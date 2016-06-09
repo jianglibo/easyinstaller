@@ -1,0 +1,117 @@
+spring:
+    cloud:
+        bootstrap:
+            enabled: false
+    datasource:
+        primary:
+            url: jdbc:hsqldb:mem:logcollector
+            username: SA
+            password:
+            driver-class-name: org.hsqldb.jdbc.JDBCDriver
+            validation-query: SELECT 1
+            test-on-borrow: true
+        secondary:
+            url: jdbc:mysql://localhost:3306/logcollectort?useUnicode=true&characterEncoding=utf-8
+            username: root
+            password: 123456
+            driver-class-name: com.mysql.jdbc.Driver
+            validation-query: SELECT 1
+            test-on-borrow: true
+    jpa:
+        database: H2
+        show-sql: false
+        hibernate:
+            ddl-auto: update
+            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+            dialect: org.hibernate.dialect.HSQLDialect
+    data:
+        rest:
+            base-path: /api/v1
+            defaultPageSize: 10
+            returnBodyOnCreate: true
+            returnBodyOnupdate: false
+    rabbitmq:
+        port: 5672
+        username:
+        password:
+        host: some-host
+        virtualHost: /
+#    thymeleaf:
+#        cache: false
+#        prefix: classpath:/templates/
+#        suffix: .html
+    freemarker:
+        cache: false
+        suffix: .html
+    security:
+        enable-csrf: true
+myapp:
+    outSideBaseUrl: http://localhost
+    initUserName: admin
+    initUserPassword: admin
+    emberRoot: /llapp
+    whlRoot: 
+    logoutSuccessUrl: /
+passwordvalidator:
+    min-length: 8
+    max-length: 32
+    max-repeat: 2
+    max-sequence: 2
+    min-name-length: 6
+server:
+    port: 80
+multipart:
+    enabled: false
+logging:
+    level:
+#        org.springframework.security.web.access: DEBUG
+#        org.hibernate.type: TRACE
+
+upload:
+    # 200M
+    multipartMaxRequestSize: 209715200
+    uploadDestFolder: ./fixtures/ignorefromgit/uploaded
+
+---
+spring:
+    profiles: prod
+    security:
+        enable-csrf: true
+    datasource:
+        primary:
+            url: jdbc:mysql://localhost:3306/logcollector?useUnicode=true&characterEncoding=utf-8
+            username: logcollector
+            password: ksd7832jisdy
+            driver-class-name: com.mysql.jdbc.Driver
+            validation-query: SELECT 1
+            test-on-borrow: true
+    secondary:
+            url: jdbc:mysql://localhost:3306/logcollector?useUnicode=true&characterEncoding=utf-8
+            username: logcollector
+            password: ksd7832jisdy
+            driver-class-name: com.mysql.jdbc.Driver
+            validation-query: SELECT 1
+            test-on-borrow: true
+#    thymeleaf:
+#        cache: true
+    freemarker:
+        cache: true
+#        view-names:
+#            - hello
+#            - x 
+    jpa:
+        database: MYSQL
+        show-sql: false
+        hibernate:
+            ddl-auto: update
+            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+            dialect: org.hibernate.dialect.MySQL5Dialect
+server:
+    port: 9008
+    tomcat:
+        remote_ip_header: x-forwarded-for
+        protocol_header: x-forwarded-proto
+upload:
+    # 200m
+    multipartMaxRequestSize: 209715200
+    uploadDestFolder: ./fixtures/ignorefromgit/uploaded

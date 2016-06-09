@@ -1,0 +1,6 @@
+signing.keyId=F58A6B4
+signing.password=secret
+signing.secretKeyRingFile=C:/secring.gpg
+
+ossrhUsername=un
+ossrhPassword=pwd

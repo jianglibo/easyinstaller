@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+<!-- in spring-boot-1.2.3.jar -->
+	<include resource="org/springframework/boot/logging/logback/base.xml" />
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>log/log-colloctor.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+			<fileNamePattern>log/log-colloctor.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>180</maxHistory>
+		</rollingPolicy>
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="SQL_FILE"
+		 class="ch.qos.logback.core.FileAppender">
+		<file>log/sql.log</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	
+	<appender name="TRANS"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>log/trans.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+			<fileNamePattern>log/trans.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>180</maxHistory>
+		</rollingPolicy>
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="TIME_COST"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>log/timecost.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+			<fileNamePattern>log/timecost.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>180</maxHistory>
+		</rollingPolicy>
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="com.atomikos.icatch" additivity="false">
+		<appender-ref ref="TRANS" />
+	</logger>
+	
+	<logger name="org.hibernate.SQL" additivity="false" level="debug">
+		<appender-ref ref="SQL_FILE" />
+	</logger>
+	
+	<logger name="com.m3958.logcollector.filter.TimeCostFilter" additivity="false" level="debug">
+		<appender-ref ref="TIME_COST" />
+	</logger>
+
+</configuration>
