@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
-import com.jianglibo.dashboard.domain.Transaction;
+import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;

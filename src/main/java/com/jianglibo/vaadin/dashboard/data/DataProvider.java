@@ -3,11 +3,11 @@ package com.jianglibo.vaadin.dashboard.data;
 import java.util.Collection;
 import java.util.Date;
 
-import com.jianglibo.dashboard.domain.DashboardNotification;
-import com.jianglibo.dashboard.domain.Movie;
-import com.jianglibo.dashboard.domain.MovieRevenue;
-import com.jianglibo.dashboard.domain.Transaction;
-import com.jianglibo.dashboard.domain.User;
+import com.jianglibo.vaadin.dashboard.domain.DashboardNotification;
+import com.jianglibo.vaadin.dashboard.domain.Movie;
+import com.jianglibo.vaadin.dashboard.domain.MovieRevenue;
+import com.jianglibo.vaadin.dashboard.domain.Transaction;
+import com.jianglibo.vaadin.dashboard.domain.User;
 
 /**
  * QuickTickets Dashboard backend API.

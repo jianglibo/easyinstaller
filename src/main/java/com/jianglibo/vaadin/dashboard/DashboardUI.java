@@ -3,9 +3,9 @@ package com.jianglibo.vaadin.dashboard;
 import java.util.Locale;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.dashboard.domain.User;
 import com.jianglibo.vaadin.dashboard.data.DataProvider;
 import com.jianglibo.vaadin.dashboard.data.dummy.DummyDataProvider;
+import com.jianglibo.vaadin.dashboard.domain.User;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;

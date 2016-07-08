@@ -4,10 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.jianglibo.dashboard.domain.Transaction;
 import com.jianglibo.vaadin.dashboard.component.InlineTextEditor;
 import com.jianglibo.vaadin.dashboard.component.TopTenMoviesTable;
 import com.jianglibo.vaadin.dashboard.component.TransactionsListing;
+import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;

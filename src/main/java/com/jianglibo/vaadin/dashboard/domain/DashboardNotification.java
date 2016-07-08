@@ -1,4 +1,4 @@
-package com.jianglibo.dashboard.domain;
+package com.jianglibo.vaadin.dashboard.domain;
 
 
 public final class DashboardNotification {

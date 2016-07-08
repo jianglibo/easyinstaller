@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.dashboard.domain.DashboardNotification;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.component.TopTenMoviesTable;
 import com.jianglibo.vaadin.dashboard.data.dummy.DummyDataGenerator;
+import com.jianglibo.vaadin.dashboard.domain.DashboardNotification;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;

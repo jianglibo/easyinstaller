@@ -35,3 +35,4 @@ node_modules
 gradle.properties
 /bin/
 /whl/
+/fixtures_out/

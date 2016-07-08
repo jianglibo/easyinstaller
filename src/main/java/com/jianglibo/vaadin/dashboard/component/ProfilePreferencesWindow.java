@@ -1,6 +1,6 @@
 package com.jianglibo.vaadin.dashboard.component;
 
-import com.jianglibo.dashboard.domain.User;
+import com.jianglibo.vaadin.dashboard.domain.User;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.ProfileUpdatedEvent;

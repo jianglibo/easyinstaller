@@ -3,7 +3,7 @@ package com.jianglibo.vaadin.dashboard.component;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.jianglibo.dashboard.domain.Movie;
+import com.jianglibo.vaadin.dashboard.domain.Movie;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;

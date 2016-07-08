@@ -34,12 +34,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.jianglibo.dashboard.domain.DashboardNotification;
-import com.jianglibo.dashboard.domain.Movie;
-import com.jianglibo.dashboard.domain.MovieRevenue;
-import com.jianglibo.dashboard.domain.Transaction;
-import com.jianglibo.dashboard.domain.User;
 import com.jianglibo.vaadin.dashboard.data.DataProvider;
+import com.jianglibo.vaadin.dashboard.domain.DashboardNotification;
+import com.jianglibo.vaadin.dashboard.domain.Movie;
+import com.jianglibo.vaadin.dashboard.domain.MovieRevenue;
+import com.jianglibo.vaadin.dashboard.domain.Transaction;
+import com.jianglibo.vaadin.dashboard.domain.User;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.util.CurrentInstance;
 

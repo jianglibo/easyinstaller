@@ -3,10 +3,10 @@ package com.jianglibo.vaadin.dashboard.view;
 import java.util.Collection;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.dashboard.domain.Transaction;
-import com.jianglibo.dashboard.domain.User;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.component.ProfilePreferencesWindow;
+import com.jianglibo.vaadin.dashboard.domain.Transaction;
+import com.jianglibo.vaadin.dashboard.domain.User;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;

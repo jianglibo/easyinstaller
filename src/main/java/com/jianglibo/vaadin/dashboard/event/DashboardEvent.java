@@ -2,7 +2,7 @@ package com.jianglibo.vaadin.dashboard.event;
 
 import java.util.Collection;
 
-import com.jianglibo.dashboard.domain.Transaction;
+import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.jianglibo.vaadin.dashboard.view.DashboardViewType;
 
 /*

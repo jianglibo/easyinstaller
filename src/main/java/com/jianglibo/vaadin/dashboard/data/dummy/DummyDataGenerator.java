@@ -3,7 +3,7 @@ package com.jianglibo.vaadin.dashboard.data.dummy;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.jianglibo.dashboard.domain.DashboardNotification;
+import com.jianglibo.vaadin.dashboard.domain.DashboardNotification;
 
 public abstract class DummyDataGenerator {
 
