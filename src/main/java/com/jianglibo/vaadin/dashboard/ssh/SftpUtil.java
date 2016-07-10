@@ -9,9 +9,27 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 public class SftpUtil {
-
-	public static void putDir(Path start, String dst, ChannelSftp sftpCh) throws JSchException, SftpException {
-		putDir(start, dst, sftpCh, false);
+	
+	public static void putFiles(ChannelSftp sftpCh, String dstFolder, Path...files) throws JSchException {
+		if (!sftpCh.isConnected()) {
+			sftpCh.connect();
+		}
+		dstFolder = dstFolder.replace('\\', '/');
+		if (!dstFolder.endsWith("/")) {
+			dstFolder = dstFolder + "/";
+		}
+		mkdirs(dstFolder, sftpCh);
+		for(Path one: files) {
+			try {
+				sftpCh.put(one.toString(), dstFolder + "/" + one.getFileName().toString());
+			} catch (SftpException e) {
+			}
+		}
+		sftpCh.quit();
+	}
+	
+	public static void putDir(Path start, String dstFolder, ChannelSftp sftpCh) throws JSchException, SftpException {
+		putDir(start, dstFolder, sftpCh, false);
 	}
 
 	public static void putDir(Path start, String dst, ChannelSftp sftpCh, boolean includeSourceDir)
@@ -25,18 +43,7 @@ public class SftpUtil {
 			dst = dst + "/";
 		}
 		final String dstf = dst;
-
-		int pos = 0;
-		do {
-			String seg = dstf.substring(0, pos);
-			if (!seg.isEmpty()) {
-				try {
-					sftpCh.mkdir(seg);
-				} catch (Exception e) {
-				}
-			}
-		} while ((pos = dstf.indexOf('/', pos + 1)) != -1);
-
+		mkdirs(dstf, sftpCh);
 		try (Stream<Path> fpaths = Files.walk(start)) {
 			fpaths.forEach(one -> {
 				Path srcla = start.relativize(one);
@@ -65,6 +72,19 @@ public class SftpUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static void mkdirs(String dstf, ChannelSftp sftpCh) {
+		int pos = 0;
+		do {
+			String seg = dstf.substring(0, pos);
+			if (!seg.isEmpty()) {
+				try {
+					sftpCh.mkdir(seg);
+				} catch (Exception e) {
+				}
+			}
+		} while ((pos = dstf.indexOf('/', pos + 1)) != -1);
 	}
 
 }

@@ -4,7 +4,7 @@ spring:
             enabled: false
     datasource:
         primary:
-            url: jdbc:hsqldb:mem:logcollector
+            url: jdbc:hsqldb:file:~/easyinstallerdb
             username: SA
             password:
             driver-class-name: org.hsqldb.jdbc.JDBCDriver
@@ -18,7 +18,7 @@ spring:
             validation-query: SELECT 1
             test-on-borrow: true
     jpa:
-        database: H2
+        database: HSQL
         show-sql: false
         hibernate:
             ddl-auto: update
@@ -69,49 +69,5 @@ logging:
 
 upload:
     # 200M
-    multipartMaxRequestSize: 209715200
-    uploadDestFolder: ./fixtures/ignorefromgit/uploaded
-
----
-spring:
-    profiles: prod
-    security:
-        enable-csrf: true
-    datasource:
-        primary:
-            url: jdbc:mysql://localhost:3306/logcollector?useUnicode=true&characterEncoding=utf-8
-            username: logcollector
-            password: ksd7832jisdy
-            driver-class-name: com.mysql.jdbc.Driver
-            validation-query: SELECT 1
-            test-on-borrow: true
-    secondary:
-            url: jdbc:mysql://localhost:3306/logcollector?useUnicode=true&characterEncoding=utf-8
-            username: logcollector
-            password: ksd7832jisdy
-            driver-class-name: com.mysql.jdbc.Driver
-            validation-query: SELECT 1
-            test-on-borrow: true
-#    thymeleaf:
-#        cache: true
-    freemarker:
-        cache: true
-#        view-names:
-#            - hello
-#            - x 
-    jpa:
-        database: MYSQL
-        show-sql: false
-        hibernate:
-            ddl-auto: update
-            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
-            dialect: org.hibernate.dialect.MySQL5Dialect
-server:
-    port: 9008
-    tomcat:
-        remote_ip_header: x-forwarded-for
-        protocol_header: x-forwarded-proto
-upload:
-    # 200m
     multipartMaxRequestSize: 209715200
     uploadDestFolder: ./fixtures/ignorefromgit/uploaded

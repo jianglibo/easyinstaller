@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard;
+package com.jianglibo.vaadin.dashboard.unused;
 
 import javax.annotation.PostConstruct;
 

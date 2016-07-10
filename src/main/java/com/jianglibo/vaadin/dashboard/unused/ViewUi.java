@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard;
+package com.jianglibo.vaadin.dashboard.unused;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

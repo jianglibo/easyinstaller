@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard;
+package com.jianglibo.vaadin.dashboard.unused;
 
 import com.jianglibo.vaadin.dashboard.data.Contact;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;

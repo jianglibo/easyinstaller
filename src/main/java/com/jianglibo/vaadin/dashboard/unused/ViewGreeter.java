@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard;
+package com.jianglibo.vaadin.dashboard.unused;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.ViewScope;
