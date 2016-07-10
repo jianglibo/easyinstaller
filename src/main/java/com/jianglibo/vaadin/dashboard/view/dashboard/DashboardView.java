@@ -5,8 +5,8 @@ import java.util.Iterator;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
+import com.jianglibo.vaadin.dashboard.annotation.DboardView;
 import com.jianglibo.vaadin.dashboard.component.TopTenMoviesTable;
-import com.jianglibo.vaadin.dashboard.data.dummy.DummyDataGenerator;
 import com.jianglibo.vaadin.dashboard.domain.DashboardNotification;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
@@ -19,6 +19,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -38,11 +39,15 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
+@SpringView(name=DashboardView.VIEW_NAME)
+@DboardView(icon=FontAwesome.HOME)
 public final class DashboardView extends Panel implements View,
         DashboardEditListener {
 
     public static final String EDIT_ID = "dashboard-edit";
     public static final String TITLE_ID = "dashboard-title";
+    
+    public static final String VIEW_NAME = "dashboard";
 
     private Label titleLabel;
     private NotificationsButton notificationsButton;

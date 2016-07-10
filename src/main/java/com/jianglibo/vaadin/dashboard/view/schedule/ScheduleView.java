@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
+import com.jianglibo.vaadin.dashboard.annotation.DboardView;
 import com.jianglibo.vaadin.dashboard.component.MovieDetailsWindow;
 import com.jianglibo.vaadin.dashboard.domain.Movie;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
@@ -17,9 +18,11 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.MouseEventDetails.MouseButton;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -45,7 +48,11 @@ import com.vaadin.ui.components.calendar.handler.BasicEventResizeHandler;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
+@SpringView(name=ScheduleView.VIEW_NAME)
+@DboardView(icon=FontAwesome.CALENDAR_O)
 public final class ScheduleView extends CssLayout implements View {
+
+    public static final String VIEW_NAME = "schedule";
 
     private Calendar calendar;
     private final Component tray;

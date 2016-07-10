@@ -28,31 +28,31 @@ public enum DashboardViewType {
         this.stateful = stateful;
     }
 
-    public boolean isStateful() {
-        return stateful;
-    }
-
-    public String getViewName() {
-        return viewName;
-    }
-
-    public Class<? extends View> getViewClass() {
-        return viewClass;
-    }
-
-    public Resource getIcon() {
-        return icon;
-    }
-
-    public static DashboardViewType getByViewName(final String viewName) {
-        DashboardViewType result = null;
-        for (DashboardViewType viewType : values()) {
-            if (viewType.getViewName().equals(viewName)) {
-                result = viewType;
-                break;
-            }
-        }
-        return result;
-    }
+//    public boolean isStateful() {
+//        return stateful;
+//    }
+//
+//    public String getViewName() {
+//        return viewName;
+//    }
+//
+//    public Class<? extends View> getViewClass() {
+//        return viewClass;
+//    }
+//
+//    public Resource getIcon() {
+//        return icon;
+//    }
+//
+//    public static DashboardViewType getByViewName(final String viewName) {
+//        DashboardViewType result = null;
+//        for (DashboardViewType viewType : values()) {
+//            if (viewType.getViewName().equals(viewName)) {
+//                result = viewType;
+//                break;
+//            }
+//        }
+//        return result;
+//    }
 
 }

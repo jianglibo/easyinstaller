@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.annotation.DboardView;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.ReportsCountUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.TransactionReportEvent;
 import com.jianglibo.vaadin.dashboard.view.reports.ReportEditor.PaletteItemType;
@@ -15,9 +16,11 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.MouseEventDetails.MouseButton;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -35,10 +38,14 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
+@SpringView(name=ReportsView.VIEW_NAME)
+@DboardView(icon=FontAwesome.FILE_TEXT_O)
 public final class ReportsView extends TabSheet implements View, CloseHandler,
         ReportEditorListener {
 
     public static final String CONFIRM_DIALOG_ID = "confirm-dialog";
+    
+    public static final String VIEW_NAME = "reports";
 
     public ReportsView() {
         setSizeFull();

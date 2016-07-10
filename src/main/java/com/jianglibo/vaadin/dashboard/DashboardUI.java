@@ -2,6 +2,8 @@ package com.jianglibo.vaadin.dashboard;
 
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.data.DataProvider;
 import com.jianglibo.vaadin.dashboard.data.dummy.DummyDataProvider;
@@ -29,12 +31,15 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @Theme("dashboard")
 @Widgetset("com.jianglibo.vaadin.dashboard.DashboardWidgetSet")
-@Title("QuickTickets Dashboard")
+@Title("EasyInstaller Dashboard")
 @SuppressWarnings("serial")
 @SpringUI(path = "/")
 public final class DashboardUI extends UI {
 	
 	private int noticeHasShown = 0;
+	
+	@Autowired
+	private MainView mainView;
 
 	/*
 	 * This field stores an access to the dummy backend layer. In real
@@ -74,7 +79,8 @@ public final class DashboardUI extends UI {
 		User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
 		if (user != null && "admin".equals(user.getRole())) {
 			// Authenticated user
-			setContent(new MainView());
+//			setContent(new MainView());
+			setContent(mainView);
 			removeStyleName("loginview");
 			getNavigator().navigateTo(getNavigator().getState());
 		} else {

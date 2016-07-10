@@ -64,18 +64,30 @@ public abstract class DashboardEvent {
         }
     }
 
-    public static final class PostViewChangeEvent {
-        private final DashboardViewType view;
+//    public static final class PostViewChangeEvent {
+//        private final DashboardViewType view;
+//
+//        public PostViewChangeEvent(final DashboardViewType view) {
+//            this.view = view;
+//        }
+//
+//        public DashboardViewType getView() {
+//            return view;
+//        }
+//    }
 
-        public PostViewChangeEvent(final DashboardViewType view) {
-            this.view = view;
+    public static final class PostViewChangeEvent {
+        private final String viewName;
+
+        public PostViewChangeEvent(final String viewName) {
+            this.viewName = viewName;
         }
 
-        public DashboardViewType getView() {
-            return view;
+        public String getViewName() {
+            return viewName;
         }
     }
-
+    
     public static class CloseOpenWindowsEvent {
     }
 

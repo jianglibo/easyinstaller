@@ -1,8 +1,10 @@
 package com.jianglibo.vaadin.dashboard.view;
 
-import com.jianglibo.vaadin.dashboard.DashboardNavigator;
+import javax.inject.Named;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 
 /*
@@ -11,19 +13,19 @@ import com.vaadin.ui.HorizontalLayout;
  */
 @SuppressWarnings("serial")
 public class MainView extends HorizontalLayout {
+	
+	@Autowired @Named("contentContainer")
+	private ComponentContainer content;
 
     public MainView() {
         setSizeFull();
         addStyleName("mainview");
-
         addComponent(new DashboardMenu());
-
-        ComponentContainer content = new CssLayout();
-        content.addStyleName("view-content");
-        content.setSizeFull();
+//        ComponentContainer content = new CssLayout();
+//        content.addStyleName("view-content");
+//        content.setSizeFull();
         addComponent(content);
         setExpandRatio(content, 1.0f);
-
-        new DashboardNavigator(content);
+//        new DashboardNavigator(content);
     }
 }

@@ -51,6 +51,8 @@ public final class DashboardMenu extends CustomComponent {
     public static final String REPORTS_BADGE_ID = "dashboard-menu-reports-badge";
     public static final String NOTIFICATIONS_BADGE_ID = "dashboard-menu-notifications-badge";
     private static final String STYLE_VISIBLE = "valo-menu-visible";
+    
+    
     private Label notificationsBadge;
     private Label reportsBadge;
     private MenuItem settingsItem;

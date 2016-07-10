@@ -13,12 +13,14 @@ import org.vaadin.maddon.FilterableListContainer;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
+import com.jianglibo.vaadin.dashboard.annotation.DboardView;
 import com.jianglibo.vaadin.dashboard.component.MovieDetailsWindow;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.TransactionReportEvent;
 import com.jianglibo.vaadin.dashboard.view.DashboardViewType;
+import com.jianglibo.vaadin.dashboard.view.reports.ReportsView;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
@@ -36,6 +38,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -52,8 +55,13 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings({ "serial", "unchecked" })
+@SpringView(name=TransactionsView.VIEW_NAME)
+@DboardView(icon=FontAwesome.TABLE)
 public final class TransactionsView extends VerticalLayout implements View {
+	
+	
 
+    public static final String VIEW_NAME = "transactions";
     private final Table table;
     private Button createReport;
     private static final DateFormat DATEFORMAT = new SimpleDateFormat(
@@ -283,7 +291,7 @@ public final class TransactionsView extends VerticalLayout implements View {
 
     void createNewReportFromSelection() {
         UI.getCurrent().getNavigator()
-                .navigateTo(DashboardViewType.REPORTS.getViewName());
+                .navigateTo(ReportsView.VIEW_NAME);
         DashboardEventBus.post(new TransactionReportEvent(
                 (Collection<Transaction>) table.getValue()));
     }

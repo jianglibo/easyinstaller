@@ -68,6 +68,8 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-starter-hateoas")
 	compile("com.vaadin:vaadin-spring-boot:1.0.0")
+	compile("de.fatalix:codmirror-addon:1.2.2")
+
 	// http://mvnrepository.com/artifact/com.vaadin/vaadin-themes
 	compile group: 'com.vaadin', name: 'vaadin-themes', version: '7.6.6'
 	
