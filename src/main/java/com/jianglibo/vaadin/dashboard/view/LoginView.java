@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view;
 
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.vaadinerrors.LoginError;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.UserLoginRequestedEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
@@ -24,26 +25,43 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
 public class LoginView extends VerticalLayout {
+	
+	private boolean loginFailed = false;
+	
+	private int noticeHasShown = 0;
 
     public LoginView() {
-        setSizeFull();
-
-        Component loginForm = buildLoginForm();
-        addComponent(loginForm);
-        setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
-
-        Notification notification = new Notification(
-                "Welcome to Dashboard Demo");
-        notification
-                .setDescription("<span>This application is not real, it only demonstrates an application built with the <a href=\"https://vaadin.com\">Vaadin framework</a>.</span> <span>No username or password is required, just click the <b>Sign In</b> button to continue.</span>");
-        notification.setHtmlContentAllowed(true);
-        notification.setStyleName("tray dark small closable login-help");
-        notification.setPosition(Position.BOTTOM_CENTER);
-        notification.setDelayMsec(20000);
-        notification.show(Page.getCurrent());
+    	this.setup();
     }
 
-    private Component buildLoginForm() {
+    public LoginView(boolean loginFailed, int noticeHasShown) {
+    	this.loginFailed = loginFailed;
+    	this.noticeHasShown = noticeHasShown;
+    	this.setup();
+	}
+    
+    private void setup() {
+        setSizeFull();
+
+        Component loginForm = buildLoginForm(loginFailed);
+        addComponent(loginForm);
+        setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
+        
+        if (noticeHasShown == 0) {
+            Notification notification = new Notification(
+                    "Welcome to Dashboard Demo");
+            notification
+                    .setDescription("<span>This application is not real, it only demonstrates an application built with the <a href=\"https://vaadin.com\">Vaadin framework</a>.</span> <span>No username or password is required, just click the <b>Sign In</b> button to continue.</span>");
+            notification.setHtmlContentAllowed(true);
+            notification.setStyleName("tray dark small closable login-help");
+            notification.setPosition(Position.BOTTOM_CENTER);
+            notification.setDelayMsec(20000);
+            notification.show(Page.getCurrent());
+        }
+
+    }
+
+	private Component buildLoginForm(boolean loginFailed) {
         final VerticalLayout loginPanel = new VerticalLayout();
         loginPanel.setSizeUndefined();
         loginPanel.setSpacing(true);
@@ -53,6 +71,7 @@ public class LoginView extends VerticalLayout {
         loginPanel.addComponent(buildLabels());
         loginPanel.addComponent(buildFields());
         loginPanel.addComponent(new CheckBox("Remember me", true));
+        	
         return loginPanel;
     }
 
@@ -62,10 +81,17 @@ public class LoginView extends VerticalLayout {
         fields.addStyleName("fields");
 
         final TextField username = new TextField("Username");
+        if (loginFailed) {
+        	username.setComponentError(new LoginError());
+        }
+
         username.setIcon(FontAwesome.USER);
         username.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
         final PasswordField password = new PasswordField("Password");
+        if (loginFailed) {
+        	password.setComponentError(new LoginError());
+        }
         password.setIcon(FontAwesome.LOCK);
         password.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
@@ -97,7 +123,7 @@ public class LoginView extends VerticalLayout {
         welcome.addStyleName(ValoTheme.LABEL_COLORED);
         labels.addComponent(welcome);
 
-        Label title = new Label("QuickTickets Dashboard");
+        Label title = new Label("EasyInstaller Dashboard");
         title.setSizeUndefined();
         title.addStyleName(ValoTheme.LABEL_H3);
         title.addStyleName(ValoTheme.LABEL_LIGHT);

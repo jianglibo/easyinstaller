@@ -1,26 +1,16 @@
 spring:
-    cloud:
-        bootstrap:
-            enabled: false
     datasource:
-        primary:
-            url: jdbc:hsqldb:file:~/easyinstallerdb
-            username: SA
-            password:
-            driver-class-name: org.hsqldb.jdbc.JDBCDriver
-            validation-query: SELECT 1
-            test-on-borrow: true
-        secondary:
-            url: jdbc:mysql://localhost:3306/logcollectort?useUnicode=true&characterEncoding=utf-8
-            username: root
-            password: 123456
-            driver-class-name: com.mysql.jdbc.Driver
-            validation-query: SELECT 1
-            test-on-borrow: true
+        url: jdbc:hsqldb:file:~/db/easyinstallerdb
+        username: SA
+        password:
+        driver-class-name: org.hsqldb.jdbc.JDBCDriver
+        validation-query: SELECT 1
+        test-on-borrow: true
     jpa:
         database: HSQL
-        show-sql: false
+        show-sql: true
         hibernate:
+            generate-ddl: true
             ddl-auto: update
             naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
             dialect: org.hibernate.dialect.HSQLDialect
@@ -64,6 +54,7 @@ multipart:
     enabled: false
 logging:
     level:
+      org.hibernate.SQL: debug
 #        org.springframework.security.web.access: DEBUG
 #        org.hibernate.type: TRACE
 

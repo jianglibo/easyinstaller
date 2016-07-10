@@ -33,6 +33,8 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 @SpringUI(path = "/")
 public final class DashboardUI extends UI {
+	
+	private int noticeHasShown = 0;
 
 	/*
 	 * This field stores an access to the dummy backend layer. In real
@@ -51,7 +53,7 @@ public final class DashboardUI extends UI {
 		Responsive.makeResponsive(this);
 		addStyleName(ValoTheme.UI_WITH_MENU);
 
-		updateContent();
+		updateContent(false);
 
 		// Some views need to be aware of browser resize events so a
 		// BrowserResizeEvent gets fired to the event bus on every occasion.
@@ -68,7 +70,7 @@ public final class DashboardUI extends UI {
 	 * If the user is logged in with appropriate privileges, main view is shown.
 	 * Otherwise login view is shown.
 	 */
-	private void updateContent() {
+	private void updateContent(boolean loginFailed) {
 		User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
 		if (user != null && "admin".equals(user.getRole())) {
 			// Authenticated user
@@ -76,7 +78,8 @@ public final class DashboardUI extends UI {
 			removeStyleName("loginview");
 			getNavigator().navigateTo(getNavigator().getState());
 		} else {
-			setContent(new LoginView());
+			setContent(new LoginView(loginFailed, noticeHasShown));
+			noticeHasShown++;
 			addStyleName("loginview");
 		}
 	}
@@ -84,8 +87,8 @@ public final class DashboardUI extends UI {
 	@Subscribe
 	public void userLoginRequested(final UserLoginRequestedEvent event) {
 		User user = getDataProvider().authenticate(event.getUserName(), event.getPassword());
-		VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
-		updateContent();
+//		VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
+		updateContent(true);
 	}
 
 	@Subscribe
