@@ -5,9 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 
@@ -20,7 +20,7 @@ public class VaadinApplication {
     }
     
     @Bean
-    @UIScope
+    @Scope("prototype")
     @Qualifier("contentContainer")
     public ComponentContainer contentContainer() {
         ComponentContainer content = new CssLayout();

@@ -2,18 +2,25 @@ package com.jianglibo.vaadin.dashboard.view.reports;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.annotation.DboardView;
+import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.ReportsCountUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.TransactionReportEvent;
+import com.jianglibo.vaadin.dashboard.view.DboardViewUtil;
+import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.jianglibo.vaadin.dashboard.view.reports.ReportEditor.PaletteItemType;
 import com.jianglibo.vaadin.dashboard.view.reports.ReportEditor.ReportEditorListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -25,16 +32,21 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.DragAndDropWrapper.DragStartMode;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.TabSheet.CloseHandler;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.AbstractSelect.AcceptItem;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
@@ -46,7 +58,8 @@ public final class ReportsView extends TabSheet implements View, CloseHandler,
     public static final String CONFIRM_DIALOG_ID = "confirm-dialog";
     
     public static final String VIEW_NAME = "reports";
-
+    public static final FontAwesome ICON_VALUE = FontAwesome.FILE_TEXT_O;
+    
     public ReportsView() {
         setSizeFull();
         addStyleName("reports");
@@ -258,5 +271,41 @@ public final class ReportsView extends TabSheet implements View, CloseHandler,
     public enum ReportType {
         MONTHLY, EMPTY, TRANSACTIONS
     }
+    
+    public static final String REPORTS_BADGE_ID = "dashboard-menu-reports-badge";
 
+	public static ValoMenuItemButton getMenuItem() {
+        // Add drop target to reports button
+		Component menuItemComponent = new ValoMenuItemButton(VIEW_NAME, ICON_VALUE);
+        DragAndDropWrapper reports = new DragAndDropWrapper(
+                menuItemComponent);
+        reports.setSizeUndefined();
+        reports.setDragStartMode(DragStartMode.NONE);
+        reports.setDropHandler(new DropHandler() {
+
+            @Override
+            public void drop(final DragAndDropEvent event) {
+                UI.getCurrent()
+                        .getNavigator()
+                        .navigateTo(VIEW_NAME);
+                Table table = (Table) event.getTransferable()
+                        .getSourceComponent();
+                DashboardEventBus.post(new TransactionReportEvent(
+                        (Collection<Transaction>) table.getValue()));
+            }
+
+            @Override
+            public AcceptCriterion getAcceptCriterion() {
+                return AcceptItem.ALL;
+            }
+
+        });
+        
+        Label reportsBadge = new Label();
+        reportsBadge.setId(REPORTS_BADGE_ID);
+        menuItemComponent = DboardViewUtil.buildBadgeWrapper(menuItemComponent,
+                reportsBadge);
+        
+        return (ValoMenuItemButton) menuItemComponent;
+	}
 }

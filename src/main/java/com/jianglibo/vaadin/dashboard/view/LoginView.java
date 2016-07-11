@@ -2,12 +2,16 @@ package com.jianglibo.vaadin.dashboard.view;
 
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.vaadinerrors.LoginError;
+
+import org.springframework.context.annotation.Scope;
+
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.UserLoginRequestedEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.Position;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -24,23 +28,27 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
+@SpringComponent
+@Scope("prototype")
 public class LoginView extends VerticalLayout {
 	
 	private boolean loginFailed = false;
-	
+
 	private int noticeHasShown = 0;
 
-    public LoginView() {
-    	this.setup();
-    }
+//    public LoginView() {
+//    	this.setup();
+//    }
 
-    public LoginView(boolean loginFailed, int noticeHasShown) {
-    	this.loginFailed = loginFailed;
-    	this.noticeHasShown = noticeHasShown;
-    	this.setup();
-	}
+//    public LoginView(boolean loginFailed, int noticeHasShown) {
+//    	this.loginFailed = loginFailed;
+//    	this.noticeHasShown = noticeHasShown;
+//    	this.setup();
+//	}
     
-    private void setup() {
+    public void setup(boolean loginFailed, int noticeHasShown) {
+    	setLoginFailed(loginFailed);
+    	setNoticeHasShown(noticeHasShown);
         setSizeFull();
 
         Component loginForm = buildLoginForm(loginFailed);
@@ -130,5 +138,21 @@ public class LoginView extends VerticalLayout {
         labels.addComponent(title);
         return labels;
     }
+    
+	public boolean isLoginFailed() {
+		return loginFailed;
+	}
+
+	public void setLoginFailed(boolean loginFailed) {
+		this.loginFailed = loginFailed;
+	}
+
+	public int getNoticeHasShown() {
+		return noticeHasShown;
+	}
+
+	public void setNoticeHasShown(int noticeHasShown) {
+		this.noticeHasShown = noticeHasShown;
+	}
 
 }

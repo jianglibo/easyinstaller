@@ -19,7 +19,7 @@ import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.TransactionReportEvent;
-import com.jianglibo.vaadin.dashboard.view.DashboardViewType;
+import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.jianglibo.vaadin.dashboard.view.reports.ReportsView;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
@@ -62,6 +62,7 @@ public final class TransactionsView extends VerticalLayout implements View {
 	
 
     public static final String VIEW_NAME = "transactions";
+    public static final FontAwesome ICON_VALUE = FontAwesome.TABLE;
     private final Table table;
     private Button createReport;
     private static final DateFormat DATEFORMAT = new SimpleDateFormat(
@@ -376,7 +377,9 @@ public final class TransactionsView extends VerticalLayout implements View {
                 }
             });
         }
-
     }
 
+	public static Component getMenuItem() {
+		return new ValoMenuItemButton(VIEW_NAME, ICON_VALUE);
+	}
 }

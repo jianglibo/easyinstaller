@@ -12,6 +12,7 @@ import com.jianglibo.vaadin.dashboard.component.MovieDetailsWindow;
 import com.jianglibo.vaadin.dashboard.domain.Movie;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -53,6 +54,7 @@ import com.vaadin.ui.themes.ValoTheme;
 public final class ScheduleView extends CssLayout implements View {
 
     public static final String VIEW_NAME = "schedule";
+    public static final FontAwesome ICON_VALUE = FontAwesome.CALENDAR_O;
 
     private Calendar calendar;
     private final Component tray;
@@ -348,5 +350,9 @@ public final class ScheduleView extends CssLayout implements View {
         }
 
     }
+
+	public static Component getMenuItem() {
+		return new ValoMenuItemButton(VIEW_NAME, ICON_VALUE);
+	}
 
 }

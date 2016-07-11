@@ -2,7 +2,9 @@ package com.jianglibo.vaadin.dashboard;
 
 import java.util.Locale;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.data.DataProvider;
@@ -34,12 +36,11 @@ import com.vaadin.ui.themes.ValoTheme;
 @Title("EasyInstaller Dashboard")
 @SuppressWarnings("serial")
 @SpringUI(path = "/")
-public final class DashboardUI extends UI {
+public final class DashboardUI extends UI implements ApplicationContextAware {
 	
 	private int noticeHasShown = 0;
 	
-	@Autowired
-	private MainView mainView;
+	private ApplicationContext applicationContext;
 
 	/*
 	 * This field stores an access to the dummy backend layer. In real
@@ -80,11 +81,14 @@ public final class DashboardUI extends UI {
 		if (user != null && "admin".equals(user.getRole())) {
 			// Authenticated user
 //			setContent(new MainView());
-			setContent(mainView);
+			MainView mv = applicationContext.getBean(MainView.class);
+			setContent(mv);
 			removeStyleName("loginview");
 			getNavigator().navigateTo(getNavigator().getState());
 		} else {
-			setContent(new LoginView(loginFailed, noticeHasShown));
+			LoginView lv = applicationContext.getBean(LoginView.class);
+			lv.setup(loginFailed, noticeHasShown);
+			setContent(lv);
 			noticeHasShown++;
 			addStyleName("loginview");
 		}
@@ -93,7 +97,7 @@ public final class DashboardUI extends UI {
 	@Subscribe
 	public void userLoginRequested(final UserLoginRequestedEvent event) {
 		User user = getDataProvider().authenticate(event.getUserName(), event.getPassword());
-//		VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
+		VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
 		updateContent(true);
 	}
 
@@ -122,5 +126,10 @@ public final class DashboardUI extends UI {
 
 	public static DashboardEventBus getDashboardEventbus() {
 		return ((DashboardUI) getCurrent()).dashboardEventbus;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 }

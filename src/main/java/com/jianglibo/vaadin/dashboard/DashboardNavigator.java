@@ -4,12 +4,12 @@ package com.jianglibo.vaadin.dashboard;
 import javax.inject.Named;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;
-import com.jianglibo.vaadin.dashboard.view.DashboardViewType;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -22,6 +22,7 @@ import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
 @SpringComponent
+@Scope("prototype")
 public class DashboardNavigator extends Navigator {
 	
     @Autowired
@@ -42,10 +43,16 @@ public class DashboardNavigator extends Navigator {
 //        if (TRACKER_ID != null && host.endsWith("demo.vaadin.com")) {
 //            initGATracker(TRACKER_ID);
 //        }
+//        initViewChangeListener();
+//        addProvider(viewProvider);
+//        initViewProviders();
+
+    }
+    
+    public void start() {
         initViewChangeListener();
         addProvider(viewProvider);
         initViewProviders();
-
     }
 
 //    private void initGATracker(final String trackerId) {

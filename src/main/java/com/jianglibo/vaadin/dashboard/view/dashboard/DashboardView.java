@@ -11,6 +11,8 @@ import com.jianglibo.vaadin.dashboard.domain.DashboardNotification;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
+import com.jianglibo.vaadin.dashboard.view.DboardViewUtil;
+import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -48,6 +50,8 @@ public final class DashboardView extends Panel implements View,
     public static final String TITLE_ID = "dashboard-title";
     
     public static final String VIEW_NAME = "dashboard";
+    
+    public static final FontAwesome ICON_VALUE = FontAwesome.HOME;
 
     private Label titleLabel;
     private NotificationsButton notificationsButton;
@@ -392,5 +396,16 @@ public final class DashboardView extends Panel implements View,
             setDescription(description);
         }
     }
+    
+    public static final String NOTIFICATIONS_BADGE_ID = "dashboard-menu-notifications-badge";
 
+
+	public static Component getMenuItem() {
+		Component menuItemComponent = new ValoMenuItemButton(VIEW_NAME, ICON_VALUE);
+        Label notificationsBadge = new Label();
+        notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
+        menuItemComponent = DboardViewUtil.buildBadgeWrapper(menuItemComponent,
+                notificationsBadge);
+		return menuItemComponent;
+	}
 }
