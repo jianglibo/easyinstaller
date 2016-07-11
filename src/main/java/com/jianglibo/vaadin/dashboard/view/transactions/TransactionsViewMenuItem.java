@@ -1,11 +1,10 @@
 package com.jianglibo.vaadin.dashboard.view.transactions;
 
-import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
-@MainMenu
+//@MainMenu
 public class TransactionsViewMenuItem implements MenuItemWrapper {
 	
 	private Component menuItem;

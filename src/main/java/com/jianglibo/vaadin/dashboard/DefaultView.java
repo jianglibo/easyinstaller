@@ -10,6 +10,8 @@ import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = DefaultView.VIEW_NAME)
 public class DefaultView extends VerticalLayout implements View {
+	
+	
     /**
      * 
      */
@@ -23,6 +25,7 @@ public class DefaultView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeEvent event) {
+    	
         // the view is constructed in the init() method()
     }
 }

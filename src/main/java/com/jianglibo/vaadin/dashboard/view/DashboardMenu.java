@@ -1,9 +1,13 @@
 package com.jianglibo.vaadin.dashboard.view;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Named;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
 import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.DashboardNavigator;
 import com.jianglibo.vaadin.dashboard.component.ProfilePreferencesWindow;
 import com.jianglibo.vaadin.dashboard.domain.User;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;
@@ -24,6 +28,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
@@ -38,8 +43,6 @@ import com.vaadin.ui.themes.ValoTheme;
  * primary navigation between the views.
  */
 @SuppressWarnings({ "serial" })
-@SpringComponent
-@Scope("prototype")
 public final class DashboardMenu extends CustomComponent {
 
 
@@ -49,7 +52,12 @@ public final class DashboardMenu extends CustomComponent {
 	private static final String STYLE_VISIBLE = "valo-menu-visible";
 
 	private MenuItem settingsItem;
-
+	
+	private DashboardViewMenuItem dashboardViewMenuItem;
+	private ReportsViewMenuItem reportsViewMenuItem;
+	private ScheduleViewMenuItem scheduleViewMenuItem;
+	private TransactionsViewMenuItem transactionsViewMenuItem;
+	
 	public DashboardMenu() {
 		setPrimaryStyleName("valo-menu");
 		setId(ID);
@@ -141,11 +149,17 @@ public final class DashboardMenu extends CustomComponent {
 	private Component buildMenuItems() {
 		CssLayout menuItemsLayout = new CssLayout();
 		menuItemsLayout.addStyleName("valo-menuitems");
-
-		menuItemsLayout.addComponent(new DashboardViewMenuItem().getMenuItem());
-		menuItemsLayout.addComponent(new ReportsViewMenuItem().getMenuItem());
-		menuItemsLayout.addComponent(new ScheduleViewMenuItem().getMenuItem());
-		menuItemsLayout.addComponent(new TransactionsViewMenuItem().getMenuItem());
+		dashboardViewMenuItem = new DashboardViewMenuItem();
+		menuItemsLayout.addComponent(dashboardViewMenuItem.getMenuItem());
+		
+		reportsViewMenuItem = new ReportsViewMenuItem();
+		menuItemsLayout.addComponent(reportsViewMenuItem.getMenuItem());
+		
+		scheduleViewMenuItem = new ScheduleViewMenuItem();
+		menuItemsLayout.addComponent(scheduleViewMenuItem.getMenuItem());
+		
+		transactionsViewMenuItem = new TransactionsViewMenuItem(); 
+		menuItemsLayout.addComponent(transactionsViewMenuItem.getMenuItem());
 
 		// for (final DashboardViewType view : DashboardViewType.values()) {
 		// Component menuItemComponent = new ValoMenuItemButton(view);
@@ -201,7 +215,7 @@ public final class DashboardMenu extends CustomComponent {
 	@Override
 	public void attach() {
 		super.attach();
-//		updateNotificationsCount(null);
+		dashboardViewMenuItem.updateNotificationsCount(null);
 	}
 
 	@Subscribe
@@ -248,4 +262,5 @@ public final class DashboardMenu extends CustomComponent {
 	// }
 	// }
 	// }
+	
 }

@@ -3,7 +3,6 @@ package com.jianglibo.vaadin.dashboard.view.reports;
 import java.util.Collection;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.ReportsCountUpdatedEvent;
@@ -22,7 +21,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.AbstractSelect.AcceptItem;
 import com.vaadin.ui.DragAndDropWrapper.DragStartMode;
 
-@MainMenu
+//@MainMenu
 public class ReportsViewMenuItem implements MenuItemWrapper {
 
 	public static final String REPORTS_BADGE_ID = "dashboard-menu-reports-badge";
@@ -60,6 +59,8 @@ public class ReportsViewMenuItem implements MenuItemWrapper {
         
         reportsBadge = new Label();
         reportsBadge.setId(REPORTS_BADGE_ID);
+        menuItemComponent = reports;
+        
         menuItemComponent = DboardViewUtil.buildBadgeWrapper(menuItemComponent,
                 reportsBadge);
         

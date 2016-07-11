@@ -1,11 +1,10 @@
 package com.jianglibo.vaadin.dashboard.view.schedule;
 
-import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
-@MainMenu
+//@MainMenu
 public class ScheduleViewMenuItem implements MenuItemWrapper {
 	
 	private Component menuItem;

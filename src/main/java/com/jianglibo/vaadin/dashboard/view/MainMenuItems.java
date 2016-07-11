@@ -34,14 +34,14 @@ public class MainMenuItems {
 	}
 	
 	
-	@PostConstruct
-	void init() {
-		Map<String, Object> wrappers =  applicationContext.getBeansWithAnnotation(MainMenu.class);
-		
-		for(Entry<String, Object> entry : wrappers.entrySet()) {
-			items.put(entry.getKey(), (Component) entry.getValue());
-		}
-	}
+//	@PostConstruct
+//	void init() {
+//		Map<String, Object> wrappers =  applicationContext.getBeansWithAnnotation(MainMenu.class);
+//		
+//		for(Entry<String, Object> entry : wrappers.entrySet()) {
+//			items.put(entry.getKey(), (Component) entry.getValue());
+//		}
+//	}
 
 //	@PostConstruct
 //	void init() {
