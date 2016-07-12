@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
@@ -12,13 +13,17 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
+@SpringComponent
+@Scope("prototype")
 public class DashboardNavigator extends Navigator {
 	
+	@Autowired
     private SpringViewProvider viewProvider;
     
     // Provide a Google Analytics tracker id here
@@ -28,9 +33,24 @@ public class DashboardNavigator extends Navigator {
     private static final String ERROR_VIEW = DashboardView.VIEW_NAME;
     private ViewProvider errorViewProvider;
 
-    public DashboardNavigator(SpringViewProvider viewProvider, ComponentContainer container) {
-        super(UI.getCurrent(), container);
-        this.viewProvider = viewProvider;
+//    public DashboardNavigator(SpringViewProvider viewProvider, ComponentContainer container) {
+//        super(UI.getCurrent(), container);
+//        this.viewProvider = viewProvider;
+//        String host = getUI().getPage().getLocation().getHost();
+////        if (TRACKER_ID != null && host.endsWith("demo.vaadin.com")) {
+////            initGATracker(TRACKER_ID);
+////        }
+////        initViewChangeListener();
+////        addProvider(viewProvider);
+////        initViewProviders();
+//        initViewChangeListener();
+//        addProvider(viewProvider);
+//        initViewProviders();
+//    }
+    
+    public void setup(ComponentContainer container) {
+    	UI ui = UI.getCurrent();
+    	init(ui, new UriFragmentManager(ui.getPage()), new ComponentContainerViewDisplay(container));
         String host = getUI().getPage().getLocation().getHost();
 //        if (TRACKER_ID != null && host.endsWith("demo.vaadin.com")) {
 //            initGATracker(TRACKER_ID);

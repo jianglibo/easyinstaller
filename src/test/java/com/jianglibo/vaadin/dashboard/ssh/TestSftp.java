@@ -15,9 +15,9 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
+import com.jianglibo.vaadin.dashboard.Tutil;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.jianglibo.vaadin.dashborad.Tutil;
 
 public class TestSftp extends Tutil {
 

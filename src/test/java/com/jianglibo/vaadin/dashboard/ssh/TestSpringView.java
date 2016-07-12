@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import com.jianglibo.vaadin.dashboard.Tbase;
+import com.jianglibo.vaadin.dashboard.Tutil;
 import com.jianglibo.vaadin.dashboard.util.ClassScanner;
-import com.jianglibo.vaadin.dashborad.Tbase;
-import com.jianglibo.vaadin.dashborad.Tutil;
 import com.vaadin.navigator.View;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.navigator.SpringViewProvider;

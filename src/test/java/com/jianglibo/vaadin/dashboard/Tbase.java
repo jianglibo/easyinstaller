@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashborad;
+package com.jianglibo.vaadin.dashboard;
 
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;

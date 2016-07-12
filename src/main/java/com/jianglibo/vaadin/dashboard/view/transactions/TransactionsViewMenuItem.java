@@ -1,10 +1,11 @@
 package com.jianglibo.vaadin.dashboard.view.transactions;
 
+import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
-//@MainMenu
+@MainMenu
 public class TransactionsViewMenuItem implements MenuItemWrapper {
 	
 	private Component menuItem;
@@ -15,5 +16,11 @@ public class TransactionsViewMenuItem implements MenuItemWrapper {
 	
 	public Component getMenuItem() {
 		return menuItem;
+	}
+
+	@Override
+	public void onAttach() {
+		// TODO Auto-generated method stub
+		
 	}
 }

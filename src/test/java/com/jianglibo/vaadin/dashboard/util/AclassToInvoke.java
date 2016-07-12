@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashborad.util;
+package com.jianglibo.vaadin.dashboard.util;
 
 public class AclassToInvoke {
 	

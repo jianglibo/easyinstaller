@@ -43,6 +43,8 @@ import com.vaadin.ui.themes.ValoTheme;
  * primary navigation between the views.
  */
 @SuppressWarnings({ "serial" })
+@SpringComponent
+@Scope("prototype")
 public final class DashboardMenu extends CustomComponent {
 
 
@@ -50,15 +52,18 @@ public final class DashboardMenu extends CustomComponent {
 	public static final String REPORTS_BADGE_ID = "dashboard-menu-reports-badge";
 	public static final String NOTIFICATIONS_BADGE_ID = "dashboard-menu-notifications-badge";
 	private static final String STYLE_VISIBLE = "valo-menu-visible";
+	
+	@Autowired
+	private MainMenuItems mmis;
 
 	private MenuItem settingsItem;
 	
-	private DashboardViewMenuItem dashboardViewMenuItem;
-	private ReportsViewMenuItem reportsViewMenuItem;
-	private ScheduleViewMenuItem scheduleViewMenuItem;
-	private TransactionsViewMenuItem transactionsViewMenuItem;
+//	private DashboardViewMenuItem dashboardViewMenuItem;
+//	private ReportsViewMenuItem reportsViewMenuItem;
+//	private ScheduleViewMenuItem scheduleViewMenuItem;
+//	private TransactionsViewMenuItem transactionsViewMenuItem;
 	
-	public DashboardMenu() {
+	public void setup(){
 		setPrimaryStyleName("valo-menu");
 		setId(ID);
 		setSizeUndefined();
@@ -66,7 +71,6 @@ public final class DashboardMenu extends CustomComponent {
 		// There's only one DashboardMenu per UI so this doesn't need to be
 		// unregistered from the UI-scoped DashboardEventBus.
 		DashboardEventBus.register(this);
-
 		setCompositionRoot(buildContent());
 	}
 
@@ -149,17 +153,21 @@ public final class DashboardMenu extends CustomComponent {
 	private Component buildMenuItems() {
 		CssLayout menuItemsLayout = new CssLayout();
 		menuItemsLayout.addStyleName("valo-menuitems");
-		dashboardViewMenuItem = new DashboardViewMenuItem();
-		menuItemsLayout.addComponent(dashboardViewMenuItem.getMenuItem());
 		
-		reportsViewMenuItem = new ReportsViewMenuItem();
-		menuItemsLayout.addComponent(reportsViewMenuItem.getMenuItem());
-		
-		scheduleViewMenuItem = new ScheduleViewMenuItem();
-		menuItemsLayout.addComponent(scheduleViewMenuItem.getMenuItem());
-		
-		transactionsViewMenuItem = new TransactionsViewMenuItem(); 
-		menuItemsLayout.addComponent(transactionsViewMenuItem.getMenuItem());
+		mmis.getItems().forEach(mw -> {
+			menuItemsLayout.addComponent(mw.getMenuItem());
+		});
+//		dashboardViewMenuItem = new DashboardViewMenuItem();
+//		menuItemsLayout.addComponent(dashboardViewMenuItem.getMenuItem());
+//		
+//		reportsViewMenuItem = new ReportsViewMenuItem();
+//		menuItemsLayout.addComponent(reportsViewMenuItem.getMenuItem());
+//		
+//		scheduleViewMenuItem = new ScheduleViewMenuItem();
+//		menuItemsLayout.addComponent(scheduleViewMenuItem.getMenuItem());
+//		
+//		transactionsViewMenuItem = new TransactionsViewMenuItem(); 
+//		menuItemsLayout.addComponent(transactionsViewMenuItem.getMenuItem());
 
 		// for (final DashboardViewType view : DashboardViewType.values()) {
 		// Component menuItemComponent = new ValoMenuItemButton(view);
@@ -215,7 +223,10 @@ public final class DashboardMenu extends CustomComponent {
 	@Override
 	public void attach() {
 		super.attach();
-		dashboardViewMenuItem.updateNotificationsCount(null);
+		mmis.getItems().forEach(mw -> {
+			mw.onAttach();
+		});
+
 	}
 
 	@Subscribe

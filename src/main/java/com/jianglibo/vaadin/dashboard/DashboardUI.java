@@ -17,9 +17,10 @@ import com.jianglibo.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.UserLoggedOutEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.UserLoginRequestedEvent;
-import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
 import com.jianglibo.vaadin.dashboard.view.LoginView;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
+import com.jianglibo.vaadin.dashboard.wrapper.DashboardMenuWrapper;
+import com.jianglibo.vaadin.dashboard.wrapper.DashboardNavigatorWrapper;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.Widgetset;
@@ -48,7 +49,6 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	private int noticeHasShown = 0;
 	
 	private ApplicationContext applicationContext;
-	
 	
 	@Autowired
     private SpringViewProvider viewProvider;
@@ -146,17 +146,16 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	}
 	
 	public class MainView extends HorizontalLayout {
-		
 	    public MainView(SpringViewProvider viewProvider) {
 	        setSizeFull();
 	        addStyleName("mainview");
-	        addComponent(new DashboardMenu());
+	        addComponent(applicationContext.getBean(DashboardMenuWrapper.class).unwrap());
 	        ComponentContainer content = new CssLayout();
 	        content.addStyleName("view-content");
 	        content.setSizeFull();
 	        addComponent(content);
 	        setExpandRatio(content, 1.0f);
-	        new DashboardNavigator(viewProvider, content);
+	        applicationContext.getBean(DashboardNavigatorWrapper.class).unwrap(content);
 	    }
 	}
 }

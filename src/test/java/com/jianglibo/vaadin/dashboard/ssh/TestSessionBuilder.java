@@ -9,9 +9,9 @@ import java.io.IOException;
 import org.junit.Test;
 
 import com.jcraft.jsch.JSchException;
+import com.jianglibo.vaadin.dashboard.Tutil;
 import com.jianglibo.vaadin.dashboard.ssh.JschExecuteResult;
 import com.jianglibo.vaadin.dashboard.ssh.JschExecuteResult.ResultType;
-import com.jianglibo.vaadin.dashborad.Tutil;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 
 public class TestSessionBuilder extends Tutil {

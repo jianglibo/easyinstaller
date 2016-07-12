@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashborad;
+package com.jianglibo.vaadin.dashboard;
 
 import com.jcraft.jsch.JSchException;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;

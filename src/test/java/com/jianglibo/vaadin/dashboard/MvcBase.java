@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashborad;
+package com.jianglibo.vaadin.dashboard;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
