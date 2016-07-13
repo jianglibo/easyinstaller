@@ -58,6 +58,10 @@ logging:
 #        org.springframework.security.web.access: DEBUG
 #        org.hibernate.type: TRACE
 
+vaadin:
+  servlet:
+    productionMode: true
+    
 upload:
     # 200M
     multipartMaxRequestSize: 209715200

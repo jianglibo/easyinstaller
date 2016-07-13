@@ -1,3 +1,5 @@
 UIProvider, UICreateEvent <-- VaadinRequest
 So UI know httprequest and session.
 
+
+UI can set locale, component can set locale. UI.getCurentPage().reload();

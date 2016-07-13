@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
+import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 
@@ -23,6 +24,11 @@ public class VaadinApplication {
 
     public static void main(String[] args) {
         ApplicationContext ctx = SpringApplication.run(VaadinApplication.class, args);
+    }
+    
+    @Bean
+    public VaadinServlet vaadinServlet() {
+    	return new DashboardServlet();
     }
     
     @Bean
