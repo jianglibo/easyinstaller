@@ -7,7 +7,6 @@ import java.util.Date;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.annotation.DboardView;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.ReportsCountUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.TransactionReportEvent;
@@ -51,7 +50,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
 @SpringView(name=ReportsView.VIEW_NAME)
-@DboardView(icon=FontAwesome.FILE_TEXT_O)
 public final class ReportsView extends TabSheet implements View, CloseHandler,
         ReportEditorListener {
 

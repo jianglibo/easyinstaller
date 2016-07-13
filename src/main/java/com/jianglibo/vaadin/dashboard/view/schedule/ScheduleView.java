@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
-import com.jianglibo.vaadin.dashboard.annotation.DboardView;
 import com.jianglibo.vaadin.dashboard.component.MovieDetailsWindow;
 import com.jianglibo.vaadin.dashboard.domain.Movie;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
@@ -50,7 +49,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
 @SpringView(name=ScheduleView.VIEW_NAME)
-@DboardView(icon=FontAwesome.CALENDAR_O)
 public final class ScheduleView extends CssLayout implements View {
 
     public static final String VIEW_NAME = "schedule";

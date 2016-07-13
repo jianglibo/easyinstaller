@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
-import com.jianglibo.vaadin.dashboard.annotation.DboardView;
 import com.jianglibo.vaadin.dashboard.component.TopTenMoviesTable;
 import com.jianglibo.vaadin.dashboard.domain.DashboardNotification;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
@@ -42,7 +41,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
 @SpringView(name=DashboardView.VIEW_NAME)
-@DboardView(icon=FontAwesome.HOME)
 public final class DashboardView extends Panel implements View,
         DashboardEditListener {
 

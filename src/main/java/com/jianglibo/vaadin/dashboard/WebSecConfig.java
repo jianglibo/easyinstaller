@@ -77,6 +77,7 @@ public class WebSecConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/", //
                 		"/vaadinServlet/**", //
                 		"/view/**", //
+                		"/test/**", //
                         "/VAADIN/**")//
                 .permitAll().anyRequest().fullyAuthenticated().and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
     }

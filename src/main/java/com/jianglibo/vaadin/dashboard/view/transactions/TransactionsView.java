@@ -13,7 +13,6 @@ import org.vaadin.maddon.FilterableListContainer;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
-import com.jianglibo.vaadin.dashboard.annotation.DboardView;
 import com.jianglibo.vaadin.dashboard.component.MovieDetailsWindow;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
@@ -56,7 +55,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings({ "serial", "unchecked" })
 @SpringView(name=TransactionsView.VIEW_NAME)
-@DboardView(icon=FontAwesome.TABLE)
 public final class TransactionsView extends VerticalLayout implements View {
 	
 	
