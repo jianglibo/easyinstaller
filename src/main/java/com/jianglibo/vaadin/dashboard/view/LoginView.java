@@ -2,8 +2,12 @@ package com.jianglibo.vaadin.dashboard.view;
 
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.vaadinerrors.LoginError;
+import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelector;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.UserLoginRequestedEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -24,6 +28,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -35,6 +40,9 @@ public class LoginView extends VerticalLayout {
 	private boolean loginFailed = false;
 
 	private int noticeHasShown = 0;
+	
+	@Autowired
+	private MessageSource messageSource;
 
 //    public LoginView() {
 //    	this.setup();
@@ -78,7 +86,7 @@ public class LoginView extends VerticalLayout {
 
         loginPanel.addComponent(buildLabels());
         loginPanel.addComponent(buildFields());
-        loginPanel.addComponent(new CheckBox("Remember me", true));
+        loginPanel.addComponent(new CheckBox(messageSource.getMessage("login.rememberme", null, getLocale()), true));
         	
         return loginPanel;
     }
@@ -88,7 +96,7 @@ public class LoginView extends VerticalLayout {
         fields.setSpacing(true);
         fields.addStyleName("fields");
 
-        final TextField username = new TextField("Username");
+        final TextField username = new TextField(messageSource.getMessage("login.username", null, getLocale()));
         if (loginFailed) {
         	username.setComponentError(new LoginError());
         }
@@ -96,14 +104,14 @@ public class LoginView extends VerticalLayout {
         username.setIcon(FontAwesome.USER);
         username.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
-        final PasswordField password = new PasswordField("Password");
+        final PasswordField password = new PasswordField(messageSource.getMessage("login.password", null, getLocale()));
         if (loginFailed) {
         	password.setComponentError(new LoginError());
         }
         password.setIcon(FontAwesome.LOCK);
         password.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
-        final Button signin = new Button("Sign In");
+        final Button signin = new Button(messageSource.getMessage("login.signin", null, getLocale()));
         signin.addStyleName(ValoTheme.BUTTON_PRIMARY);
         signin.setClickShortcut(KeyCode.ENTER);
         signin.focus();
@@ -125,13 +133,17 @@ public class LoginView extends VerticalLayout {
         CssLayout labels = new CssLayout();
         labels.addStyleName("labels");
 
-        Label welcome = new Label("Welcome");
+        LocaleSelector ls = new LocaleSelector();
+
+        Label welcome = new Label(messageSource.getMessage("login.welcome", null, getLocale()));
         welcome.setSizeUndefined();
         welcome.addStyleName(ValoTheme.LABEL_H4);
         welcome.addStyleName(ValoTheme.LABEL_COLORED);
         labels.addComponent(welcome);
+        
+        labels.addComponent(ls.unwrap());
 
-        Label title = new Label("EasyInstaller Dashboard");
+        Label title = new Label( messageSource.getMessage("login.dashboard", new String[]{"EasyInstaller"}, getLocale()));
         title.setSizeUndefined();
         title.addStyleName(ValoTheme.LABEL_H3);
         title.addStyleName(ValoTheme.LABEL_LIGHT);

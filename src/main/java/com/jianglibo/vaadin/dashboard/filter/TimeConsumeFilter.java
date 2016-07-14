@@ -13,9 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
-@WebFilter
-public class TimeConsumeFilter implements Filter {
+@Component
+public class TimeConsumeFilter implements Filter, Ordered {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(TimeConsumeFilter.class);
 
@@ -29,12 +32,17 @@ public class TimeConsumeFilter implements Filter {
 			throws IOException, ServletException {
 		long start = System.currentTimeMillis();
 		chain.doFilter(request, response);
-		LOGGER.info("[{}] costs [{}] ms", ((HttpServletRequest)request).getRequestURI(), System.currentTimeMillis() - start);
+		LOGGER.info("[{}] costs [{}] ms filter1", ((HttpServletRequest)request).getRequestURI(), System.currentTimeMillis() - start);
 		
 	}
 
 	@Override
 	public void destroy() {
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE + 1000;
 	}
 
 }
