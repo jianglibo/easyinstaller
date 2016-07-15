@@ -32,9 +32,9 @@ public class ControllerFort implements ApplicationContextAware {
     }
     
     @RequestMapping("msg")
-    public ResponseEntity<String> msg(HttpServletRequest req, @RequestParam String mid) {
-    	Locale lo = RequestContextUtils.getLocale(req);
-    	String msg = messageSource.getMessage(mid, new Object[]{}, lo);
+    public ResponseEntity<String> msg(HttpServletRequest req, @RequestParam String mid, @RequestParam String lo) {
+    	Locale l = new Locale(lo);
+    	String msg = messageSource.getMessage(mid, new Object[]{}, l);
         return ResponseEntity.ok(msg);
     }
 

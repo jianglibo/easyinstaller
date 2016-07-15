@@ -6,6 +6,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
@@ -19,6 +20,7 @@ import com.jianglibo.vaadin.dashboard.event.DashboardEvent.UserLoggedOutEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.UserLoginRequestedEvent;
 import com.jianglibo.vaadin.dashboard.view.LoginView;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
+import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelector;
 import com.jianglibo.vaadin.dashboard.wrapper.DashboardMenuWrapper;
 import com.jianglibo.vaadin.dashboard.wrapper.DashboardNavigatorWrapper;
 import com.vaadin.annotations.Theme;
@@ -31,6 +33,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
@@ -64,7 +67,10 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 
 	@Override
 	protected void init(final VaadinRequest request) {
-		setLocale(Locale.US);
+		VaadinServletRequest vsr = (VaadinServletRequest) request;
+		Locale lo = RequestContextUtils.getLocale(vsr.getHttpServletRequest());
+		
+		setLocale(LocaleSelector.getLocaleSupported(lo));
 
 		DashboardEventBus.register(this);
 		Responsive.makeResponsive(this);

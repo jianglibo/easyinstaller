@@ -9,8 +9,10 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.id.CompositeNestedGeneratedValueGenerator.GenerationContextLocator;
 import org.slf4j.Logger;
@@ -23,11 +25,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.vaadin.maddon.FilterableListContainer;
 
 import com.google.common.collect.Lists;
+import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.component.MovieDetailsWindow;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
@@ -52,8 +56,10 @@ import com.vaadin.server.Responsive;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
+import com.vaadin.server.VaadinServletResponse;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.server.SpringVaadinServletRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
@@ -78,12 +84,25 @@ public class LocaleSelector implements Wrapper<Button> , ApplicationContextAware
 	@Autowired
 	private MessageSource messageSource;
 	
+	private static final Set<String> supportedLanguages = Sets.newHashSet("en", "zh");
+	
+	@Autowired
+	private LocaleResolver localeResolver;
+	
 	private ApplicationContext applicationContext;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocaleSelector.class);
 
 	private static final DateFormat DATEFORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
 	private static final DecimalFormat DECIMALFORMAT = new DecimalFormat("#.##");
+	
+	public static Locale getLocaleSupported(Locale locale) {
+		if (supportedLanguages.contains(locale.getLanguage())) {
+			return locale;
+		} else {
+			return new Locale("en");
+		}
+	}
 
 	private Button btn;
 	
@@ -279,11 +298,14 @@ public class LocaleSelector implements Wrapper<Button> , ApplicationContextAware
 				Locale newLocale = new Locale(lan.getCode());
 				VaadinSession.getCurrent().setLocale(newLocale);
 				
-				HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
-				RequestContext rc = new RequestContext(request);
+				HttpServletRequest originRequest = (VaadinServletRequest)VaadinService.getCurrentRequest();
+				HttpServletResponse originResponse = (VaadinServletResponse)VaadinService.getCurrentResponse();
+				localeResolver.setLocale(originRequest, originResponse, newLocale);
+//				HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+//				RequestContext rc = new RequestContext(request);
 
 //				RequestContext rc = applicationContext.getBean(RequestContext.class);
-				rc.changeLocale(newLocale);
+//				rc.changeLocale(newLocale);
 				UI.getCurrent().getPage().reload();
 			}
 		});

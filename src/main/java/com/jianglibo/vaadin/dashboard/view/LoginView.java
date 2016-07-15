@@ -4,6 +4,8 @@ import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.vaadinerrors.LoginError;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelector;
 
+import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +68,11 @@ public class LoginView extends VerticalLayout {
 //    	this.noticeHasShown = noticeHasShown;
 //    	this.setup();
 //	}
+	
+	@Override
+	public Locale getLocale() {
+		return UI.getCurrent().getLocale();
+	}
     
     public void setup(boolean loginFailed, int noticeHasShown) {
     	setLoginFailed(loginFailed);
@@ -99,7 +106,11 @@ public class LoginView extends VerticalLayout {
 
         loginPanel.addComponent(buildLabels());
         loginPanel.addComponent(buildFields());
-        loginPanel.addComponent(new CheckBox(messageSource.getMessage("login.rememberme", null, getLocale()), true));
+//        getLocal() is null, because form has not attach to parent.
+        LOGGER.info("current locale is: {}", getLocale().getLanguage());
+        String msg = messageSource.getMessage("login.rememberme", null, getLocale());
+        LOGGER.info("current msg is: {}", msg);
+        loginPanel.addComponent(new CheckBox(msg, true));
 //        llabel.addStyleName(ValoTheme.LABEL_H4);
         loginPanel.addComponent(localSelector.unwrap());
         return loginPanel;

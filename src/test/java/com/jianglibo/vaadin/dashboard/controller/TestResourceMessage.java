@@ -1,13 +1,18 @@
 package com.jianglibo.vaadin.dashboard.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import java.util.Locale;
 
 import org.junit.Test;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultHandler;
 
 import com.jianglibo.vaadin.dashboard.Tbase;
+import com.jianglibo.vaadin.dashboard.Tutil;
 import com.vaadin.server.Constants;
 
 public class TestResourceMessage extends Tbase {
@@ -19,8 +24,18 @@ public class TestResourceMessage extends Tbase {
 	
 	@Test
 	public void msg() throws Exception{
-		mvc.perform(get("/test/msg?mid=abc")).andExpect(content().string("Alligators rock!"));
-		mvc.perform(get("/test/msg?mid=abcd")).andExpect(content().string("abcd"));
+		mvc.perform(get("/test/msg?mid=login.username&lo=en")).andExpect(content().string("Username"));
+		mvc.perform(get("/test/msg?mid=login.password&lo=zh")).andDo(new ResultHandler() {
+			
+			@Override
+			public void handle(MvcResult result) throws Exception {
+				String s = result.getResponse().getContentAsString();
+				Tutil.printme(result.getResponse().getContentType());
+				assertThat(s, equalTo("密码"));
+//				andExpect(content().string("密码"));
+				
+			}
+		});
 //		Locale lo = new Locale(language);
 	}
 

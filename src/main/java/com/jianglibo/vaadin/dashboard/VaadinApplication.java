@@ -19,7 +19,6 @@ import com.vaadin.ui.CssLayout;
 
 @SpringBootApplication
 @EnableJpaRepositories("com.jianglibo.vaadin.dashboard.repositories")
-@ServletComponentScan
 public class VaadinApplication {
 
     public static void main(String[] args) {
