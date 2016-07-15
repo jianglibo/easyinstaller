@@ -1,11 +1,16 @@
 package com.jianglibo.vaadin.dashboard.util;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
+import javax.swing.text.AttributeSet.FontAttribute;
+
 import org.junit.Test;
+import org.springframework.core.io.Resource;
 
 import com.jianglibo.vaadin.dashboard.Tutil;
+import com.vaadin.server.FontAwesome;
 
 public class TestAllLocale {
 
@@ -20,5 +25,11 @@ public class TestAllLocale {
 			String lan = l.getLanguage();
 			Tutil.printme(cn + "," + c + "," + lan);
 		}
+	}
+	
+	@Test
+	public void resources() {
+		List<Resource> rss = ClassScanner.findResourceInPackage("messages", "/*.properties");
+		Tutil.printme(rss.size());
 	}
 }

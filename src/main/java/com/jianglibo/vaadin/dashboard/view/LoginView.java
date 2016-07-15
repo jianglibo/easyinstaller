@@ -4,7 +4,10 @@ import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.vaadinerrors.LoginError;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -37,12 +40,22 @@ import com.vaadin.ui.themes.ValoTheme;
 @Scope("prototype")
 public class LoginView extends VerticalLayout {
 	
+	private static Logger LOGGER = LoggerFactory.getLogger(LoginView.class);
+	
 	private boolean loginFailed = false;
 
 	private int noticeHasShown = 0;
 	
+	private final LocaleSelector localSelector;
+	
+	private final MessageSource messageSource;
+	
 	@Autowired
-	private MessageSource messageSource;
+	private LoginView(LocaleSelector localSelector, MessageSource messageResource) {
+		this.localSelector = localSelector;
+		this.messageSource = messageResource;
+
+	}
 
 //    public LoginView() {
 //    	this.setup();
@@ -87,7 +100,8 @@ public class LoginView extends VerticalLayout {
         loginPanel.addComponent(buildLabels());
         loginPanel.addComponent(buildFields());
         loginPanel.addComponent(new CheckBox(messageSource.getMessage("login.rememberme", null, getLocale()), true));
-        	
+//        llabel.addStyleName(ValoTheme.LABEL_H4);
+        loginPanel.addComponent(localSelector.unwrap());
         return loginPanel;
     }
 
@@ -130,18 +144,26 @@ public class LoginView extends VerticalLayout {
     }
 
     private Component buildLabels() {
-        CssLayout labels = new CssLayout();
+        CssLayout labels = new CssLayout(){
+        	@Override
+        	protected String getCss(Component c) {
+        		String css =  super.getCss(c);
+//        		if (c.getIcon() != null) {
+//        			return "display: inline-block; margin-left: 8px";
+//        		}
+//        		LOGGER.info("css: {}", css);
+        		return css;
+        	}
+        };
         labels.addStyleName("labels");
 
-        LocaleSelector ls = new LocaleSelector();
+        
 
         Label welcome = new Label(messageSource.getMessage("login.welcome", null, getLocale()));
         welcome.setSizeUndefined();
         welcome.addStyleName(ValoTheme.LABEL_H4);
         welcome.addStyleName(ValoTheme.LABEL_COLORED);
         labels.addComponent(welcome);
-        
-        labels.addComponent(ls.unwrap());
 
         Label title = new Label( messageSource.getMessage("login.dashboard", new String[]{"EasyInstaller"}, getLocale()));
         title.setSizeUndefined();

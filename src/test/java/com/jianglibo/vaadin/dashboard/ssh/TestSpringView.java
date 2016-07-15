@@ -27,7 +27,7 @@ public class TestSpringView extends Tbase {
 //		Map<String, Object> svs = context.getBeansWithAnnotation(SpringView.class);
 		View view = provider.getView("dashboard");
 		PathMatchingResourcePatternResolver prr = new PathMatchingResourcePatternResolver();
-		List<Class<?>> css = ClassScanner.findMyTypes("com.jianglibo.vaadin.dashboard.unused", SpringView.class);
+		List<Class<?>> css = ClassScanner.findAnnotatedBy("com.jianglibo.vaadin.dashboard.unused", SpringView.class);
 		
 		Tutil.printme(css.size());
 	}
