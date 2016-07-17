@@ -376,8 +376,4 @@ public final class TransactionsView extends VerticalLayout implements View {
             });
         }
     }
-
-	public static Component getMenuItem() {
-		return new ValoMenuItemButton(VIEW_NAME, ICON_VALUE);
-	}
 }

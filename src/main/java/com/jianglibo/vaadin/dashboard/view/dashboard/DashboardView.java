@@ -395,15 +395,5 @@ public final class DashboardView extends Panel implements View,
         }
     }
     
-    public static final String NOTIFICATIONS_BADGE_ID = "dashboard-menu-notifications-badge";
-
-
-	public static Component getMenuItem() {
-		Component menuItemComponent = new ValoMenuItemButton(VIEW_NAME, ICON_VALUE);
-        Label notificationsBadge = new Label();
-        notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
-        menuItemComponent = DboardViewUtil.buildBadgeWrapper(menuItemComponent,
-                notificationsBadge);
-		return menuItemComponent;
-	}
+//    public static final String NOTIFICATIONS_BADGE_ID = "dashboard-menu-notifications-badge";
 }

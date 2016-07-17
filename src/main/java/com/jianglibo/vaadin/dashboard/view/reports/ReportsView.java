@@ -269,41 +269,4 @@ public final class ReportsView extends TabSheet implements View, CloseHandler,
     public enum ReportType {
         MONTHLY, EMPTY, TRANSACTIONS
     }
-    
-    public static final String REPORTS_BADGE_ID = "dashboard-menu-reports-badge";
-
-	public static ValoMenuItemButton getMenuItem() {
-        // Add drop target to reports button
-		Component menuItemComponent = new ValoMenuItemButton(VIEW_NAME, ICON_VALUE);
-        DragAndDropWrapper reports = new DragAndDropWrapper(
-                menuItemComponent);
-        reports.setSizeUndefined();
-        reports.setDragStartMode(DragStartMode.NONE);
-        reports.setDropHandler(new DropHandler() {
-
-            @Override
-            public void drop(final DragAndDropEvent event) {
-                UI.getCurrent()
-                        .getNavigator()
-                        .navigateTo(VIEW_NAME);
-                Table table = (Table) event.getTransferable()
-                        .getSourceComponent();
-                DashboardEventBus.post(new TransactionReportEvent(
-                        (Collection<Transaction>) table.getValue()));
-            }
-
-            @Override
-            public AcceptCriterion getAcceptCriterion() {
-                return AcceptItem.ALL;
-            }
-
-        });
-        
-        Label reportsBadge = new Label();
-        reportsBadge.setId(REPORTS_BADGE_ID);
-        menuItemComponent = DboardViewUtil.buildBadgeWrapper(menuItemComponent,
-                reportsBadge);
-        
-        return (ValoMenuItemButton) menuItemComponent;
-	}
 }

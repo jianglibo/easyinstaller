@@ -1,5 +1,8 @@
 package com.jianglibo.vaadin.dashboard.view.transactions;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
@@ -10,8 +13,12 @@ public class TransactionsViewMenuItem implements MenuItemWrapper {
 	
 	private Component menuItem;
 	
-	public TransactionsViewMenuItem() {
-		this.menuItem = new ValoMenuItemButton(TransactionsView.VIEW_NAME, TransactionsView.ICON_VALUE);
+	private final MessageSource messageSource;
+	
+	@Autowired
+	public TransactionsViewMenuItem(MessageSource messageSource) {
+		this.messageSource = messageSource;
+		this.menuItem = new ValoMenuItemButton(TransactionsView.VIEW_NAME, TransactionsView.ICON_VALUE, messageSource);
 	}
 	
 	public Component getMenuItem() {

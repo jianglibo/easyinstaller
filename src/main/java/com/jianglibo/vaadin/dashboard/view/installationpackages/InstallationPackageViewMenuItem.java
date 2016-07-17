@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.globalsetting;
+package com.jianglibo.vaadin.dashboard.view.installationpackages;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -8,17 +8,18 @@ import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
-@MainMenu
-public class GlobalSettingViewMenuItem implements MenuItemWrapper {
-	
+@MainMenu(menuOrder = 10)
+public class InstallationPackageViewMenuItem implements MenuItemWrapper {
+
 	private Component menuItem;
+
+	private final MessageSource messageSource;
 	
-	private MessageSource messageSource;
 	
 	@Autowired
-	public GlobalSettingViewMenuItem(MessageSource messageSource) {
+	public InstallationPackageViewMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.menuItem = new ValoMenuItemButton(GlobalSettingView.VIEW_NAME, GlobalSettingView.ICON_VALUE, messageSource);
+		this.menuItem = new ValoMenuItemButton(InstallationPackageView.VIEW_NAME, InstallationPackageView.ICON_VALUE, messageSource);
 	}
 	
 	public Component getMenuItem() {

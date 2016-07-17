@@ -2,6 +2,9 @@ package com.jianglibo.vaadin.dashboard.view.reports;
 
 import java.util.Collection;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
@@ -30,10 +33,14 @@ public class ReportsViewMenuItem implements MenuItemWrapper {
 	private Component menuItem;
 
 	private Label reportsBadge;
+	
+	private final MessageSource messageSource;
 
-	public ReportsViewMenuItem() {
+	@Autowired
+	public ReportsViewMenuItem(MessageSource messageSource) {
 		// Add drop target to reports button
-		Component menuItemComponent = new ValoMenuItemButton(ReportsView.VIEW_NAME, ReportsView.ICON_VALUE);
+		this.messageSource = messageSource;
+		Component menuItemComponent = new ValoMenuItemButton(ReportsView.VIEW_NAME, ReportsView.ICON_VALUE, messageSource);
 		DragAndDropWrapper reports = new DragAndDropWrapper(menuItemComponent);
 		reports.setSizeUndefined();
 		reports.setDragStartMode(DragStartMode.NONE);

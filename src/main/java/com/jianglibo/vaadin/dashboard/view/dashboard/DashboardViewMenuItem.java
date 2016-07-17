@@ -1,5 +1,8 @@
 package com.jianglibo.vaadin.dashboard.view.dashboard;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
@@ -19,9 +22,13 @@ public class DashboardViewMenuItem implements MenuItemWrapper {
 	private Component menuItem;
 	
 	private Label notificationsBadge;
+	
+	private final MessageSource messageSource;
 
-	public DashboardViewMenuItem() {
-		Component menuItemComponent = new ValoMenuItemButton(DashboardView.VIEW_NAME, DashboardView.ICON_VALUE);
+	@Autowired
+	public DashboardViewMenuItem(MessageSource messageSource) {
+		this.messageSource = messageSource;
+		Component menuItemComponent = new ValoMenuItemButton(DashboardView.VIEW_NAME, DashboardView.ICON_VALUE, messageSource);
         notificationsBadge = new Label();
         notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
         this.menuItem = DboardViewUtil.buildBadgeWrapper(menuItemComponent,

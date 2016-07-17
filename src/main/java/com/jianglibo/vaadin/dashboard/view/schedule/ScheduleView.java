@@ -349,8 +349,8 @@ public final class ScheduleView extends CssLayout implements View {
 
     }
 
-	public static Component getMenuItem() {
-		return new ValoMenuItemButton(VIEW_NAME, ICON_VALUE);
-	}
+//	public static Component getMenuItem() {
+//		return new ValoMenuItemButton(VIEW_NAME, ICON_VALUE);
+//	}
 
 }

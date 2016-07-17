@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Named;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
 import com.google.common.eventbus.Subscribe;
@@ -36,6 +37,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 /**
@@ -55,6 +57,9 @@ public final class DashboardMenu extends CustomComponent {
 	
 	@Autowired
 	private MainMenuItems mmis;
+	
+	@Autowired
+	private MessageSource messageSource;
 
 	private MenuItem settingsItem;
 	
@@ -92,7 +97,7 @@ public final class DashboardMenu extends CustomComponent {
 	}
 
 	private Component buildTitle() {
-		Label logo = new Label("QuickTickets <strong>Dashboard</strong>", ContentMode.HTML);
+		Label logo = new Label(messageSource.getMessage("dmenu.title", null, UI.getCurrent().getLocale()), ContentMode.HTML);
 		logo.setSizeUndefined();
 		HorizontalLayout logoWrapper = new HorizontalLayout(logo);
 		logoWrapper.setComponentAlignment(logo, Alignment.MIDDLE_CENTER);
@@ -103,27 +108,27 @@ public final class DashboardMenu extends CustomComponent {
 	private User getCurrentUser() {
 		return (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
 	}
-
+			
 	private Component buildUserMenu() {
 		final MenuBar settings = new MenuBar();
 		settings.addStyleName("user-menu");
 		final User user = getCurrentUser();
 		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
 		updateUserName(null);
-		settingsItem.addItem("Edit Profile", new Command() {
+		settingsItem.addItem(messageSource.getMessage("dmenu.dropdown.editprofile", null, UI.getCurrent().getLocale()), new Command() {
 			@Override
 			public void menuSelected(final MenuItem selectedItem) {
 				ProfilePreferencesWindow.open(user, false);
 			}
 		});
-		settingsItem.addItem("Preferences", new Command() {
+		settingsItem.addItem(messageSource.getMessage("dmenu.dropdown.preferences", null, UI.getCurrent().getLocale()), new Command() {
 			@Override
 			public void menuSelected(final MenuItem selectedItem) {
 				ProfilePreferencesWindow.open(user, true);
 			}
 		});
 		settingsItem.addSeparator();
-		settingsItem.addItem("Sign Out", new Command() {
+		settingsItem.addItem(messageSource.getMessage("dmenu.dropdown.signout", null, UI.getCurrent().getLocale()), new Command() {
 			@Override
 			public void menuSelected(final MenuItem selectedItem) {
 				DashboardEventBus.post(new UserLoggedOutEvent());

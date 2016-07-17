@@ -33,6 +33,7 @@ import org.vaadin.maddon.FilterableListContainer;
 import com.google.common.collect.Lists;
 import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
+import com.jianglibo.vaadin.dashboard.LocalizedSystemMessageProvider;
 import com.jianglibo.vaadin.dashboard.component.MovieDetailsWindow;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
@@ -88,6 +89,7 @@ public class LocaleSelector implements Wrapper<Button> , ApplicationContextAware
 	
 	@Autowired
 	private LocaleResolver localeResolver;
+	
 	
 	private ApplicationContext applicationContext;
 	
@@ -301,6 +303,7 @@ public class LocaleSelector implements Wrapper<Button> , ApplicationContextAware
 				HttpServletRequest originRequest = (VaadinServletRequest)VaadinService.getCurrentRequest();
 				HttpServletResponse originResponse = (VaadinServletResponse)VaadinService.getCurrentResponse();
 				localeResolver.setLocale(originRequest, originResponse, newLocale);
+//				lsmp.changeLocale(newLocale);
 //				HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
 //				RequestContext rc = new RequestContext(request);
 

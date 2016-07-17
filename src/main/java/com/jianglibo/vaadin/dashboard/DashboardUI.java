@@ -55,6 +55,9 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	
 	@Autowired
     private SpringViewProvider viewProvider;
+	
+	@Autowired
+	private LocalizedSystemMessageProvider lsmp;
 
 	/*
 	 * This field stores an access to the dummy backend layer. In real
@@ -68,10 +71,10 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	@Override
 	protected void init(final VaadinRequest request) {
 		VaadinServletRequest vsr = (VaadinServletRequest) request;
-		Locale lo = RequestContextUtils.getLocale(vsr.getHttpServletRequest());
+		Locale lo = LocaleSelector.getLocaleSupported(RequestContextUtils.getLocale(vsr.getHttpServletRequest()));
 		
-		setLocale(LocaleSelector.getLocaleSupported(lo));
-
+		setLocale(lo);
+//		lsmp.changeLocale(lo);
 		DashboardEventBus.register(this);
 		Responsive.makeResponsive(this);
 		addStyleName(ValoTheme.UI_WITH_MENU);

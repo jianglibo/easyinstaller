@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view;
 
+import org.springframework.context.MessageSource;
+
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;
@@ -14,12 +16,11 @@ public class ValoMenuItemButton extends Button {
 
     private final String viewName;
 
-    public ValoMenuItemButton(final String viewName, FontAwesome icon) {
+    public ValoMenuItemButton(final String viewName, FontAwesome icon, MessageSource messageSource) {
         this.viewName = viewName;
         setPrimaryStyleName("valo-menu-item");
         setIcon(icon);
-        setCaption(viewName.substring(0, 1).toUpperCase()
-                + viewName.substring(1));
+        setCaption(messageSource.getMessage("menu." + viewName, null, UI.getCurrent().getLocale()));
         DashboardEventBus.register(this);
         addClickListener(new ClickListener() {
             @Override

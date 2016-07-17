@@ -4,7 +4,7 @@ spring:
         username: SA
         password:
         driver-class-name: org.hsqldb.jdbc.JDBCDriver
-        validation-query: SELECT 1
+        validation-query: SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS
         test-on-borrow: true
     jpa:
         database: HSQL
@@ -61,6 +61,14 @@ vaadin:
   servlet:
     production-mode: true
     url-mapping: /vaadin/* 
+  systemmessages:
+    authenticationErrorNotificationEnabled: true
+    communicationErrorNotificationEnabled: true
+    cookiesDisabledNotificationEnabled: true
+    internalErrorNotificationEnabled: true
+    sessionExpiredNotificationEnabled: true
+application:
+  upload-dst: ~/easyinstaller-files
 upload:
     # 200M
     multipartMaxRequestSize: 209715200
