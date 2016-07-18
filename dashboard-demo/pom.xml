@@ -189,6 +189,10 @@
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-logging</artifactId>
 				</exclusion>
+				<exclusion>            
+                <groupId>org.apache.tomcat</groupId>      
+                <artifactId>tomcat-juli</artifactId>        
+        </exclusion>  
 			</exclusions>
 		</dependency>
 

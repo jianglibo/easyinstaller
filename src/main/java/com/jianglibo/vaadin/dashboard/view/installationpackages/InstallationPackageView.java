@@ -101,26 +101,26 @@ public class InstallationPackageView extends VerticalLayout implements View {
 
         addComponent(buildToolbar());
         
-        HorizontalLayout vl = new HorizontalLayout();
-        vl.setSpacing(true);
-        vl.setSizeFull();
-        
-        final ProgressBar bar = new ProgressBar(0.0f);
-        vl.addComponent(bar);
-        vl.setComponentAlignment(bar, Alignment.MIDDLE_CENTER);
-        vl.setWidth("250px");
-        vl.addComponent(new Button("Increase",
-            new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                float current = bar.getValue();
-                if (current < 1.0f)
-                    bar.setValue(current + 0.10f);
-            }
-        }));
-        
-        addComponent(vl);
-        setExpandRatio(vl, 1);
+//        HorizontalLayout vl = new HorizontalLayout();
+//        vl.setSpacing(true);
+//        vl.setSizeFull();
+//        
+//        final ProgressBar bar = new ProgressBar(0.0f);
+//        vl.addComponent(bar);
+//        vl.setComponentAlignment(bar, Alignment.MIDDLE_CENTER);
+//        vl.setWidth("250px");
+//        vl.addComponent(new Button("Increase",
+//            new ClickListener() {
+//            @Override
+//            public void buttonClick(ClickEvent event) {
+//                float current = bar.getValue();
+//                if (current < 1.0f)
+//                    bar.setValue(current + 0.10f);
+//            }
+//        }));
+//        
+//        addComponent(vl);
+//        setExpandRatio(vl, 1);
         table = buildTable();
         addComponent(table);
         setExpandRatio(table, 1);

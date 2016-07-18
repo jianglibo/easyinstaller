@@ -11849,3 +11849,7 @@ div.v-layout.v-horizontal.v-widget {
 .dashboard .reports .transaction .seats {
 	left: 60%;
 }
+
+.dashboard .v-caption-uploadwrapper {
+	display: none;
+}
