@@ -1,12 +1,20 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.upload;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Scope;
+
+import com.jianglibo.vaadin.dashboard.wrapper.Wrapper;
+import com.vaadin.server.Page;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.FailedEvent;
@@ -18,28 +26,30 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.StartedListener;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
-import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class ImmediateUploader extends HorizontalLayout {
+@SpringComponent
+@Scope("prototype")
+public class ImmediateUploader extends HorizontalLayout implements Wrapper<Component>{
 
-	 private Label status = new Label("Please select a file to upload");
+	 private Label status = new Label("");
 
 	// private ProgressBar progressBar = new ProgressBar(new Float(0.3));
 
-	private UploadReceiver receiver = new UploadReceiver();
+	@Autowired
+	private UploadReceiver receiver;
 
 	// private VerticalLayout progressLayout = new VerticalLayout();
+	
+	@Autowired
+	private MessageSource messageSource;
 
 	private Upload upload;
 
 	private Button cancelBtn;
 
-	public ImmediateUploader() {
+	public Component unwrap() {
 		setSpacing(true);
-
-		// Slow down the upload
-		receiver.setSlow(true);
 
 		upload = new Upload("", receiver);
 		upload.addStyleName("uploadwrapper");
@@ -54,24 +64,18 @@ public class ImmediateUploader extends HorizontalLayout {
 
 		// Make uploading start immediately when file is selected
 		upload.setImmediate(true);
-		upload.setButtonCaption("Select file");
+		upload.setButtonCaption(messageSource.getMessage("component.upload.selectfile", null, UI.getCurrent().getLocale()));
 
-		// progressLayout.setSpacing(true);
-		// progressLayout.setVisible(true);
-		// progressLayout.addComponent(progressBar);
-		// progressBar.setCaption("进度");
-		// progressBar.setEnabled(true);
-		// progressLayout.setComponentAlignment(progressBar,
-		// Alignment.MIDDLE_LEFT);
-
-		cancelBtn = new Button("Cancel");
+		cancelBtn = new Button(messageSource.getMessage("component.upload.cancel", null, UI.getCurrent().getLocale()));
 		cancelBtn.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				upload.interruptUpload();
+				new Notification(messageSource.getMessage("component.upload.interrupt", null, UI.getCurrent().getLocale()), "", Notification.Type.WARNING_MESSAGE)
+				.show(Page.getCurrent());
+
 			}
 		});
-		// cancelBtn.setStyleName("small");
 		addComponent(cancelBtn);
 		cancelBtn.setVisible(false);
 
@@ -85,44 +89,44 @@ public class ImmediateUploader extends HorizontalLayout {
 			public void uploadStarted(StartedEvent event) {
 				upload.setVisible(false);
 				cancelBtn.setVisible(true);
-				// progressBar.setValue(0.5f);
-				upload.setCaption("Uploading file \"" + event.getFilename() + "\"");
-
+				status.setValue(event.getFilename());
 			}
 		});
 
 		upload.addProgressListener(new ProgressListener() {
 			@Override
 			public void updateProgress(long readBytes, long contentLength) {
-				// This method gets called several times during the update
-				// progressBar.setValue(new Float(readBytes / (float)
-				// contentLength));
+				double d = (double)readBytes/contentLength;
+				String per = Math.round(d * 100) + "%";
+				cancelBtn.setCaption(messageSource.getMessage("component.upload.cancel", null, UI.getCurrent().getLocale()) + " " + per);
 			}
 		});
 
 		upload.addSucceededListener(new SucceededListener() {
 			@Override
 			public void uploadSucceeded(SucceededEvent event) {
-				upload.setCaption("Uploading file \"" + event.getFilename() + "\" succeeded");
+				new Notification(messageSource.getMessage("component.upload.success", new String[]{event.getFilename()}, UI.getCurrent().getLocale()), "", Notification.Type.TRAY_NOTIFICATION)
+				.show(Page.getCurrent());
 			}
 		});
 
 		upload.addFailedListener(new FailedListener() {
 			@Override
 			public void uploadFailed(FailedEvent event) {
-				upload.setCaption("Uploading interrupted");
-
+				new Notification(messageSource.getMessage("component.upload.fail", new String[]{event.getFilename()}, UI.getCurrent().getLocale()), "", Notification.Type.ERROR_MESSAGE)
+				.show(Page.getCurrent());
 			}
 		});
 
 		upload.addFinishedListener(new FinishedListener() {
 			@Override
 			public void uploadFinished(FinishedEvent event) {
+				status.setValue("");
 				cancelBtn.setVisible(false);
 				upload.setVisible(true);
-				upload.setCaption("Select another file");
 			}
 		});
+		return this;
 	}
 
 //	class WorkThread extends Thread {

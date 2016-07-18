@@ -8,10 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.Subscribe;
@@ -23,40 +21,24 @@ import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
 import com.jianglibo.vaadin.dashboard.view.reports.ReportsView;
-import com.jianglibo.vaadin.dashboard.view.upload.UploadView.ImageUploader;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Container.Filterable;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.Upload.ChangeEvent;
-import com.vaadin.ui.Upload.ChangeListener;
-import com.vaadin.ui.Upload.StartedEvent;
-import com.vaadin.ui.Upload.StartedListener;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -146,35 +128,7 @@ public class InstallationPackageView extends VerticalLayout implements View {
         title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         header.addComponent(title);
 
-//        createReport = buildCreateReport();
-//        Component createReport = new PackageUploader();
-        
-        
-//        FileUploadReceiver furc = applicationContext.getBean(FileUploadReceiver.class); 
-//        upload = new Upload("", furc);
-//        upload.addSucceededListener(furc);
-//        upload.addChangeListener(new ChangeListener() {
-//			
-//			@Override
-//			public void filenameChanged(ChangeEvent event) {
-//				
-//				
-//			}
-//		});
-//        upload.addStartedListener(new StartedListener() {
-//			
-//			@Override
-//			public void uploadStarted(StartedEvent event) {
-//				event.getFilename();
-//		        new Notification("Starting...",
-//		                "",
-//		                Notification.Type.HUMANIZED_MESSAGE)
-//		   .show(Page.getCurrent());
-//				
-//			}
-//		});
-//        upload.setButtonCaption(messageSource.getMessage("view.installationpackage.uploadbtn",null, UI.getCurrent().getLocale()));
-        HorizontalLayout tools = new HorizontalLayout(new ImmediateUploader(), new PkSourceFilterBuilder(this).build());
+        HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(ImmediateUploader.class).unwrap(), new PkSourceFilterBuilder(this).build());
         tools.setSpacing(true);
         tools.addStyleName("toolbar");
         

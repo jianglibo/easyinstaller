@@ -1,45 +1,46 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.upload;
 
-import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Scope;
+
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
+import com.vaadin.server.Page;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload.Receiver;
 
 @SuppressWarnings("serial")
-public class UploadReceiver  implements Receiver{
-    private String fileName;
-    private String mtype;
-    private boolean sleep;
-    private int total = 0;
+@SpringComponent
+@Scope("prototype")
+public class UploadReceiver implements Receiver {
+	
+	@Autowired
+	private MessageSource messageSource;
 
-    public OutputStream receiveUpload(String filename, String mimetype) {
-        fileName = filename;
-        mtype = mimetype;
-        return new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                total++;
-                if (sleep && total % 10000 == 0) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-    }
+	@Autowired
+	private ApplicationConfig applicationConfig;
 
-    public String getFileName() {
-        return fileName;
-    }
+	public File file;
 
-    public String getMimeType() {
-        return mtype;
-    }
+	public OutputStream receiveUpload(String filename, String mimeType) {
+		// Create upload stream
+		FileOutputStream fos = null; // Stream to write to
+		try {
+			// Open the file for writing.
+			file = applicationConfig.getUploadDstPath().resolve(filename).toFile();
+			fos = new FileOutputStream(file);
+		} catch (final java.io.FileNotFoundException e) {
+			new Notification(messageSource.getMessage("component.upload.cantopenfile", new String[]{file.toString()}, UI.getCurrent().getLocale()), "", Notification.Type.ERROR_MESSAGE)
+					.show(Page.getCurrent());
+			return null;
+		}
+		return fos;
+	}
 
-    public void setSlow(boolean value) {
-        sleep = value;
-    }
 }
-
