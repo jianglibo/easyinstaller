@@ -35,13 +35,6 @@ spring:
         suffix: .html
     security:
         enable-csrf: true
-myapp:
-    outSideBaseUrl: http://localhost
-    initUserName: admin
-    initUserPassword: admin
-    emberRoot: /llapp
-    whlRoot: 
-    logoutSuccessUrl: /
 passwordvalidator:
     min-length: 8
     max-length: 32
@@ -60,7 +53,7 @@ logging:
 vaadin:
   servlet:
     production-mode: true
-    url-mapping: /vaadin/* 
+#    url-mapping: /vaadin/* 
   systemmessages:
     authenticationErrorNotificationEnabled: true
     communicationErrorNotificationEnabled: true
@@ -69,7 +62,3 @@ vaadin:
     sessionExpiredNotificationEnabled: true
 application:
   upload-dst: ~/easyinstaller-files
-upload:
-    # 200M
-    multipartMaxRequestSize: 209715200
-    uploadDestFolder: ./fixtures/ignorefromgit/uploaded
