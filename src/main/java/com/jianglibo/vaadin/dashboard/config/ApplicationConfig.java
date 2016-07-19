@@ -1,12 +1,9 @@
 package com.jianglibo.vaadin.dashboard.config;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
-
-import javax.annotation.PostConstruct;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -17,11 +14,9 @@ import com.google.common.collect.Sets;
 @ConfigurationProperties(prefix="application")
 public class ApplicationConfig {
 	
-	private String uploadDst = "~/easyinstaller-files";
+	private String uploadDst;// = "~/easyinstaller-files";
 	
 	private Path uploadDstPath;
-
-
 
 	public String getUploadDst() {
 		return uploadDst;
@@ -32,8 +27,8 @@ public class ApplicationConfig {
 	}
 	public Path getUploadDstPath() {
 		return uploadDstPath;
-	}	
-	@PostConstruct
+	}
+
 	public void after() {
 		if (uploadDst.startsWith("~")) {
 			uploadDstPath = Paths.get(System.getProperty("user.home"));
