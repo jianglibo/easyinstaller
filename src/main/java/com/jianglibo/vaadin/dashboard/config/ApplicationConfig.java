@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
+import com.google.gwt.thirdparty.guava.common.base.Strings;
 
 @Component
 @ConfigurationProperties(prefix="application")
@@ -17,7 +18,7 @@ public class ApplicationConfig {
 	private String uploadDst;// = "~/easyinstaller-files";
 	
 	private Path uploadDstPath;
-
+	
 	public String getUploadDst() {
 		return uploadDst;
 	}
@@ -29,7 +30,12 @@ public class ApplicationConfig {
 		return uploadDstPath;
 	}
 
-	public void after() {
+	public void after(ApplicationConfigCustom acc) {
+		// will change when new custom config item added.
+		if (!Strings.isNullOrEmpty(acc.getUploadDst())) {
+			setUploadDst(acc.getUploadDst());
+		}
+		
 		if (uploadDst.startsWith("~")) {
 			uploadDstPath = Paths.get(System.getProperty("user.home"));
 			Set<Character> cs = Sets.newHashSet('~', '/', '\\');
@@ -45,4 +51,5 @@ public class ApplicationConfig {
 			}
 		}
 	}
+
 }

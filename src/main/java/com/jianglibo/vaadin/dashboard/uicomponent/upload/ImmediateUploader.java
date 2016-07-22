@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
-import com.jianglibo.vaadin.dashboard.wrapper.Wrapper;
 import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
@@ -30,7 +29,7 @@ import com.vaadin.ui.Upload.SucceededListener;
 @SuppressWarnings("serial")
 @SpringComponent
 @Scope("prototype")
-public class ImmediateUploader extends HorizontalLayout implements Wrapper<Component>{
+public class ImmediateUploader extends HorizontalLayout {
 
 	 private Label status = new Label("");
 
@@ -47,13 +46,14 @@ public class ImmediateUploader extends HorizontalLayout implements Wrapper<Compo
 	private Upload upload;
 
 	private Button cancelBtn;
+	
+	private UploadSuccessListener listener;
 
-	public Component unwrap() {
+	public Component setupUi(UploadSuccessListener listener) {
 		setSpacing(true);
-
-		upload = new Upload("", receiver);
-		upload.addStyleName("uploadwrapper");
-		
+		this.listener = listener;
+		this.upload = new Upload("", receiver);
+		this.upload.addStyleName("uploadwrapper");
 
 		// addComponent(status);
 		addComponent(status);
@@ -105,14 +105,17 @@ public class ImmediateUploader extends HorizontalLayout implements Wrapper<Compo
 		upload.addSucceededListener(new SucceededListener() {
 			@Override
 			public void uploadSucceeded(SucceededEvent event) {
+				receiver.uploadSuccessed(listener);
 				new Notification(messageSource.getMessage("component.upload.success", new String[]{event.getFilename()}, UI.getCurrent().getLocale()), "", Notification.Type.TRAY_NOTIFICATION)
 				.show(Page.getCurrent());
 			}
 		});
+		
 
 		upload.addFailedListener(new FailedListener() {
 			@Override
 			public void uploadFailed(FailedEvent event) {
+				receiver.uploadNotSuccess();
 				new Notification(messageSource.getMessage("component.upload.fail", new String[]{event.getFilename()}, UI.getCurrent().getLocale()), "", Notification.Type.ERROR_MESSAGE)
 				.show(Page.getCurrent());
 			}

@@ -16,8 +16,6 @@ public class PkSourceContainer extends FilterableListContainer<PkSource>{
 		setCollection(backingList);
 	}
 	
-	
-	
 	@Override
 	public void sort(Object[] propertyId, boolean[] ascending) {
         final boolean sortAscending = ascending[0];

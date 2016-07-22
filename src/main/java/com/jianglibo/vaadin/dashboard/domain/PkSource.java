@@ -1,12 +1,8 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
@@ -29,6 +25,9 @@ public class PkSource extends BaseEntity {
     
     private Long length;
     
+    private String extNoDot;
+    
+    private String mimeType;
 
 	public String getFileMd5() {
 		return fileMd5;
@@ -60,5 +59,60 @@ public class PkSource extends BaseEntity {
 
 	public void setLength(long length) {
 		this.length = length;
+	}
+
+	public String getExtNoDot() {
+		return extNoDot;
+	}
+
+	public void setExtNoDot(String extNoDot) {
+		this.extNoDot = extNoDot;
+	}
+	
+	public String getMimeType() {
+		return mimeType;
+	}
+
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
+	}
+
+	public static class PkSourceBuilder {
+		private final String fileMd5;
+
+	    private final String pkname;
+	    
+	    private final Long length;
+	    
+	    private final String extNoDot;
+	    
+	    private final String mimeType;
+	    
+	    private String originFrom;
+
+		public PkSourceBuilder(String fileMd5, String pkname, Long length, String extNoDot, String mimeType) {
+			super();
+			this.fileMd5 = fileMd5;
+			this.pkname = pkname;
+			this.length = length;
+			this.extNoDot = extNoDot;
+			this.mimeType = mimeType;
+		}
+		
+		public PkSource build() {
+			PkSource ps = new PkSource();
+			ps.setFileMd5(fileMd5);
+			ps.setPkname(pkname);
+			ps.setOriginFrom(originFrom);
+			ps.setLength(length);
+			ps.setExtNoDot(extNoDot);
+			ps.setMimeType(mimeType);
+			return ps;
+		}
+
+		public PkSourceBuilder setOriginFrom(String originFrom) {
+			this.originFrom = originFrom;
+			return this;
+		}
 	}
 }

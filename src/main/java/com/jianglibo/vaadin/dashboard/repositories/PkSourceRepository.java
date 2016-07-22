@@ -9,6 +9,7 @@ import com.jianglibo.vaadin.dashboard.domain.PkSource;
 
 
 @RepositoryRestResource(collectionResourceRel = "pksources", path = "pksources")
-public interface PkSourceRepository extends JpaRepository<PkSource, Long>, BoxRepositoryCustom, JpaSpecificationExecutor<PkSource> {
+public interface PkSourceRepository extends JpaRepository<PkSource, Long>, PkSourceRepositoryCustom, JpaSpecificationExecutor<PkSource> {
     
+	PkSource findByFileMd5(String md5);
 }
