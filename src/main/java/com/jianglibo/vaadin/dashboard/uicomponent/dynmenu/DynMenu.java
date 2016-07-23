@@ -1,21 +1,17 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.dynmenu;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.context.MessageSource;
 
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
-import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.SelectionChangeLinster;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")

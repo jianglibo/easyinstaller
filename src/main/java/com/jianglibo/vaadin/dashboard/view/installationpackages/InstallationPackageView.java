@@ -1,11 +1,9 @@
 package com.jianglibo.vaadin.dashboard.view.installationpackages;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -20,39 +18,40 @@ import com.jianglibo.vaadin.dashboard.domain.Transaction;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEvent.TransactionReportEvent;
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.formatter.FileLengthFormat;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
-import com.jianglibo.vaadin.dashboard.uicomponent.upload.UploadSuccessListener;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynMenu;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynMenuListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.MenuItemDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.MenuItemDescription.MenuItemEnableType;
-import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.UploadSuccessListener;
 import com.jianglibo.vaadin.dashboard.view.reports.ReportsView;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -78,14 +77,15 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 	private ApplicationContext applicationContext;
 
 	private final Table table;
-
-	private Button createReport;
+	
+	private int page;
 
 	private TableController tableController;
+	
+	private PkSourceContainer pc;
 
 	// private Upload upload;
 	private static final DateFormat DATEFORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
-	private static final DecimalFormat DECIMALFORMAT = new DecimalFormat("#.##");
 
 	private static final String[] DEFAULT_COLLAPSIBLE = { "length", "originFrom", "createdAt" };
 
@@ -155,12 +155,40 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 		header.addComponent(title);
 
 		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(ImmediateUploader.class).setupUi(this),
-				new PkSourceFilterBuilder(this).build());
+				buildFilter());
 		tools.setSpacing(true);
 		tools.addStyleName("toolbar");
 
 		header.addComponent(tools);
 		return header;
+	}
+	
+	@SuppressWarnings("serial")
+	private TextField buildFilter() {
+        final TextField filter = new TextField();
+        filter.addTextChangeListener(new TextChangeListener() {
+            @Override
+            public void textChange(final TextChangeEvent event) {
+            	String fs = event.getText();
+            	LOGGER.info("fiter string: {}", fs );
+            	pc.setFilterTxt(fs);
+            	table.setColumnFooter("createdAt", String.valueOf(table.getContainerDataSource().size()));
+            }
+        });
+
+        filter.setInputPrompt(messageSource.getMessage("inputtips.filter", null, UI.getCurrent().getLocale()));
+        filter.setIcon(FontAwesome.SEARCH);
+        filter.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
+        filter.addShortcutListener(new ShortcutListener("Clear",
+                KeyCode.ESCAPE, null) {
+            @Override
+            public void handleAction(final Object sender, final Object target) {
+                filter.setValue("");
+        		pc.setFilterTxt("");
+        		table.setColumnFooter("createdAt", String.valueOf(table.getContainerDataSource().size()));
+            }
+        });
+        return filter;
 	}
 
 	@SuppressWarnings("serial")
@@ -176,22 +204,22 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 		createReport.setEnabled(false);
 		return createReport;
 	}
+	
+	private String getLocaledName(String fn) {
+		return messageSource.getMessage("table.pksource.column." + fn, null, UI.getCurrent().getLocale());
+	}
+	
 
 	@SuppressWarnings("serial")
 	private Table buildTable() {
-		@SuppressWarnings("serial")
 		final Table table = new Table() {
 			@Override
 			protected String formatPropertyValue(final Object rowId, final Object colId, final Property<?> property) {
 				String result = super.formatPropertyValue(rowId, colId, property);
-				if (colId.equals("time")) {
+				if (colId.equals("createdAt")) {
 					result = DATEFORMAT.format(((Date) property.getValue()));
-				} else if (colId.equals("price")) {
-					if (property != null && property.getValue() != null) {
-						return "$" + DECIMALFORMAT.format(property.getValue());
-					} else {
-						return "";
-					}
+				} else if (colId.equals("length")) {
+					return FileLengthFormat.format((Long)property.getValue());
 				}
 				return result;
 			}
@@ -207,21 +235,23 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 		table.setColumnCollapsible("pkname", false);
 
 		table.setColumnReorderingAllowed(true);
-		List<PkSource> pkSources = pkSourceRepository.findAll();
-		table.setContainerDataSource(new PkSourceContainer(pkSources));
+		
 		table.setSortContainerPropertyId("createdAt");
 		table.setSortAscending(false);
 
-		// table.setColumnAlignment("seats", Align.RIGHT);
-		// table.setColumnAlignment("price", Align.RIGHT);
-		// Collection c = table.getContainerPropertyIds();
+		table.setColumnAlignment("length", Align.RIGHT);
+		table.setColumnAlignment("createdAt", Align.RIGHT);
+		
+		
+		pc = new PkSourceContainer(pkSourceRepository, 15);
+		table.setContainerDataSource(pc);
 		table.setVisibleColumns("pkname", "originFrom", "length", "createdAt");
-		table.setColumnHeaders("pkname", "originFrom", "length", "createdAt");
-
+		table.setColumnFooter("createdAt", String.valueOf(table.getContainerDataSource().size()));
+		
+		table.setColumnHeaders(getLocaledName("pkname"), getLocaledName("originFrom"), getLocaledName("length"), getLocaledName("createdAt"));
+		table.setColumnCollapsed("originFrom", true);
 		table.setFooterVisible(true);
 		table.setColumnFooter("pkname", "Total");
-
-		table.setColumnFooter("createdAt", String.valueOf(pkSourceRepository.count()));
 
 		// Allow dragging items to the reports menu
 		table.setDragMode(TableDragMode.MULTIROW);
@@ -230,7 +260,6 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 		table.addActionHandler(new PkSourceActionHandler());
 
 		table.addItemClickListener(new ItemClickListener() {
-
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				// event.getItem()
@@ -298,7 +327,22 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 
 	@Override
 	public void onMenuClick(String menuName) {
+		switch (menuName) {
+		case "delete":
+			LOGGER.info(table.getValue().toString());
+			break;
 
+		default:
+			LOGGER.error("unKnown menuName {}", menuName);
+		}
+	}
+	
+	public int getPage() {
+		return page;
+	}
+
+	public void setPage(int page) {
+		this.page = page;
 	}
 
 	// @Override

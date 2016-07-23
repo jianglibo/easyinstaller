@@ -29,7 +29,8 @@ public abstract class BaseEntity implements Serializable {
     @Version
     private int version;
     
-    @Temporal(TemporalType.TIMESTAMP)
+
+	@Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     
     private boolean archived = false;
@@ -66,4 +67,7 @@ public abstract class BaseEntity implements Serializable {
     public void setVersion(int version) {
         this.version = version;
     }
+    public int getVersion() {
+		return version;
+	}
 }
