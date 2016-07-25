@@ -21,4 +21,13 @@
 	.v-slot-dyn-menu .v-margin-bottom {
 		padding-bottom: 37px;
 	}
+	.page .v-button {
+		height: 0px;
+	}
+	.table-controller {
+	  border-bottom: 1px solid #dfdfdf;
+	}
+	.display-none {
+		display: none;
+	}
 }

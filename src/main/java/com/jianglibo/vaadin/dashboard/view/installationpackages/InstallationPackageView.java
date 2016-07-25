@@ -20,9 +20,14 @@ import com.jianglibo.vaadin.dashboard.event.DashboardEvent.TransactionReportEven
 import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.formatter.FileLengthFormat;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroups;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynMenuListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.MenuItemDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.MenuItemDescription.MenuItemEnableType;
+import com.jianglibo.vaadin.dashboard.uicomponent.pager.PagerListener;
+import com.jianglibo.vaadin.dashboard.uicomponent.table.TableControllerListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.UploadSuccessListener;
@@ -57,7 +62,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SpringView(name = InstallationPackageView.VIEW_NAME)
-public class InstallationPackageView extends VerticalLayout implements View, UploadSuccessListener, DynMenuListener {
+public class InstallationPackageView extends VerticalLayout implements View, UploadSuccessListener, TableControllerListener {
 
 	/**
 	 * 
@@ -101,11 +106,12 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 
 		addComponent(buildToolbar());
 
+		
 		tableController = new TableController(messageSource, this, //
-				new MenuItemDescription("edit",FontAwesome.EDIT, MenuItemEnableType.ONE), //
-				new MenuItemDescription("delete",FontAwesome.TRASH, MenuItemEnableType.MANY) //
+				new ButtonGroups(new ButtonDescription("edit", FontAwesome.EDIT, ButtonEnableType.ONE),new ButtonDescription("delete", FontAwesome.TRASH, ButtonEnableType.MANY)),
+				new ButtonGroups(new ButtonDescription("refresh", FontAwesome.REFRESH, ButtonEnableType.ALWAYS))
 		);
-		addComponent(tableController);
+//		addComponent(tableController);
 		// setExpandRatio(hl, 1);
 		// HorizontalLayout vl = new HorizontalLayout();
 		// vl.setSpacing(true);
@@ -127,10 +133,18 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 		//
 		// addComponent(vl);
 		// setExpandRatio(vl, 1);
+		
+//		VerticalLayout vl = new VerticalLayout();
+		addComponent(tableController);
 		table = buildTable();
 
 		addComponent(table);
 		setExpandRatio(table, 1);
+//		addComponent(vl);
+//		vl.setExpandRatio(table, 1);
+//		setExpandRatio(vl, 1);
+		
+
 	}
 
 	@Override
@@ -343,6 +357,18 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 
 	public void setPage(int page) {
 		this.page = page;
+	}
+
+	@Override
+	public void onPageChange(int page) {
+		setPage(page);
+		pc.setPage(page);
+	}
+
+	@Override
+	public void checkBoxChanged(String cbName, boolean state) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	// @Override

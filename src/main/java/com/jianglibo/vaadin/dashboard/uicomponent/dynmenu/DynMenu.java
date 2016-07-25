@@ -6,6 +6,7 @@ import org.springframework.context.MessageSource;
 
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.SelectionChangeLinster;
+import com.vaadin.server.Resource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
@@ -19,15 +20,15 @@ public class DynMenu extends HorizontalLayout implements SelectionChangeLinster 
 	
 	private MessageSource messageSource;
 	
-	private DynMenuListener linster;
+	private DynMenuListener listener;
 	
 	private Map<String, MenuItemDescription> menuItemDescriptionMap = Maps.newHashMap();
 	
 	private Map<String, MenuItem> itemMap = Maps.newHashMap();
 	
-	public DynMenu(MessageSource messageSource, DynMenuListener linster, MenuItemDescription...menuItemDescriptions) {
+	public DynMenu(MessageSource messageSource, DynMenuListener listener, MenuItemDescription...menuItemDescriptions) {
 		this.messageSource = messageSource;
-		this.linster = linster;
+		this.listener = listener;
 		MarginInfo mf = new MarginInfo(false, false, false, true);
 		setMargin(mf);
 		addStyleName("dyn-menu");
@@ -45,6 +46,7 @@ public class DynMenu extends HorizontalLayout implements SelectionChangeLinster 
         		mi.setDescription(msg);
         	}
         	itemMap.put(mid.getItemId(), mi);
+        	
         }
         addComponent(mb);
         onSelectionChange(0);
@@ -59,7 +61,7 @@ public class DynMenu extends HorizontalLayout implements SelectionChangeLinster 
 
 		@Override
 		public void menuSelected(MenuItem selectedItem) {
-			DynMenu.this.linster.onMenuClick(itemId);
+			DynMenu.this.listener.onMenuClick(itemId);
 		}
 	}
 
@@ -67,6 +69,7 @@ public class DynMenu extends HorizontalLayout implements SelectionChangeLinster 
 	public void onSelectionChange(int num) {
 		itemMap.forEach((k, v) -> {
 			v.setEnabled(menuItemDescriptionMap.get(k).isEnabled(num));
+			
 		});
 		
 	}

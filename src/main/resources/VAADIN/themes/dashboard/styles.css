@@ -11853,3 +11853,35 @@ div.v-layout.v-horizontal.v-widget {
 .dashboard .v-caption-uploadwrapper {
 	display: none;
 }
+
+.dashboard .v-horizontallayout-pager .v-button {
+	height: 0px;
+}
+
+.dashboard .v-slot-dyn-menu .v-margin-top {
+	padding-top: 37px;
+}
+
+.dashboard .v-slot-dyn-menu .v-margin-left {
+	padding-left: 37px;
+}
+
+.dashboard .v-slot-dyn-menu .v-margin-right {
+	padding-right: 37px;
+}
+
+.dashboard .v-slot-dyn-menu .v-margin-bottom {
+	padding-bottom: 37px;
+}
+
+.dashboard .page .v-button {
+	height: 0px;
+}
+
+.dashboard .table-controller {
+	border-bottom: 1px solid #dfdfdf;
+}
+
+.dashboard .display-none {
+	display: none;
+}

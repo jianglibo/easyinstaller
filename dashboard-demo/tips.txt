@@ -5,5 +5,5 @@ mvn vaadin:update-widgetset
 mvn vaadin:compile
 mvn vaadin:compile-theme
 mvn vaadin:update-theme
-
 mvn  -Dmaven.test.skip=true -Pproduction-mode install
+
