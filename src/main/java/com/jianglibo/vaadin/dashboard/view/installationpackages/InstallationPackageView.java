@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
@@ -26,6 +27,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynMenuListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.MenuItemDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.MenuItemDescription.MenuItemEnableType;
+import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager;
 import com.jianglibo.vaadin.dashboard.uicomponent.pager.PagerListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableControllerListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
@@ -93,6 +95,10 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 	private static final DateFormat DATEFORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
 
 	private static final String[] DEFAULT_COLLAPSIBLE = { "length", "originFrom", "createdAt" };
+	
+	private EventBus eventBus;
+	
+	private Pager pager;
 
 	@Autowired
 	public InstallationPackageView(PkSourceRepository pkSourceRepository, MessageSource messageSource,
@@ -100,14 +106,17 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 		this.pkSourceRepository = pkSourceRepository;
 		this.messageSource = messageSource;
 		this.applicationContext = applicationContext;
+		this.eventBus = new EventBus(this.getClass().getName());
+		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
 		// DashboardEventBus.register(this);
 
 		addComponent(buildToolbar());
-
 		
-		tableController = new TableController(messageSource, this, //
+		pc = new PkSourceContainer(eventBus, pkSourceRepository, 15);
+		pager = new Pager(eventBus, messageSource, this);
+		tableController = new TableController(eventBus,pager, messageSource, this, //
 				new ButtonGroups(new ButtonDescription("edit", FontAwesome.EDIT, ButtonEnableType.ONE),new ButtonDescription("delete", FontAwesome.TRASH, ButtonEnableType.MANY)),
 				new ButtonGroups(new ButtonDescription("refresh", FontAwesome.REFRESH, ButtonEnableType.ALWAYS))
 		);
@@ -143,8 +152,8 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 //		addComponent(vl);
 //		vl.setExpandRatio(table, 1);
 //		setExpandRatio(vl, 1);
-		
-
+		pc.setList();
+		pager.setLableValue();
 	}
 
 	@Override
@@ -256,8 +265,6 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 		table.setColumnAlignment("length", Align.RIGHT);
 		table.setColumnAlignment("createdAt", Align.RIGHT);
 		
-		
-		pc = new PkSourceContainer(pkSourceRepository, 15);
 		table.setContainerDataSource(pc);
 		table.setVisibleColumns("pkname", "originFrom", "length", "createdAt");
 		table.setColumnFooter("createdAt", String.valueOf(table.getContainerDataSource().size()));
@@ -328,6 +335,8 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 
 	@Override
 	public void enter(final ViewChangeEvent event) {
+		LOGGER.info("current view: {}", this);
+		LOGGER.info("parameter is: {}", event.getParameters());
 	}
 
 	@Override

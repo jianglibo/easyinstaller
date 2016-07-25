@@ -4,8 +4,10 @@ import java.util.Map;
 
 import org.springframework.context.MessageSource;
 
+import com.google.common.eventbus.EventBus;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.SelectionChangeLinster;
+import com.jianglibo.vaadin.dashboard.uicomponent.table.TableControllerListener;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.shared.ui.MarginInfo;
@@ -26,7 +28,11 @@ public class DynButton extends HorizontalLayout implements SelectionChangeLinste
 	
 	private Map<String, Button> itemMap = Maps.newHashMap();
 	
-	public DynButton(MessageSource messageSource, DynMenuListener listener, ButtonGroups...btnGroups) {
+	private EventBus eventBus;
+	
+	public DynButton(EventBus eventBus, MessageSource messageSource, DynMenuListener listener, ButtonGroups...btnGroups) {
+		this.eventBus = eventBus;
+		eventBus.register(this);
 		this.messageSource = messageSource;
 		this.listener = listener;
 		MarginInfo mf = new MarginInfo(false, false, false, true);
@@ -55,6 +61,8 @@ public class DynButton extends HorizontalLayout implements SelectionChangeLinste
         addComponent(btgHl);
         onSelectionChange(0);
 	}
+
+
 
 	@Override
 	public void onSelectionChange(int num) {

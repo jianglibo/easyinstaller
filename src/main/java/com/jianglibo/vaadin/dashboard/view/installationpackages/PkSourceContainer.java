@@ -10,8 +10,11 @@ import org.springframework.data.domain.Sort.Direction;
 import org.vaadin.maddon.ListContainer;
 
 import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
+import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager.CurrentPageEvent;
 
 @SuppressWarnings("serial")
 public class PkSourceContainer extends ListContainer<PkSource>{
@@ -32,14 +35,22 @@ public class PkSourceContainer extends ListContainer<PkSource>{
 	
 	private int perPage;
 	
-	public PkSourceContainer(PkSourceRepository pkSourceRepository, int perPage) {
+	private EventBus eventBus;
+	
+	public PkSourceContainer(EventBus eventBus, PkSourceRepository pkSourceRepository, int perPage) {
 		super(PkSource.class);
+		this.eventBus = eventBus;
+		this.eventBus.register(this);
 		this.pkSourceRepository = pkSourceRepository;
 		this.perPage = perPage;
-		setList();
+	}
+
+	@Subscribe
+	public void whenPagerChange(CurrentPageEvent pagerData) {
+		LOGGER.info("got pagerData from eventBus, {}", pagerData.getCurrentPage());
 	}
 	
-	private void setList() {
+	public void setList() {
 		Pageable pageable = new PageRequest(getPage(), getPerPage(), getDirection(), getSortField());
 		Page<PkSource> pkSources;
 		if (Strings.isNullOrEmpty(getFilterTxt())) {
@@ -49,6 +60,7 @@ public class PkSourceContainer extends ListContainer<PkSource>{
 			pkSources = pkSourceRepository.findByPknameContainingIgnoreCase(getFilterTxt(), pageable);
 			total = pkSourceRepository.countByPknameContainingIgnoreCase(getFilterTxt());
 		}
+		eventBus.post(new TotalPageEvent(total, perPage));
 		setCollection(pkSources.getContent());
 	}
 	
@@ -109,6 +121,47 @@ public class PkSourceContainer extends ListContainer<PkSource>{
 				setDirection(Direction.DESC);
 			}
 			setPage(0);
+		}
+	}
+	
+	public static class TotalPageEvent {
+		private int totalRecord;
+		
+		private int perPage;
+		
+		private int totalPage;
+
+		public TotalPageEvent(long totalRecord, int perPage) {
+			int page = (int) (totalRecord/perPage);
+			if (totalRecord % perPage > 0) {
+				page=page+1;
+			}
+			this.setTotalPage(page);
+			this.setTotalRecord(new Long(totalRecord).intValue());
+		}
+		
+		public int getTotalRecord() {
+			return totalRecord;
+		}
+
+		public void setTotalRecord(int totalRecord) {
+			this.totalRecord = totalRecord;
+		}
+
+		public int getPerPage() {
+			return perPage;
+		}
+
+		public void setPerPage(int perPage) {
+			this.perPage = perPage;
+		}
+
+		public int getTotalPage() {
+			return totalPage;
+		}
+
+		public void setTotalPage(int totalPage) {
+			this.totalPage = totalPage;
 		}
 	}
 }

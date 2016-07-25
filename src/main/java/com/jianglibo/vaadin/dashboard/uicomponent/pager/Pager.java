@@ -3,8 +3,10 @@ package com.jianglibo.vaadin.dashboard.uicomponent.pager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.data.domain.Pageable;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.view.installationpackages.PkSourceContainer.TotalPageEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
@@ -21,16 +23,21 @@ public class Pager extends HorizontalLayout implements Button.ClickListener {
 	
 	private MessageSource messageSource;
 	
-	private Pageable pageable;
-	
 	private Label label;
 	
+	private int currentPage;
 	
-	public Pager(MessageSource messageSource, Pageable pageable, PagerListener listener) {
+	private int totalPage;
+
+	private EventBus eventBus;
+	
+	public Pager(EventBus eventBus, MessageSource messageSource,  PagerListener listener) {
+		this.eventBus = eventBus;
+		this.messageSource = messageSource;
+		eventBus.register(this);
 		MarginInfo mf = new MarginInfo(true, true, true, false);
 		setMargin(mf);
 		addStyleName("pager");
-		this.pageable = pageable;
 		Button left = new Button("");
 		left.addStyleName(ValoTheme.BUTTON_LINK);
 
@@ -42,19 +49,65 @@ public class Pager extends HorizontalLayout implements Button.ClickListener {
 		
 		right.addClickListener(this);
 		left.addClickListener(this);
-		pageable.getPageNumber();
 		label = new Label();
 		addComponents(left, label, right);
 	}
 	
-	private void setLabelText() {
-		label.setCaption(messageSource.getMessage("pager.pagenumber", new Object[]{pageable.getPageNumber(), pageable.getOffset()/pageable.getPageSize()}, UI.getCurrent().getLocale()));
+	
+	@Subscribe
+	public void whenTotalPageChange(TotalPageEvent tre) {
+		setTotalPage(tre.getTotalPage());
+	}
+	
+	public void setLableValue() {
+		label.setValue(messageSource.getMessage("pager.pagenumber", new Object[]{getTotalPage(), getCurrentPage()}, UI.getCurrent().getLocale()));
 	}
 
 
 	@Override
 	public void buttonClick(ClickEvent event) {
-		LOGGER.info("is left arrow clicked: {}", String.valueOf(event.getButton().getIcon().equals(FontAwesome.ARROW_LEFT)));
+		if (String.valueOf(event.getButton().getIcon()).equals(FontAwesome.ARROW_LEFT)) {
+			if (currentPage > 0) {
+				currentPage--;
+				eventBus.post(new CurrentPageEvent(currentPage));
+			}
+		} else {
+			if (currentPage < totalPage) {
+				currentPage++;
+				eventBus.post(new CurrentPageEvent(currentPage));
+			}
+		}
+	}
+	
+	public static class CurrentPageEvent {
+		private int currentPage;
 		
+		public CurrentPageEvent(int currentPage) {
+			this.setCurrentPage(currentPage);
+		}
+
+		public int getCurrentPage() {
+			return currentPage;
+		}
+
+		public void setCurrentPage(int currentPage) {
+			this.currentPage = currentPage;
+		}
+	}
+
+	public int getCurrentPage() {
+		return currentPage;
+	}
+
+	public void setCurrentPage(int currentPage) {
+		this.currentPage = currentPage;
+	}
+	
+	public int getTotalPage() {
+		return totalPage;
+	}
+
+	public void setTotalPage(int totalPage) {
+		this.totalPage = totalPage;
 	}
 }
