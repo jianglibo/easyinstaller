@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroups;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButton;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynMenuListener;
@@ -33,15 +32,14 @@ public class TableController extends HorizontalLayout implements SelectionChange
 	
 	private EventBus eventBus;
 	
-	public TableController(EventBus eventBus,Pager pager, MessageSource messageSource, TableControllerListener listener, ButtonGroups...btnGroups) {
+	public TableController(EventBus eventBus, MessageSource messageSource, ButtonGroups...btnGroups) {
 		this.eventBus = eventBus;
 		this.messageSource = messageSource;
-		this.listener = listener;
+		this.pager = new Pager(eventBus, messageSource);
 		addStyleName("table-controller");
 		setWidth("100%");
 		menu = new DynButton(eventBus, messageSource, listener, btnGroups);
 		
-		this.pager = pager;
 		addComponent(menu);
 		
 		setComponentAlignment(menu, Alignment.MIDDLE_LEFT);

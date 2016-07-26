@@ -4,8 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.jianglibo.vaadin.dashboard.domain.Movie;
-import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Responsive;

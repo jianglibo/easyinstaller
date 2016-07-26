@@ -36,7 +36,7 @@ import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.LocalizedSystemMessageProvider;
 import com.jianglibo.vaadin.dashboard.component.MovieDetailsWindow;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
-import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.wrapper.Wrapper;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;

@@ -6,10 +6,10 @@ import java.util.Collection;
 import java.util.Date;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
-import com.jianglibo.vaadin.dashboard.event.DashboardEvent.ReportsCountUpdatedEvent;
-import com.jianglibo.vaadin.dashboard.event.DashboardEvent.TransactionReportEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.ReportsCountUpdatedEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.TransactionReportEvent;
 import com.jianglibo.vaadin.dashboard.view.DboardViewUtil;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.jianglibo.vaadin.dashboard.view.reports.ReportEditor.PaletteItemType;

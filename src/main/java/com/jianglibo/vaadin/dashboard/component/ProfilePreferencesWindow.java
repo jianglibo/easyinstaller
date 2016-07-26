@@ -1,9 +1,9 @@
 package com.jianglibo.vaadin.dashboard.component;
 
 import com.jianglibo.vaadin.dashboard.domain.User;
-import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
-import com.jianglibo.vaadin.dashboard.event.DashboardEvent.ProfileUpdatedEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.ProfileUpdatedEvent;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.fieldgroup.PropertyId;

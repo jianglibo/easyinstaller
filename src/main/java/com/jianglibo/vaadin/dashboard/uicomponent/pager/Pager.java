@@ -6,7 +6,9 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.view.installationpackages.PkSourceContainer.TotalPageEvent;
+import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
+import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
+import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
@@ -31,7 +33,7 @@ public class Pager extends HorizontalLayout implements Button.ClickListener {
 
 	private EventBus eventBus;
 	
-	public Pager(EventBus eventBus, MessageSource messageSource,  PagerListener listener) {
+	public Pager(EventBus eventBus, MessageSource messageSource ) {
 		this.eventBus = eventBus;
 		this.messageSource = messageSource;
 		eventBus.register(this);
@@ -55,14 +57,16 @@ public class Pager extends HorizontalLayout implements Button.ClickListener {
 	
 	
 	@Subscribe
-	public void whenTotalPageChange(TotalPageEvent tre) {
+	public void whenTotalPageChange(PageMetaEvent tre) {
 		setTotalPage(tre.getTotalPage());
-	}
-	
-	public void setLableValue() {
 		label.setValue(messageSource.getMessage("pager.pagenumber", new Object[]{getTotalPage(), getCurrentPage()}, UI.getCurrent().getLocale()));
 	}
 
+	@Subscribe
+	public void whenUriFragementChange(ViewFragmentBuilder vfb) {
+		setCurrentPage(vfb.getCurrentPage());
+		label.setValue(messageSource.getMessage("pager.pagenumber", new Object[]{getTotalPage(), getCurrentPage()}, UI.getCurrent().getLocale()));
+	}
 
 	@Override
 	public void buttonClick(ClickEvent event) {
@@ -76,22 +80,6 @@ public class Pager extends HorizontalLayout implements Button.ClickListener {
 				currentPage++;
 				eventBus.post(new CurrentPageEvent(currentPage));
 			}
-		}
-	}
-	
-	public static class CurrentPageEvent {
-		private int currentPage;
-		
-		public CurrentPageEvent(int currentPage) {
-			this.setCurrentPage(currentPage);
-		}
-
-		public int getCurrentPage() {
-			return currentPage;
-		}
-
-		public void setCurrentPage(int currentPage) {
-			this.currentPage = currentPage;
 		}
 	}
 

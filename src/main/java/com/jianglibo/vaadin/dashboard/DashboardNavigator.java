@@ -4,10 +4,10 @@ package com.jianglibo.vaadin.dashboard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
-import com.jianglibo.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
-import com.jianglibo.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
-import com.jianglibo.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;
-import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.PostViewChangeEvent;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;

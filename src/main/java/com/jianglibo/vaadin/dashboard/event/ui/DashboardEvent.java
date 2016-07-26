@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.event;
+package com.jianglibo.vaadin.dashboard.event.ui;
 
 import java.util.Collection;
 

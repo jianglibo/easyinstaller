@@ -3,8 +3,8 @@ package com.jianglibo.vaadin.dashboard.view;
 import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.event.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.PostViewChangeEvent;
 import com.vaadin.ui.UI;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;

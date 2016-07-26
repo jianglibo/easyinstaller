@@ -7,7 +7,6 @@ import org.springframework.context.MessageSource;
 import com.google.common.eventbus.EventBus;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.SelectionChangeLinster;
-import com.jianglibo.vaadin.dashboard.uicomponent.table.TableControllerListener;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.shared.ui.MarginInfo;

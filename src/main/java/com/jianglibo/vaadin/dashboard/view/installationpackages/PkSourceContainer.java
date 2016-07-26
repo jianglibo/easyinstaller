@@ -13,21 +13,16 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
+import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
-import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager.CurrentPageEvent;
+import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
 
 @SuppressWarnings("serial")
 public class PkSourceContainer extends ListContainer<PkSource>{
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(PkSourceContainer.class);
 	
-	private long total;
-	
 	private final PkSourceRepository pkSourceRepository;
-	
-	private String filterTxt;
-	
-	private int page;
 	
 	private Direction direction = Direction.DESC;
 	
@@ -46,40 +41,20 @@ public class PkSourceContainer extends ListContainer<PkSource>{
 	}
 
 	@Subscribe
-	public void whenPagerChange(CurrentPageEvent pagerData) {
-		LOGGER.info("got pagerData from eventBus, {}", pagerData.getCurrentPage());
-	}
-	
-	public void setList() {
-		Pageable pageable = new PageRequest(getPage(), getPerPage(), getDirection(), getSortField());
+	public void whenUriFragmentChange(ViewFragmentBuilder vfb) {
+		Pageable pageable = new PageRequest(vfb.getCurrentPage() - 1, getPerPage(), getDirection(), getSortField());
 		Page<PkSource> pkSources;
-		if (Strings.isNullOrEmpty(getFilterTxt())) {
+		String filterStr = vfb.getFilterStr();
+		long total;
+		if (Strings.isNullOrEmpty(filterStr)) {
 			pkSources = pkSourceRepository.findAll(pageable);
 			total = pkSourceRepository.count();
 		} else {
-			pkSources = pkSourceRepository.findByPknameContainingIgnoreCase(getFilterTxt(), pageable);
-			total = pkSourceRepository.countByPknameContainingIgnoreCase(getFilterTxt());
+			pkSources = pkSourceRepository.findByPknameContainingIgnoreCase(filterStr, pageable);
+			total = pkSourceRepository.countByPknameContainingIgnoreCase(filterStr);
 		}
-		eventBus.post(new TotalPageEvent(total, perPage));
 		setCollection(pkSources.getContent());
-	}
-	
-	public String getFilterTxt() {
-		return filterTxt;
-	}
-
-	public void setFilterTxt(String filterTxt) {
-		this.filterTxt = filterTxt;
-		setList();
-	}
-
-	public int getPage() {
-		return page;
-	}
-
-	public void setPage(int page) {
-		this.page = page;
-		setList();
+		eventBus.post(new PageMetaEvent(total, getPerPage()));
 	}
 
 	public Direction getDirection() {
@@ -105,11 +80,6 @@ public class PkSourceContainer extends ListContainer<PkSource>{
 	public void setPerPage(int perPage) {
 		this.perPage = perPage;
 	}
-
-	@Override
-	public int size() {
-		return new Long(total).intValue();
-	}
 	
 	@Override
 	public void sort(Object[] propertyId, boolean[] ascending) {
@@ -120,48 +90,7 @@ public class PkSourceContainer extends ListContainer<PkSource>{
 			} else {
 				setDirection(Direction.DESC);
 			}
-			setPage(0);
 		}
 	}
-	
-	public static class TotalPageEvent {
-		private int totalRecord;
-		
-		private int perPage;
-		
-		private int totalPage;
 
-		public TotalPageEvent(long totalRecord, int perPage) {
-			int page = (int) (totalRecord/perPage);
-			if (totalRecord % perPage > 0) {
-				page=page+1;
-			}
-			this.setTotalPage(page);
-			this.setTotalRecord(new Long(totalRecord).intValue());
-		}
-		
-		public int getTotalRecord() {
-			return totalRecord;
-		}
-
-		public void setTotalRecord(int totalRecord) {
-			this.totalRecord = totalRecord;
-		}
-
-		public int getPerPage() {
-			return perPage;
-		}
-
-		public void setPerPage(int perPage) {
-			this.perPage = perPage;
-		}
-
-		public int getTotalPage() {
-			return totalPage;
-		}
-
-		public void setTotalPage(int totalPage) {
-			this.totalPage = totalPage;
-		}
-	}
 }
