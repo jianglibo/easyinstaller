@@ -4,11 +4,11 @@ import java.util.List;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 
-public class ButtonGroups {
+public class ButtonGroup {
 
 	private List<ButtonDescription> buttons;
 	
-	public ButtonGroups(ButtonDescription...btnDescriptions) {
+	public ButtonGroup(ButtonDescription...btnDescriptions) {
 		setButtons(Lists.newArrayList(btnDescriptions));
 	}
 

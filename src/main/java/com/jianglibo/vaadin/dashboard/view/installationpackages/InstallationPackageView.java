@@ -13,19 +13,22 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
+import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
+import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
 import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
+import com.jianglibo.vaadin.dashboard.event.view.UploadFinishEvent;
 import com.jianglibo.vaadin.dashboard.formatter.FileLengthFormat;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroups;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
-import com.jianglibo.vaadin.dashboard.uicomponent.upload.UploadSuccessListener;
 import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -49,7 +52,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SpringView(name = InstallationPackageView.VIEW_NAME)
-public class InstallationPackageView extends VerticalLayout implements View, UploadSuccessListener {
+public class InstallationPackageView extends VerticalLayout implements View {
 
 	/**
 	 * 
@@ -57,8 +60,6 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InstallationPackageView.class);
-
-	private final PkSourceRepository pkSourceRepository;
 
 	private final MessageSource messageSource;
 
@@ -69,6 +70,7 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 	private ApplicationContext applicationContext;
 
 	private final Table table;
+	
 	private TableController tableController;
 	
 	private PkSourceContainer pc;
@@ -85,7 +87,6 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 	@Autowired
 	public InstallationPackageView(PkSourceRepository pkSourceRepository, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		this.pkSourceRepository = pkSourceRepository;
 		this.messageSource = messageSource;
 		this.applicationContext = applicationContext;
 		this.eventBus = new EventBus(this.getClass().getName());
@@ -98,10 +99,11 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 		
 		pc = new PkSourceContainer(eventBus, pkSourceRepository, 15);
 		
-		tableController = new TableController(eventBus,messageSource, //
-				new ButtonGroups(new ButtonDescription("edit", FontAwesome.EDIT, ButtonEnableType.ONE),new ButtonDescription("delete", FontAwesome.TRASH, ButtonEnableType.MANY)),
-				new ButtonGroups(new ButtonDescription("refresh", FontAwesome.REFRESH, ButtonEnableType.ALWAYS))
-		);
+		ButtonGroup[] bgs = new ButtonGroup[]{new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE),new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
+		
+		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
+		
 //		addComponent(tableController);
 		// setExpandRatio(hl, 1);
 		// HorizontalLayout vl = new HorizontalLayout();
@@ -157,8 +159,8 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 		title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
 		header.addComponent(title);
 
-		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(ImmediateUploader.class).setupUi(this),
-				new FilterForm(eventBus, messageSource, ""));
+		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(ImmediateUploader.class).afterInjection(eventBus),
+				applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
 		tools.setSpacing(true);
 		tools.addStyleName("toolbar");
 
@@ -275,7 +277,7 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 			public void valueChange(final ValueChangeEvent event) {
 				if (table.getValue() instanceof Set) {
 					Set<Object> val = (Set<Object>) table.getValue();
-					tableController.onSelectionChange(val.size());
+					eventBus.post(val);
 				}
 			}
 		});
@@ -299,9 +301,38 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 	}
 	
 	@Subscribe
+	public void whenCurrentPageChange(CurrentPageEvent cpe) {
+		String nvs = vfb.setCurrentPage(cpe.getCurrentPage()).toNavigateString();
+		UI.getCurrent().getNavigator().navigateTo(nvs);
+	}
+	
+	@Subscribe
 	public void whenFilterStrChange(FilterStrEvent fse) {
 		String nvs = vfb.setFilterStr(fse.getFilterStr()).toNavigateString();
 		UI.getCurrent().getNavigator().navigateTo(nvs);
+	}
+	
+	@Subscribe
+	public void whenUploadFinished(UploadFinishEvent ufe) {
+		PkSource pkSource = ufe.getPkSource();
+		if (pkSource != null && ufe.isNewCreated()) {
+			LOGGER.info("upload a new file.");
+			table.addItem(pkSource);
+		}
+	}
+	
+	@Subscribe
+	public void dynMenuClicked(DynMenuClickEvent dce) {
+		switch (dce.getBtnId()) {
+		case CommonMenuItemIds.DELETE:
+			LOGGER.info(table.getValue().toString());
+			break;
+		case CommonMenuItemIds.REFRESH:
+			pc.refresh();
+			break;
+		default:
+			LOGGER.error("unKnown menuName {}", dce.getBtnId());
+		}
 	}
 
 	@Subscribe
@@ -331,14 +362,14 @@ public class InstallationPackageView extends VerticalLayout implements View, Upl
 		LOGGER.info("parameter is: {}", event.getParameters());
 	}
 
-	@Override
-	public void uploadFinished(PkSource pkSource, boolean newCreate) {
-		if (pkSource != null && newCreate) {
-			LOGGER.info("upload a new file.");
-		}
-		table.addItem(pkSource);
-		table.sort();
-	}
+//	@Override
+//	public void uploadFinished(PkSource pkSource, boolean newCreate) {
+//		if (pkSource != null && newCreate) {
+//			LOGGER.info("upload a new file.");
+//		}
+//		table.addItem(pkSource);
+//		table.sort();
+//	}
 
 //	@Override
 //	public void onMenuClick(String menuName) {

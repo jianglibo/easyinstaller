@@ -1,6 +1,8 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.filterform;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Scope;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -9,6 +11,7 @@ import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -17,12 +20,16 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 @SuppressWarnings("serial")
+@SpringComponent
+@Scope("prototype")
 public class FilterForm extends HorizontalLayout {
 
-	private final TextField filterField;
-
+	private TextField filterField;
 	
-	public FilterForm(EventBus eventBus,MessageSource messageSource, String filterStr) {
+	@Autowired
+	private MessageSource messageSource;
+	
+	public FilterForm afterInjection(EventBus eventBus, String filterStr) {
 		this.filterField = new TextField();
 		filterField.setInputPrompt(messageSource.getMessage("filterform.inputprompt", null, UI.getCurrent().getLocale()));
 		eventBus.register(this);
@@ -47,6 +54,7 @@ public class FilterForm extends HorizontalLayout {
         });
         search.setClickShortcut(KeyCode.ENTER, null);
         addComponent(search);
+		return this;
 	}
 	
 	@Subscribe

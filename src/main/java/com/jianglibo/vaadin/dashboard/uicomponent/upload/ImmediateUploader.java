@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
+import com.google.common.eventbus.EventBus;
 import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
@@ -46,13 +47,10 @@ public class ImmediateUploader extends HorizontalLayout {
 	private Upload upload;
 
 	private Button cancelBtn;
-	
-	private UploadSuccessListener listener;
 
-	public Component setupUi(UploadSuccessListener listener) {
+	public Component afterInjection(EventBus eventBus) {
 		setSpacing(true);
-		this.listener = listener;
-		this.upload = new Upload("", receiver);
+		this.upload = new Upload("", receiver.afterInjection(eventBus));
 		this.upload.addStyleName("uploadwrapper");
 
 		// addComponent(status);
@@ -105,7 +103,7 @@ public class ImmediateUploader extends HorizontalLayout {
 		upload.addSucceededListener(new SucceededListener() {
 			@Override
 			public void uploadSucceeded(SucceededEvent event) {
-				receiver.uploadSuccessed(listener);
+				receiver.uploadSuccessed();
 				new Notification(messageSource.getMessage("component.upload.success", new String[]{event.getFilename()}, UI.getCurrent().getLocale()), "", Notification.Type.TRAY_NOTIFICATION)
 				.show(Page.getCurrent());
 			}

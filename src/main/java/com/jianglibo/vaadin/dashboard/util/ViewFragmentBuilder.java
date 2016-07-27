@@ -34,6 +34,34 @@ public class ViewFragmentBuilder {
 		setUriComs(uriCb.build());		
 	}
 	
+	public ViewFragmentBuilder setBoolean(String pname, boolean value) {
+		if (value) {
+			uriCb.replaceQueryParam(pname, value);
+		} else {
+			uriCb.replaceQueryParam(pname);
+		}
+		return this;
+	}
+	
+	public ViewFragmentBuilder setString(String pname, String value) {
+		if (Strings.isNullOrEmpty(value)) {
+			uriCb.replaceQueryParam(pname);
+		} else {
+			uriCb.replaceQueryParam(pname, value);
+		}
+		return this;
+	}
+	
+	
+	public ViewFragmentBuilder setCurrentPage(int page) {
+		if (page < 2) {
+			uriCb.replaceQueryParam(PAGE_PARAM_NAME);
+		} else {
+			uriCb.replaceQueryParam(PAGE_PARAM_NAME, page);
+		}
+		return this;
+	}
+	
 	private Integer str2i(String stri) {
 		try {
 			return Integer.valueOf(stri);
@@ -69,30 +97,30 @@ public class ViewFragmentBuilder {
 		}
 	}
 	
-	public ViewFragmentBuilder increasePage() {
-		String page = getParameterValue(PAGE_PARAM_NAME);
-		int i = str2i(page);
-		i = i + 1;
-		if (i < 2) {
-			i = 2;
-		}
-		uriCb.replaceQueryParam(PAGE_PARAM_NAME, i);
-		return this;
-	}
-	
-	public ViewFragmentBuilder decreasePage() {
-		String page = getParameterValue(PAGE_PARAM_NAME);
-		int i = str2i(page);
-
-		i = i - 1;
-		
-		if (i < 2) {
-			uriCb.replaceQueryParam(PAGE_PARAM_NAME);
-		} else {
-			uriCb.replaceQueryParam(PAGE_PARAM_NAME, i);
-		}
-		return this;
-	}
+//	public ViewFragmentBuilder increasePage() {
+//		String page = getParameterValue(PAGE_PARAM_NAME);
+//		int i = str2i(page);
+//		i = i + 1;
+//		if (i < 2) {
+//			i = 2;
+//		}
+//		uriCb.replaceQueryParam(PAGE_PARAM_NAME, i);
+//		return this;
+//	}
+//	
+//	public ViewFragmentBuilder decreasePage() {
+//		String page = getParameterValue(PAGE_PARAM_NAME);
+//		int i = str2i(page);
+//
+//		i = i - 1;
+//		
+//		if (i < 2) {
+//			uriCb.replaceQueryParam(PAGE_PARAM_NAME);
+//		} else {
+//			uriCb.replaceQueryParam(PAGE_PARAM_NAME, i);
+//		}
+//		return this;
+//	}
 
 	
 	private String getParameterValue(String pname) {

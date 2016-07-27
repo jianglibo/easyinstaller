@@ -12,13 +12,13 @@ public class TestViewParameters {
 	
 	@Test
 	public void tPage() {
-		ViewFragmentBuilder vp = new ViewFragmentBuilder("/?page=2", "hello");
-		String s = vp.decreasePage().build().toUriString();
-		assertThat(s, equalTo("/"));
+		ViewFragmentBuilder vp = new ViewFragmentBuilder("/?p=2", "hello");
+		String s = vp.setCurrentPage(1).build().toUriString();
+		assertThat("should remove page parameter.", s, equalTo("/"));
 		
 		vp = new ViewFragmentBuilder("/", "hello");
-		s = vp.increasePage().build().toUriString();
-		assertThat(s, equalTo("/?page=2"));
+		s = vp.setCurrentPage(2).build().toUriString();
+		assertThat(s, equalTo("/?p=2"));
 	}
 
 	@Test

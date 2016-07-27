@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.context.MessageSource;
 
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
-import com.jianglibo.vaadin.dashboard.uicomponent.table.SelectionChangeLinster;
 import com.vaadin.server.Resource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.HorizontalLayout;
@@ -16,19 +15,17 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
-public class DynMenu extends HorizontalLayout implements SelectionChangeLinster {
+public class DynMenu extends HorizontalLayout {
 	
 	private MessageSource messageSource;
 	
-	private DynMenuListener listener;
 	
 	private Map<String, MenuItemDescription> menuItemDescriptionMap = Maps.newHashMap();
 	
 	private Map<String, MenuItem> itemMap = Maps.newHashMap();
 	
-	public DynMenu(MessageSource messageSource, DynMenuListener listener, MenuItemDescription...menuItemDescriptions) {
+	public DynMenu(MessageSource messageSource,  MenuItemDescription...menuItemDescriptions) {
 		this.messageSource = messageSource;
-		this.listener = listener;
 		MarginInfo mf = new MarginInfo(false, false, false, true);
 		setMargin(mf);
 		addStyleName("dyn-menu");
@@ -49,7 +46,7 @@ public class DynMenu extends HorizontalLayout implements SelectionChangeLinster 
         	
         }
         addComponent(mb);
-        onSelectionChange(0);
+//        onSelectionChange(0);
 	}
 	
 	private class ItemCommand implements Command {
@@ -61,16 +58,16 @@ public class DynMenu extends HorizontalLayout implements SelectionChangeLinster 
 
 		@Override
 		public void menuSelected(MenuItem selectedItem) {
-			DynMenu.this.listener.onMenuClick(itemId);
+//			DynMenu.this.listener.onMenuClick(itemId);
 		}
 	}
 
-	@Override
-	public void onSelectionChange(int num) {
-		itemMap.forEach((k, v) -> {
-			v.setEnabled(menuItemDescriptionMap.get(k).isEnabled(num));
-			
-		});
-		
-	}
+//	@Override
+//	public void onSelectionChange(int num) {
+//		itemMap.forEach((k, v) -> {
+//			v.setEnabled(menuItemDescriptionMap.get(k).isEnabled(num));
+//			
+//		});
+//		
+//	}
 }

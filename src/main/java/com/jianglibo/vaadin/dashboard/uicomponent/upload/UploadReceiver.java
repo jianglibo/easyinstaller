@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
+import com.jianglibo.vaadin.dashboard.event.view.UploadFinishEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -37,6 +39,7 @@ public class UploadReceiver implements Receiver  {
 	@Autowired
 	private ApplicationConfigWrapper applicationConfigWrapper;
 	
+	
 	@Autowired
 	private PkSourceRepository pkSourceRepository;
 
@@ -45,9 +48,17 @@ public class UploadReceiver implements Receiver  {
 	public String filename;
 	
 	private String mimeType;
+	
+	private EventBus eventBus;
+	
+	public UploadReceiver afterInjection(EventBus eventBus) {
+		this.eventBus = eventBus;
+		return this;
+	}
 
 	public OutputStream receiveUpload(String filename, String mimeType) {
 		// Create upload stream
+		
 		this.filename = filename;
 		this.mimeType = mimeType;
 		FileOutputStream fos = null; // Stream to write to
@@ -64,7 +75,7 @@ public class UploadReceiver implements Receiver  {
 		return fos;
 	}
 
-	public void uploadSuccessed(UploadSuccessListener listener) {
+	public void uploadSuccessed() {
 		try {
 			String md5 = Files.asByteSource(file).hash(Hashing.md5()).toString();
 			PkSource ps = pkSourceRepository.findByFileMd5(md5);
@@ -76,9 +87,9 @@ public class UploadReceiver implements Receiver  {
 				}
 				ps = new PkSource.PkSourceBuilder(md5, filename, nf.length(), extNoDot, mimeType).build();
 				pkSourceRepository.save(ps);
-				listener.uploadFinished(ps, true);
+				eventBus.post(new UploadFinishEvent(ps));
 			} else {
-				listener.uploadFinished(ps, false);
+				eventBus.post(new UploadFinishEvent(ps));
 				new Notification(messageSource.getMessage("component.upload.duplicated", new String[]{filename}, UI.getCurrent().getLocale()), "", Notification.Type.ERROR_MESSAGE)
 				.show(Page.getCurrent());
 			}
