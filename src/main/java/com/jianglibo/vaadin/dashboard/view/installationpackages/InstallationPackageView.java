@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -20,6 +23,8 @@ import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
 import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
 import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
+import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
+import com.jianglibo.vaadin.dashboard.event.view.TrashedCheckBoxEvent;
 import com.jianglibo.vaadin.dashboard.event.view.UploadFinishEvent;
 import com.jianglibo.vaadin.dashboard.formatter.FileLengthFormat;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
@@ -60,6 +65,8 @@ public class InstallationPackageView extends VerticalLayout implements View {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InstallationPackageView.class);
+	
+	private static final Sort defaultSort = new Sort(Direction.DESC, "createdAt");
 
 	private final MessageSource messageSource;
 
@@ -97,7 +104,7 @@ public class InstallationPackageView extends VerticalLayout implements View {
 
 		addComponent(buildToolbar());
 		
-		pc = new PkSourceContainer(eventBus, pkSourceRepository, 15);
+		pc = new PkSourceContainer(eventBus, pkSourceRepository,defaultSort, 15);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE),new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
@@ -240,9 +247,6 @@ public class InstallationPackageView extends VerticalLayout implements View {
 		table.setColumnCollapsible("pkname", false);
 
 		table.setColumnReorderingAllowed(true);
-		
-		table.setSortContainerPropertyId("createdAt");
-		table.setSortAscending(false);
 
 		table.setColumnAlignment("length", Align.RIGHT);
 		table.setColumnAlignment("createdAt", Align.RIGHT);
@@ -322,6 +326,19 @@ public class InstallationPackageView extends VerticalLayout implements View {
 	}
 	
 	@Subscribe
+	public void whenSortChanged(TableSortEvent tse) {
+		Order od = tse.getSort().iterator().next();
+		String nvs = vfb.setSort(od.getProperty(), od.isAscending(), defaultSort).toNavigateString();
+		UI.getCurrent().getNavigator().navigateTo(nvs);
+	}
+	
+	@Subscribe
+	public void whenTrashedCheckboxChange(TrashedCheckBoxEvent tce) {
+		String nvs = vfb.setFilterStr("").setCurrentPage(1).setBoolean(ViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
+		UI.getCurrent().getNavigator().navigateTo(nvs);
+	}
+	
+	@Subscribe
 	public void dynMenuClicked(DynMenuClickEvent dce) {
 		switch (dce.getBtnId()) {
 		case CommonMenuItemIds.DELETE:
@@ -358,6 +375,16 @@ public class InstallationPackageView extends VerticalLayout implements View {
 	@Override
 	public void enter(final ViewChangeEvent event) {
 		vfb = new ViewFragmentBuilder(event);
+		Sort sort = vfb.getSort();
+		if (sort == null) {
+			sort = defaultSort;
+		}
+		
+		if (sort.iterator().hasNext()) {
+			Order od = sort.iterator().next();
+			table.setSortContainerPropertyId(od.getProperty());
+			table.setSortAscending(od.isAscending());
+		}
 		eventBus.post(vfb);
 		LOGGER.info("parameter is: {}", event.getParameters());
 	}

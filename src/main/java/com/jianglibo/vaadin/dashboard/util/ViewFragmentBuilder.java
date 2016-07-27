@@ -1,16 +1,26 @@
 package com.jianglibo.vaadin.dashboard.util;
 
+import java.util.Set;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Strings;
+import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 public class ViewFragmentBuilder {
 	
 	public static final String PAGE_PARAM_NAME = "p";
 	
+	public static final String SORT_PARAM_NAME = "sort";
+	
 	public static final String FILTER_STR_PARAM_NAME = "q";
+	
+	public static final String TRASHED_PARAM_NAME = "trashed";
 	
 	private String pstr;
 	
@@ -41,6 +51,49 @@ public class ViewFragmentBuilder {
 			uriCb.replaceQueryParam(pname);
 		}
 		return this;
+	}
+	
+	public ViewFragmentBuilder setSort(String fname, boolean ascending, Sort defaultSort) {
+		String s;
+		if (ascending) {
+			s = fname;
+		} else {
+			s = "-" + fname;
+		}
+		
+		Order od = defaultSort.iterator().next();
+		
+		if (od.getProperty().equals(fname) && ascending == od.isAscending()) {
+			uriCb.replaceQueryParam(SORT_PARAM_NAME);
+		} else {
+			uriCb.replaceQueryParam(SORT_PARAM_NAME, s);
+		}
+		return this;
+	}
+	
+	public Sort getSort() {
+		String s = getParameterValue(SORT_PARAM_NAME);
+		if (Strings.isNullOrEmpty(s)) {
+			return null;
+		}
+		if (s.startsWith("-")) {
+			return new Sort(Direction.DESC, s.substring(1));
+		} else {
+			return new Sort(Direction.ASC, s); 
+		}
+	}
+	
+	public boolean getBoolean(String pname) {
+		String bs = getParameterValue(pname);
+		if (Strings.isNullOrEmpty(bs)) {
+			return false;
+		} else {
+			if ("true".equalsIgnoreCase(bs) || "yes".equalsIgnoreCase(bs) || "1".equalsIgnoreCase(bs)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 	
 	public ViewFragmentBuilder setString(String pname, String value) {

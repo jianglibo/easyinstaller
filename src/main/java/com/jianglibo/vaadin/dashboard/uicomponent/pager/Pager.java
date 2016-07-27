@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.config.InterestInUriFragemnt;
 import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
@@ -24,7 +25,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 @SpringComponent
 @Scope("prototype")
-public class Pager extends HorizontalLayout implements Button.ClickListener {
+public class Pager extends HorizontalLayout implements Button.ClickListener, InterestInUriFragemnt {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(Pager.class);
 	

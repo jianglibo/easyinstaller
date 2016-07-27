@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.vaadin.maddon.ListContainer;
 
@@ -14,6 +15,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
+import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
 
@@ -32,26 +34,34 @@ public class PkSourceContainer extends ListContainer<PkSource>{
 	
 	private EventBus eventBus;
 	
-	public PkSourceContainer(EventBus eventBus, PkSourceRepository pkSourceRepository, int perPage) {
+	private Sort defaultSort;
+	
+	public PkSourceContainer(EventBus eventBus, PkSourceRepository pkSourceRepository,Sort defaultSort, int perPage) {
 		super(PkSource.class);
 		this.eventBus = eventBus;
 		this.eventBus.register(this);
+		this.defaultSort = defaultSort;
 		this.pkSourceRepository = pkSourceRepository;
 		this.perPage = perPage;
 	}
 
 	@Subscribe
 	public void whenUriFragmentChange(ViewFragmentBuilder vfb) {
-		Pageable pageable = new PageRequest(vfb.getCurrentPage() - 1, getPerPage(), getDirection(), getSortField());
+		boolean trashed = vfb.getBoolean(ViewFragmentBuilder.TRASHED_PARAM_NAME);
+		Sort sort = vfb.getSort();
+		if (sort == null) {
+			sort = defaultSort;
+		}
+		Pageable pageable = new PageRequest(vfb.getCurrentPage() - 1, getPerPage(), sort);
 		Page<PkSource> pkSources;
 		String filterStr = vfb.getFilterStr();
 		long total;
 		if (Strings.isNullOrEmpty(filterStr)) {
-			pkSources = pkSourceRepository.findAll(pageable);
-			total = pkSourceRepository.count();
+			pkSources = pkSourceRepository.findByArchivedEquals(trashed, pageable);
+			total = pkSourceRepository.countByArchivedEquals(trashed);
 		} else {
-			pkSources = pkSourceRepository.findByPknameContainingIgnoreCase(filterStr, pageable);
-			total = pkSourceRepository.countByPknameContainingIgnoreCase(filterStr);
+			pkSources = pkSourceRepository.findByPknameContainingIgnoreCaseAndArchivedEquals(filterStr,trashed, pageable);
+			total = pkSourceRepository.countByPknameContainingIgnoreCaseAndArchivedEquals(filterStr, trashed);
 		}
 		setCollection(pkSources.getContent());
 		eventBus.post(new PageMetaEvent(total, getPerPage()));
@@ -84,12 +94,9 @@ public class PkSourceContainer extends ListContainer<PkSource>{
 	@Override
 	public void sort(Object[] propertyId, boolean[] ascending) {
 		if (propertyId.length > 0) {
-			setSortField((String) propertyId[0]);
-			if (ascending[0]) {
-				setDirection(Direction.ASC);
-			} else {
-				setDirection(Direction.DESC);
-			}
+			String fname = (String) propertyId[0];
+			Direction direction = ascending[0] ? Direction.ASC : Direction.DESC;
+			eventBus.post(new TableSortEvent(new Sort(direction, fname)));
 		}
 	}
 

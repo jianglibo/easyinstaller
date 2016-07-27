@@ -18,5 +18,13 @@ public interface PkSourceRepository extends JpaRepository<PkSource, Long>, PkSou
 	long countByPknameContainingIgnoreCase(String filter);
 
 	Page<PkSource> findByPknameContainingIgnoreCase(String filter, Pageable pageable);
+	
+	Page<PkSource> findByArchivedEquals(boolean archived, Pageable pageable);
+	
+	long countByArchivedEquals(boolean archived);
+	
+	Page<PkSource> findByPknameContainingIgnoreCaseAndArchivedEquals(String filter, boolean archived, Pageable pageable);
+	
+	long countByPknameContainingIgnoreCaseAndArchivedEquals(String filter, boolean archived);
 
 }
