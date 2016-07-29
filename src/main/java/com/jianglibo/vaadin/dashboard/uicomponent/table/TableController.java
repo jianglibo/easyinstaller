@@ -14,7 +14,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButton;
 import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
-import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -95,8 +95,8 @@ public class TableController extends HorizontalLayout implements /*ValueChangeLi
 
 	@Override
 	@Subscribe
-	public void whenUriFragementChange(ViewFragmentBuilder vfb) {
-		boolean trashed = vfb.getBoolean(ViewFragmentBuilder.TRASHED_PARAM_NAME);
+	public void whenUriFragementChange(ListViewFragmentBuilder vfb) {
+		boolean trashed = vfb.getBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME);
 //		checkEventFromUri = true;
 		if (trashed) {
 			trashBt.addStyleName(ValoTheme.BUTTON_PRIMARY);

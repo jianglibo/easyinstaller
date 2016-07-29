@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.context.MessageSource;
 
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
-import com.vaadin.server.Resource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;

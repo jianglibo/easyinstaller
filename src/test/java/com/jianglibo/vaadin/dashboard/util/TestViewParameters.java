@@ -12,18 +12,18 @@ public class TestViewParameters {
 	
 	@Test
 	public void tPage() {
-		ViewFragmentBuilder vp = new ViewFragmentBuilder("/?p=2", "hello");
+		ListViewFragmentBuilder vp = new ListViewFragmentBuilder("/?p=2", "hello");
 		String s = vp.setCurrentPage(1).build().toUriString();
 		assertThat("should remove page parameter.", s, equalTo("/"));
 		
-		vp = new ViewFragmentBuilder("/", "hello");
+		vp = new ListViewFragmentBuilder("/", "hello");
 		s = vp.setCurrentPage(2).build().toUriString();
 		assertThat(s, equalTo("/?p=2"));
 	}
 
 	@Test
 	public void t(){
-		ViewFragmentBuilder vp = new ViewFragmentBuilder("/?page=1", "hello");
+		ListViewFragmentBuilder vp = new ListViewFragmentBuilder("/?page=1", "hello");
 		UriComponentsBuilder ucb = vp.getUriCb();
 		UriComponents uc = vp.getUriCb().replaceQuery("page={page}").buildAndExpand(5); 
 		String uriStr = uc.toUriString();
@@ -36,7 +36,7 @@ public class TestViewParameters {
 		assertThat(uriStr, equalTo("/?page=5"));
 		
 		
-		vp = new ViewFragmentBuilder("/", "hello");
+		vp = new ListViewFragmentBuilder("/", "hello");
 		ucb = vp.getUriCb();
 		uc = vp.getUriCb().replaceQuery("page={page}").buildAndExpand(5); 
 		uriStr = uc.toUriString();

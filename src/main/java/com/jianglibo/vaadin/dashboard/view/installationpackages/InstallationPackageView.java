@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard.view.installationpackages;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -34,7 +35,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.Butt
 import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
-import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -82,7 +83,7 @@ public class InstallationPackageView extends VerticalLayout implements View {
 	
 	private PkSourceContainer pc;
 	
-	private ViewFragmentBuilder vfb;
+	private ListViewFragmentBuilder vfb;
 
 	// private Upload upload;
 	private static final DateFormat DATEFORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
@@ -334,7 +335,7 @@ public class InstallationPackageView extends VerticalLayout implements View {
 	
 	@Subscribe
 	public void whenTrashedCheckboxChange(TrashedCheckBoxEvent tce) {
-		String nvs = vfb.setFilterStr("").setCurrentPage(1).setBoolean(ViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
+		String nvs = vfb.setFilterStr("").setCurrentPage(1).setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
 		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
 	
@@ -346,6 +347,10 @@ public class InstallationPackageView extends VerticalLayout implements View {
 			break;
 		case CommonMenuItemIds.REFRESH:
 			pc.refresh();
+			break;
+		case CommonMenuItemIds.EDIT:
+			Collection<PkSource> selected = (Collection<PkSource>) table.getValue();
+			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId());
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", dce.getBtnId());
@@ -374,7 +379,7 @@ public class InstallationPackageView extends VerticalLayout implements View {
 
 	@Override
 	public void enter(final ViewChangeEvent event) {
-		vfb = new ViewFragmentBuilder(event);
+		vfb = new ListViewFragmentBuilder(event);
 		Sort sort = vfb.getSort();
 		if (sort == null) {
 			sort = defaultSort;

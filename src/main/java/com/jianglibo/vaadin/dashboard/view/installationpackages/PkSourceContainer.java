@@ -17,7 +17,7 @@ import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
-import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 
 @SuppressWarnings("serial")
 public class PkSourceContainer extends ListContainer<PkSource>{
@@ -46,8 +46,8 @@ public class PkSourceContainer extends ListContainer<PkSource>{
 	}
 
 	@Subscribe
-	public void whenUriFragmentChange(ViewFragmentBuilder vfb) {
-		boolean trashed = vfb.getBoolean(ViewFragmentBuilder.TRASHED_PARAM_NAME);
+	public void whenUriFragmentChange(ListViewFragmentBuilder vfb) {
+		boolean trashed = vfb.getBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME);
 		Sort sort = vfb.getSort();
 		if (sort == null) {
 			sort = defaultSort;

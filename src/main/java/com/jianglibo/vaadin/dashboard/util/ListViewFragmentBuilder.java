@@ -1,7 +1,5 @@
 package com.jianglibo.vaadin.dashboard.util;
 
-import java.util.Set;
-
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -9,10 +7,9 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Strings;
-import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
-public class ViewFragmentBuilder {
+public class ListViewFragmentBuilder {
 	
 	public static final String PAGE_PARAM_NAME = "p";
 	
@@ -30,21 +27,21 @@ public class ViewFragmentBuilder {
 	
 	private UriComponents uriComs;
 	
-	public ViewFragmentBuilder(String pstr, String viewName) {
+	public ListViewFragmentBuilder(String pstr, String viewName) {
 		setPstr(pstr);
 		setViewName(viewName);
 		setUriCb(UriComponentsBuilder.fromUriString(getPstr()));
 		setUriComs(uriCb.build());
 	}
 	
-	public ViewFragmentBuilder(ViewChangeEvent vce) {
+	public ListViewFragmentBuilder(ViewChangeEvent vce) {
 		setPstr(vce.getParameters());
 		setViewName(vce.getViewName());
 		setUriCb(UriComponentsBuilder.fromUriString(getPstr()));
 		setUriComs(uriCb.build());		
 	}
 	
-	public ViewFragmentBuilder setBoolean(String pname, boolean value) {
+	public ListViewFragmentBuilder setBoolean(String pname, boolean value) {
 		if (value) {
 			uriCb.replaceQueryParam(pname, value);
 		} else {
@@ -53,7 +50,7 @@ public class ViewFragmentBuilder {
 		return this;
 	}
 	
-	public ViewFragmentBuilder setSort(String fname, boolean ascending, Sort defaultSort) {
+	public ListViewFragmentBuilder setSort(String fname, boolean ascending, Sort defaultSort) {
 		String s;
 		if (ascending) {
 			s = fname;
@@ -96,7 +93,7 @@ public class ViewFragmentBuilder {
 		}
 	}
 	
-	public ViewFragmentBuilder setString(String pname, String value) {
+	public ListViewFragmentBuilder setString(String pname, String value) {
 		if (Strings.isNullOrEmpty(value)) {
 			uriCb.replaceQueryParam(pname);
 		} else {
@@ -106,7 +103,7 @@ public class ViewFragmentBuilder {
 	}
 	
 	
-	public ViewFragmentBuilder setCurrentPage(int page) {
+	public ListViewFragmentBuilder setCurrentPage(int page) {
 		if (page < 2) {
 			uriCb.replaceQueryParam(PAGE_PARAM_NAME);
 		} else {
@@ -127,7 +124,7 @@ public class ViewFragmentBuilder {
 		return viewName + "/" + build().toUriString();
 	}
 	
-	public ViewFragmentBuilder setFilterStr(String filterStr) {
+	public ListViewFragmentBuilder setFilterStr(String filterStr) {
 		if (Strings.isNullOrEmpty(filterStr)) {
 			uriCb.replaceQueryParam(FILTER_STR_PARAM_NAME);
 		} else {

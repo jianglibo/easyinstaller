@@ -1,8 +1,8 @@
 package com.jianglibo.vaadin.dashboard.config;
 
-import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 
 public interface InterestInUriFragemnt {
 
-	void whenUriFragementChange(ViewFragmentBuilder vfb);
+	void whenUriFragementChange(ListViewFragmentBuilder vfb);
 }

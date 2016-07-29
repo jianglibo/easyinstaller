@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Scope;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
-import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
@@ -58,7 +58,7 @@ public class FilterForm extends HorizontalLayout {
 	}
 	
 	@Subscribe
-	public void whenUriFragmentChange(ViewFragmentBuilder vfb) {
+	public void whenUriFragmentChange(ListViewFragmentBuilder vfb) {
 		String v = vfb.getFilterStr();
 		filterField.setValue(v);
 	}

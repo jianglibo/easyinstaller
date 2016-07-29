@@ -55,6 +55,7 @@ public class DynButton extends HorizontalLayout implements ClickListener {
             		bt = new Button(btnDesc.getIcon());
             		bt.setDescription(msg);
             	}
+            	bt.addClickListener(this);
             	bt.setData(btnDesc);
             	itemMap.put(btnDesc.getItemId(), bt);
             	hl.addComponent(bt);

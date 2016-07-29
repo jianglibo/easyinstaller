@@ -11,7 +11,7 @@ import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.config.InterestInUriFragemnt;
 import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
-import com.jianglibo.vaadin.dashboard.util.ViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -73,7 +73,7 @@ public class Pager extends HorizontalLayout implements Button.ClickListener, Int
 	}
 
 	@Subscribe
-	public void whenUriFragementChange(ViewFragmentBuilder vfb) {
+	public void whenUriFragementChange(ListViewFragmentBuilder vfb) {
 		setCurrentPage(vfb.getCurrentPage());
 		label.setValue(messageSource.getMessage("pager.pagenumber", new Object[]{getTotalPage(), getCurrentPage()}, UI.getCurrent().getLocale()));
 	}
