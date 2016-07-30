@@ -8,6 +8,8 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 public class ItemViewFragmentBuilder {
 	
+	public static final String PREVIOUS_VIEW_PARAMETER_NAME = "pv";
+	
 	private String pstr;
 	
 	private String viewName;
@@ -21,6 +23,10 @@ public class ItemViewFragmentBuilder {
 		setViewName(viewName);
 		setUriCb(UriComponentsBuilder.fromUriString(getPstr()));
 		setUriComs(uriCb.build());
+	}
+	
+	public String getPreviousView() {
+		return getParameterValue(PREVIOUS_VIEW_PARAMETER_NAME);
 	}
 	
 	public ItemViewFragmentBuilder(ViewChangeEvent vce) {
@@ -118,7 +124,8 @@ public class ItemViewFragmentBuilder {
 	}
 
 	public long getBeanId() {
-		String idstrs[] = pstr.split("/");
+		String idpart = getUriComs().getPath();
+		String idstrs[] = idpart.split("/");
 		String idstr = idstrs[idstrs.length - 1];
 		
 		try {

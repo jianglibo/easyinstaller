@@ -11885,3 +11885,43 @@ div.v-layout.v-horizontal.v-widget {
 .dashboard .display-none {
 	display: none;
 }
+
+.dashboard .margin-ten {
+	margin: 10px;
+}
+
+.dashboard .margin-top-ten {
+	margin-top: 10px;
+}
+
+.dashboard .margin-left-ten {
+	margin-left: 10px;
+}
+
+.dashboard .margin-bottom-ten {
+	margin-bottom: 10px;
+}
+
+.dashboard .margin-right-ten {
+	margin-right: 10px;
+}
+
+.dashboard .margin-twenty {
+	margin: 20px;
+}
+
+.dashboard .margin-top-twenty {
+	margin-top: 20px;
+}
+
+.dashboard .margin-left-twenty {
+	margin-left: 20px;
+}
+
+.dashboard .margin-bottom-twenty {
+	margin-bottom: 20px;
+}
+
+.dashboard .margin-right-twenty {
+	margin-right: 20px;
+}

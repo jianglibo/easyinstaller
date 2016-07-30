@@ -7,19 +7,26 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
+import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
+import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -137,9 +144,13 @@ public class InstallationPackageEditView  extends VerticalLayout implements View
 //        bioField.setRows(4);
 //        bioField.setNullRepresentation("");
 //        details.addComponent(bioField);
-
+        StyleUtil.setMarginTopTwenty(details);
         return details;
     }
+    
+    private HeaderLayout header;
+    
+    private ItemViewFragmentBuilder ifb;
 	
 	@Autowired
 	public InstallationPackageEditView(PkSourceRepository pkSourceRepository, MessageSource messageSource,
@@ -152,8 +163,16 @@ public class InstallationPackageEditView  extends VerticalLayout implements View
 		setSizeFull();
 		addStyleName("transactions");
 		// DashboardEventBus.register(this);
+		setMargin(true);
+		
+		header = applicationContext.getBean(HeaderLayout.class).afterInjectionWithBackBtn(eventBus, "");
+		
+		addComponent(header);
 		Component fl = buildProfileTab();
+		fl.setWidth(80f, Unit.PERCENTAGE);
 		addComponent(fl);
+		
+//		setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
 		setExpandRatio(fl, 1);
 	}
 
@@ -165,7 +184,11 @@ public class InstallationPackageEditView  extends VerticalLayout implements View
 		// DashboardEventBus.unregister(this);
 	}
 	
-	private ItemViewFragmentBuilder ifb;
+	@Subscribe
+	public void onBackBtnClicked(HistoryBackEvent hbe) {
+		UI.getCurrent().getNavigator().navigateTo(ifb.getPreviousView());
+	}
+	
 
 	@Override
 	public void enter(ViewChangeEvent event) {
@@ -177,6 +200,7 @@ public class InstallationPackageEditView  extends VerticalLayout implements View
 			pkSource = new PkSource();
 		} else {
 			pkSource = pkSourceRepository.findOne(bid);
+			header.setLabelTxt(pkSource.getPkname());
 		}
         fieldGroup.setItemDataSource(pkSource);
 	}

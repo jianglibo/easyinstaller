@@ -30,12 +30,14 @@ import com.jianglibo.vaadin.dashboard.event.view.UploadFinishEvent;
 import com.jianglibo.vaadin.dashboard.formatter.FileLengthFormat;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
+import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -45,11 +47,9 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
-import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.Table.TableDragMode;
@@ -102,8 +102,15 @@ public class InstallationPackageView extends VerticalLayout implements View {
 		setSizeFull();
 		addStyleName("transactions");
 		// DashboardEventBus.register(this);
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(MsgUtil.getMsg(messageSource, "view.installationpackage.title"));
+		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(ImmediateUploader.class).afterInjection(eventBus),
+				applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
+		tools.setSpacing(true);
+		tools.addStyleName("toolbar");
 
-		addComponent(buildToolbar());
+		header.addComponent(tools);
+		addComponent(header);
+//		addComponent(buildToolbar());
 		
 		pc = new PkSourceContainer(eventBus, pkSourceRepository,defaultSort, 15);
 		
@@ -154,27 +161,27 @@ public class InstallationPackageView extends VerticalLayout implements View {
 		// DashboardEventBus.unregister(this);
 	}
 
-	private Component buildToolbar() {
-		HorizontalLayout header = new HorizontalLayout();
-		header.addStyleName("viewheader");
-		header.setSpacing(true);
-		Responsive.makeResponsive(header);
-
-		Label title = new Label(
-				messageSource.getMessage("view.installationpackage.title", null, UI.getCurrent().getLocale()));
-		title.setSizeUndefined();
-		title.addStyleName(ValoTheme.LABEL_H1);
-		title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-		header.addComponent(title);
-
-		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(ImmediateUploader.class).afterInjection(eventBus),
-				applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
-		tools.setSpacing(true);
-		tools.addStyleName("toolbar");
-
-		header.addComponent(tools);
-		return header;
-	}
+//	private Component buildToolbar() {
+//		HorizontalLayout header = new HorizontalLayout();
+//		header.addStyleName("viewheader");
+//		header.setSpacing(true);
+//		Responsive.makeResponsive(header);
+//
+//		Label title = new Label(
+//				messageSource.getMessage("view.installationpackage.title", null, UI.getCurrent().getLocale()));
+//		title.setSizeUndefined();
+//		title.addStyleName(ValoTheme.LABEL_H1);
+//		title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+//		header.addComponent(title);
+//
+//		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(ImmediateUploader.class).afterInjection(eventBus),
+//				applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
+//		tools.setSpacing(true);
+//		tools.addStyleName("toolbar");
+//
+//		header.addComponent(tools);
+//		return header;
+//	}
 	
 //	@SuppressWarnings("serial")
 //	private TextField buildFilter() {
@@ -350,7 +357,7 @@ public class InstallationPackageView extends VerticalLayout implements View {
 			break;
 		case CommonMenuItemIds.EDIT:
 			Collection<PkSource> selected = (Collection<PkSource>) table.getValue();
-			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId());
+			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + vfb.toNavigateString());
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", dce.getBtnId());
