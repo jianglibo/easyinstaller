@@ -9,6 +9,8 @@ import org.springframework.context.MessageSource;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.ProfileUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
@@ -16,18 +18,27 @@ import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.PropertyId;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.server.Page;
+import com.vaadin.shared.Position;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 
@@ -54,38 +65,65 @@ public class InstallationPackageEditView  extends VerticalLayout implements View
 	
     private BeanFieldGroup<PkSource> fieldGroup;
 	
-	@PropertyId("fileMd5")
+    private static final String fileMd5FieldName = "fileMd5";
+    
+	@PropertyId(fileMd5FieldName)
 	private TextField fileMd5Field;
+	
+	private static final String pknameFieldName = "pkname";
 
-	@PropertyId("pkname")
+	@PropertyId(pknameFieldName)
     private TextField pknameField;
     
-	@PropertyId("originFrom")
+	private static final String originFromFieldName = "originFrom";
+
+	@PropertyId(originFromFieldName)
     private TextField originFromField;
-    
-	@PropertyId("mimeType")
-    private ComboBox mimeTypeField;
 	
-    private Component buildProfileTab() {
+	
+	private static final String mimeTypeFieldName = "mimeType";
+    
+	@PropertyId(mimeTypeFieldName)
+    private TextField mimeTypeField;
+	
+	
+	private	PkSource pkSource;
+	
+	private String getMsg(String key) {
+		return messageSource.getMessage("fieldname.pksource." + key, null, UI.getCurrent().getLocale());
+	}
+	
+    @SuppressWarnings("serial")
+	private Component buildProfileTab() {
 
         FormLayout details = new FormLayout();
         details.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+        
+        details.addShortcutListener(new ShortcutListener("submit", null, KeyCode.ENTER) {
+			@Override
+			public void handleAction(Object sender, Object target) {
+				save();
+			}
+		});
+        
+        details.addShortcutListener(new ShortcutListener("submit", null, KeyCode.ESCAPE) {
+			@Override
+			public void handleAction(Object sender, Object target) {
+				eventBus.post(new HistoryBackEvent());
+			}
+		});
 
-        fileMd5Field = new TextField("First Name");
+        fileMd5Field = new TextField(getMsg(fileMd5FieldName));
         details.addComponent(fileMd5Field);
         
-        pknameField = new TextField("Last Name");
+        pknameField = new TextField(getMsg(pknameFieldName));
         details.addComponent(pknameField);
 
-        originFromField = new TextField("Last Name");
+        originFromField = new TextField(getMsg(originFromFieldName));
         details.addComponent(originFromField);
+        originFromField.setNullRepresentation("");
 
-        mimeTypeField = new ComboBox("Title");
-        mimeTypeField.setInputPrompt("Please specify");
-        mimeTypeField.addItem("Mr.");
-        mimeTypeField.addItem("Mrs.");
-        mimeTypeField.addItem("Ms.");
-        mimeTypeField.setNewItemsAllowed(true);
+        mimeTypeField = new TextField(getMsg(mimeTypeFieldName));
         details.addComponent(mimeTypeField);
         
         fieldGroup = new BeanFieldGroup<PkSource>(PkSource.class);
@@ -169,12 +207,49 @@ public class InstallationPackageEditView  extends VerticalLayout implements View
 		
 		addComponent(header);
 		Component fl = buildProfileTab();
-		fl.setWidth(80f, Unit.PERCENTAGE);
+//		fl.setWidth(80f, Unit.PERCENTAGE);
 		addComponent(fl);
-		
+		addComponent(buildFooter());
 //		setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
 		setExpandRatio(fl, 1);
 	}
+	
+	private void save() {
+        try {
+            fieldGroup.commit();
+            pkSourceRepository.save(pkSource);
+            Notification success = new Notification(messageSource.getMessage("shared.msg.savesuccess", null, UI.getCurrent().getLocale()));
+            success.setDelayMsec(2000);
+            success.setStyleName("bar success small");
+            success.setPosition(Position.BOTTOM_CENTER);
+            success.show(Page.getCurrent());
+            DashboardEventBus.post(new ProfileUpdatedEvent());
+        } catch (CommitException e) {
+            Notification.show(messageSource.getMessage("shared.msg.savefailed",null, UI.getCurrent().getLocale()),
+                    Type.ERROR_MESSAGE);
+        }
+	}
+	
+    @SuppressWarnings("serial")
+	private Component buildFooter() {
+        HorizontalLayout footer = new HorizontalLayout();
+        footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+        footer.setWidth(100.0f, Unit.PERCENTAGE);
+
+        Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));
+        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        ok.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+            	save();
+            }
+        });
+        ok.focus();
+        footer.addComponent(ok);
+        footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
+        return footer;
+    }
+    
 
 	@Override
 	public void detach() {
@@ -195,7 +270,6 @@ public class InstallationPackageEditView  extends VerticalLayout implements View
 		LOGGER.info("parameter string is: {}", event.getParameters());
 		ifb = new ItemViewFragmentBuilder(event);
 		long bid = ifb.getBeanId();
-		PkSource pkSource;
 		if (bid == 0) {
 			pkSource = new PkSource();
 		} else {
