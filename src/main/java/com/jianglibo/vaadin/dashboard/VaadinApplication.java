@@ -26,7 +26,7 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages={"com.jianglibo.vaadin","com.jianglibo.vaadin.dashboard.domain"})
 @EnableJpaRepositories("com.jianglibo.vaadin.dashboard.repositories")
 public class VaadinApplication {
 	

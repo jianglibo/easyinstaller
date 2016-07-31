@@ -1,11 +1,8 @@
 package com.jianglibo.vaadin.dashboard.view;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
 
 import javax.annotation.PostConstruct;
 
@@ -16,15 +13,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 
 import com.google.common.collect.Maps;
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
-import com.jianglibo.vaadin.dashboard.util.ClassScanner;
-import com.jianglibo.vaadin.dashboard.util.MethodInvoker;
-import com.vaadin.navigator.View;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.spring.internal.Conventions;
-import com.vaadin.ui.Component;
 
 @SpringComponent
 @Scope("prototype")
@@ -33,7 +23,7 @@ public class MainMenuItems {
 
 	private final ApplicationContext applicationContext;
 	
-	List<MenuItemWrapper> items = Lists.newArrayList();
+	private SortedMap<Integer, MenuItemWrapper> items = Maps.newTreeMap();
 	
 	@Autowired
 	public MainMenuItems(ApplicationContext applicationContext) {
@@ -43,25 +33,15 @@ public class MainMenuItems {
 	@PostConstruct
 	void after() {
 		Map<String, Object> wrappers =  applicationContext.getBeansWithAnnotation(MainMenu.class);
-		Map<Integer, Object> orderWrap = Maps.newHashMap();
 		
 		for(Entry<String, Object> entry : wrappers.entrySet()) {
 			MainMenu mm = entry.getValue().getClass().getAnnotation(MainMenu.class);
 			int i = mm.menuOrder();
-			while (orderWrap.containsKey(i)) {
+			while(items.containsKey(i)) {
 				i++;
 			}
-			orderWrap.put(i, entry.getValue());
-			
+			items.put(i, (MenuItemWrapper) entry.getValue());
 		}
-		Integer[] orders = new Integer[orderWrap.keySet().size()];
-		orderWrap.keySet().toArray(orders);
-		Arrays.sort(orders);
-		
-		for(Integer i: orders) {
-			items.add((MenuItemWrapper) orderWrap.get(i));
-		}
-		
 	}
 	
 //	@PostConstruct
@@ -98,7 +78,7 @@ public class MainMenuItems {
 //		return Conventions.deriveMappingForView(beanClass, annotation);
 //	}
 	
-	public List<MenuItemWrapper> getItems() {
+	public SortedMap<Integer, MenuItemWrapper> getItems() {
 		return items;
 	}
 

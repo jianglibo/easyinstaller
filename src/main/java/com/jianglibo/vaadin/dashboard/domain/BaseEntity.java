@@ -14,6 +14,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import com.jianglibo.vaadin.dashboard.annotation.TableColumn;
+
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 
@@ -31,6 +33,7 @@ public abstract class BaseEntity implements Serializable {
     
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@TableColumn(name="createdAt", order=10000)
     private Date createdAt;
     
     private boolean archived = false;
