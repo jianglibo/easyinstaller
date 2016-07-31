@@ -5,6 +5,7 @@ import org.springframework.context.MessageSource;
 import com.jianglibo.vaadin.dashboard.annotation.TableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.TableColumns;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Table;
 
 public class TableUtil {
@@ -31,10 +32,19 @@ public class TableUtil {
 		for(TableColumn tc: tableColumns.getTcmap().values()) {
 			table.setColumnCollapsible(tc.name(), tc.collapsible());
 			table.setColumnAlignment(tc.name(), tc.alignment());
-			
 		}
 		
 		table.setVisibleColumns(tableColumns.getVisibleColumns());
 		table.setColumnHeaders(tableColumns.getColumnHeaders(messageSource));
+	}
+	
+	public static boolean autoCollapseColumnsNeedChangeState(Table table, TableColumns tc) {
+		boolean result = true;
+		for (String propertyId : tc.getAutoCollapseColumns()) {
+			if (table.isColumnCollapsed(propertyId) == Page.getCurrent().getBrowserWindowWidth() < 800) {
+				result = false;
+			}
+		}
+		return result;
 	}
 }

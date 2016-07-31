@@ -19,4 +19,5 @@ public @interface TableColumn {
 	boolean sortable() default false;
 	boolean visible() default true;
 	boolean collapsed() default false;
+	boolean autoCollapsed() default false;
 }

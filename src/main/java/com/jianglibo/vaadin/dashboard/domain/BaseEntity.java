@@ -33,7 +33,7 @@ public abstract class BaseEntity implements Serializable {
     
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@TableColumn(name="createdAt", order=10000)
+	@TableColumn(name="createdAt", order=10000, sortable=true)
     private Date createdAt;
     
     private boolean archived = false;

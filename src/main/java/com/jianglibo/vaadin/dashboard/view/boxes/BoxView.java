@@ -23,6 +23,7 @@ import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
 import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
 import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
@@ -86,12 +87,14 @@ public class BoxView extends VerticalLayout implements View {
 
 	// private Upload upload;
 	private static final DateFormat DATEFORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
-
-	private static final String[] DEFAULT_COLLAPSIBLE = { "length", "originFrom", "createdAt" };
 	
 	private EventBus eventBus;
 	
+	private TableColumns tableColumns;
+	
 	private Domains domains;
+	
+	private UiEventListener uel = new UiEventListener();
 	
 	@Autowired
 	public BoxView(BoxRepository boxRepository,Domains domains, MessageSource messageSource,
@@ -100,6 +103,7 @@ public class BoxView extends VerticalLayout implements View {
 		this.applicationContext = applicationContext;
 		this.domains = domains;
 		this.eventBus = new EventBus(this.getClass().getName());
+		DashboardEventBus.register(uel);
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
@@ -131,7 +135,7 @@ public class BoxView extends VerticalLayout implements View {
 		super.detach();
 		// A new instance of TransactionsView is created every time it's
 		// navigated to so we'll need to clean up references to it on detach.
-		// DashboardEventBus.unregister(this);
+		DashboardEventBus.unregister(uel);
 	}
 
 
@@ -148,12 +152,14 @@ public class BoxView extends VerticalLayout implements View {
 			}
 		};
 		
-		TableColumns tableColumns = domains.getTableColumns().get(Box.VAADIN_TABLE_NAME);
+		table.setContainerDataSource(pc);
+		
+		tableColumns = domains.getTableColumns().get(Box.VAADIN_TABLE_NAME);
 		VaadinTable vt = domains.getTables().get(Box.VAADIN_TABLE_NAME);
 		
 		TableUtil.decorateTable(table, messageSource, vt, tableColumns);
 		
-		table.setContainerDataSource(pc);
+		
 		table.setColumnFooter("createdAt", "");
 		table.setColumnFooter("ip", "Total");
 
@@ -180,16 +186,6 @@ public class BoxView extends VerticalLayout implements View {
 		});
 		table.setImmediate(true);
 		return table;
-	}
-
-	private boolean defaultColumnsVisible() {
-		boolean result = true;
-		for (String propertyId : DEFAULT_COLLAPSIBLE) {
-			if (table.isColumnCollapsed(propertyId) == Page.getCurrent().getBrowserWindowWidth() < 800) {
-				result = false;
-			}
-		}
-		return result;
 	}
 	
 	@Subscribe
@@ -240,13 +236,18 @@ public class BoxView extends VerticalLayout implements View {
 		}
 	}
 
-	@Subscribe
-	public void browserResized(final BrowserResizeEvent event) {
-		// Some columns are collapsed when browser window width gets small
-		// enough to make the table fit better.
-		if (defaultColumnsVisible()) {
-			for (String propertyId : DEFAULT_COLLAPSIBLE) {
-				table.setColumnCollapsed(propertyId, Page.getCurrent().getBrowserWindowWidth() < 800);
+
+	
+	public class UiEventListener {
+		
+		@Subscribe
+		public void browserResized(final BrowserResizeEvent event) {
+			// Some columns are collapsed when browser window width gets small
+			// enough to make the table fit better.
+			if (TableUtil.autoCollapseColumnsNeedChangeState(table, tableColumns)) {
+				for (String propertyId : tableColumns.getAutoCollapseColumns()) {
+					table.setColumnCollapsed(propertyId, Page.getCurrent().getBrowserWindowWidth() < 800);
+				}
 			}
 		}
 	}
@@ -258,7 +259,6 @@ public class BoxView extends VerticalLayout implements View {
 		if (sort == null) {
 			sort = defaultSort;
 		}
-		
 		if (sort.iterator().hasNext()) {
 			Order od = sort.iterator().next();
 			table.setSortContainerPropertyId(od.getProperty());

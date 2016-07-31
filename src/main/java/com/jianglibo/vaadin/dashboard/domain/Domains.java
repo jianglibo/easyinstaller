@@ -38,18 +38,22 @@ public class Domains {
 	private SortedMap<Integer, TableColumn> processOneTable(Class<?> clazz) {
 		SortedMap<Integer, TableColumn> sm = Maps.newTreeMap();
 		
-		for(Field field  : clazz.getDeclaredFields())
-		{
-		    if (field.isAnnotationPresent(TableColumn.class))
-		        {
-		        	TableColumn tc =  field.getAnnotation(TableColumn.class);
-		        	sm.put(tc.order(), tc);
-		        }
+		for(Field field  : clazz.getDeclaredFields()){
+		    if (field.isAnnotationPresent(TableColumn.class)) {
+	        	TableColumn tc =  field.getAnnotation(TableColumn.class);
+	        	sm.put(tc.order(), tc);
+	        }
+		}
+		
+		for(Field field  : clazz.getSuperclass().getDeclaredFields()){
+		    if (field.isAnnotationPresent(TableColumn.class)) {
+	        	TableColumn tc =  field.getAnnotation(TableColumn.class);
+	        	sm.put(tc.order(), tc);
+	        }
 		}
 		return sm;
 	}
 	
-
 	public Map<String, TableColumns> getTableColumns() {
 		return tableColumns;
 	}

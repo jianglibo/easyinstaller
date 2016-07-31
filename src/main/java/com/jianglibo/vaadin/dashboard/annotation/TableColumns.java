@@ -25,6 +25,16 @@ public class TableColumns {
 		}
 		return visibles.toArray(new String[]{});
 	}
+	
+	public String[] getAutoCollapseColumns() {
+		List<String> visibles = Lists.newArrayList();
+		for(TableColumn tc : tcmap.values()) {
+			if (tc.autoCollapsed()) {
+				visibles.add(tc.name());
+			}
+		}
+		return visibles.toArray(new String[]{});
+	}
 
 	public SortedMap<Integer, TableColumn> getTcmap() {
 		return tcmap;

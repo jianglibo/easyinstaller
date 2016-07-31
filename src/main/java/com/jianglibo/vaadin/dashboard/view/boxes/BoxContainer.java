@@ -7,42 +7,26 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.vaadin.maddon.ListContainer;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
-import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 
 @SuppressWarnings("serial")
-public class BoxContainer extends ListContainer<Box>{
+public class BoxContainer extends JpaContainer<Box>{
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(BoxContainer.class);
 	
 	private final BoxRepository boxRepository;
 	
-	private Direction direction = Direction.DESC;
-	
-	private String sortField = "createdAt";
-	
-	private int perPage;
-	
-	private EventBus eventBus;
-	
-	private Sort defaultSort;
-	
 	public BoxContainer(EventBus eventBus, BoxRepository boxRepository,Sort defaultSort, int perPage) {
-		super(Box.class);
-		this.eventBus = eventBus;
-		this.eventBus.register(this);
-		this.defaultSort = defaultSort;
+		super(Box.class, eventBus, defaultSort, perPage);
 		this.boxRepository= boxRepository;
-		this.perPage = perPage;
 	}
 
 	@Subscribe
@@ -50,7 +34,7 @@ public class BoxContainer extends ListContainer<Box>{
 		boolean trashed = vfb.getBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME);
 		Sort sort = vfb.getSort();
 		if (sort == null) {
-			sort = defaultSort;
+			sort = getDefaultSort();
 		}
 		Pageable pageable = new PageRequest(vfb.getCurrentPage() - 1, getPerPage(), sort);
 		Page<Box> boxes;
@@ -64,40 +48,7 @@ public class BoxContainer extends ListContainer<Box>{
 			total = boxRepository.countByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, trashed);
 		}
 		setCollection(boxes.getContent());
-		eventBus.post(new PageMetaEvent(total, getPerPage()));
-	}
-
-	public Direction getDirection() {
-		return direction;
-	}
-
-	public void setDirection(Direction direction) {
-		this.direction = direction;
-	}
-
-	public String getSortField() {
-		return sortField;
-	}
-
-	public void setSortField(String sortField) {
-		this.sortField = sortField;
-	}
-
-	public int getPerPage() {
-		return perPage;
-	}
-
-	public void setPerPage(int perPage) {
-		this.perPage = perPage;
-	}
-	
-	@Override
-	public void sort(Object[] propertyId, boolean[] ascending) {
-		if (propertyId.length > 0) {
-			String fname = (String) propertyId[0];
-			Direction direction = ascending[0] ? Direction.ASC : Direction.DESC;
-			eventBus.post(new TableSortEvent(new Sort(direction, fname)));
-		}
+		getEventBus().post(new PageMetaEvent(total, getPerPage()));
 	}
 
 	public void refresh() {

@@ -293,7 +293,7 @@ public class InstallationPackageView extends VerticalLayout implements View {
 				}
 			}
 		});
-		table.setImmediate(true);
+//		table.setImmediate(true);
 		return table;
 	}
 

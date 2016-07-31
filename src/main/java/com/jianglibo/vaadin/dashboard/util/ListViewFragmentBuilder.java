@@ -27,12 +27,7 @@ public class ListViewFragmentBuilder {
 	
 	private UriComponents uriComs;
 	
-	public ListViewFragmentBuilder(String pstr, String viewName) {
-		setPstr(pstr);
-		setViewName(viewName);
-		setUriCb(UriComponentsBuilder.fromUriString(getPstr()));
-		setUriComs(uriCb.build());
-	}
+	private boolean fromNav = false;
 	
 	public ListViewFragmentBuilder(ViewChangeEvent vce) {
 		setPstr(vce.getParameters());
@@ -40,6 +35,23 @@ public class ListViewFragmentBuilder {
 		setUriCb(UriComponentsBuilder.fromUriString(getPstr()));
 		setUriComs(uriCb.build());		
 	}
+	
+	public ListViewFragmentBuilder(ViewChangeEvent vce, boolean fromNav) {
+		setPstr(vce.getParameters());
+		setFromNav(fromNav);
+		setViewName(vce.getViewName());
+		setUriCb(UriComponentsBuilder.fromUriString(getPstr()));
+		setUriComs(uriCb.build());		
+	}
+	
+	protected ListViewFragmentBuilder(String pstr, String viewName) {
+		setPstr(pstr);
+		setViewName(viewName);
+		setUriCb(UriComponentsBuilder.fromUriString(getPstr()));
+		setUriComs(uriCb.build());
+	}
+	
+
 	
 	public ListViewFragmentBuilder setBoolean(String pname, boolean value) {
 		if (value) {
@@ -217,6 +229,14 @@ public class ListViewFragmentBuilder {
 
 	public void setUriComs(UriComponents uriComs) {
 		this.uriComs = uriComs;
+	}
+
+	public boolean isFromNav() {
+		return fromNav;
+	}
+
+	public void setFromNav(boolean fromNav) {
+		this.fromNav = fromNav;
 	}
 
 }
