@@ -8,6 +8,10 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.annotation.FormFields;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.domain.Box;
+import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.ProfileUpdatedEvent;
@@ -17,6 +21,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -87,14 +92,45 @@ public class BoxEditView  extends VerticalLayout implements View {
     private TextField mimeTypeField;
 	
 	
+	private Domains domains;
+	
 	private	PkSource pkSource;
 	
 	private String getMsg(String key) {
 		return messageSource.getMessage("fieldname.pksource." + key, null, UI.getCurrent().getLocale());
 	}
+    
+    private HeaderLayout header;
+    
+    private ItemViewFragmentBuilder ifb;
+	
+	@Autowired
+	public BoxEditView(PkSourceRepository pkSourceRepository,Domains domains, MessageSource messageSource,
+			ApplicationContext applicationContext) {
+		this.messageSource = messageSource;
+		this.domains = domains;
+		this.applicationContext = applicationContext;
+		this.pkSourceRepository = pkSourceRepository;
+		this.eventBus = new EventBus(this.getClass().getName());
+		eventBus.register(this);
+		setSizeFull();
+		addStyleName("transactions");
+		// DashboardEventBus.register(this);
+		setMargin(true);
+		
+		header = applicationContext.getBean(HeaderLayout.class).afterInjectionWithBackBtn(eventBus, "");
+		
+		addComponent(header);
+		Component fl = buildForm();
+//		fl.setWidth(80f, Unit.PERCENTAGE);
+		addComponent(fl);
+		addComponent(buildFooter());
+//		setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
+		setExpandRatio(fl, 1);
+	}
 	
     @SuppressWarnings("serial")
-	private Component buildProfileTab() {
+	private Component buildForm() {
 
         FormLayout details = new FormLayout();
         details.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
@@ -112,6 +148,14 @@ public class BoxEditView  extends VerticalLayout implements View {
 				eventBus.post(new HistoryBackEvent());
 			}
 		});
+        
+        FormFields ffs = domains.getFormFields().get(Box.VAADIN_TABLE_NAME);
+        
+        for(VaadinFormField vf : ffs.getVfs().values()) {
+        	
+        }
+        
+        DefaultFieldGroupFieldFactory.get().createField(type, fieldType);
 
         fileMd5Field = new TextField(getMsg(fileMd5FieldName));
         details.addComponent(fileMd5Field);
@@ -129,91 +173,9 @@ public class BoxEditView  extends VerticalLayout implements View {
         fieldGroup = new BeanFieldGroup<PkSource>(PkSource.class);
         fieldGroup.bindMemberFields(this);
 
-//        sexField = new OptionGroup("Sex");
-//        sexField.addItem(Boolean.FALSE);
-//        sexField.setItemCaption(Boolean.FALSE, "Female");
-//        sexField.addItem(Boolean.TRUE);
-//        sexField.setItemCaption(Boolean.TRUE, "Male");
-//        sexField.addStyleName("horizontal");
-//        details.addComponent(sexField);
-//
-//        Label section = new Label("Contact Info");
-//        section.addStyleName(ValoTheme.LABEL_H4);
-//        section.addStyleName(ValoTheme.LABEL_COLORED);
-//        details.addComponent(section);
-//
-//        emailField = new TextField("Email");
-//        emailField.setWidth("100%");
-//        emailField.setRequired(true);
-//        emailField.setNullRepresentation("");
-//        details.addComponent(emailField);
-//
-//        locationField = new TextField("Location");
-//        locationField.setWidth("100%");
-//        locationField.setNullRepresentation("");
-//        locationField.setComponentError(new UserError(
-//                "This address doesn't exist"));
-//        details.addComponent(locationField);
-//
-//        phoneField = new TextField("Phone");
-//        phoneField.setWidth("100%");
-//        phoneField.setNullRepresentation("");
-//        details.addComponent(phoneField);
-//
-//        newsletterField = new OptionalSelect<Integer>();
-//        newsletterField.addOption(0, "Daily");
-//        newsletterField.addOption(1, "Weekly");
-//        newsletterField.addOption(2, "Monthly");
-//        details.addComponent(newsletterField);
-//
-//        section = new Label("Additional Info");
-//        section.addStyleName(ValoTheme.LABEL_H4);
-//        section.addStyleName(ValoTheme.LABEL_COLORED);
-//        details.addComponent(section);
-//
-//        websiteField = new TextField("Website");
-//        websiteField.setInputPrompt("http://");
-//        websiteField.setWidth("100%");
-//        websiteField.setNullRepresentation("");
-//        details.addComponent(websiteField);
-//
-//        bioField = new TextArea("Bio");
-//        bioField.setWidth("100%");
-//        bioField.setRows(4);
-//        bioField.setNullRepresentation("");
-//        details.addComponent(bioField);
         StyleUtil.setMarginTopTwenty(details);
         return details;
-    }
-    
-    private HeaderLayout header;
-    
-    private ItemViewFragmentBuilder ifb;
-	
-	@Autowired
-	public BoxEditView(PkSourceRepository pkSourceRepository, MessageSource messageSource,
-			ApplicationContext applicationContext) {
-		this.messageSource = messageSource;
-		this.applicationContext = applicationContext;
-		this.pkSourceRepository = pkSourceRepository;
-		this.eventBus = new EventBus(this.getClass().getName());
-		eventBus.register(this);
-		setSizeFull();
-		addStyleName("transactions");
-		// DashboardEventBus.register(this);
-		setMargin(true);
-		
-		header = applicationContext.getBean(HeaderLayout.class).afterInjectionWithBackBtn(eventBus, "");
-		
-		addComponent(header);
-		Component fl = buildProfileTab();
-//		fl.setWidth(80f, Unit.PERCENTAGE);
-		addComponent(fl);
-		addComponent(buildFooter());
-//		setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
-		setExpandRatio(fl, 1);
-	}
-	
+    }	
 	private void save() {
         try {
             fieldGroup.commit();

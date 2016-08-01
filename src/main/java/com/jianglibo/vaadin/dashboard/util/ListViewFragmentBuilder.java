@@ -51,6 +51,10 @@ public class ListViewFragmentBuilder {
 		setUriComs(uriCb.build());
 	}
 	
+	public String getCurrentSortField() {
+		return getParameterValue(SORT_PARAM_NAME);
+	}
+	
 
 	
 	public ListViewFragmentBuilder setBoolean(String pname, boolean value) {

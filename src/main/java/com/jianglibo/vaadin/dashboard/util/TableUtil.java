@@ -2,7 +2,7 @@ package com.jianglibo.vaadin.dashboard.util;
 
 import org.springframework.context.MessageSource;
 
-import com.jianglibo.vaadin.dashboard.annotation.TableColumn;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.TableColumns;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.vaadin.server.Page;
@@ -29,7 +29,7 @@ public class TableUtil {
 		table.setFooterVisible(vt.footerVisible());
 		table.setMultiSelect(vt.multiSelect());
 		
-		for(TableColumn tc: tableColumns.getTcmap().values()) {
+		for(VaadinTableColumn tc: tableColumns.getTcmap().values()) {
 			table.setColumnCollapsible(tc.name(), tc.collapsible());
 			table.setColumnAlignment(tc.name(), tc.alignment());
 		}

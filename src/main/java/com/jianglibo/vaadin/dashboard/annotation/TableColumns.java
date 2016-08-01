@@ -10,15 +10,15 @@ import com.vaadin.ui.UI;
 
 public class TableColumns {
 
-	private final SortedMap<Integer, TableColumn> tcmap;
+	private final SortedMap<Integer, VaadinTableColumn> tcmap;
 	
-	public TableColumns(SortedMap<Integer, TableColumn> tcmap) {
+	public TableColumns(SortedMap<Integer, VaadinTableColumn> tcmap) {
 		this.tcmap = tcmap;
 	}
 	
 	public String[] getVisibleColumns() {
 		List<String> visibles = Lists.newArrayList();
-		for(TableColumn tc : tcmap.values()) {
+		for(VaadinTableColumn tc : tcmap.values()) {
 			if (tc.visible()) {
 				visibles.add(tc.name());
 			}
@@ -28,7 +28,7 @@ public class TableColumns {
 	
 	public String[] getAutoCollapseColumns() {
 		List<String> visibles = Lists.newArrayList();
-		for(TableColumn tc : tcmap.values()) {
+		for(VaadinTableColumn tc : tcmap.values()) {
 			if (tc.autoCollapsed()) {
 				visibles.add(tc.name());
 			}
@@ -36,7 +36,7 @@ public class TableColumns {
 		return visibles.toArray(new String[]{});
 	}
 
-	public SortedMap<Integer, TableColumn> getTcmap() {
+	public SortedMap<Integer, VaadinTableColumn> getTcmap() {
 		return tcmap;
 	}
 	

@@ -5,8 +5,8 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
-import com.jianglibo.vaadin.dashboard.annotation.TableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
@@ -22,10 +22,10 @@ public class Box extends BaseEntity {
 	public static final String VAADIN_TABLE_NAME = "box";
 	
 	@NotNull
-	@TableColumn(order = 0, name="ip")
+	@VaadinTableColumn(order = 0, name="ip")
 	private String ip;
 	
-	@TableColumn(order = 1, name = "name")
+	@VaadinTableColumn(order = 1, name = "name")
 	private String name;
 	
 	private String description;
