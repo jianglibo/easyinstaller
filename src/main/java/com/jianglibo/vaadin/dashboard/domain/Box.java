@@ -25,26 +25,26 @@ public class Box extends BaseEntity {
 	public static final String VAADIN_TABLE_NAME = "box";
 	
 	@NotNull
-	@VaadinTableColumn(order = 0, name="ip")
-	@VaadinFormField(name="ip", order = 0, caption = "id")
+	@VaadinTableColumn(order = 0)
+	@VaadinFormField(order = 0, caption = "id")
 	private String ip;
 	
-	@VaadinTableColumn(order = 1, name = "name")
-	@VaadinFormField(name="name", order = 1, caption = "name")
+	@VaadinTableColumn(order = 1)
+	@VaadinFormField(order = 1, caption = "name")
 	private String name;
 	
-	@VaadinTableColumn(name="osType", order=2)
-	@VaadinFormField(name="osType", caption="osType", order = 2, fieldType=Ft.COMBO_BOX, comboKey="ostype")
+	@VaadinTableColumn(order=2)
+	@VaadinFormField(caption="osType", order = 2, fieldType=Ft.COMBO_BOX, comboKey="ostype")
 	private String osType;
 	
-	@VaadinFormField(order = 3, caption="description", name = "description", fieldType=Ft.TEXT_AREA)
+	@VaadinFormField(order = 3, caption="description", fieldType=Ft.TEXT_AREA)
 	private String description;
 	
-	@VaadinFormField(order = 4, name = "keyFileContent", fieldType=Ft.TEXT_AREA)
+	@VaadinFormField(order = 4, fieldType=Ft.TEXT_AREA)
 	@Lob
 	private String keyFileContent;
 	
-	@VaadinFormField(order = 5, name = "keyFilePath")
+	@VaadinFormField(order = 5)
 	private String keyFilePath;
 
 	public String getIp() {

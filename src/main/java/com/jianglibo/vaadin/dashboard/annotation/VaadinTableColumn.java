@@ -10,7 +10,6 @@ import com.vaadin.ui.Table.Align;
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Documented
 public @interface VaadinTableColumn {
-	String name();
 	int order() default 0;
 	boolean collapsible() default true;
 	Align alignment() default Align.RIGHT;

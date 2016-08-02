@@ -11,6 +11,7 @@ import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
@@ -29,24 +30,24 @@ public class FormFieldsFactory {
 	public List<PropertyIdAndField> buildFields(VaadinTable vt, FormFields ffs) {
 		List<PropertyIdAndField> fields = Lists.newArrayList();
 		
-        for(VaadinFormField vf : ffs.getVfs().values()) {
-        	switch (vf.fieldType()) {
+        for(VaadinFormFieldWrapper vfw : ffs.getFields()) {
+        	switch (vfw.getVff().fieldType()) {
 			case COMBO_BOX:
-				ComboBox cb = comboBoxFieldFactory.createCombo(vt, vf);
-				fields.add(new PropertyIdAndField(vf.name(), cb));
+				ComboBox cb = comboBoxFieldFactory.createCombo(vt, vfw);
+				fields.add(new PropertyIdAndField(vfw.getName(), cb));
 				break;
 			
 			default:
-				String caption = vf.caption();
+				String caption = vfw.getVff().caption();
 				if (Strings.isNullOrEmpty(caption)) {
-					caption = vf.name();
+					caption = vfw.getName();
 				}
 				try {
 					caption = messageSource.getMessage(vt.messagePrefix() + "field." + caption, null, UI.getCurrent().getLocale());
 				} catch (NoSuchMessageException e) {
 				}
 				TextField tf = new TextField(caption);
-				fields.add(new PropertyIdAndField(vf.name(), tf));
+				fields.add(new PropertyIdAndField(vfw.getName(), tf));
 				break;
 			}
         }

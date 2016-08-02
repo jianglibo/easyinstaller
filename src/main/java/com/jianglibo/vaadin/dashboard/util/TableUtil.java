@@ -2,15 +2,15 @@ package com.jianglibo.vaadin.dashboard.util;
 
 import org.springframework.context.MessageSource;
 
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
-import com.jianglibo.vaadin.dashboard.annotation.TableColumns;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Table;
 
 public class TableUtil {
 	
-	public static void decorateTable(Table table, MessageSource messageSource, VaadinTable vt, TableColumns tableColumns) {
+	public static void decorateTable(Table table, MessageSource messageSource, VaadinTable vt, VaadinTableColumns tableColumns) {
 		if (vt.fullSize()) {
 			table.setSizeFull();
 		}
@@ -29,16 +29,16 @@ public class TableUtil {
 		table.setFooterVisible(vt.footerVisible());
 		table.setMultiSelect(vt.multiSelect());
 		
-		for(VaadinTableColumn tc: tableColumns.getTcmap().values()) {
-			table.setColumnCollapsible(tc.name(), tc.collapsible());
-			table.setColumnAlignment(tc.name(), tc.alignment());
+		for(VaadinTableColumnWrapper tcw: tableColumns.getColumns()) {
+			table.setColumnCollapsible(tcw.getName(), tcw.getVtc().collapsible());
+			table.setColumnAlignment(tcw.getName(), tcw.getVtc().alignment());
 		}
 		
 		table.setVisibleColumns(tableColumns.getVisibleColumns());
 		table.setColumnHeaders(tableColumns.getColumnHeaders(messageSource));
 	}
 	
-	public static boolean autoCollapseColumnsNeedChangeState(Table table, TableColumns tc) {
+	public static boolean autoCollapseColumnsNeedChangeState(Table table, VaadinTableColumns tc) {
 		boolean result = true;
 		for (String propertyId : tc.getAutoCollapseColumns()) {
 			if (table.isColumnCollapsed(propertyId) == Page.getCurrent().getBrowserWindowWidth() < 800) {

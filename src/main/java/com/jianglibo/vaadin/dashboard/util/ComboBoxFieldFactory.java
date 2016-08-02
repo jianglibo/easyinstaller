@@ -5,7 +5,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Component;
 
-import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
@@ -29,9 +29,9 @@ public class ComboBoxFieldFactory {
 		this.appConfig = appConfigWrapper.unwrap();
 	}
 	
-	public ComboBox createCombo(VaadinTable vt, VaadinFormField vff) {
-		ComboBoxData cbd = appConfig.getComboDatas().get(vff.comboKey());
-		String caption = vff.caption();
+	public ComboBox createCombo(VaadinTable vt, VaadinFormFieldWrapper vffw) {
+		ComboBoxData cbd = appConfig.getComboDatas().get(vffw.getVff().comboKey());
+		String caption = vffw.getVff().caption();
 		try {
 			caption = messageSource.getMessage(vt.messagePrefix() + "field." + caption, null, UI.getCurrent().getLocale());
 		} catch (NoSuchMessageException e) {

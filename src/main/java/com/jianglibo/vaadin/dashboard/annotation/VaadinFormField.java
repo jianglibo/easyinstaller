@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Documented
 public @interface VaadinFormField {
-	String name();
 	int order() default 0;
 	Ft fieldType() default Ft.TEXT_FIELD;
 	String comboKey() default "";

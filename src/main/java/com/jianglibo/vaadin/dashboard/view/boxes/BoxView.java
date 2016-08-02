@@ -17,7 +17,7 @@ import org.springframework.data.domain.Sort.Order;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.annotation.TableColumns;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Box;
@@ -90,7 +90,7 @@ public class BoxView extends VerticalLayout implements View {
 	
 	private EventBus eventBus;
 	
-	private TableColumns tableColumns;
+	private VaadinTableColumns tableColumns;
 	
 	private Domains domains;
 	

@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard.domain;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -12,16 +13,18 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
-import com.jianglibo.vaadin.dashboard.annotation.TableColumns;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.util.ClassScanner;
 
 @Component
 public class Domains {
 	
-	Map<String, TableColumns> tableColumns = Maps.newHashMap();
+	Map<String, VaadinTableColumns> tableColumns = Maps.newHashMap();
 	
 	Map<String, FormFields> formFields = Maps.newHashMap();
 
@@ -34,51 +37,51 @@ public class Domains {
 		
 		for(Class<?> clazz : clazzes) {
 			VaadinTable vt = clazz.getAnnotation(VaadinTable.class);
-			tableColumns.put(vt.name(), new TableColumns(processOneTableColumn(clazz)));
+			tableColumns.put(vt.name(), new VaadinTableColumns(processOneTableColumn(clazz)));
 			formFields.put(vt.name(), new FormFields(processOneTableForm(clazz)));
 			tables.put(vt.name(), vt);
 		}
 	}
 	
-	private SortedMap<Integer, VaadinFormField> processOneTableForm(Class<?> clazz) {
-		SortedMap<Integer, VaadinFormField> vfs = Maps.newTreeMap();
+	private Collection<VaadinFormFieldWrapper> processOneTableForm(Class<?> clazz) {
+		SortedMap<Integer, VaadinFormFieldWrapper> vfs = Maps.newTreeMap();
 		
 		for(Field field  : clazz.getDeclaredFields()){
 		    if (field.isAnnotationPresent(VaadinFormField.class)) {
 	        	VaadinFormField vf =  field.getAnnotation(VaadinFormField.class);
-	        	vfs.put(vf.order(), vf);
+	        	vfs.put(vf.order(), new VaadinFormFieldWrapper(vf, field.getName()));
 	        }
 		}
 		
 		for(Field field  : clazz.getSuperclass().getDeclaredFields()){
 		    if (field.isAnnotationPresent(VaadinFormField.class)) {
-	        	VaadinFormField tc =  field.getAnnotation(VaadinFormField.class);
-	        	vfs.put(tc.order(), tc);
+	        	VaadinFormField vf =  field.getAnnotation(VaadinFormField.class);
+	        	vfs.put(vf.order(), new VaadinFormFieldWrapper(vf, field.getName()));
 	        }
 		}
-		return vfs;
+		return vfs.values();
 	}
 
-	private SortedMap<Integer, VaadinTableColumn> processOneTableColumn(Class<?> clazz) {
-		SortedMap<Integer, VaadinTableColumn> sm = Maps.newTreeMap();
+	private Collection<VaadinTableColumnWrapper> processOneTableColumn(Class<?> clazz) {
+		SortedMap<Integer, VaadinTableColumnWrapper> sm = Maps.newTreeMap();
 		
 		for(Field field  : clazz.getDeclaredFields()){
 		    if (field.isAnnotationPresent(VaadinTableColumn.class)) {
 	        	VaadinTableColumn tc =  field.getAnnotation(VaadinTableColumn.class);
-	        	sm.put(tc.order(), tc);
+	        	sm.put(tc.order(), new VaadinTableColumnWrapper(tc, field.getName()));
 	        }
 		}
 		
 		for(Field field  : clazz.getSuperclass().getDeclaredFields()){
 		    if (field.isAnnotationPresent(VaadinTableColumn.class)) {
 	        	VaadinTableColumn tc =  field.getAnnotation(VaadinTableColumn.class);
-	        	sm.put(tc.order(), tc);
+	        	sm.put(tc.order(), new VaadinTableColumnWrapper(tc, field.getName()));
 	        }
 		}
-		return sm;
+		return sm.values();
 	}
 	
-	public Map<String, TableColumns> getTableColumns() {
+	public Map<String, VaadinTableColumns> getTableColumns() {
 		return tableColumns;
 	}
 
