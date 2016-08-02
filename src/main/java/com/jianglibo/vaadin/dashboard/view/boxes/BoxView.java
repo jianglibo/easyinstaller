@@ -234,6 +234,9 @@ public class BoxView extends VerticalLayout implements View {
 			Collection<Box> selected = (Collection<Box>) table.getValue();
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + vfb.toNavigateString());
 			break;
+		case CommonMenuItemIds.ADD:
+			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
+			break;
 		default:
 			LOGGER.error("unKnown menuName {}", dce.getBtnId());
 		}

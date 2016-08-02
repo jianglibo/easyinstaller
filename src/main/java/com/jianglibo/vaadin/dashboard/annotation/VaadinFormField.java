@@ -10,8 +10,11 @@ import java.lang.annotation.Target;
 public @interface VaadinFormField {
 	String name();
 	int order() default 0;
+	Ft fieldType() default Ft.TEXT_FIELD;
+	String comboKey() default "";
+	String caption() default "";
 	
 	public static enum Ft {
-		
+		TEXT_FIELD,COMBO_BOX, TEXT_AREA, RICH_TEXT
 	}
 }

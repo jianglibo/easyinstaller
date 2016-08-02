@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.boxes;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,20 +11,20 @@ import org.springframework.context.MessageSource;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.PkSource;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.ProfileUpdatedEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
-import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
+import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
+import com.jianglibo.vaadin.dashboard.util.ComboBoxFieldFactory;
+import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
+import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory.PropertyIdAndField;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
-import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
-import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
@@ -34,16 +36,15 @@ import com.vaadin.shared.Position;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 
@@ -58,7 +59,7 @@ public class BoxEditView  extends VerticalLayout implements View {
 	
 	private final MessageSource messageSource;
 	
-	private final PkSourceRepository pkSourceRepository;
+	private final BoxRepository boxRepository;
 
 	public static final String VIEW_NAME = "box/edit";
 
@@ -68,49 +69,29 @@ public class BoxEditView  extends VerticalLayout implements View {
 		
 	private EventBus eventBus;
 	
-    private BeanFieldGroup<PkSource> fieldGroup;
+    private BeanFieldGroup<Box> fieldGroup;
 	
-    private static final String fileMd5FieldName = "fileMd5";
-    
-	@PropertyId(fileMd5FieldName)
-	private TextField fileMd5Field;
+	private final Domains domains;
 	
-	private static final String pknameFieldName = "pkname";
-
-	@PropertyId(pknameFieldName)
-    private TextField pknameField;
-    
-	private static final String originFromFieldName = "originFrom";
-
-	@PropertyId(originFromFieldName)
-    private TextField originFromField;
-	
-	
-	private static final String mimeTypeFieldName = "mimeType";
-    
-	@PropertyId(mimeTypeFieldName)
-    private TextField mimeTypeField;
-	
-	
-	private Domains domains;
-	
-	private	PkSource pkSource;
-	
-	private String getMsg(String key) {
-		return messageSource.getMessage("fieldname.pksource." + key, null, UI.getCurrent().getLocale());
-	}
+	private Box box;
     
     private HeaderLayout header;
     
     private ItemViewFragmentBuilder ifb;
+    
+    private final ComboBoxFieldFactory comboBoxFieldFactory;
+    
+    private final FormFieldsFactory formFieldsFactory;
 	
 	@Autowired
-	public BoxEditView(PkSourceRepository pkSourceRepository,Domains domains, MessageSource messageSource,
+	public BoxEditView(BoxRepository boxRepository,Domains domains,FormFieldsFactory formFieldsFactory, MessageSource messageSource,ComboBoxFieldFactory comboBoxFieldFactory,
 			ApplicationContext applicationContext) {
 		this.messageSource = messageSource;
 		this.domains = domains;
+		this.comboBoxFieldFactory = comboBoxFieldFactory;
+		this.formFieldsFactory = formFieldsFactory;
 		this.applicationContext = applicationContext;
-		this.pkSourceRepository = pkSourceRepository;
+		this.boxRepository= boxRepository;
 		this.eventBus = new EventBus(this.getClass().getName());
 		eventBus.register(this);
 		setSizeFull();
@@ -149,37 +130,24 @@ public class BoxEditView  extends VerticalLayout implements View {
 			}
 		});
         
+        fieldGroup = new BeanFieldGroup<Box>(Box.class);
+        
+        VaadinTable vt = domains.getTables().get(Box.VAADIN_TABLE_NAME);
         FormFields ffs = domains.getFormFields().get(Box.VAADIN_TABLE_NAME);
         
-        for(VaadinFormField vf : ffs.getVfs().values()) {
-        	
+        List<PropertyIdAndField> fields = formFieldsFactory.buildFields(vt, ffs);
+        
+        for(PropertyIdAndField paf : fields) {
+			fieldGroup.bind(paf.getField(), paf.getPropertyId());
+			details.addComponent(paf.getField());
         }
-        
-        DefaultFieldGroupFieldFactory.get().createField(type, fieldType);
-
-        fileMd5Field = new TextField(getMsg(fileMd5FieldName));
-        details.addComponent(fileMd5Field);
-        
-        pknameField = new TextField(getMsg(pknameFieldName));
-        details.addComponent(pknameField);
-
-        originFromField = new TextField(getMsg(originFromFieldName));
-        details.addComponent(originFromField);
-        originFromField.setNullRepresentation("");
-
-        mimeTypeField = new TextField(getMsg(mimeTypeFieldName));
-        details.addComponent(mimeTypeField);
-        
-        fieldGroup = new BeanFieldGroup<PkSource>(PkSource.class);
-        fieldGroup.bindMemberFields(this);
-
         StyleUtil.setMarginTopTwenty(details);
         return details;
     }	
 	private void save() {
         try {
             fieldGroup.commit();
-            pkSourceRepository.save(pkSource);
+            boxRepository.save(box);
             Notification success = new Notification(messageSource.getMessage("shared.msg.savesuccess", null, UI.getCurrent().getLocale()));
             success.setDelayMsec(2000);
             success.setStyleName("bar success small");
@@ -233,11 +201,11 @@ public class BoxEditView  extends VerticalLayout implements View {
 		ifb = new ItemViewFragmentBuilder(event);
 		long bid = ifb.getBeanId();
 		if (bid == 0) {
-			pkSource = new PkSource();
+			box = new Box();
 		} else {
-			pkSource = pkSourceRepository.findOne(bid);
-			header.setLabelTxt(pkSource.getPkname());
+			box = boxRepository.findOne(bid);
+			header.setLabelTxt(box.getName());
 		}
-        fieldGroup.setItemDataSource(pkSource);
+        fieldGroup.setItemDataSource(box);
 	}
 }

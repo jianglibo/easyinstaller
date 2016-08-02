@@ -16,4 +16,5 @@ public @interface VaadinTable {
 	boolean columnCollapsingAllowed() default false;
 	boolean footerVisible() default false;
 	boolean multiSelect() default false;
+	String messagePrefix();
 }
