@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.context.MessageSource;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
-import com.vaadin.ui.UI;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 
 public class VaadinTableColumns {
 
@@ -40,10 +40,12 @@ public class VaadinTableColumns {
 		return columns;
 	}
 	
-	public String[] getColumnHeaders(MessageSource messageSource) {
+	public String[] getColumnHeaders(VaadinTable vt ,MessageSource messageSource) {
 		List<String> headers = Lists.newArrayList();
-		for(String s : getVisibleColumns()) {
-			headers.add(messageSource.getMessage("table.box.column." + s, null, UI.getCurrent().getLocale()));
+		for(VaadinTableColumnWrapper tcw : columns) {
+			if (tcw.getVtc().visible()) {
+				headers.add(MsgUtil.getFieldMsg(messageSource, vt.messagePrefix(), tcw));
+			}
 		}
 		return headers.toArray(new String[]{});
 	}

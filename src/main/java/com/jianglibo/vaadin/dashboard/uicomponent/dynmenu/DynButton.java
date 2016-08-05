@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
@@ -23,7 +24,7 @@ import com.vaadin.ui.Button.ClickListener;
 
 @SuppressWarnings("serial")
 @SpringComponent
-@Scope("prototype")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class DynButton extends HorizontalLayout implements ClickListener {
 	
 	@Autowired

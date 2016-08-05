@@ -11,6 +11,7 @@ import com.vaadin.ui.Table.Align;
 @Documented
 public @interface VaadinTableColumn {
 	int order() default 0;
+	String columnHeader() default "";
 	boolean collapsible() default true;
 	Align alignment() default Align.RIGHT;
 	boolean sortable() default false;

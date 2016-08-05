@@ -64,10 +64,11 @@ application:
   upload-dst: ~/easyinstaller-files
   combo-datas:
     ostype:
-      - items:
-          - caption: CentOs
-            value: CentOs
-            localized: false
-            valueType: String
-          - value: UbuntuOs
+      - caption: CentOs
+        value: CentOs
+        localized: false
+        valueType: String
+      - value: UbuntuOs
+    boxrole:
+      - value: Java
           

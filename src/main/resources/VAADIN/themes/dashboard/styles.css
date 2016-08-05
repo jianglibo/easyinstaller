@@ -11925,3 +11925,12 @@ div.v-layout.v-horizontal.v-widget {
 .dashboard .margin-right-twenty {
 	margin-right: 20px;
 }
+
+.dashboard .twin-col-select-horizonal .v-select-twincol-buttons {
+	display: inline-block;
+	vertical-align: top;
+}
+
+.dashboard .overflow-auto {
+	overflow: auto;
+}

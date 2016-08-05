@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.installationpackages;
+package com.jianglibo.vaadin.dashboard.view.pksource;
 
 import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.component.MovieDetailsWindow;

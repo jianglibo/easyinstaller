@@ -1,10 +1,8 @@
-package com.jianglibo.vaadin.dashboard.view.boxes;
+package com.jianglibo.vaadin.dashboard.view.box;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -38,13 +34,8 @@ import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
-import com.jianglibo.vaadin.dashboard.util.MsgUtil;
+import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.util.TableUtil;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -53,7 +44,6 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -67,15 +57,11 @@ public class BoxView extends VerticalLayout implements View {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BoxView.class);
 	
-	private static final Sort defaultSort = new Sort(Direction.DESC, "createdAt");
-
-	private final MessageSource messageSource;
+	private Sort defaultSort;
 
 	public static final String VIEW_NAME = "box";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.DESKTOP;
-
-	private ApplicationContext applicationContext;
 
 	private final Table table;
 	
@@ -92,31 +78,28 @@ public class BoxView extends VerticalLayout implements View {
 	
 	private VaadinTableColumns tableColumns;
 	
-	private Domains domains;
-	
 	private UiEventListener uel = new UiEventListener();
 	
 	@Autowired
 	public BoxView(BoxRepository boxRepository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		this.messageSource = messageSource;
-		this.applicationContext = applicationContext;
-		this.domains = domains;
 		this.eventBus = new EventBus(this.getClass().getName());
 		DashboardEventBus.register(uel);
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
 		
-		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(MsgUtil.getMsg(messageSource, "view.box.title"));
+		tableColumns = domains.getTableColumns().get(Box.DOMAIN_NAME);
+		
+		defaultSort = SortUtil.fromString(domains.getTables().get(Box.DOMAIN_NAME).defaultSort());
+		
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection("");
 		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
 		tools.setSpacing(true);
 		tools.addStyleName("toolbar");
 
 		header.addComponent(tools);
 		addComponent(header);
-		
-		pc = new BoxContainer(eventBus, boxRepository,defaultSort, 15);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{ //
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
@@ -127,7 +110,7 @@ public class BoxView extends VerticalLayout implements View {
 		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
 
 		addComponent(tableController);
-		table = buildTable();
+		table = applicationContext.getBean(BoxTable.class).afterInjection(eventBus);
 
 		addComponent(table);
 		setExpandRatio(table, 1);
@@ -139,56 +122,6 @@ public class BoxView extends VerticalLayout implements View {
 		// A new instance of TransactionsView is created every time it's
 		// navigated to so we'll need to clean up references to it on detach.
 		DashboardEventBus.unregister(uel);
-	}
-
-
-	@SuppressWarnings("serial")
-	private Table buildTable() {
-		final Table table = new Table() {
-			@Override
-			protected String formatPropertyValue(final Object rowId, final Object colId, final Property<?> property) {
-				String result = super.formatPropertyValue(rowId, colId, property);
-				if (colId.equals("createdAt")) {
-					result = DATEFORMAT.format(((Date) property.getValue()));
-				}
-				return result;
-			}
-		};
-		
-		table.setContainerDataSource(pc);
-		
-		tableColumns = domains.getTableColumns().get(Box.VAADIN_TABLE_NAME);
-		VaadinTable vt = domains.getTables().get(Box.VAADIN_TABLE_NAME);
-		
-		TableUtil.decorateTable(table, messageSource, vt, tableColumns);
-		
-		
-		table.setColumnFooter("createdAt", "");
-		table.setColumnFooter("ip", "Total");
-
-		// Allow dragging items to the reports menu
-		table.setDragMode(TableDragMode.MULTIROW);
-
-		table.addItemClickListener(new ItemClickListener() {
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				// event.getItem()
-				// TODO Auto-generated method stub
-			}
-		});
-
-		table.addValueChangeListener(new ValueChangeListener() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void valueChange(final ValueChangeEvent event) {
-				if (table.getValue() instanceof Set) {
-					Set<Object> val = (Set<Object>) table.getValue();
-					eventBus.post(val);
-				}
-			}
-		});
-		table.setImmediate(true);
-		return table;
 	}
 	
 	@Subscribe
@@ -211,7 +144,7 @@ public class BoxView extends VerticalLayout implements View {
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
 		Order od = tse.getSort().iterator().next();
-		String nvs = vfb.setSort(od.getProperty(), od.isAscending(), defaultSort).toNavigateString();
+		String nvs = vfb.setSort(od.getProperty(), od.isAscending(),defaultSort).toNavigateString();
 		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
 	
@@ -241,8 +174,6 @@ public class BoxView extends VerticalLayout implements View {
 			LOGGER.error("unKnown menuName {}", dce.getBtnId());
 		}
 	}
-
-
 	
 	public class UiEventListener {
 		

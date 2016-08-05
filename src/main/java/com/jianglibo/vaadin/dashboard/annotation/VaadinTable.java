@@ -17,4 +17,6 @@ public @interface VaadinTable {
 	boolean footerVisible() default false;
 	boolean multiSelect() default false;
 	String messagePrefix();
+	String defaultSort() default "-createdAt";
+	int defaultPerPage() default 15;
 }

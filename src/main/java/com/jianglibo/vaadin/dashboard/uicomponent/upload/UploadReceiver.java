@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
@@ -28,7 +29,7 @@ import com.vaadin.ui.Upload.Receiver;
 
 @SuppressWarnings("serial")
 @SpringComponent
-@Scope("prototype")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class UploadReceiver implements Receiver  {
 	
 	public static final Logger LOGGER = LoggerFactory.getLogger(UploadReceiver.class);

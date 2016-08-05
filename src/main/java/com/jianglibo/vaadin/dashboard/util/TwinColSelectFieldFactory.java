@@ -12,42 +12,38 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
 import com.jianglibo.vaadin.dashboard.config.ComboItem;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.TwinColSelect;
 
 
 @Component
-public class ComboBoxFieldFactory {
+public class TwinColSelectFieldFactory {
 
 	private final MessageSource messageSource;
 	
 	private final ApplicationConfig appConfig;
 	
 	@Autowired
-	public ComboBoxFieldFactory(MessageSource messageSource, ApplicationConfigWrapper appConfigWrapper) {
+	public TwinColSelectFieldFactory(MessageSource messageSource, ApplicationConfigWrapper appConfigWrapper) {
 		this.messageSource = messageSource;
 		this.appConfig = appConfigWrapper.unwrap();
 	}
 	
-	public ComboBox createCombo(VaadinTable vt, VaadinFormFieldWrapper vffw) {
+	public TwinColSelect create(VaadinTable vt, VaadinFormFieldWrapper vffw) {
 		List<ComboItem> comboItems = appConfig.getComboDatas().get(vffw.getVff().comboKey());
 		String caption = null;
 		try {
-			caption = MsgUtil.getFieldMsg(messageSource, vt.messagePrefix(), vffw);
+			caption = MsgUtil.getFieldMsg(messageSource, vt.messagePrefix(), vffw); 
 		} catch (NoSuchMessageException e) {
 		}
-		ComboBox cb = new ComboBox(caption);
-		cb.setNewItemsAllowed(vffw.getVff().newItemAllowed());
-		cb.setItemCaptionMode(
-			    ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
-
+		TwinColSelect tcs = new TwinColSelect(caption);
 		
 		for(ComboItem ci : comboItems) {
 			Object v = convertItemValue(ci);
-			cb.addItem(v);
-			cb.setItemCaption(v, MsgUtil.getComboItemMsg(messageSource, vffw.getVff().comboKey(), ci));
+			tcs.addItem(v);
+			tcs.setItemCaption(v, MsgUtil.getComboItemMsg(messageSource, vffw.getVff().comboKey(), ci));
 		}
-		return cb;
+//		tcs.setSizeUndefined();
+		return tcs;
 	}
 	
 	public Object convertItemValue(ComboItem ci) {

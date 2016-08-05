@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
@@ -20,7 +21,7 @@ import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
 @SpringComponent
-@Scope("prototype")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class DashboardNavigator extends Navigator {
 	
 	@Autowired

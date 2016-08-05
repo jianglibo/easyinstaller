@@ -5,6 +5,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.vaadin.maddon.ListContainer;
 
 import com.google.common.eventbus.EventBus;
+import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 
 @SuppressWarnings("serial")
@@ -20,15 +21,21 @@ public class JpaContainer<T> extends ListContainer<T> {
 	
 	private Sort defaultSort;
 	
+	private Domains domains;
+	
 	private boolean initSort = true;
 	
 	
-	public JpaContainer(Class<T> clazz, EventBus eventBus,Sort defaultSort, int perPage) {
+	public JpaContainer(Class<T> clazz, Domains domains){
 		super(clazz);
+		this.domains = domains;
+	}
+	
+	public void setupProperties(EventBus eventBus, Sort defaultSort, int perPage) {
 		setEventBus(eventBus);
 		setDefaultSort(defaultSort);
 		setPerPage(perPage);
-		this.eventBus.register(this);
+		getEventBus().register(this);
 	}
 	
 	
@@ -103,6 +110,10 @@ public class JpaContainer<T> extends ListContainer<T> {
 
 	public void setInitSort(boolean initSort) {
 		this.initSort = initSort;
+	}
+
+	public Domains getDomains() {
+		return domains;
 	}
 
 }

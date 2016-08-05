@@ -35,7 +35,7 @@ public class TableUtil {
 		}
 		
 		table.setVisibleColumns(tableColumns.getVisibleColumns());
-		table.setColumnHeaders(tableColumns.getColumnHeaders(messageSource));
+		table.setColumnHeaders(tableColumns.getColumnHeaders(vt, messageSource));
 	}
 	
 	public static boolean autoCollapseColumnsNeedChangeState(Table table, VaadinTableColumns tc) {

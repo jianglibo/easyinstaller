@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.installationpackages;
+package com.jianglibo.vaadin.dashboard.view.pksource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,20 +42,20 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 
-@SpringView(name = InstallationPackageEditView.VIEW_NAME)
-public class InstallationPackageEditView  extends VerticalLayout implements View {
+@SpringView(name = PkSourceEditView.VIEW_NAME)
+public class PkSourceEditView  extends VerticalLayout implements View {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(InstallationPackageEditView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PkSourceEditView.class);
 	
 	private final MessageSource messageSource;
 	
 	private final PkSourceRepository pkSourceRepository;
 
-	public static final String VIEW_NAME = "installationPackage/edit";
+	public static final String VIEW_NAME = PkSourceView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 
@@ -191,7 +191,7 @@ public class InstallationPackageEditView  extends VerticalLayout implements View
     private ItemViewFragmentBuilder ifb;
 	
 	@Autowired
-	public InstallationPackageEditView(PkSourceRepository pkSourceRepository, MessageSource messageSource,
+	public PkSourceEditView(PkSourceRepository pkSourceRepository, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.messageSource = messageSource;
 		this.applicationContext = applicationContext;

@@ -4,6 +4,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 import com.vaadin.spring.annotation.SpringComponent;
@@ -12,7 +13,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Documented
 @SpringComponent
-@Scope("prototype")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public @interface MainMenu {
 	int menuOrder() default 0;
 }

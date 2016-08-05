@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.installationpackages;
+package com.jianglibo.vaadin.dashboard.view.pksource;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -37,7 +37,6 @@ import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
-import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -57,25 +56,24 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-@SpringView(name = InstallationPackageView.VIEW_NAME)
-public class InstallationPackageView extends VerticalLayout implements View {
+@SpringView(name = PkSourceView.VIEW_NAME)
+public class PkSourceView extends VerticalLayout implements View {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(InstallationPackageView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PkSourceView.class);
 	
 	private static final Sort defaultSort = new Sort(Direction.DESC, "createdAt");
 
 	private final MessageSource messageSource;
 
-	public static final String VIEW_NAME = "installationPackage";
+	public static final String VIEW_NAME = "pksource";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 
-	private ApplicationContext applicationContext;
 
 	private final Table table;
 	
@@ -93,16 +91,15 @@ public class InstallationPackageView extends VerticalLayout implements View {
 	private EventBus eventBus;
 	
 	@Autowired
-	public InstallationPackageView(PkSourceRepository pkSourceRepository, MessageSource messageSource,
+	public PkSourceView(PkSourceRepository pkSourceRepository, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.messageSource = messageSource;
-		this.applicationContext = applicationContext;
 		this.eventBus = new EventBus(this.getClass().getName());
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
 		// DashboardEventBus.register(this);
-		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(MsgUtil.getMsg(messageSource, "view.installationpackage.title"));
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection("");
 		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(ImmediateUploader.class).afterInjection(eventBus),
 				applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
 		tools.setSpacing(true);
@@ -112,7 +109,7 @@ public class InstallationPackageView extends VerticalLayout implements View {
 		addComponent(header);
 //		addComponent(buildToolbar());
 		
-		pc = new PkSourceContainer(eventBus, pkSourceRepository,defaultSort, 15);
+		pc = applicationContext.getBean(PkSourceContainer.class).afterInjection(eventBus);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE),new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};

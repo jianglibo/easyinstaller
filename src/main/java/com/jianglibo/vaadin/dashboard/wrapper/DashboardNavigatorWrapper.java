@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.wrapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 import com.jianglibo.vaadin.dashboard.DashboardNavigator;
@@ -9,7 +10,7 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.ComponentContainer;
 
 @SpringComponent
-@Scope("prototype")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class DashboardNavigatorWrapper {
 
 	private final DashboardNavigator dn;

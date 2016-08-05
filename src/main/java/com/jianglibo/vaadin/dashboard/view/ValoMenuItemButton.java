@@ -4,6 +4,7 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.PostViewChangeEvent;
 import com.vaadin.ui.UI;
 import com.vaadin.server.FontAwesome;
@@ -20,7 +21,7 @@ public class ValoMenuItemButton extends Button {
         this.viewName = viewName;
         setPrimaryStyleName("valo-menu-item");
         setIcon(icon);
-        setCaption(messageSource.getMessage("menu." + viewName, null, UI.getCurrent().getLocale()));
+        setCaption(MsgUtil.getViewMenuMsg(messageSource, viewName));
         DashboardEventBus.register(this);
         addClickListener(new ClickListener() {
             @Override

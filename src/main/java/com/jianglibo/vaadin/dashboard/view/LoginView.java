@@ -10,6 +10,7 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
@@ -39,7 +40,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
 @SpringComponent
-@Scope("prototype")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class LoginView extends VerticalLayout {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(LoginView.class);

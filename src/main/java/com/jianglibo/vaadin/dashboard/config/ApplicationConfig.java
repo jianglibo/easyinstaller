@@ -3,6 +3,7 @@ package com.jianglibo.vaadin.dashboard.config;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public class ApplicationConfig {
 	
 	private Path uploadDstPath;
 	
-	private Map<String, ComboBoxData> comboDatas = Maps.newHashMap();
+	private Map<String, List<ComboItem>> comboDatas = Maps.newHashMap();
 	
 	public String getUploadDst() {
 		return uploadDst;
@@ -34,11 +35,11 @@ public class ApplicationConfig {
 		return uploadDstPath;
 	}
 
-	public Map<String, ComboBoxData> getComboDatas() {
+	public Map<String, List<ComboItem>> getComboDatas() {
 		return comboDatas;
 	}
 
-	public void setComboDatas(Map<String, ComboBoxData> comboDatas) {
+	public void setComboDatas(Map<String, List<ComboItem>> comboDatas) {
 		this.comboDatas = comboDatas;
 	}
 

@@ -125,6 +125,9 @@ public class ItemViewFragmentBuilder {
 
 	public long getBeanId() {
 		String idpart = getUriComs().getPath();
+		if (idpart == null) {
+			return 0;
+		}
 		String idstrs[] = idpart.split("/");
 		String idstr = idstrs[idstrs.length - 1];
 		

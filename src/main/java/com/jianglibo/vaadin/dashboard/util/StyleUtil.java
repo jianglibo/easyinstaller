@@ -9,6 +9,14 @@ public class StyleUtil {
 		return Sets.newHashSet(styles.split("\\s+")).contains(style);
 	}
 	
+	public static void setOverflowAuto(Component c, boolean b) {
+		if(b) {
+			c.addStyleName("overflow-auto");
+		} else {
+			c.removeStyleName("overflow-auto");
+		}
+	}
+	
 	public static void setMarginTen(Component c) {
 		c.addStyleName("margin-ten");
 	}

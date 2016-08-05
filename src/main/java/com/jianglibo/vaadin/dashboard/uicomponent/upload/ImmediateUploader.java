@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.upload;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
@@ -29,7 +30,7 @@ import com.vaadin.ui.Upload.SucceededListener;
 
 @SuppressWarnings("serial")
 @SpringComponent
-@Scope("prototype")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ImmediateUploader extends HorizontalLayout {
 
 	 private Label status = new Label("");

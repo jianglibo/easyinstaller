@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -49,7 +50,7 @@ public class VaadinApplication {
     
     
     @Bean
-    @Scope("prototype")
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     @Qualifier("contentContainer")
     public ComponentContainer contentContainer() {
         ComponentContainer content = new CssLayout();

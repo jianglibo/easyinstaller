@@ -14,6 +14,8 @@ public class PkSource extends BaseEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public static String DOMAIN_NAME = "pksource";
 
 	@NotNull
     @Column(nullable = false)

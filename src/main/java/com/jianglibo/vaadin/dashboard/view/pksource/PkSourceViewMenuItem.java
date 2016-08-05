@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.boxes;
+package com.jianglibo.vaadin.dashboard.view.pksource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -9,7 +9,7 @@ import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
 @MainMenu(menuOrder = 10)
-public class BoxViewMenuItem implements MenuItemWrapper {
+public class PkSourceViewMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;
 
@@ -17,9 +17,9 @@ public class BoxViewMenuItem implements MenuItemWrapper {
 	
 	
 	@Autowired
-	public BoxViewMenuItem(MessageSource messageSource) {
+	public PkSourceViewMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.menuItem = new ValoMenuItemButton(BoxView.VIEW_NAME, BoxView.ICON_VALUE, messageSource);
+		this.menuItem = new ValoMenuItemButton(PkSourceView.VIEW_NAME, PkSourceView.ICON_VALUE, messageSource);
 	}
 	
 	public Component getMenuItem() {

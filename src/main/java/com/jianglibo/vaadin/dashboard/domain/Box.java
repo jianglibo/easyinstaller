@@ -1,11 +1,19 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
+import com.google.common.collect.Lists;
+import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
@@ -13,7 +21,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
-@VaadinTable(name = Box.VAADIN_TABLE_NAME, messagePrefix="domain.box.", styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
+@VaadinTable(name = Box.DOMAIN_NAME,multiSelect=true, messagePrefix="domain.box.", styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
 @Table(name = "box", uniqueConstraints = { @UniqueConstraint(columnNames = "ip") })
 public class Box extends BaseEntity {
 
@@ -22,29 +30,34 @@ public class Box extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public static final String VAADIN_TABLE_NAME = "box";
+	public static final String DOMAIN_NAME = "box";
 	
 	@NotNull
+	@NotEmpty
 	@VaadinTableColumn(order = 0)
-	@VaadinFormField(order = 0, caption = "id")
+	@VaadinFormField(order = 0, caption = "ip")
 	private String ip;
 	
 	@VaadinTableColumn(order = 1)
-	@VaadinFormField(order = 1, caption = "name")
+	@VaadinFormField(order = 10, caption = "name")
 	private String name;
 	
 	@VaadinTableColumn(order=2)
-	@VaadinFormField(caption="osType", order = 2, fieldType=Ft.COMBO_BOX, comboKey="ostype")
+	@VaadinFormField(order = 20, fieldType=Ft.COMBO_BOX, comboKey="ostype")
 	private String osType;
 	
-	@VaadinFormField(order = 3, caption="description", fieldType=Ft.TEXT_AREA)
+	@ElementCollection
+	@VaadinFormField(order = 25, fieldType=Ft.TWIN_COL_SELECT, comboKey="boxrole", styleNames={"twin-col-select-horizonal"})
+	private Set<String> roles = Sets.newHashSet();
+	
+	@VaadinFormField(order = 30, fieldType=Ft.TEXT_AREA)
 	private String description;
 	
-	@VaadinFormField(order = 4, fieldType=Ft.TEXT_AREA)
+	@VaadinFormField(order = 40, fieldType=Ft.TEXT_AREA)
 	@Lob
 	private String keyFileContent;
 	
-	@VaadinFormField(order = 5)
+	@VaadinFormField(order = 50)
 	private String keyFilePath;
 
 	public String getIp() {
@@ -94,5 +107,12 @@ public class Box extends BaseEntity {
 	public void setOsType(String osType) {
 		this.osType = osType;
 	}
-	
+
+	public Set<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<String> roles) {
+		this.roles = roles;
+	}
 }

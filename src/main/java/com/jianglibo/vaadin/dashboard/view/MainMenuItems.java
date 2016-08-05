@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 
@@ -17,7 +18,7 @@ import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.vaadin.spring.annotation.SpringComponent;
 
 @SpringComponent
-@Scope("prototype")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class MainMenuItems {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainMenuItems.class);
 
