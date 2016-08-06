@@ -71,4 +71,7 @@ application:
       - value: UbuntuOs
     boxrole:
       - value: Java
-          
+  
+---
+spring:
+    profiles: prod

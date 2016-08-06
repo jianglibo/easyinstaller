@@ -36,3 +36,5 @@ gradle.properties
 /bin/
 /whl/
 /fixtures_out/
+Vagrantfile
+.vagrant/
