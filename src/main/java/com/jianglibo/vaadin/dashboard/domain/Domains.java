@@ -49,14 +49,22 @@ public class Domains {
 		for(Field field  : clazz.getDeclaredFields()){
 		    if (field.isAnnotationPresent(VaadinFormField.class)) {
 	        	VaadinFormField vf =  field.getAnnotation(VaadinFormField.class);
-	        	vfs.put(vf.order(), new VaadinFormFieldWrapper(vf, field.getName()));
+	        	int i = vf.order();
+	        	while(vfs.containsKey(i)) {
+	        		i++;
+	        	}
+	        	vfs.put(i, new VaadinFormFieldWrapper(vf, field.getName()));
 	        }
 		}
 		
 		for(Field field  : clazz.getSuperclass().getDeclaredFields()){
 		    if (field.isAnnotationPresent(VaadinFormField.class)) {
 	        	VaadinFormField vf =  field.getAnnotation(VaadinFormField.class);
-	        	vfs.put(vf.order(), new VaadinFormFieldWrapper(vf, field.getName()));
+	        	int i = vf.order();
+	        	while(vfs.containsKey(i)) {
+	        		i++;
+	        	}
+	        	vfs.put(i, new VaadinFormFieldWrapper(vf, field.getName()));
 	        }
 		}
 		return vfs.values();
@@ -68,14 +76,22 @@ public class Domains {
 		for(Field field  : clazz.getDeclaredFields()){
 		    if (field.isAnnotationPresent(VaadinTableColumn.class)) {
 	        	VaadinTableColumn tc =  field.getAnnotation(VaadinTableColumn.class);
-	        	sm.put(tc.order(), new VaadinTableColumnWrapper(tc, field.getName()));
+	        	int i = tc.order();
+	        	while(sm.containsKey(i)) {
+	        		i++;
+	        	}
+	        	sm.put(i, new VaadinTableColumnWrapper(tc, field.getName()));
 	        }
 		}
 		
 		for(Field field  : clazz.getSuperclass().getDeclaredFields()){
 		    if (field.isAnnotationPresent(VaadinTableColumn.class)) {
 	        	VaadinTableColumn tc =  field.getAnnotation(VaadinTableColumn.class);
-	        	sm.put(tc.order(), new VaadinTableColumnWrapper(tc, field.getName()));
+	        	int i = tc.order();
+	        	while(sm.containsKey(i)) {
+	        		i++;
+	        	}
+	        	sm.put(i, new VaadinTableColumnWrapper(tc, field.getName()));
 	        }
 		}
 		return sm.values();

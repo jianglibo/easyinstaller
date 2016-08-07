@@ -6,8 +6,14 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
+import com.vaadin.ui.themes.ValoTheme;
+
 @Entity
-@Table(name = "pksource", uniqueConstraints = { @UniqueConstraint(columnNames = "fileMd5") })
+@Table(name = "pksource",uniqueConstraints = { @UniqueConstraint(columnNames = "fileMd5") })
+@VaadinTable(name= PkSource.DOMAIN_NAME,multiSelect = true, messagePrefix="domain.pksource.",styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
 public class PkSource extends BaseEntity {
 
     /**
@@ -15,20 +21,25 @@ public class PkSource extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public static String DOMAIN_NAME = "pksource";
+	public static final String DOMAIN_NAME = "pksource";
 
 	@NotNull
     @Column(nullable = false)
 	private String fileMd5;
 
+	@VaadinTableColumn(order = 10)
+	@VaadinFormField
     private String pkname;
     
+	@VaadinFormField
     private String originFrom;
     
+    @VaadinTableColumn(order = 20)
     private Long length;
     
     private String extNoDot;
     
+    @VaadinTableColumn(order = 30)
     private String mimeType;
 
 	public String getFileMd5() {

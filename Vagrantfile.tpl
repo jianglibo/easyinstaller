@@ -9,13 +9,13 @@ Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
-  
+
   config.ssh.private_key_path = "G:\\cygwin64\\home\\Administrator\\.ssh"
-  
+
   config.vm.provider "virtualbox" do |v|
     v.memory = 512
   end
-  
+
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = ""
@@ -74,9 +74,9 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
-  
-    
-  
+
+
+
     config.vm.define "centos" do |centos|
 	    centos.vm.provider "virtualbox" do |v|
 #    	  v.gui = true
@@ -84,6 +84,14 @@ Vagrant.configure("2") do |config|
 #      	  v.customize ['createmedium', '--filename',  'f:/vms/desktop', '--size', 100000]
     	end
     	centos.vm.box = "geerlingguy/centos7"
-    	centos.vm.network "private_network", ip: "192.168.56.10"
+    	centos.vm.network "private_network", ip: "192.168.33.10"
   	end
+
+    config.vm.define "ubuntu" do |ubuntu|
+	    ubuntu.vm.provider "virtualbox" do |v|
+    	end
+    	ubuntu.vm.box = "ubuntu/trusty64"
+    	ubuntu.vm.network "private_network", ip: "192.168.33.11"
+  	end
+
 end

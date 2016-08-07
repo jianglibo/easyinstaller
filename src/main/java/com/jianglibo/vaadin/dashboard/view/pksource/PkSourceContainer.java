@@ -3,6 +3,7 @@ package com.jianglibo.vaadin.dashboard.view.pksource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ public class PkSourceContainer extends JpaContainer<PkSource>{
 	
 	private final PkSourceRepository pkSourceRepository;
 	
+	@Autowired
 	public PkSourceContainer(PkSourceRepository pkSourceRepository, Domains domains) {
 		super(PkSource.class, domains);
 		this.pkSourceRepository = pkSourceRepository;

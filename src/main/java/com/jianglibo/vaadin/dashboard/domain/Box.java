@@ -1,10 +1,11 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -12,7 +13,6 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
@@ -35,18 +35,20 @@ public class Box extends BaseEntity {
 	@NotNull
 	@NotEmpty
 	@VaadinTableColumn(order = 0)
-	@VaadinFormField(order = 0, caption = "ip")
+	@VaadinFormField(order = 0)
 	private String ip;
 	
 	@VaadinTableColumn(order = 1)
-	@VaadinFormField(order = 10, caption = "name")
+	@VaadinFormField(order = 10)
 	private String name;
 	
 	@VaadinTableColumn(order=2)
 	@VaadinFormField(order = 20, fieldType=Ft.COMBO_BOX, comboKey="ostype")
+	@NotNull
+	@NotEmpty
 	private String osType;
 	
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	@VaadinFormField(order = 25, fieldType=Ft.TWIN_COL_SELECT, comboKey="boxrole", styleNames={"twin-col-select-horizonal"})
 	private Set<String> roles = Sets.newHashSet();
 	
@@ -55,6 +57,7 @@ public class Box extends BaseEntity {
 	
 	@VaadinFormField(order = 40, fieldType=Ft.TEXT_AREA)
 	@Lob
+	@Column(length=2000)
 	private String keyFileContent;
 	
 	@VaadinFormField(order = 50)
