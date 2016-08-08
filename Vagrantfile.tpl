@@ -10,7 +10,9 @@ Vagrant.configure("2") do |config|
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
 
-  config.ssh.private_key_path = "G:\\cygwin64\\home\\Administrator\\.ssh"
+  # config.ssh.private_key_path = "G:\\cygwin64\\home\\Administrator\\.ssh"
+
+  config.ssh.insert_key = true
 
   config.vm.provider "virtualbox" do |v|
     v.memory = 512
