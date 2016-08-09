@@ -69,6 +69,14 @@ application:
         localized: false
         valueType: String
       - value: UbuntuOs
+    installRoles:
+      Java:
+        - value: java6
+        - value: java7
+      	- value: java8
+      	- value: java9
+      Hadoop:
+        - value: datanode
     boxrole:
       - value: Java
   
