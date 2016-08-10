@@ -1,55 +1,60 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.util.Set;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
-import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
-
-
-/**
- * A installation can not exists alone, It must install to a machine.
- * @author jianglibo@gmail.com
- *
- */
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "singleInstallation", uniqueConstraints = { @UniqueConstraint(columnNames = {"name", "sversion"})})
+@Table(name = "singleInstallation")
 public class SingleInstallation extends BaseEntity {
 	
-	@VaadinFormField(fieldType=Ft.COMBO_BOX, comboKey="installInstallationNames")
-	private String name;
+	@ManyToOne
+	private Software software;
 	
-	// If it looks an long, then think it as a PkSource object, else think it as a url.
-	private String pksource;
+	@ManyToMany
+	private Set<Box> boxes;
 	
-	//HAOOP_DATANODE etc.
-	@VaadinFormField()
-	private String sversion;
+	private boolean success;
 	
-	public String getSversion() {
-		return sversion;
+	@Lob
+	@Column(length=64000)
+	private String config;
+
+	public Software getSoftware() {
+		return software;
 	}
 
-	public void setSversion(String sversion) {
-		this.sversion = sversion;
+	public void setSoftware(Software software) {
+		this.software = software;
 	}
 
-	public String getName() {
-		return name;
+	public String getConfig() {
+		return config;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setConfig(String config) {
+		this.config = config;
 	}
 
-	public String getPksource() {
-		return pksource;
+	public Set<Box> getBoxes() {
+		return boxes;
 	}
 
-	public void setPksource(String pksource) {
-		this.pksource = pksource;
+	public void setBoxes(Set<Box> boxes) {
+		this.boxes = boxes;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
 	}
 }

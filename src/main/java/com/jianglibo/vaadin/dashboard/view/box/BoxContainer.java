@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
@@ -23,6 +22,7 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
 @SpringComponent
@@ -31,44 +31,50 @@ public class BoxContainer extends JpaContainer<Box>{
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(BoxContainer.class);
 	
-	private final BoxRepository boxRepository;
+	private final BoxRepository repository;
 	
 	@Autowired
-	public BoxContainer(BoxRepository boxRepository, Domains domains) {
+	public BoxContainer(BoxRepository repository, Domains domains) {
 		super(Box.class, domains);
-		this.boxRepository = boxRepository;
+		this.repository = repository;
 	}
 	
-	public BoxContainer afterInjection(EventBus eventBus) {
+	public BoxContainer afterInjection(EventBus eventBus, Table table) {
 		VaadinTable vt = getDomains().getTables().get(Box.DOMAIN_NAME);
-		setupProperties(eventBus, SortUtil.fromString(vt.defaultSort()), vt.defaultPerPage());
+		setupProperties(table, eventBus, SortUtil.fromString(vt.defaultSort()), vt.defaultPerPage());
 		return this;
 	}
 
 	@Subscribe
 	public void whenUriFragmentChange(ListViewFragmentBuilder vfb) {
-		boolean trashed = vfb.getBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME);
-		Sort sort = vfb.getSort();
-		if (sort == null) {
-			sort = getDefaultSort();
+		persistState(vfb);
+		setList();
+	}
+	
+	public void setList() {
+		Pageable pageable;
+		if (getSort() == null) {
+			pageable = new PageRequest(getCurrentPage() - 1, getPerPage());
+		} else {
+			pageable = new PageRequest(getCurrentPage() - 1, getPerPage(), getSort());
 		}
-		Pageable pageable = new PageRequest(vfb.getCurrentPage() - 1, getPerPage(), sort);
-		Page<Box> boxes;
-		String filterStr = vfb.getFilterStr();
+		
+		Page<Box> entities;
+		String filterStr = getFilterStr();
 		long total;
 		if (Strings.isNullOrEmpty(filterStr)) {
-			boxes = boxRepository.findByArchivedEquals(trashed, pageable);
-			total = boxRepository.countByArchivedEquals(trashed);
+			entities = repository.findByArchivedEquals(isTrashed(), pageable);
+			total = repository.countByArchivedEquals(isTrashed());
 		} else {
-			boxes = boxRepository.findByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, trashed, pageable);
-			total = boxRepository.countByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, trashed);
+			entities = repository.findByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, isTrashed(), pageable);
+			total = repository.countByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, isTrashed());
 		}
-		setCollection(boxes.getContent());
+		setCollection(entities.getContent());
 		getEventBus().post(new PageMetaEvent(total, getPerPage()));
 	}
 
 	public void refresh() {
-		LOGGER.info("refresh btn cliecked.");
+		setList();
 	}
 
 }

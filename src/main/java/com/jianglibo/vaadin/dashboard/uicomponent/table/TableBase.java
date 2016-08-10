@@ -28,8 +28,6 @@ public abstract class TableBase<T> extends Table {
 	
 	protected final Class<T> clazz;
 
-	protected EventBus eventBus;
-	
 	protected String domainName;
 	
 	public TableBase(Class<T> clazz, Domains domains, MessageSource messageSource) {
@@ -64,6 +62,7 @@ public abstract class TableBase<T> extends Table {
 			}
 		});
 	}
+
 	
 	public String formatDate(DateFormat dfm, Property<?> property) {
 		return dfm.format(((Date) property.getValue()));

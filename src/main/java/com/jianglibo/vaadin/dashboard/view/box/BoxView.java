@@ -1,7 +1,5 @@
 package com.jianglibo.vaadin.dashboard.view.box;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 
 import org.slf4j.Logger;
@@ -9,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -56,8 +52,6 @@ public class BoxView extends VerticalLayout implements View {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BoxView.class);
-	
-	private Sort defaultSort;
 
 	public static final String VIEW_NAME = "box";
 
@@ -67,23 +61,24 @@ public class BoxView extends VerticalLayout implements View {
 	
 	private TableController tableController;
 	
-	private BoxContainer pc;
-	
 	private ListViewFragmentBuilder vfb;
 
-	// private Upload upload;
-	private static final DateFormat DATEFORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
-	
 	private EventBus eventBus;
 	
 	private VaadinTableColumns tableColumns;
 	
 	private UiEventListener uel = new UiEventListener();
 	
+	private final Domains domains;
+	
+	private final BoxRepository repository;
+	
 	@Autowired
-	public BoxView(BoxRepository boxRepository,Domains domains, MessageSource messageSource,
+	public BoxView(BoxRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.eventBus = new EventBus(this.getClass().getName());
+		this.repository = repository;
+		this.domains = domains;
 		DashboardEventBus.register(uel);
 		eventBus.register(this);
 		setSizeFull();
@@ -91,7 +86,6 @@ public class BoxView extends VerticalLayout implements View {
 		
 		tableColumns = domains.getTableColumns().get(Box.DOMAIN_NAME);
 		
-		defaultSort = SortUtil.fromString(domains.getTables().get(Box.DOMAIN_NAME).defaultSort());
 		
 		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection("");
 		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
@@ -143,9 +137,8 @@ public class BoxView extends VerticalLayout implements View {
 	
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
-		Order od = tse.getSort().iterator().next();
-		String nvs = vfb.setSort(od.getProperty(), od.isAscending(),defaultSort).toNavigateString();
-		UI.getCurrent().getNavigator().navigateTo(nvs);
+		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(Box.DOMAIN_NAME), vfb);
+		UI.getCurrent().getNavigator().navigateTo(vfb.toNavigateString());
 	}
 	
 	@Subscribe
@@ -154,17 +147,28 @@ public class BoxView extends VerticalLayout implements View {
 		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Subscribe
 	public void dynMenuClicked(DynMenuClickEvent dce) {
+		Collection<Box> selected;
 		switch (dce.getBtnId()) {
 		case CommonMenuItemIds.DELETE:
-			LOGGER.info(table.getValue().toString());
+			selected = (Collection<Box>) table.getValue();
+			selected.forEach(b -> {
+				if (b.isArchived()) {
+					repository.delete(b);
+				} else {
+					b.setArchived(true);
+					repository.save(b);
+				}
+			});
+			((BoxContainer)table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.REFRESH:
-			pc.refresh();
+			((BoxContainer)table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
-			Collection<Box> selected = (Collection<Box>) table.getValue();
+			selected = (Collection<Box>) table.getValue();
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + vfb.toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:
@@ -192,15 +196,6 @@ public class BoxView extends VerticalLayout implements View {
 	@Override
 	public void enter(final ViewChangeEvent event) {
 		vfb = new ListViewFragmentBuilder(event);
-		Sort sort = vfb.getSort();
-		if (sort == null) {
-			sort = defaultSort;
-		}
-		if (sort.iterator().hasNext()) {
-			Order od = sort.iterator().next();
-			table.setSortContainerPropertyId(od.getProperty());
-			table.setSortAscending(od.isAscending());
-		}
 		eventBus.post(vfb);
 		LOGGER.info("parameter is: {}", event.getParameters());
 	}

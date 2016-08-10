@@ -7,14 +7,12 @@ import org.springframework.context.MessageSource;
 import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
-import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory;
 import com.jianglibo.vaadin.dashboard.util.ReflectUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory.PropertyIdAndField;
-import com.jianglibo.vaadin.dashboard.view.box.BoxForm;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Page;
 import com.vaadin.shared.Position;
@@ -52,6 +50,7 @@ public abstract class FormBase<T> extends FormLayout {
 	
 	protected void defaultAfterInjection(EventBus eventBus) {
 		this.eventBus = eventBus;
+		eventBus.register(this);
 		fieldGroup = new BeanFieldGroup<T>(clazz);
 		addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         addEnterListener();
@@ -118,10 +117,19 @@ public abstract class FormBase<T> extends FormLayout {
         }
 	}
 	
-	
-	
 	public void setItemDataSource(T domain){
 		fieldGroup.setItemDataSource(domain);
 	}
 	
+	public T getWrappedBean() {
+		return fieldGroup.getItemDataSource().getBean();
+	}
+
+	public BeanFieldGroup<T> getFieldGroup() {
+		return fieldGroup;
+	}
+
+	public void setFieldGroup(BeanFieldGroup<T> fieldGroup) {
+		this.fieldGroup = fieldGroup;
+	}
 }

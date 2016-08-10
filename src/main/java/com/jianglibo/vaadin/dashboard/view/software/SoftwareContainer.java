@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.pksource;
+package com.jianglibo.vaadin.dashboard.view.software;
 
 
 import org.slf4j.Logger;
@@ -15,10 +15,11 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.container.JpaContainer;
+import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.PkSource;
+import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
-import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
+import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -27,20 +28,20 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class PkSourceContainer extends JpaContainer<PkSource>{
+public class SoftwareContainer extends JpaContainer<Software>{
 	
-	private static Logger LOGGER = LoggerFactory.getLogger(PkSourceContainer.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(SoftwareContainer.class);
 	
-	private final PkSourceRepository repository;
+	private final SoftwareRepository repository;
 	
 	@Autowired
-	public PkSourceContainer(PkSourceRepository repository, Domains domains) {
-		super(PkSource.class, domains);
+	public SoftwareContainer(SoftwareRepository repository, Domains domains) {
+		super(Software.class, domains);
 		this.repository = repository;
 	}
 	
-	public PkSourceContainer afterInjection(EventBus eventBus, Table table) {
-		VaadinTable vt = getDomains().getTables().get(PkSource.DOMAIN_NAME);
+	public SoftwareContainer afterInjection(EventBus eventBus, Table table) {
+		VaadinTable vt = getDomains().getTables().get(Box.DOMAIN_NAME);
 		setupProperties(table, eventBus, SortUtil.fromString(vt.defaultSort()), vt.defaultPerPage());
 		return this;
 	}
@@ -50,7 +51,7 @@ public class PkSourceContainer extends JpaContainer<PkSource>{
 		persistState(vfb);
 		setList();
 	}
-
+	
 	public void setList() {
 		Pageable pageable;
 		if (getSort() == null) {
@@ -59,15 +60,15 @@ public class PkSourceContainer extends JpaContainer<PkSource>{
 			pageable = new PageRequest(getCurrentPage() - 1, getPerPage(), getSort());
 		}
 		
-		Page<PkSource> entities;
+		Page<Software> entities;
 		String filterStr = getFilterStr();
 		long total;
 		if (Strings.isNullOrEmpty(filterStr)) {
 			entities = repository.findByArchivedEquals(isTrashed(), pageable);
 			total = repository.countByArchivedEquals(isTrashed());
 		} else {
-			entities = repository.findByPknameContainingIgnoreCaseAndArchivedEquals(filterStr, isTrashed(), pageable);
-			total = repository.countByPknameContainingIgnoreCaseAndArchivedEquals(filterStr, isTrashed());
+			entities = repository.findByNameContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, isTrashed(), pageable);
+			total = repository.countByNameContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, isTrashed());
 		}
 		setCollection(entities.getContent());
 		getEventBus().post(new PageMetaEvent(total, getPerPage()));

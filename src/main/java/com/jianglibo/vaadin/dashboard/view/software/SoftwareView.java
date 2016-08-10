@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.pksource;
+package com.jianglibo.vaadin.dashboard.view.software;
 
 import java.util.Collection;
 
@@ -10,29 +10,28 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.eventbus.SubscriberExceptionContext;
-import com.google.common.eventbus.SubscriberExceptionHandler;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.PkSource;
+import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
 import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
 import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TrashedCheckBoxEvent;
-import com.jianglibo.vaadin.dashboard.event.view.UploadFinishEvent;
-import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
+import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
-import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
+import com.jianglibo.vaadin.dashboard.util.TableUtil;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -44,20 +43,20 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@SpringView(name = PkSourceView.VIEW_NAME)
-public class PkSourceView extends VerticalLayout implements View, SubscriberExceptionHandler {
+@SpringView(name = SoftwareView.VIEW_NAME)
+public class SoftwareView extends VerticalLayout implements View {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PkSourceView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SoftwareView.class);
 	
 
-	public static final String VIEW_NAME = "pksource";
+	public static final String VIEW_NAME = "software";
 
-	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
+	public static final FontAwesome ICON_VALUE = FontAwesome.APPLE;
 
 	private final Table table;
 	
@@ -65,40 +64,48 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 	
 	private ListViewFragmentBuilder lvfb;
 
-	private static final String[] DEFAULT_COLLAPSIBLE = { "length", "originFrom", "createdAt" };
-	
 	private EventBus eventBus;
 	
-	private final PkSourceRepository repository;
+	private VaadinTableColumns tableColumns;
+	
+	private UiEventListener uel = new UiEventListener();
+	
+	private final SoftwareRepository repository;
+	
 	private final Domains domains;
 	
 	@Autowired
-	public PkSourceView(PkSourceRepository repository,Domains domains, MessageSource messageSource,
+	public SoftwareView(SoftwareRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		this.eventBus = new EventBus(this);
+		this.eventBus = new EventBus(this.getClass().getName());
 		this.repository = repository;
 		this.domains = domains;
+		DashboardEventBus.register(uel);
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
 		
+		tableColumns = domains.getTableColumns().get(Software.DOMAIN_NAME);
+		
 		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection("");
-		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(ImmediateUploader.class).afterInjection(eventBus),
-				applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
+		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
 		tools.setSpacing(true);
 		tools.addStyleName("toolbar");
 
 		header.addComponent(tools);
 		addComponent(header);
 		
-		ButtonGroup[] bgs = new ButtonGroup[]{new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE),new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
+		ButtonGroup[] bgs = new ButtonGroup[]{ //
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS)), //
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS))};
 		
 		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
-		
 
 		addComponent(tableController);
-		table = applicationContext.getBean(PkSourceTable.class).afterInjection(eventBus);
+		table = applicationContext.getBean(SoftwareTable.class).afterInjection(eventBus);
+
 		addComponent(table);
 		setExpandRatio(table, 1);
 	}
@@ -108,18 +115,7 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 		super.detach();
 		// A new instance of TransactionsView is created every time it's
 		// navigated to so we'll need to clean up references to it on detach.
-		// DashboardEventBus.unregister(this);
-	}
-
-
-	private boolean defaultColumnsVisible() {
-		boolean result = true;
-		for (String propertyId : DEFAULT_COLLAPSIBLE) {
-			if (table.isColumnCollapsed(propertyId) == Page.getCurrent().getBrowserWindowWidth() < 800) {
-				result = false;
-			}
-		}
-		return result;
+		DashboardEventBus.unregister(uel);
 	}
 	
 	@Subscribe
@@ -140,17 +136,8 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 	}
 	
 	@Subscribe
-	public void whenUploadFinished(UploadFinishEvent ufe) {
-		PkSource pkSource = ufe.getPkSource();
-		if (pkSource != null && ufe.isNewCreated()) {
-			LOGGER.info("upload a new file.");
-			table.addItem(pkSource);
-		}
-	}
-	
-	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(PkSource.DOMAIN_NAME), lvfb);
+		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(Software.DOMAIN_NAME), lvfb);
 		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
 	
@@ -163,10 +150,10 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 	@SuppressWarnings("unchecked")
 	@Subscribe
 	public void dynMenuClicked(DynMenuClickEvent dce) {
-		Collection<PkSource> selected;
+		Collection<Software> selected;
 		switch (dce.getBtnId()) {
 		case CommonMenuItemIds.DELETE:
-			selected = (Collection<PkSource>) table.getValue();
+			selected = (Collection<Software>) table.getValue();
 			selected.forEach(b -> {
 				if (b.isArchived()) {
 					repository.delete(b);
@@ -175,27 +162,33 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 					repository.save(b);
 				}
 			});
-			((PkSourceContainer)table.getContainerDataSource()).refresh();
+			((SoftwareContainer)table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.REFRESH:
-			((PkSourceContainer)table.getContainerDataSource()).refresh();
+			((SoftwareContainer)table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
-			selected = (Collection<PkSource>) table.getValue();
+			selected = (Collection<Software>) table.getValue();
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
+			break;
+		case CommonMenuItemIds.ADD:
+			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", dce.getBtnId());
 		}
 	}
-
-	@Subscribe
-	public void browserResized(final BrowserResizeEvent event) {
-		// Some columns are collapsed when browser window width gets small
-		// enough to make the table fit better.
-		if (defaultColumnsVisible()) {
-			for (String propertyId : DEFAULT_COLLAPSIBLE) {
-				table.setColumnCollapsed(propertyId, Page.getCurrent().getBrowserWindowWidth() < 800);
+	
+	public class UiEventListener {
+		
+		@Subscribe
+		public void browserResized(final BrowserResizeEvent event) {
+			// Some columns are collapsed when browser window width gets small
+			// enough to make the table fit better.
+			if (TableUtil.autoCollapseColumnsNeedChangeState(table, tableColumns)) {
+				for (String propertyId : tableColumns.getAutoCollapseColumns()) {
+					table.setColumnCollapsed(propertyId, Page.getCurrent().getBrowserWindowWidth() < 800);
+				}
 			}
 		}
 	}
@@ -203,14 +196,17 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 	@Override
 	public void enter(final ViewChangeEvent event) {
 		lvfb = new ListViewFragmentBuilder(event);
+//		Sort sort = vfb.getSort();
+//		if (sort == null) {
+//			sort = defaultSort;
+//		}
+//		if (sort.iterator().hasNext()) {
+//			Order od = sort.iterator().next();
+//			table.setSortContainerPropertyId(od.getProperty());
+//			table.setSortAscending(od.isAscending());
+//		}
 		eventBus.post(lvfb);
-		LOGGER.info("parameter is: {}", event.getParameters());
-	}
-
-	@Override
-	public void handleException(Throwable exception, SubscriberExceptionContext context) {
-		exception.printStackTrace();
-		LOGGER.info(exception.getMessage());
 		
+		LOGGER.info("parameter is: {}", event.getParameters());
 	}
 }

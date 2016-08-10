@@ -2,28 +2,35 @@ package com.jianglibo.vaadin.dashboard.container;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.vaadin.maddon.ListContainer;
 
 import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
+import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
 public class JpaContainer<T> extends ListContainer<T> {
 	
-	private Direction direction = Direction.DESC;
-	
-	private String sortField = "createdAt";
-	
 	private int perPage;
+	
+	private boolean trashed;
 	
 	private EventBus eventBus;
 	
-	private Sort defaultSort;
+	private String filterStr;
+	
+	private int currentPage;
+	
+	private Sort sort;
 	
 	private Domains domains;
 	
 	private boolean initSort = true;
+	
+	private Table table;
 	
 	
 	public JpaContainer(Class<T> clazz, Domains domains){
@@ -31,11 +38,25 @@ public class JpaContainer<T> extends ListContainer<T> {
 		this.domains = domains;
 	}
 	
-	public void setupProperties(EventBus eventBus, Sort defaultSort, int perPage) {
+	public void setupProperties(Table table, EventBus eventBus, Sort defaultSort, int perPage) {
+		setTable(table);
 		setEventBus(eventBus);
-		setDefaultSort(defaultSort);
+		setSort(defaultSort);
 		setPerPage(perPage);
 		getEventBus().register(this);
+	}
+	
+	public void persistState(ListViewFragmentBuilder vfb) {
+		setTrashed(vfb.getBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME));
+		setSort(vfb.getSort());
+		setFilterStr(vfb.getFilterStr());
+		setCurrentPage(vfb.getCurrentPage());
+		
+		if (getSort() != null) {
+			Order od = getSort().iterator().next();
+			table.setSortContainerPropertyId(od.getProperty());
+			table.setSortAscending(od.isAscending());
+		}
 	}
 	
 	
@@ -51,27 +72,6 @@ public class JpaContainer<T> extends ListContainer<T> {
 			initSort = false;
 		}
 	}
-
-
-	public Direction getDirection() {
-		return direction;
-	}
-
-
-	public void setDirection(Direction direction) {
-		this.direction = direction;
-	}
-
-
-	public String getSortField() {
-		return sortField;
-	}
-
-
-	public void setSortField(String sortField) {
-		this.sortField = sortField;
-	}
-
 
 	public int getPerPage() {
 		return perPage;
@@ -92,21 +92,25 @@ public class JpaContainer<T> extends ListContainer<T> {
 		this.eventBus = eventBus;
 	}
 
-
-	public Sort getDefaultSort() {
-		return defaultSort;
+	public Sort getSort() {
+		return sort;
 	}
 
-
-	public void setDefaultSort(Sort defaultSort) {
-		this.defaultSort = defaultSort;
+	public String getFilterStr() {
+		return filterStr;
 	}
 
+	public void setFilterStr(String filterStr) {
+		this.filterStr = filterStr;
+	}
+
+	public void setSort(Sort sort) {
+		this.sort = sort;
+	}
 
 	public boolean isInitSort() {
 		return initSort;
 	}
-
 
 	public void setInitSort(boolean initSort) {
 		this.initSort = initSort;
@@ -116,4 +120,29 @@ public class JpaContainer<T> extends ListContainer<T> {
 		return domains;
 	}
 
+	public int getCurrentPage() {
+		return currentPage;
+	}
+
+	public void setCurrentPage(int currentPage) {
+		this.currentPage = currentPage;
+	}
+
+	public boolean isTrashed() {
+		return trashed;
+	}
+
+	public void setTrashed(boolean trashed) {
+		this.trashed = trashed;
+	}
+
+	public Table getTable() {
+		return table;
+	}
+
+	public void setTable(Table table) {
+		this.table = table;
+	}
+	
+	
 }

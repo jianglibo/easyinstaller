@@ -27,7 +27,7 @@ public class PkSourceTable extends TableBase<PkSource> {
 	}
 	
 	public PkSourceTable afterInjection(EventBus eventBus) {
-		defaultAfterInjection(eventBus, container.afterInjection(eventBus));
+		defaultAfterInjection(eventBus, container.afterInjection(eventBus, this));
 		return this;
 	}
 

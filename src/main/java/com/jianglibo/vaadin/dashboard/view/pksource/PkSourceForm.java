@@ -19,7 +19,6 @@ import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory;
 public class PkSourceForm extends FormBase<PkSource>{
 
 	private final PkSourceRepository repository;
-	private PkSource domain;
 	
 	@Autowired
 	public PkSourceForm(MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory, PkSourceRepository repository) {
@@ -32,10 +31,9 @@ public class PkSourceForm extends FormBase<PkSource>{
 		return this;
 	}
 
-
 	@Override
 	public boolean saveToRepo() {
-		repository.save(domain);
+		repository.save(getWrappedBean());
 		return true;
 	}
 }

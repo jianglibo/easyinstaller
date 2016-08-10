@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.box;
+package com.jianglibo.vaadin.dashboard.view.software;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +9,9 @@ import org.springframework.context.MessageSource;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.domain.Box;
+import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
-import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
+import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
@@ -31,35 +31,35 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 
-@SpringView(name = BoxEditView.VIEW_NAME)
-public class BoxEditView  extends VerticalLayout implements View {
+@SpringView(name = SoftwareEditView.VIEW_NAME)
+public class SoftwareEditView  extends VerticalLayout implements View {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(BoxEditView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SoftwareEditView.class);
 	
 	private final MessageSource messageSource;
 	
-	private final BoxRepository repository;
+	private final SoftwareRepository repository;
 
-	public static final String VIEW_NAME = BoxView.VIEW_NAME + "/edit";
+	public static final String VIEW_NAME = SoftwareView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 
 	private EventBus eventBus;
 	
-	private Box bean;
+	private Software bean;
     
     private HeaderLayout header;
     
     private ItemViewFragmentBuilder ifb;
     
-    private BoxForm form;
+    private SoftwareForm form;
     
 	@Autowired
-	public BoxEditView(BoxRepository repository, MessageSource messageSource,
+	public SoftwareEditView(SoftwareRepository repository, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.messageSource = messageSource;
 		this.repository= repository;
@@ -73,7 +73,7 @@ public class BoxEditView  extends VerticalLayout implements View {
 		header = applicationContext.getBean(HeaderLayout.class).afterInjectionWithBackBtn(eventBus, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(BoxForm.class).afterInjection(eventBus);
+		form = applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus);
 		addComponent(form);
 		Component ft = buildFooter();
 		addComponent(ft);
@@ -113,7 +113,7 @@ public class BoxEditView  extends VerticalLayout implements View {
 	public void onBackBtnClicked(HistoryBackEvent hbe) {
 		String bu = ifb.getPreviousView();
 		if (Strings.isNullOrEmpty(bu)) {
-			bu = BoxView.VIEW_NAME;
+			bu = SoftwareView.VIEW_NAME;
 		}
 		UI.getCurrent().getNavigator().navigateTo(bu);
 	}
@@ -124,8 +124,8 @@ public class BoxEditView  extends VerticalLayout implements View {
 		ifb = new ItemViewFragmentBuilder(event);
 		long bid = ifb.getBeanId();
 		if (bid == 0) {
-			bean = new Box();
-			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, Box.DOMAIN_NAME + ".newtitle"));
+			bean = new Software();
+			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, Software.DOMAIN_NAME + ".newtitle"));
 		} else {
 			bean = repository.findOne(bid);
 			header.setLabelTxt(bean.getName());

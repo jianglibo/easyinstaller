@@ -3,6 +3,7 @@ package com.jianglibo.vaadin.dashboard.domain;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
@@ -18,6 +19,7 @@ public class ClusterInstallation extends BaseEntity {
 	@VaadinFormField(fieldType=Ft.COMBO_BOX, comboKey="clusterInstallationNames")
 	private String appname;
 	
+	@OneToMany
 	private Set<BoxAndRole> boxes;
 
 	public String getName() {

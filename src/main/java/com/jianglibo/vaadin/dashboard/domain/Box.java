@@ -7,6 +7,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -41,6 +42,9 @@ public class Box extends BaseEntity {
 	@VaadinTableColumn(order = 1)
 	@VaadinFormField(order = 10)
 	private String name;
+	
+	@ManyToMany(mappedBy = "boxes")
+	private Set<SingleInstallation> installations;
 	
 	@VaadinTableColumn(order=2)
 	@VaadinFormField(order = 20, fieldType=Ft.COMBO_BOX, comboKey="ostype")
@@ -117,5 +121,17 @@ public class Box extends BaseEntity {
 
 	public void setRoles(Set<String> roles) {
 		this.roles = roles;
+	}
+
+	public Set<SingleInstallation> getInstallations() {
+		return installations;
+	}
+
+	public void setInstallations(Set<SingleInstallation> installations) {
+		this.installations = installations;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 }

@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.box;
+package com.jianglibo.vaadin.dashboard.view.software;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -6,8 +6,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
 import com.google.common.eventbus.EventBus;
-import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
 import com.vaadin.data.Property;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -16,14 +16,14 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class BoxTable extends TableBase<Box> {
+public class SoftwareTable extends TableBase<Software> {
 	
 	@Autowired
-	private BoxContainer container;
+	private SoftwareContainer container;
 
 	@Autowired
-	public BoxTable(Domains domains, MessageSource messageSource) {
-		super(Box.class, domains, messageSource);
+	public SoftwareTable(Domains domains, MessageSource messageSource) {
+		super(Software.class, domains, messageSource);
 	}
 	
 	public Table afterInjection(EventBus eventBus) {
