@@ -10,6 +10,8 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.eventbus.SubscriberExceptionContext;
+import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -26,7 +28,6 @@ import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
-import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
@@ -37,14 +38,13 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = SoftwareView.VIEW_NAME)
-public class SoftwareView extends VerticalLayout implements View {
+public class SoftwareView extends VerticalLayout implements View, SubscriberExceptionHandler {
 
 	/**
 	 * 
@@ -77,7 +77,7 @@ public class SoftwareView extends VerticalLayout implements View {
 	@Autowired
 	public SoftwareView(SoftwareRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		this.eventBus = new EventBus(this.getClass().getName());
+		this.eventBus = new EventBus(this);
 		this.repository = repository;
 		this.domains = domains;
 		DashboardEventBus.register(uel);
@@ -87,12 +87,13 @@ public class SoftwareView extends VerticalLayout implements View {
 		
 		tableColumns = domains.getTableColumns().get(Software.DOMAIN_NAME);
 		
-		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection("");
-		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
-		tools.setSpacing(true);
-		tools.addStyleName("toolbar");
 
-		header.addComponent(tools);
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, "");
+//		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
+//		tools.setSpacing(true);
+//		tools.addStyleName("toolbar");
+//
+//		header.addComponent(tools);
 		addComponent(header);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{ //
@@ -196,17 +197,14 @@ public class SoftwareView extends VerticalLayout implements View {
 	@Override
 	public void enter(final ViewChangeEvent event) {
 		lvfb = new ListViewFragmentBuilder(event);
-//		Sort sort = vfb.getSort();
-//		if (sort == null) {
-//			sort = defaultSort;
-//		}
-//		if (sort.iterator().hasNext()) {
-//			Order od = sort.iterator().next();
-//			table.setSortContainerPropertyId(od.getProperty());
-//			table.setSortAscending(od.isAscending());
-//		}
 		eventBus.post(lvfb);
 		
 		LOGGER.info("parameter is: {}", event.getParameters());
+	}
+
+	@Override
+	public void handleException(Throwable exception, SubscriberExceptionContext context) {
+		exception.printStackTrace();
+		
 	}
 }

@@ -66,7 +66,9 @@ public class PkSourceEditView  extends VerticalLayout implements View {
 		addStyleName("transactions");
 		// DashboardEventBus.register(this);
 		setMargin(true);
-		header = applicationContext.getBean(HeaderLayout.class).afterInjectionWithBackBtn(eventBus, "");
+		
+		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,true, false, "");
+		
 		addComponent(header);
 		form = applicationContext.getBean(PkSourceForm.class).afterInjection(eventBus);
 		addComponent(form);

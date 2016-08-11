@@ -14,6 +14,17 @@ public class MsgUtil {
 	
 	public static final Logger LOGGER = LoggerFactory.getLogger(MsgUtil.class); 
 	
+	public static String getDynaMenuMsg(MessageSource messageSource, String menuid) {
+		String key = "dynmenu." + menuid;
+		String msg = null;
+		try {
+			msg = messageSource.getMessage(key, null, UI.getCurrent().getLocale());
+		} catch (NoSuchMessageException e) {
+			LOGGER.info("menuid {} has no localized message", key);
+		}
+		return msg == null ? key : msg;
+	}
+	
 	public static String getComboItemMsg(MessageSource messageSource,String comboKey, ComboItem ci) {
 		String key = "comboitem." + comboKey + "." + ci.getCaption();
 		String msg = null;

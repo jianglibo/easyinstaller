@@ -42,8 +42,6 @@ public class TableController extends HorizontalLayout implements /*ValueChangeLi
 	@Autowired
 	private MessageSource messageSource;
 	
-//	private CheckBox cb;
-	
 	private Button trashBt;
 
 	private EventBus eventBus;
@@ -69,10 +67,6 @@ public class TableController extends HorizontalLayout implements /*ValueChangeLi
 				}
 			}
 		});
-//		cb = new CheckBox(messageSource.getMessage("tablecontroller.trashswitcher", null, UI.getCurrent().getLocale()), false);
-//		cb.setIcon(FontAwesome.TRASH);
-//		
-//		cb.addValueChangeListener(this);
 		HorizontalLayout hl = new HorizontalLayout();
 		hl.setSpacing(true);
 		hl.addComponent(trashBt);
@@ -83,19 +77,11 @@ public class TableController extends HorizontalLayout implements /*ValueChangeLi
 		return this;
 	}
 
-//	@Override
-//	public void valueChange(ValueChangeEvent event) {
-//		if (!checkEventFromUri) {
-//			eventBus.post(new TrashedCheckBoxEvent((boolean) event.getProperty().getValue()));
-//		}
-//		checkEventFromUri = false;
-//	}
 
 	@Override
 	@Subscribe
 	public void whenUriFragementChange(ListViewFragmentBuilder vfb) {
 		boolean trashed = vfb.getBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME);
-//		checkEventFromUri = true;
 		if (trashed) {
 			trashBt.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		} else {

@@ -9,17 +9,26 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
+import com.vaadin.ui.themes.ValoTheme;
+
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "singleInstallation")
+@VaadinTable(name = SingleInstallation.DOMAIN_NAME,multiSelect=true, messagePrefix="domain.singleinstallaion.", styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
 public class SingleInstallation extends BaseEntity {
+
+	public static final String DOMAIN_NAME = "singleinstallation";
 	
 	@ManyToOne
+	@VaadinTableColumn
 	private Software software;
 	
 	@ManyToMany
 	private Set<Box> boxes;
 	
+	@VaadinTableColumn
 	private boolean success;
 	
 	@Lob

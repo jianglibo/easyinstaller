@@ -70,7 +70,7 @@ public class SoftwareEditView  extends VerticalLayout implements View {
 		StyleUtil.setOverflowAuto(this, true);
 		setMargin(true);
 		
-		header = applicationContext.getBean(HeaderLayout.class).afterInjectionWithBackBtn(eventBus, "");
+		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,true, false, "");
 		
 		addComponent(header);
 		form = applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus);

@@ -10,6 +10,8 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.eventbus.SubscriberExceptionContext;
+import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Box;
@@ -26,25 +28,24 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
-import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.util.TableUtil;
+import com.jianglibo.vaadin.dashboard.view.singleinstallation.SingleInstallationView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = BoxView.VIEW_NAME)
-public class BoxView extends VerticalLayout implements View {
+public class BoxView extends VerticalLayout implements View, SubscriberExceptionHandler {
 
 	/**
 	 * 
@@ -61,7 +62,7 @@ public class BoxView extends VerticalLayout implements View {
 	
 	private TableController tableController;
 	
-	private ListViewFragmentBuilder vfb;
+	private ListViewFragmentBuilder lvfb;
 
 	private EventBus eventBus;
 	
@@ -76,7 +77,7 @@ public class BoxView extends VerticalLayout implements View {
 	@Autowired
 	public BoxView(BoxRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		this.eventBus = new EventBus(this.getClass().getName());
+		this.eventBus = new EventBus(this);
 		this.repository = repository;
 		this.domains = domains;
 		DashboardEventBus.register(uel);
@@ -87,19 +88,20 @@ public class BoxView extends VerticalLayout implements View {
 		tableColumns = domains.getTableColumns().get(Box.DOMAIN_NAME);
 		
 		
-		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection("");
-		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
-		tools.setSpacing(true);
-		tools.addStyleName("toolbar");
-
-		header.addComponent(tools);
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, "");
+//		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
+//		tools.setSpacing(true);
+//		tools.addStyleName("toolbar");
+//
+//		header.addComponent(tools);
 		addComponent(header);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{ //
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
 						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS)), //
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS))};
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
+				new ButtonGroup(new ButtonDescription("installedSoftware", null, ButtonEnableType.ONE))};
 		
 		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
 
@@ -125,25 +127,25 @@ public class BoxView extends VerticalLayout implements View {
 	
 	@Subscribe
 	public void whenCurrentPageChange(CurrentPageEvent cpe) {
-		String nvs = vfb.setCurrentPage(cpe.getCurrentPage()).toNavigateString();
+		String nvs = lvfb.setCurrentPage(cpe.getCurrentPage()).toNavigateString();
 		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
 	
 	@Subscribe
 	public void whenFilterStrChange(FilterStrEvent fse) {
-		String nvs = vfb.setFilterStr(fse.getFilterStr()).toNavigateString();
+		String nvs = lvfb.setFilterStr(fse.getFilterStr()).toNavigateString();
 		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
 	
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(Box.DOMAIN_NAME), vfb);
-		UI.getCurrent().getNavigator().navigateTo(vfb.toNavigateString());
+		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(Box.DOMAIN_NAME), lvfb);
+		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
 	
 	@Subscribe
 	public void whenTrashedCheckboxChange(TrashedCheckBoxEvent tce) {
-		String nvs = vfb.setFilterStr("").setCurrentPage(1).setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
+		String nvs = lvfb.setFilterStr("").setCurrentPage(1).setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
 		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
 	
@@ -169,10 +171,14 @@ public class BoxView extends VerticalLayout implements View {
 			break;
 		case CommonMenuItemIds.EDIT:
 			selected = (Collection<Box>) table.getValue();
-			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + vfb.toNavigateString());
+			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
+			break;
+		case "installedSoftware":
+			selected = (Collection<Box>) table.getValue();
+			UI.getCurrent().getNavigator().navigateTo(SingleInstallationView.VIEW_NAME + "/?boxid=" + selected.iterator().next().getId() + "&pv=" + lvfb.toNavigateString());
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", dce.getBtnId());
@@ -195,8 +201,13 @@ public class BoxView extends VerticalLayout implements View {
 
 	@Override
 	public void enter(final ViewChangeEvent event) {
-		vfb = new ListViewFragmentBuilder(event);
-		eventBus.post(vfb);
+		lvfb = new ListViewFragmentBuilder(event);
+		eventBus.post(lvfb);
 		LOGGER.info("parameter is: {}", event.getParameters());
+	}
+
+	@Override
+	public void handleException(Throwable exception, SubscriberExceptionContext context) {
+		exception.printStackTrace();
 	}
 }

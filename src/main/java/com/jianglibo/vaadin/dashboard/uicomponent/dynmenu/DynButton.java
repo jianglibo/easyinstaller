@@ -14,11 +14,11 @@ import com.google.common.eventbus.Subscribe;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
@@ -48,7 +48,7 @@ public class DynButton extends HorizontalLayout implements ClickListener {
         	HorizontalLayout hl = new HorizontalLayout();
         	for(ButtonDescription btnDesc: btg.getButtons()) {
             	btnDescriptionMap.put(btnDesc.getItemId(), btnDesc);
-            	String msg = messageSource.getMessage("dynmenu." + btnDesc.getItemId(), null, UI.getCurrent().getLocale());
+            	String msg = MsgUtil.getDynaMenuMsg(messageSource, btnDesc.getItemId());
             	Button bt;
             	if (btnDesc.getIcon() == null) {
             		bt = new Button(msg);

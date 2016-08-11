@@ -4,10 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Component;
 
-import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
@@ -17,7 +15,6 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.TwinColSelect;
-import com.vaadin.ui.UI;
 
 @Component
 public class FormFieldsFactory {
@@ -53,14 +50,7 @@ public class FormFieldsFactory {
 				fields.add(new PropertyIdAndField(vfw.getName(), tcs));
 				break;
 			default:
-				String caption = vfw.getVff().caption();
-				if (Strings.isNullOrEmpty(caption)) {
-					caption = vfw.getName();
-				}
-				try {
-					caption = messageSource.getMessage(vt.messagePrefix() + "field." + caption, null, UI.getCurrent().getLocale());
-				} catch (NoSuchMessageException e) {
-				}
+				String caption = MsgUtil.getFieldMsg(messageSource, vt.messagePrefix(), vfw);
 				TextField tf = new TextField(caption);
 				tf.setNullRepresentation("");
 				addStyleName(vfw, tf);
