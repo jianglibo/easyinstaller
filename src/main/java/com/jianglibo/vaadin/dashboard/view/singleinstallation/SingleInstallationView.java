@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
+import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
+import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.SingleInstallation;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
@@ -21,9 +23,11 @@ import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
 import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
 import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
+import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TrashedCheckBoxEvent;
+import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.SingleInstallationRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
@@ -31,14 +35,15 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.util.TableUtil;
+import com.jianglibo.vaadin.dashboard.view.box.BoxView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -74,12 +79,20 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 	
 	private final Domains domains;
 	
+	private HeaderLayout header;
+	
+	private final MessageSource messageSource;
+	
+	@Autowired
+	private BoxRepository boxRepository;
+	
 	@Autowired
 	public SingleInstallationView(SingleInstallationRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.eventBus = new EventBus(this);
 		this.repository = repository;
 		this.domains = domains;
+		this.messageSource = messageSource;
 		DashboardEventBus.register(uel);
 		eventBus.register(this);
 		setSizeFull();
@@ -87,12 +100,7 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 		
 		tableColumns = domains.getTableColumns().get(SingleInstallation.DOMAIN_NAME);
 		
-		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, "");
-//		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
-//		tools.setSpacing(true);
-//		tools.addStyleName("toolbar");
-//
-//		header.addComponent(tools);
+		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, false, true, "");
 		addComponent(header);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{ //
@@ -147,6 +155,15 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
 	
+	@Subscribe
+	public void onBackBtnClicked(HistoryBackEvent hbe) {
+		String bu = lvfb.getPreviousView();
+		if (Strings.isNullOrEmpty(bu)) {
+			bu = BoxView.VIEW_NAME;
+		}
+		UI.getCurrent().getNavigator().navigateTo(bu);
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Subscribe
 	public void dynMenuClicked(DynMenuClickEvent dce) {
@@ -197,8 +214,10 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 	public void enter(final ViewChangeEvent event) {
 		lvfb = new ListViewFragmentBuilder(event);
 		eventBus.post(lvfb);
+		Long boxId = lvfb.getLong("boxid");
+		Box box = boxRepository.findOne(boxId);
 		
-		LOGGER.info("parameter is: {}", event.getParameters());
+		header.setLabelTxt(box.getName() + "'s " + MsgUtil.getListViewTitle(messageSource, SingleInstallation.DOMAIN_NAME));
 	}
 
 	@Override

@@ -28,7 +28,7 @@ public class JpaContainer<T> extends ListContainer<T> {
 	
 	private Domains domains;
 	
-	private boolean initSort = true;
+	private boolean enableSort = false;
 	
 	private Table table;
 	
@@ -48,7 +48,10 @@ public class JpaContainer<T> extends ListContainer<T> {
 	
 	public void persistState(ListViewFragmentBuilder vfb) {
 		setTrashed(vfb.getBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME));
-		setSort(vfb.getSort());
+		// only if vfb.getSort() exists.
+		if (vfb.getSort() != null) {
+			setSort(vfb.getSort());
+		}
 		setFilterStr(vfb.getFilterStr());
 		setCurrentPage(vfb.getCurrentPage());
 		
@@ -62,14 +65,12 @@ public class JpaContainer<T> extends ListContainer<T> {
 	
 	@Override
 	public void sort(Object[] propertyId, boolean[] ascending) {
-		if (!initSort) {
+		if (enableSort) {
 			if (propertyId.length > 0) {
 				String fname = (String) propertyId[0];
 				Direction ndirection = ascending[0] ? Direction.ASC : Direction.DESC;
 				eventBus.post(new TableSortEvent(new Sort(ndirection, fname)));
 			}
-		} else {
-			initSort = false;
 		}
 	}
 
@@ -108,12 +109,9 @@ public class JpaContainer<T> extends ListContainer<T> {
 		this.sort = sort;
 	}
 
-	public boolean isInitSort() {
-		return initSort;
-	}
 
-	public void setInitSort(boolean initSort) {
-		this.initSort = initSort;
+	public void setEnableSort(boolean enableSort) {
+		this.enableSort = enableSort;
 	}
 
 	public Domains getDomains() {

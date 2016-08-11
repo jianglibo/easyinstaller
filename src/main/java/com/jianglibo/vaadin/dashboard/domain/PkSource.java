@@ -13,7 +13,14 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
 @Table(name = "pksource",uniqueConstraints = { @UniqueConstraint(columnNames = "fileMd5"), @UniqueConstraint(columnNames = "pkname") })
-@VaadinTable(name= PkSource.DOMAIN_NAME,multiSelect = true, messagePrefix="domain.pksource.",styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true, sortable=true)
+@VaadinTable(name= PkSource.DOMAIN_NAME,
+	multiSelect = true,
+	messagePrefix="domain.pksource.",
+	styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT},
+	selectable=true,
+	fullSize=true,
+	footerVisible=true,
+	sortable=true)
 public class PkSource extends BaseEntity {
 
     /**

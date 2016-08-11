@@ -5,7 +5,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
-import com.jianglibo.vaadin.dashboard.domain.Software;
 
 public class SortUtil {
 
@@ -14,6 +13,14 @@ public class SortUtil {
 			return new Sort(Direction.DESC, sortstr.substring(1));
 		} else {
 			return new Sort(Direction.ASC, sortstr);
+		}
+	}
+	
+	public static Order orderFromString(String str) {
+		if (str.startsWith("-")) {
+			return new Order(Direction.DESC, str.substring(1));
+		} else {
+			return new Order(Direction.ASC, str);
 		}
 	}
 	

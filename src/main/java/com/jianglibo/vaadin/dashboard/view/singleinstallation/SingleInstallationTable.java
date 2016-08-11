@@ -28,6 +28,8 @@ public class SingleInstallationTable extends TableBase<SingleInstallation> {
 	
 	public Table afterInjection(EventBus eventBus) {
 		defaultAfterInjection(eventBus, container.afterInjection(eventBus, this));
+		//Because we use sql sort, not the component sort. 
+		container.setEnableSort(true);
 		return this;
 	}
 	

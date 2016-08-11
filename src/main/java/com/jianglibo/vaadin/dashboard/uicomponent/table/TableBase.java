@@ -6,13 +6,15 @@ import java.util.Date;
 import java.util.Set;
 
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Sort.Order;
 
 import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.util.ReflectUtil;
-import com.jianglibo.vaadin.dashboard.util.TableUtil;
+import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
@@ -43,9 +45,7 @@ public abstract class TableBase<T> extends Table {
 		VaadinTableColumns tableColumns = domains.getTableColumns().get(domainName);
 		VaadinTable vt = domains.getTables().get(domainName);
 		
-		TableUtil.decorateTable(this, messageSource, vt, tableColumns);
-		
-		setMultiSelect(vt.multiSelect());
+		decorateTable(vt, tableColumns);
 		
 		setFooter();
 
@@ -64,6 +64,40 @@ public abstract class TableBase<T> extends Table {
 	}
 
 	
+	private void decorateTable(VaadinTable vt, VaadinTableColumns tableColumns) {
+		if (vt.fullSize()) {
+			setSizeFull();
+		}
+		
+		setSortEnabled(vt.sortable());
+		
+		for(String sn : vt.styleNames()) {
+			addStyleName(sn);
+		}
+		setSelectable(vt.selectable());
+		
+		setColumnReorderingAllowed(vt.columnCollapsingAllowed());
+
+		setColumnCollapsingAllowed(vt.columnCollapsingAllowed());
+		
+		setFooterVisible(vt.footerVisible());
+		setMultiSelect(vt.multiSelect());
+		
+		Order order = SortUtil.orderFromString(vt.defaultSort());
+		
+		setSortContainerPropertyId(order.getProperty());
+		setSortAscending(order.isAscending());
+		
+		for(VaadinTableColumnWrapper tcw: tableColumns.getColumns()) {
+			setColumnCollapsible(tcw.getName(), tcw.getVtc().collapsible());
+			setColumnAlignment(tcw.getName(), tcw.getVtc().alignment());
+		}
+		
+		setVisibleColumns(tableColumns.getVisibleColumns());
+		setColumnHeaders(tableColumns.getColumnHeaders(vt, messageSource));
+		
+	}
+
 	public String formatDate(DateFormat dfm, Property<?> property) {
 		return dfm.format(((Date) property.getValue()));
 	}

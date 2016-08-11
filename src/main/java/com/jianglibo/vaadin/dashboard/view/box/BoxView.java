@@ -31,6 +31,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.util.TableUtil;
 import com.jianglibo.vaadin.dashboard.view.singleinstallation.SingleInstallationView;
@@ -88,12 +89,7 @@ public class BoxView extends VerticalLayout implements View, SubscriberException
 		tableColumns = domains.getTableColumns().get(Box.DOMAIN_NAME);
 		
 		
-		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, "");
-//		HorizontalLayout tools = new HorizontalLayout(applicationContext.getBean(FilterForm.class).afterInjection(eventBus, ""));
-//		tools.setSpacing(true);
-//		tools.addStyleName("toolbar");
-//
-//		header.addComponent(tools);
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, Box.DOMAIN_NAME));
 		addComponent(header);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{ //

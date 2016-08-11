@@ -28,6 +28,8 @@ public class PkSourceTable extends TableBase<PkSource> {
 	
 	public PkSourceTable afterInjection(EventBus eventBus) {
 		defaultAfterInjection(eventBus, container.afterInjection(eventBus, this));
+		//Because we use sql sort, not the component sort. 
+		container.setEnableSort(true);
 		return this;
 	}
 

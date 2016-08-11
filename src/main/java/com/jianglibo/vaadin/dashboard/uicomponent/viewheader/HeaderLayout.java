@@ -64,14 +64,26 @@ public class HeaderLayout extends HorizontalLayout {
 			addComponent(tools);
 		}
 
-		public void addComponentToToolbar(Component c) {
+		public void addToToolbar(Component c) {
 			tools.addComponent(c);
+		}
+		
+		public void addToToolbar(Component c, int position) {
+			tools.addComponent(c, position);
+		}
+		
+		public void addToToolbar(Component c, int position, String...styles) {
+			for(String style: styles) {
+				c.addStyleName(style);
+			}
+			
+			tools.addComponent(c, position);
 		}
 		
 		private void makeToolbar(boolean showFilterForm, boolean showBackBtn) {
 			if (showFilterForm) {
 				FilterForm filterForm = applicationContext.getBean(FilterForm.class).afterInjection(eventBus, "");
-				addComponentToToolbar(filterForm);
+				addToToolbar(filterForm);
 			}
 			
 			if (showBackBtn) {
@@ -84,7 +96,7 @@ public class HeaderLayout extends HorizontalLayout {
 						eventBus.post(new HistoryBackEvent());
 					}
 				});
-				addComponentToToolbar(backBtn);
+				addToToolbar(backBtn);
 			}
 		}
 		
