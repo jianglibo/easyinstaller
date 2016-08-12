@@ -73,10 +73,15 @@ application:
       Java:
         - value: java6
         - value: java7
-      	- value: java8
-      	- value: java9
-      Hadoop:
-        - value: datanode
+        - value: java8
+        - value: java9
+    Hadoop:
+      - value: datanode
+    runstatus:
+      - value: unstarted
+      - value: running
+      - value: success
+      - value: failure
     boxrole:
       - value: Java
   

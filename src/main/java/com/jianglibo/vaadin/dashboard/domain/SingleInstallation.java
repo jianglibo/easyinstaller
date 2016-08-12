@@ -9,6 +9,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
@@ -23,17 +25,25 @@ public class SingleInstallation extends BaseEntity {
 	
 	@ManyToOne
 	@VaadinTableColumn
+	@VaadinFormField
 	private Software software;
 	
 	@ManyToMany
 	private Set<Box> boxes;
 	
 	@VaadinTableColumn
-	private boolean success;
+	@VaadinFormField(enabled = false, readOnly=true)
+	private String state = "unstarted";
 	
 	@Lob
 	@Column(length=64000)
+	@VaadinFormField(fieldType=Ft.TEXT_AREA)
 	private String config;
+	
+	@Lob
+	@Column(length=64000)
+	@VaadinFormField(fieldType=Ft.TEXT_AREA)
+	private String output;
 
 	public Software getSoftware() {
 		return software;
@@ -59,11 +69,20 @@ public class SingleInstallation extends BaseEntity {
 		this.boxes = boxes;
 	}
 
-	public boolean isSuccess() {
-		return success;
+	public String getState() {
+		return state;
 	}
 
-	public void setSuccess(boolean success) {
-		this.success = success;
+	public void setState(String state) {
+		this.state = state;
 	}
+
+	public String getOutput() {
+		return output;
+	}
+
+	public void setOutput(String output) {
+		this.output = output;
+	}
+
 }

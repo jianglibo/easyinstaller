@@ -47,22 +47,22 @@ public class MsgUtil {
 		return msg == null ? key : msg;
 	}
 	
-	public static String getListViewTitle(MessageSource messageSource, String domainName) {
+	public static String getListViewTitle(MessageSource messageSource, String domainName, String...substitudes) {
 		String key = "view." + domainName + ".list.title";
 		String msg = null;
 		try {
-			msg = messageSource.getMessage(key, null, UI.getCurrent().getLocale());
+			msg = messageSource.getMessage(key, substitudes, UI.getCurrent().getLocale());
 		} catch (NoSuchMessageException e) {
 			LOGGER.info("field {} has no localized message", key);
 		}
 		return msg == null ? key : msg;
 	}
 	
-	public static String getViewMsg(MessageSource messageSource, String domainName) {
+	public static String getViewMsg(MessageSource messageSource, String domainName, String...substitudes) {
 		String key = "view." + domainName;
 		String msg = null;
 		try {
-			msg = messageSource.getMessage(key, null, UI.getCurrent().getLocale());
+			msg = messageSource.getMessage(key, substitudes, UI.getCurrent().getLocale());
 		} catch (NoSuchMessageException e) {
 			LOGGER.info("field {} has no localized message", key);
 		}

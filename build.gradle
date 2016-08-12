@@ -88,6 +88,9 @@ dependencies {
 	
 	// http://mvnrepository.com/artifact/com.vaadin/vaadin-client-compiled
 	compile group: 'com.vaadin', name: 'vaadin-client-compiled', version: '7.6.8'
+	
+	// https://mvnrepository.com/artifact/com.vaadin/vaadin-push
+	compile group: 'com.vaadin', name: 'vaadin-push', version: '7.6.8'
 
 	// http://mvnrepository.com/artifact/commons-beanutils/commons-beanutils
 	compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.2'

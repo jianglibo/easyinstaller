@@ -36,25 +36,25 @@ public class FormFieldsFactory {
 			case COMBO_BOX:
 				ComboBox cb = comboBoxFieldFactory.createCombo(vt, vfw);
 				addStyleName(vfw, cb);
-				fields.add(new PropertyIdAndField(vfw.getName(), cb));
+				fields.add(new PropertyIdAndField(vfw, cb));
 				break;
 			case TEXT_AREA:
 				TextArea ta = new TextArea(MsgUtil.getFieldMsg(messageSource, vt.messagePrefix(), vfw));
 				ta.setNullRepresentation("");
 				addStyleName(vfw, ta);
-				fields.add(new PropertyIdAndField(vfw.getName(), ta));
+				fields.add(new PropertyIdAndField(vfw, ta));
 				break;
 			case TWIN_COL_SELECT:
 				TwinColSelect tcs = twinColSelectFieldFactory.create(vt, vfw);
 				addStyleName(vfw, tcs);
-				fields.add(new PropertyIdAndField(vfw.getName(), tcs));
+				fields.add(new PropertyIdAndField(vfw, tcs));
 				break;
 			default:
 				String caption = MsgUtil.getFieldMsg(messageSource, vt.messagePrefix(), vfw);
 				TextField tf = new TextField(caption);
 				tf.setNullRepresentation("");
 				addStyleName(vfw, tf);
-				fields.add(new PropertyIdAndField(vfw.getName(), tf));
+				fields.add(new PropertyIdAndField(vfw, tf));
 				break;
 			}
         }
@@ -73,9 +73,11 @@ public class FormFieldsFactory {
 		private String propertyId;
 		private Field<?> field;
 		
-		public PropertyIdAndField(String propertyId, Field<?> field) {
+		public PropertyIdAndField(VaadinFormFieldWrapper vfw, Field<?> field) {
 			super();
-			this.propertyId = propertyId;
+			field.setEnabled(vfw.getVff().enabled());
+			field.setReadOnly(vfw.getVff().readOnly());
+			this.propertyId = vfw.getName();
 			this.field = field;
 		}
 

@@ -9,8 +9,10 @@ import org.springframework.context.MessageSource;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.SingleInstallation;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
+import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.SingleInstallationRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
@@ -59,6 +61,9 @@ public class SingleInstallationEditView  extends VerticalLayout implements View 
     private SingleInstallationForm form;
     
 	@Autowired
+	private BoxRepository boxRepository;
+	
+	@Autowired
 	public SingleInstallationEditView(SingleInstallationRepository repository, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.messageSource = messageSource;
@@ -70,7 +75,7 @@ public class SingleInstallationEditView  extends VerticalLayout implements View 
 		StyleUtil.setOverflowAuto(this, true);
 		setMargin(true);
 		
-		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,true, false, "");
+		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
 		form = applicationContext.getBean(SingleInstallationForm.class).afterInjection(eventBus);
@@ -123,9 +128,13 @@ public class SingleInstallationEditView  extends VerticalLayout implements View 
 		LOGGER.info("parameter string is: {}", event.getParameters());
 		ifb = new ItemViewFragmentBuilder(event);
 		long bid = ifb.getBeanId();
+		
+		Long boxId = ifb.getLong("boxid");
+		Box box = boxRepository.findOne(boxId);
+				
 		if (bid == 0) {
 			bean = new SingleInstallation();
-			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, SingleInstallation.DOMAIN_NAME + ".newtitle"));
+			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, SingleInstallation.DOMAIN_NAME + ".newtitle", box.getName()));
 		} else {
 			bean = repository.findOne(bid);
 			header.setLabelTxt(bean.getSoftware().getName());

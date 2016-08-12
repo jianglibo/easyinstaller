@@ -86,6 +86,8 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 	@Autowired
 	private BoxRepository boxRepository;
 	
+	private Box box; 
+	
 	@Autowired
 	public SingleInstallationView(SingleInstallationRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
@@ -189,7 +191,7 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:
-			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
+			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/?boxid=" + box.getId() + "&pv=" + lvfb.toNavigateString());
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", dce.getBtnId());
@@ -215,9 +217,8 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 		lvfb = new ListViewFragmentBuilder(event);
 		eventBus.post(lvfb);
 		Long boxId = lvfb.getLong("boxid");
-		Box box = boxRepository.findOne(boxId);
-		
-		header.setLabelTxt(box.getName() + "'s " + MsgUtil.getListViewTitle(messageSource, SingleInstallation.DOMAIN_NAME));
+		box = boxRepository.findOne(boxId);
+		header.setLabelTxt(MsgUtil.getListViewTitle(messageSource, SingleInstallation.DOMAIN_NAME, box.getName()));
 	}
 
 	@Override
