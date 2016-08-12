@@ -45,4 +45,10 @@ public class ClusterInstallation extends BaseEntity {
 	public void setBoxes(Set<BoxAndRole> boxes) {
 		this.boxes = boxes;
 	}
+
+	@Override
+	public String getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -30,6 +30,12 @@ public class BlobObjectInDb extends BaseEntity {
 	public void setBlob(String blob) {
 		this.blob = blob;
 	}
+
+	@Override
+	public String getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 }

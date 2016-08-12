@@ -32,12 +32,13 @@ public abstract class BaseEntity implements Serializable {
     @Version
     private int version;
     
-
 	@Temporal(TemporalType.TIMESTAMP)
 	@VaadinTableColumn(order=10000, sortable=true)
     private Date createdAt;
     
     private boolean archived = false;
+    
+    public abstract String getDisplayName();
     
     @PrePersist
     public void createCreatedAt() {

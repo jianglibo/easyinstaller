@@ -27,4 +27,10 @@ public class BoxAndRole extends BaseEntity {
 	public void setRole(String role) {
 		this.role = role;
 	}
+
+	@Override
+	public String getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

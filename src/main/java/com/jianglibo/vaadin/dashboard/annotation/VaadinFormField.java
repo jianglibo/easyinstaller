@@ -4,6 +4,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
+
 @Target({ java.lang.annotation.ElementType.FIELD })
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Documented
@@ -18,6 +20,8 @@ public @interface VaadinFormField {
 	String comboDependOn() default "";
 	boolean readOnly() default false;
 	boolean allowNewComboOption() default false;
+	String jpql() default "";
+	Class<? extends BaseEntity> comboOptionClass() default BaseEntity.class;
 	public static enum Ft {
 		TEXT_FIELD,COMBO_BOX, TEXT_AREA, RICH_TEXT, TWIN_COL_SELECT
 	}

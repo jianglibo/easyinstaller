@@ -54,12 +54,13 @@ public class JpaContainer<T> extends ListContainer<T> {
 		}
 		setFilterStr(vfb.getFilterStr());
 		setCurrentPage(vfb.getCurrentPage());
+		// will cause circular sort event.
 		
-		if (getSort() != null) {
-			Order od = getSort().iterator().next();
-			table.setSortContainerPropertyId(od.getProperty());
-			table.setSortAscending(od.isAscending());
-		}
+//		if (getSort() != null) {
+//			Order od = getSort().iterator().next();
+//			table.setSortContainerPropertyId(od.getProperty());
+//			table.setSortAscending(od.isAscending());
+//		}
 	}
 	
 	

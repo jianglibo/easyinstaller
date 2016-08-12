@@ -95,7 +95,6 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 		this.repository = repository;
 		this.domains = domains;
 		this.messageSource = messageSource;
-		DashboardEventBus.register(uel);
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
@@ -123,7 +122,7 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 	@Override
 	public void detach() {
 		super.detach();
-		// A new instance of TransactionsView is created every time it's
+		// A new instance of SingleInstallationView is created every time it's
 		// navigated to so we'll need to clean up references to it on detach.
 		DashboardEventBus.unregister(uel);
 	}
@@ -214,6 +213,7 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 
 	@Override
 	public void enter(final ViewChangeEvent event) {
+		DashboardEventBus.register(uel);
 		lvfb = new ListViewFragmentBuilder(event);
 		eventBus.post(lvfb);
 		Long boxId = lvfb.getLong("boxid");

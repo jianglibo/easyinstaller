@@ -6,6 +6,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
 import com.google.common.eventbus.EventBus;
+import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.SingleInstallation;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
@@ -45,6 +46,9 @@ public class SingleInstallationTable extends TableBase<SingleInstallation> {
 		String result = super.formatPropertyValue(rowId, colId, property);
 		if (colId.equals("createdAt")) {
 			result = formatDate(DATEFORMAT, property);
+		} else if (colId.equals("software")) {
+			BaseEntity be = (BaseEntity) property.getValue();
+			result = be.getDisplayName();
 		}
 		return result;
 	}

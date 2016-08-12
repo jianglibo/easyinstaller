@@ -9,6 +9,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.google.common.base.Objects;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
@@ -64,5 +65,15 @@ public class Software extends BaseEntity {
 
 	public void setPksources(Set<PkSource> pksources) {
 		this.pksources = pksources;
+	}
+	
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("name", getName()).toString();
+	}
+
+	@Override
+	public String getDisplayName() {
+		return name;
 	}
 }

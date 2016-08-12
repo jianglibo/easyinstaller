@@ -53,4 +53,10 @@ public class ShellExecRole extends BaseEntity implements GrantedAuthority {
     public String getAuthority() {
         return name;
     }
+
+	@Override
+	public String getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
