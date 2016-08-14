@@ -1,6 +1,8 @@
 package com.jianglibo.vaadin.dashboard.view.pksource;
 
 
+import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +23,15 @@ import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
+import com.vaadin.data.Container;
+import com.vaadin.data.util.filter.UnsupportedFilterException;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class PkSourceContainer extends JpaContainer<PkSource>{
+public class PkSourceContainer extends JpaContainer<PkSource> implements Container.Filterable{
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(PkSourceContainer.class);
 	
@@ -75,6 +79,26 @@ public class PkSourceContainer extends JpaContainer<PkSource>{
 
 	public void refresh() {
 		setList();
+	}
+
+	@Override
+	public void addContainerFilter(Filter filter) throws UnsupportedFilterException {
+		
+	}
+
+	@Override
+	public void removeContainerFilter(Filter filter) {
+		
+	}
+
+	@Override
+	public void removeAllContainerFilters() {
+		
+	}
+
+	@Override
+	public Collection<Filter> getContainerFilters() {
+		return null;
 	}
 
 }
