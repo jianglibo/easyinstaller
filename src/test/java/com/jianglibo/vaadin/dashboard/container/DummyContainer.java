@@ -3,14 +3,20 @@ package com.jianglibo.vaadin.dashboard.container;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.AbstractContainer;
 
 @SuppressWarnings("serial")
-public class FreeContainer<T> extends AbstractContainer implements Container.Indexed, Container.Sortable {
-
+@Component
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+public class DummyContainer<T> extends AbstractContainer implements Container.Indexed, Container.Sortable {
+	
 	@Override
 	public T nextItemId(Object itemId) {
 		return null;
@@ -152,5 +158,4 @@ public class FreeContainer<T> extends AbstractContainer implements Container.Ind
 	public Item addItemAt(int index, Object newItemId) throws UnsupportedOperationException {
 		return null;
 	}
-
 }

@@ -2,7 +2,6 @@ package com.jianglibo.vaadin.dashboard.container;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
 import org.vaadin.maddon.ListContainer;
 
 import com.google.common.eventbus.EventBus;
