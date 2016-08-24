@@ -8,6 +8,12 @@ public class ClassNameAndId {
 	
 	private Long id;
 
+	public ClassNameAndId(String className, Long id) {
+		super();
+		this.className = className;
+		this.id = id;
+	}
+
 	public String getClassName() {
 		return className;
 	}

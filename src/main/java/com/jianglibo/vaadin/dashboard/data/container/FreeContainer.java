@@ -7,34 +7,36 @@ import java.util.List;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.data.ClassNameAndId;
 import com.jianglibo.vaadin.dashboard.data.EntityCacheWrapper;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
-import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonMethod;
+import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.vaadin.data.Buffered;
 import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.Container.Indexed;
 import com.vaadin.data.Container.ItemSetChangeNotifier;
 import com.vaadin.data.Container.PropertySetChangeNotifier;
 import com.vaadin.data.Container.Sortable;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.filter.UnsupportedFilterException;
 import com.vaadin.ui.Table;
 
+/**
+ * Maybe use a window is more convenient.!!!!!
+ * @author Administrator
+ *
+ * @param <T>
+ */
 @SuppressWarnings("serial")
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -69,15 +71,42 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	
 	private EntityCacheWrapper entityCacheWrapper;
 	
-	public FreeContainer(Class<T> clazz, Domains domains, EntityCacheWrapper entityCacheWrapper) {
+	private Sort defaultSort;
+
+	
+	public FreeContainer(Class<T> clazz,VaadinTable vt, Domains domains, EntityCacheWrapper entityCacheWrapper) {
 		this.clazz = clazz;
 		this.simpleClassName = clazz.getSimpleName();
 		this.domains = domains;
 		this.entityCacheWrapper = entityCacheWrapper;
+		this.defaultSort = SortUtil.fromString(vt.defaultSort());
+		this.sort = this.defaultSort;
 	}
 
+	/**
+	 * If we can get item in cache, get it.or else we should fetch from store.
+	 */
 	@Override
-	public T nextItemId(Object itemId) {
+	public Object nextItemId(Object itemId) {
+		BaseEntity be = (BaseEntity) itemId;
+		Long id = be.getId();
+		ClassNameAndId cnaid = new ClassNameAndId(simpleClassName, id);
+		int idx;
+		if (indexAndOid.containsValue(cnaid)) {
+			idx = indexAndOid.inverse().get(cnaid) + 1;
+			if (indexAndOid.containsKey(idx)) {
+				ClassNameAndId nextCnaid = indexAndOid.get(idx);
+				BaseEntity nextbe = entityCacheWrapper.getCacher().getIfPresent(nextCnaid); 
+				if (nextbe != null) {
+					return nextbe;
+				}
+			}
+		} else {
+			
+		}
+		
+		batchFetch(idx);
+		
 		return null;
 	}
 
@@ -310,8 +339,12 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public void sort(Object[] propertyId, boolean[] ascending) {
-		// TODO Auto-generated method stub
-
+		if (propertyId.length > 0) {
+			String s = (String) propertyId[0];
+			this.sort =  new Sort(ascending[0] ? Direction.ASC : Direction.DESC, s);
+		} else {
+			this.sort = defaultSort;
+		}
 	}
 
 	@Override
