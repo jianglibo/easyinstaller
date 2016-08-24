@@ -13,6 +13,8 @@ import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
+import com.jianglibo.vaadin.dashboard.uicomponent.twingrid.TwinGridField;
+import com.jianglibo.vaadin.dashboard.uicomponent.twingrid.TwinGridLayout;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
@@ -20,6 +22,7 @@ import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -69,23 +72,34 @@ public class BoxEditView  extends VerticalLayout implements View {
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
-		StyleUtil.setOverflowAuto(this, true);
-		setMargin(true);
+//		StyleUtil.setOverflowAuto(this, true);
+		setMargin(new MarginInfo(true, true, false, true));
 		
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, false, true, "");
 		
 		addComponent(header);
 		form = applicationContext.getBean(BoxForm.class).afterInjection(eventBus);
+		TwinGridField tl = new TwinGridField<>();
+		tl.setCaption("box");
+		StyleUtil.setOverflowAuto(form, true);
+		form.addComponent(tl);
 		addComponent(form);
+		form.setSizeFull();
+		
 		Component ft = buildFooter();
-		addComponent(ft);
-		setComponentAlignment(form, Alignment.TOP_LEFT);
+		
+//		addComponent(ft);
+//		ft.setHeight(30, Unit.PIXELS);
+		form.addComponent(ft);
+//		setComponentAlignment(form, Alignment.TOP_LEFT);
 		setExpandRatio(form, 1);
+//		setExpandRatio(ft, 1);
 	}
 	
     @SuppressWarnings("serial")
 	private Component buildFooter() {
         HorizontalLayout footer = new HorizontalLayout();
+        footer.setMargin(true);
         footer.setWidth(100.0f, Unit.PERCENTAGE);
 
         Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));

@@ -9,6 +9,11 @@ import java.util.SortedMap;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
@@ -16,19 +21,35 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
+import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
+import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonMethod;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.util.ClassScanner;
 
 @Component
-public class Domains {
+public class Domains implements ApplicationContextAware{
 	
 	Map<String, VaadinTableColumns> tableColumns = Maps.newHashMap();
 	
 	Map<String, FormFields> formFields = Maps.newHashMap();
 
 	Map<String, VaadinTable> tables = Maps.newHashMap();
+	
+	Map<String, Object> repositories = Maps.newHashMap();
+	
+	public RepositoryCommonMethod<?> getRepositoryCommonMethod(String className) {
+		return (RepositoryCommonMethod<?>) repositories.get(className);
+	}
+	
+	public RepositoryCommonCustom<?> getRepositoryCommonCustom(String className) {
+		return (RepositoryCommonCustom<?>) repositories.get(className);
+	}
+	
+	public JpaRepository<Long, BaseEntity> getJpaRepository(String className) {
+		return (JpaRepository<Long, BaseEntity>) repositories.get(className);
+	}
 	
 	@PostConstruct
 	void after() throws ClassNotFoundException, IOException {
@@ -107,6 +128,17 @@ public class Domains {
 
 	public Map<String, FormFields> getFormFields() {
 		return formFields;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		Map<String, Object> repos =  applicationContext.getBeansWithAnnotation(RepositoryRestResource.class);
+		
+		for(Map.Entry<String, Object> es: repos.entrySet()) {
+			char c = Character.toUpperCase(es.getKey().charAt(0));
+			String nn = c + es.getKey().substring(1);
+			repositories.put(nn, es.getValue());
+		}
 	}
 
 }

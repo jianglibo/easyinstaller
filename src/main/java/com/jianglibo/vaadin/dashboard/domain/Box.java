@@ -52,9 +52,9 @@ public class Box extends BaseEntity {
 	@NotEmpty
 	private String osType;
 	
-	@ElementCollection(fetch = FetchType.EAGER)
-	@VaadinFormField(order = 25, fieldType=Ft.TWIN_COL_SELECT, comboKey="boxrole", styleNames={"twin-col-select-horizonal"})
-	private Set<String> roles = Sets.newHashSet();
+//	@ElementCollection(fetch = FetchType.EAGER)
+//	@VaadinFormField(order = 25, fieldType=Ft.TWIN_COL_SELECT, comboKey="boxrole", styleNames={"twin-col-select-horizonal"})
+//	private Set<String> roles = Sets.newHashSet();
 	
 	@VaadinFormField(order = 30, fieldType=Ft.TEXT_AREA)
 	private String description;
@@ -115,13 +115,13 @@ public class Box extends BaseEntity {
 		this.osType = osType;
 	}
 
-	public Set<String> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<String> roles) {
-		this.roles = roles;
-	}
+//	public Set<String> getRoles() {
+//		return roles;
+//	}
+//
+//	public void setRoles(Set<String> roles) {
+//		this.roles = roles;
+//	}
 
 	public Set<SingleInstallation> getInstallations() {
 		return installations;
