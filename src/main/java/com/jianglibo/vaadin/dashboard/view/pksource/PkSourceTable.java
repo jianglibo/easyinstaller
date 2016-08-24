@@ -44,7 +44,7 @@ public class PkSourceTable extends TableBase<PkSource> {
 		if (colId.equals("createdAt")) {
 			result = formatDate(DATEFORMAT, property);
 		} else if (colId.equals("length")){
-			return FileLengthFormat.format((long) property.getValue());
+			return FileLengthFormat.format((Long) property.getValue());
 		}
 		return result;
 	}

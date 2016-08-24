@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.container;
+package com.jianglibo.vaadin.dashboard.data.container;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
