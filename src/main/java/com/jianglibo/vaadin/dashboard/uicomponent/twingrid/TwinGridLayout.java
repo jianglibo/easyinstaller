@@ -1,19 +1,45 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.twingrid;
 
+import java.util.Collection;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+
+import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.HorizontalLayout;
 
 @SuppressWarnings("serial")
-public class TwinGridLayout extends HorizontalLayout {
+@SpringComponent
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+public class TwinGridLayout<T extends Collection<? extends BaseEntity>> extends HorizontalLayout {
+	
+	@Autowired
+	private ApplicationContext applicationContext;
+	
+	private TwinGridLeft<T> left;
+	
+	private TwinGridRight<T> right;
 
-	public TwinGridLayout() {
-		TwinGridLeft tgl = new TwinGridLeft();
-		TwinGridRight tgr = new TwinGridRight();
+	public TwinGridLayout<T> afterInjection(Class<T> clazz, int perPage) {
+		left = applicationContext.getBean(TwinGridLeft.class);
+		right = applicationContext.getBean(TwinGridRight.class).afterInjection(clazz, perPage);
 		
-		addComponent(tgl);
-		addComponent(tgr);
+		addComponent(left);
+		addComponent(right);
 		
-		setExpandRatio(tgl, 1);
-		setExpandRatio(tgr, 1);
-		
+		setExpandRatio(left, 1);
+		setExpandRatio(right, 1);
+		return this;
+	}
+
+	public TwinGridLeft<T> getLeft() {
+		return left;
+	}
+
+	public TwinGridRight<T> getRight() {
+		return right;
 	}
 }

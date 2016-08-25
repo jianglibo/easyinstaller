@@ -82,7 +82,7 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 		setSizeFull();
 		addStyleName("transactions");
 		
-		HeaderLayout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, PkSource.DOMAIN_NAME));
+		HeaderLayout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, PkSource.class.getSimpleName()));
 		
 		Component uploader = applicationContext.getBean(ImmediateUploader.class).afterInjection(eventBus);
 		StyleUtil.setMarginRightTen(uploader);
@@ -148,7 +148,7 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 	
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(PkSource.DOMAIN_NAME), lvfb);
+		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(PkSource.class.getSimpleName()), lvfb);
 		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
 	

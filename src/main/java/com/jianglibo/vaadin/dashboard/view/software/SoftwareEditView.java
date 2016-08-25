@@ -125,7 +125,7 @@ public class SoftwareEditView  extends VerticalLayout implements View {
 		long bid = ifb.getBeanId();
 		if (bid == 0) {
 			bean = new Software();
-			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, Software.DOMAIN_NAME + ".newtitle"));
+			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, Software.class.getSimpleName() + ".newtitle"));
 		} else {
 			bean = repository.findOne(bid);
 			header.setLabelTxt(bean.getName());

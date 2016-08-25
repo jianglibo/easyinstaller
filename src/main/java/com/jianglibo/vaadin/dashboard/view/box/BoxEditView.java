@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.box;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +16,11 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.twingrid.TwinGridField;
-import com.jianglibo.vaadin.dashboard.uicomponent.twingrid.TwinGridLayout;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -79,7 +81,12 @@ public class BoxEditView  extends VerticalLayout implements View {
 		
 		addComponent(header);
 		form = applicationContext.getBean(BoxForm.class).afterInjection(eventBus);
-		TwinGridField tl = new TwinGridField<>();
+		
+		BeanFieldGroup<Box> bfg = form.getFieldGroup();
+		
+		TwinGridField<List<Box>> tl = applicationContext.getBean(TwinGridField.class);
+		
+		bfg.bind(tl, "");
 		tl.setCaption("box");
 		StyleUtil.setOverflowAuto(form, true);
 		form.addComponent(tl);
@@ -141,7 +148,7 @@ public class BoxEditView  extends VerticalLayout implements View {
 		long bid = ifb.getBeanId();
 		if (bid == 0) {
 			bean = new Box();
-			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, Box.DOMAIN_NAME + ".newtitle"));
+			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, Box.class.getSimpleName() + ".newtitle"));
 		} else {
 			bean = repository.findOne(bid);
 			header.setLabelTxt(bean.getName());

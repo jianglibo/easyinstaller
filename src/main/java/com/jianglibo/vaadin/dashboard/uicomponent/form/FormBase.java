@@ -6,7 +6,7 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory;
@@ -59,10 +59,10 @@ public abstract class FormBase<T> extends FormLayout {
 	}
 	
 	public void createTable() {
-        VaadinTable vt = domains.getTables().get(domainName);
+        VaadinTableWrapper vtw = domains.getTables().get(domainName);
         FormFields ffs = domains.getFormFields().get(domainName);
         
-        List<PropertyIdAndField> fields = formFieldsFactory.buildFields(vt, ffs);
+        List<PropertyIdAndField> fields = formFieldsFactory.buildFields(vtw, ffs);
         
         for(PropertyIdAndField paf : fields) {
 			fieldGroup.bind(paf.getField(), paf.getPropertyId());

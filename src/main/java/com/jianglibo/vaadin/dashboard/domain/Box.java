@@ -3,9 +3,7 @@ package com.jianglibo.vaadin.dashboard.domain;
 import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
@@ -14,7 +12,6 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
@@ -22,7 +19,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
-@VaadinTable(name = Box.DOMAIN_NAME,multiSelect=true, messagePrefix="domain.box.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
+@VaadinTable(multiSelect=true, messagePrefix="domain.box.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
 @Table(name = "box", uniqueConstraints = { @UniqueConstraint(columnNames = "ip") })
 public class Box extends BaseEntity {
 
@@ -30,8 +27,6 @@ public class Box extends BaseEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	public static final String DOMAIN_NAME = "box";
 	
 	@NotNull
 	@NotEmpty
@@ -51,10 +46,6 @@ public class Box extends BaseEntity {
 	@NotNull
 	@NotEmpty
 	private String osType;
-	
-//	@ElementCollection(fetch = FetchType.EAGER)
-//	@VaadinFormField(order = 25, fieldType=Ft.TWIN_COL_SELECT, comboKey="boxrole", styleNames={"twin-col-select-horizonal"})
-//	private Set<String> roles = Sets.newHashSet();
 	
 	@VaadinFormField(order = 30, fieldType=Ft.TEXT_AREA)
 	private String description;
@@ -114,14 +105,6 @@ public class Box extends BaseEntity {
 	public void setOsType(String osType) {
 		this.osType = osType;
 	}
-
-//	public Set<String> getRoles() {
-//		return roles;
-//	}
-//
-//	public void setRoles(Set<String> roles) {
-//		this.roles = roles;
-//	}
 
 	public Set<SingleInstallation> getInstallations() {
 		return installations;

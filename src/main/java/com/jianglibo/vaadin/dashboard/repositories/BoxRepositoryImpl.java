@@ -9,7 +9,7 @@ import com.jianglibo.vaadin.dashboard.domain.Box;
 public class BoxRepositoryImpl implements BoxRepositoryCustom<Box> {
 
 	@Override
-	public List<Box> getLastPage(Pageable page, String filterString, boolean trashed) {
+	public List<Box> getPage(Pageable page, String filterString, boolean trashed) {
 		return null;
 	}
 

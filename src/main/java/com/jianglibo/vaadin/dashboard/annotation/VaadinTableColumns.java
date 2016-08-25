@@ -40,11 +40,11 @@ public class VaadinTableColumns {
 		return columns;
 	}
 	
-	public String[] getColumnHeaders(VaadinTable vt ,MessageSource messageSource) {
+	public String[] getColumnHeaders(VaadinTableWrapper vtw ,MessageSource messageSource) {
 		List<String> headers = Lists.newArrayList();
 		for(VaadinTableColumnWrapper tcw : columns) {
 			if (tcw.getVtc().visible()) {
-				headers.add(MsgUtil.getFieldMsg(messageSource, vt.messagePrefix(), tcw));
+				headers.add(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), tcw));
 			}
 		}
 		return headers.toArray(new String[]{});

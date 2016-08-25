@@ -18,11 +18,9 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "singleInstallation")
-@VaadinTable(name = SingleInstallation.DOMAIN_NAME,multiSelect=true,sortable=true, messagePrefix="domain.singleinstallaion.", styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
+@VaadinTable(multiSelect=true,sortable=true, messagePrefix="domain.singleinstallaion.", styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
 public class SingleInstallation extends BaseEntity {
 
-	public static final String DOMAIN_NAME = "singleinstallation";
-	
 	@ManyToOne
 	@VaadinTableColumn
 	@VaadinFormField(fieldType=Ft.COMBO_BOX, jpql="SELECT s FROM Software AS s WHERE archived=false ORDER BY createdAt DESC")

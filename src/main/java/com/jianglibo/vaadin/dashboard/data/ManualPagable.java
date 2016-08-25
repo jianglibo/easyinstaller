@@ -25,4 +25,8 @@ public class ManualPagable extends PageRequest {
 		int p = total / getPageSize();
 		return new ManualPagable(p, getPageSize(), getSort());
 	}
+	
+	public static int lastPageNum(int total, int size) {
+		return total / size;
+	}
 }

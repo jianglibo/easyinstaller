@@ -1,21 +1,26 @@
 package com.jianglibo.vaadin.dashboard.data.container;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.DynaProperty;
+import org.apache.commons.beanutils.WrapDynaBean;
+import org.apache.commons.beanutils.WrapDynaClass;
+import org.apache.commons.lang3.ClassUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.eventbus.EventBus;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
-import com.jianglibo.vaadin.dashboard.data.ClassNameAndId;
-import com.jianglibo.vaadin.dashboard.data.EntityCacheWrapper;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.jianglibo.vaadin.dashboard.data.ManualPagable;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
@@ -29,319 +34,290 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.filter.UnsupportedFilterException;
-import com.vaadin.ui.Table;
 
 /**
- * Maybe use a window is more convenient.!!!!!
- * @author Administrator
+ * Maybe use a window is more convenient.
+ * This class has some code copy and paste from @ListContainer
+ * 
+ * @author jianglibo@gmail.com
  *
  * @param <T>
  */
 @SuppressWarnings("serial")
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, ItemSetChangeNotifier, PropertySetChangeNotifier, Buffered,
-		Container.Filterable, Serializable {
- 
+public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, ItemSetChangeNotifier,
+		PropertySetChangeNotifier, Buffered, Container.Filterable, Serializable {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(FreeContainer.class);
+
 	private int perPage;
 
 	private boolean trashed;
 
-	private EventBus eventBus;
-
-	private String filterStr;
+	private String filterString;
 
 	private int currentPage;
 
 	private Sort sort;
 
-	private final Domains domains;
-
 	private boolean enableSort = false;
 
-	private Table table;
-
 	private Class<T> clazz;
-	
+
 	private String simpleClassName;
-	
+
 	private Integer cachedSize;
-	
-	private BiMap<Integer, ClassNameAndId> indexAndOid = HashBiMap.create();
-	
-	private EntityCacheWrapper entityCacheWrapper;
-	
+
 	private Sort defaultSort;
 
+	private List<T> currentWindow = Lists.newArrayList();
 	
-	public FreeContainer(Class<T> clazz,VaadinTable vt, Domains domains, EntityCacheWrapper entityCacheWrapper) {
+	@Autowired
+	private Domains domains;
+	
+	public FreeContainer<T> afterInjection(Class<T> clazz, int perPage) {
 		this.clazz = clazz;
 		this.simpleClassName = clazz.getSimpleName();
-		this.domains = domains;
-		this.entityCacheWrapper = entityCacheWrapper;
-		this.defaultSort = SortUtil.fromString(vt.defaultSort());
+		this.defaultSort = SortUtil.fromString(domains.getTables().get(clazz.getSimpleName()).getVt().defaultSort());
 		this.sort = this.defaultSort;
+		this.perPage = perPage;
+		return this;
+	}
+
+	public FreeContainer() {
+
 	}
 
 	/**
-	 * If we can get item in cache, get it.or else we should fetch from store.
+	 * Can I believe itemId always in currentWindow? If so, the block of code
+	 * should work.
 	 */
 	@Override
 	public Object nextItemId(Object itemId) {
-		BaseEntity be = (BaseEntity) itemId;
-		Long id = be.getId();
-		ClassNameAndId cnaid = new ClassNameAndId(simpleClassName, id);
-		int idx;
-		if (indexAndOid.containsValue(cnaid)) {
-			idx = indexAndOid.inverse().get(cnaid) + 1;
-			if (indexAndOid.containsKey(idx)) {
-				ClassNameAndId nextCnaid = indexAndOid.get(idx);
-				BaseEntity nextbe = entityCacheWrapper.getCacher().getIfPresent(nextCnaid); 
-				if (nextbe != null) {
-					return nextbe;
-				}
-			}
-		} else {
-			
+		int idx = inWindowIdx(itemId);
+		if (idx == -1) {
+			return null;
 		}
-		
-		batchFetch(idx);
-		
-		return null;
+		if (atWindowBottom(itemId)) {
+			currentPage++;
+			refreshWindow();
+			return topItem();
+		} else {
+			return currentWindow.get(idx + 1);
+		}
 	}
 
 	@Override
 	public Object prevItemId(Object itemId) {
-		// TODO Auto-generated method stub
-		return null;
+		int idx = inWindowIdx(itemId);
+		if (idx == -1) {
+			return null;
+		}
+		if (atWindowTop(itemId)) {
+			currentPage--;
+			refreshWindow();
+			return bottomItem();
+		} else {
+			return currentWindow.get(idx - 1);
+		}
 	}
 
-	/**
-	 * 
-	 */
 	@Override
 	public Object firstItemId() {
-		// TODO Auto-generated method stub
-		return null;
+		currentPage = 0;
+		return topItem();
 	}
 
 	@Override
 	public Object lastItemId() {
-		return null;
+		currentPage = ManualPagable.lastPageNum(size(), perPage);
+		refreshWindow();
+		return bottomItem();
 	}
 
 	@Override
 	public boolean isFirstId(Object itemId) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isLastId(Object itemId) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Item getItem(Object itemId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Collection<?> getContainerPropertyIds() {
-		// TODO Auto-generated method stub
-		return null;
+		if (itemId == null) {
+			return null;
+		}
+		return new DynaBeanItem<T>((T) itemId);
 	}
 
 	@Override
 	public Collection<?> getItemIds() {
-		// TODO Auto-generated method stub
-		return null;
+		return currentWindow;
 	}
 
 	@Override
 	public Property getContainerProperty(Object itemId, Object propertyId) {
-		// TODO Auto-generated method stub
-		return null;
+		return getItem(itemId).getItemProperty(propertyId);
 	}
 
 	@Override
 	public Class<?> getType(Object propertyId) {
-		// TODO Auto-generated method stub
-		return null;
+        final Class<?> type = getDynaClass().getDynaProperty(propertyId.toString()).getType();
+        if(type.isPrimitive()) {
+            // Vaadin can't handle primitive types in _all_ places, so use
+            // wrappers instead. FieldGroup works, but e.g. Table in _editable_ 
+            // mode fails for some reason
+            return ClassUtils.primitiveToWrapper(type);
+        }
+        return type;
 	}
 
 	@Override
 	public int size() {
 		if (cachedSize == null) {
-			return new Long(domains.getRepositoryCommonMethod(simpleClassName).countByArchivedEquals(trashed)).intValue();
+			return new Long(domains.getRepositoryCommonMethod(simpleClassName).countByArchivedEquals(trashed))
+					.intValue();
 		}
 		return cachedSize;
 	}
 
 	@Override
 	public boolean containsId(Object itemId) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public Item addItem(Object itemId) throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object addItem() throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean removeItem(Object itemId) throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean addContainerProperty(Object propertyId, Class<?> type, Object defaultValue)
 			throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean removeContainerProperty(Object propertyId) throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean removeAllItems() throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void addContainerFilter(Filter filter) throws UnsupportedFilterException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void removeContainerFilter(Filter filter) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void removeAllContainerFilters() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public Collection<Filter> getContainerFilters() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void commit() throws SourceException, InvalidValueException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void discard() throws SourceException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void setBuffered(boolean buffered) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public boolean isBuffered() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isModified() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void addPropertySetChangeListener(PropertySetChangeListener listener) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void addListener(PropertySetChangeListener listener) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void removePropertySetChangeListener(PropertySetChangeListener listener) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void removeListener(PropertySetChangeListener listener) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void addItemSetChangeListener(ItemSetChangeListener listener) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void addListener(ItemSetChangeListener listener) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void removeItemSetChangeListener(ItemSetChangeListener listener) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void removeListener(ItemSetChangeListener listener) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void sort(Object[] propertyId, boolean[] ascending) {
 		if (propertyId.length > 0) {
 			String s = (String) propertyId[0];
-			this.sort =  new Sort(ascending[0] ? Direction.ASC : Direction.DESC, s);
+			this.sort = new Sort(ascending[0] ? Direction.ASC : Direction.DESC, s);
 		} else {
 			this.sort = defaultSort;
 		}
@@ -349,37 +325,159 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public Collection<?> getSortableContainerPropertyIds() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public int indexOfId(Object itemId) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public Object getIdByIndex(int index) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object addItemAt(int index) throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Item addItemAt(int index, Object newItemId) throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
 		return null;
 	}
+
+	private void refreshWindow() {
+		ManualPagable pageable = new ManualPagable(currentPage, perPage, sort);
+		currentWindow = (List<T>) domains.getRepositoryCommonCustom(simpleClassName).getPage(pageable, filterString,
+				trashed);
+	}
+
+	private int inWindowIdx(Object itemId) {
+		int idx = currentWindow.indexOf(itemId);
+		if (idx == -1) {
+			LOGGER.error("{} not sit in currentWindow.", itemId.toString());
+		}
+		return idx;
+	}
+
+	private boolean atWindowTop(Object itemId) {
+		return inWindowIdx(itemId) == 0;
+	}
+
+	private boolean atWindowBottom(Object itemId) {
+		return inWindowIdx(itemId) == currentWindow.size() - 1;
+	}
+
+	private Object topItem() {
+		if (currentWindow.size() > 0) {
+			return currentWindow.get(0);
+		}
+		return null;
+	}
+
+	private Object bottomItem() {
+		if (currentWindow.size() > 0) {
+			return currentWindow.get(currentWindow.size() - 1);
+		}
+		return null;
+	}
+
+	// Code bellow Copy and paste from @ListContainer
+	
+	@Override
+	public Collection<String> getContainerPropertyIds() {
+        ArrayList<String> properties = new ArrayList<String>();
+        if (getDynaClass() != null) {
+            for (DynaProperty db : getDynaClass().getDynaProperties()) {
+                properties.add(db.getName());
+            }
+            properties.remove("class");
+        }
+        return properties;
+	}
+
+	private WrapDynaClass getDynaClass() {
+		return WrapDynaClass.createDynaClass(clazz);
+	}
+
+	public class DynaBeanItem<T> implements Item {
+
+		private class DynaProperty implements Property {
+
+			private final String propertyName;
+
+			public DynaProperty(String property) {
+				propertyName = property;
+			}
+
+			@Override
+			public Object getValue() {
+				return getDynaBean().get(propertyName);
+			}
+
+			@Override
+			public void setValue(Object newValue) throws Property.ReadOnlyException {
+				getDynaBean().set(propertyName, newValue);
+			}
+
+			@Override
+			public Class getType() {
+				return FreeContainer.this.getType(propertyName);
+			}
+
+			@Override
+			public boolean isReadOnly() {
+				return getDynaClass().getPropertyDescriptor(propertyName).getWriteMethod() == null;
+			}
+
+			@Override
+			public void setReadOnly(boolean newStatus) {
+				throw new UnsupportedOperationException("Not supported yet.");
+			}
+
+		}
+
+		private T bean;
+
+		private transient DynaBean db;
+
+		public DynaBeanItem(T bean) {
+			this.bean = bean;
+		}
+
+		private DynaBean getDynaBean() {
+			if (db == null) {
+				db = new WrapDynaBean(bean);
+			}
+			return db;
+		}
+
+		@Override
+		public Property getItemProperty(Object id) {
+			return new DynaProperty(id.toString());
+		}
+
+		@Override
+		public Collection<String> getItemPropertyIds() {
+			return FreeContainer.this.getContainerPropertyIds();
+		}
+
+		@Override
+		public boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean removeItemProperty(Object id) throws UnsupportedOperationException {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+	}
+
 }

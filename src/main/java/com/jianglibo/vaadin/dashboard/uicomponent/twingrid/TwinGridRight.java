@@ -1,11 +1,17 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.twingrid;
 
+import java.util.Collection;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.vaadin.maddon.ListContainer;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
+import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Box;
+import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Grid;
@@ -15,11 +21,17 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class TwinGridRight extends VerticalLayout {
+public class TwinGridRight<T extends Collection<? extends BaseEntity>> extends VerticalLayout {
 
 	private TextField filterField;
 	
-	public TwinGridRight() {
+	@Autowired
+	private ApplicationContext applicationContext;
+	
+	@Autowired
+	private Domains domains;
+	
+	public TwinGridRight<T> afterInjection(Class<T> clazz, int perPage) {
 		setWidth(100.0f, Unit.PERCENTAGE);
 		filterField = new TextField();
 		filterField.setWidth(100.0f, Unit.PERCENTAGE);
@@ -30,6 +42,7 @@ public class TwinGridRight extends VerticalLayout {
 		box.setName("hello");
 		List<Box> boxes = Lists.newArrayList(box);
 		ListContainer<Box> bcontainer = new ListContainer<Box>(boxes);
+		FreeContainer<Box> fc = applicationContext.getBean(FreeContainer.class).afterInjection(clazz, perPage);
 		Grid grid = new Grid();
 		grid.setColumns("name");
 		grid.setColumnOrder("name");
@@ -42,5 +55,7 @@ public class TwinGridRight extends VerticalLayout {
 		grid.setSortOrder(Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
 		grid.setContainerDataSource(bcontainer);
 		addComponent(grid);
+		return this;
 	}
+
 }

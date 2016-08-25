@@ -12,6 +12,7 @@ import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.util.ReflectUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
@@ -36,16 +37,16 @@ public abstract class TableBase<T> extends Table {
 		this.domains = domains;
 		this.clazz = clazz;
 		this.messageSource = messageSource;
-		this.domainName = ReflectUtil.getDomainName(clazz);
+		this.domainName = clazz.getSimpleName();
 	}
 	
 	protected void defaultAfterInjection(EventBus eventBus, Container container) {
 		setContainerDataSource(container);
 		
 		VaadinTableColumns tableColumns = domains.getTableColumns().get(domainName);
-		VaadinTable vt = domains.getTables().get(domainName);
+		VaadinTableWrapper vtw = domains.getTables().get(domainName);
 		
-		decorateTable(vt, tableColumns);
+		decorateTable(vtw, tableColumns);
 		
 		setFooter();
 
@@ -64,26 +65,26 @@ public abstract class TableBase<T> extends Table {
 	}
 
 	
-	private void decorateTable(VaadinTable vt, VaadinTableColumns tableColumns) {
-		if (vt.fullSize()) {
+	private void decorateTable(VaadinTableWrapper vtw, VaadinTableColumns tableColumns) {
+		if (vtw.getVt().fullSize()) {
 			setSizeFull();
 		}
 		
-		setSortEnabled(vt.sortable());
+		setSortEnabled(vtw.getVt().sortable());
 		
-		for(String sn : vt.styleNames()) {
+		for(String sn : vtw.getVt().styleNames()) {
 			addStyleName(sn);
 		}
-		setSelectable(vt.selectable());
+		setSelectable(vtw.getVt().selectable());
 		
-		setColumnReorderingAllowed(vt.columnCollapsingAllowed());
+		setColumnReorderingAllowed(vtw.getVt().columnCollapsingAllowed());
 
-		setColumnCollapsingAllowed(vt.columnCollapsingAllowed());
+		setColumnCollapsingAllowed(vtw.getVt().columnCollapsingAllowed());
 		
-		setFooterVisible(vt.footerVisible());
-		setMultiSelect(vt.multiSelect());
+		setFooterVisible(vtw.getVt().footerVisible());
+		setMultiSelect(vtw.getVt().multiSelect());
 		
-		Order order = SortUtil.orderFromString(vt.defaultSort());
+		Order order = SortUtil.orderFromString(vtw.getVt().defaultSort());
 		
 		setSortContainerPropertyId(order.getProperty());
 		setSortAscending(order.isAscending());
@@ -94,7 +95,7 @@ public abstract class TableBase<T> extends Table {
 		}
 		
 		setVisibleColumns(tableColumns.getVisibleColumns());
-		setColumnHeaders(tableColumns.getColumnHeaders(vt, messageSource));
+		setColumnHeaders(tableColumns.getColumnHeaders(vtw, messageSource));
 		
 	}
 

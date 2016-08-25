@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
 import com.jianglibo.vaadin.dashboard.config.ComboItem;
@@ -42,11 +42,11 @@ public class ComboBoxFieldFactory {
 		this.appConfig = appConfigWrapper.unwrap();
 	}
 	
-	public ComboBox createCombo(VaadinTable vt, VaadinFormFieldWrapper vffw) {
+	public ComboBox createCombo(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		
 		String caption = null;
 		try {
-			caption = MsgUtil.getFieldMsg(messageSource, vt.messagePrefix(), vffw);
+			caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw);
 		} catch (NoSuchMessageException e) {
 		}
 
@@ -57,13 +57,13 @@ public class ComboBoxFieldFactory {
 			    ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
 		
 		if (!Strings.isNullOrEmpty(vffw.getVff().jpql())) {
-			return buildJpqlCombox(vt, vffw, cb);
+			return buildJpqlCombox(vtw, vffw, cb);
 		} else {
-			return buildYmlCombox(vt, vffw, cb);
+			return buildYmlCombox(vtw, vffw, cb);
 		}
 	}
 	
-	private ComboBox buildYmlCombox(VaadinTable vt, VaadinFormFieldWrapper vffw, ComboBox cb) {
+	private ComboBox buildYmlCombox(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw, ComboBox cb) {
 		List<ComboItem> comboItems = appConfig.getComboDatas().get(vffw.getVff().comboKey());
 		
 		if (comboItems == null) {
@@ -79,7 +79,7 @@ public class ComboBoxFieldFactory {
 		return cb;
 	}
 	
-	private ComboBox buildJpqlCombox(VaadinTable vt, VaadinFormFieldWrapper vffw, ComboBox cb) {
+	private ComboBox buildJpqlCombox(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw, ComboBox cb) {
 		String jpql = vffw.getVff().jpql();
 		List<? extends BaseEntity> results = entityManager.createQuery(jpql, BaseEntity.class).getResultList();
 		

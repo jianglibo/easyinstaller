@@ -8,7 +8,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Component;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
 import com.jianglibo.vaadin.dashboard.config.ComboItem;
@@ -28,11 +28,11 @@ public class TwinColSelectFieldFactory {
 		this.appConfig = appConfigWrapper.unwrap();
 	}
 	
-	public TwinColSelect create(VaadinTable vt, VaadinFormFieldWrapper vffw) {
+	public TwinColSelect create(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		List<ComboItem> comboItems = appConfig.getComboDatas().get(vffw.getVff().comboKey());
 		String caption = null;
 		try {
-			caption = MsgUtil.getFieldMsg(messageSource, vt.messagePrefix(), vffw); 
+			caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw); 
 		} catch (NoSuchMessageException e) {
 		}
 		TwinColSelect tcs = new TwinColSelect(caption);

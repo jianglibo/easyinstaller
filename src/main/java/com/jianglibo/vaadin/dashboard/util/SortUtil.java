@@ -4,7 +4,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 
 public class SortUtil {
 
@@ -24,8 +24,8 @@ public class SortUtil {
 		}
 	}
 	
-	public static void setUrlObSort(Sort sort, VaadinTable vt, ListViewFragmentBuilder lvfb) {
+	public static void setUrlObSort(Sort sort, VaadinTableWrapper vtw, ListViewFragmentBuilder lvfb) {
 		Order od = sort.iterator().next();
-		lvfb.setSort(od.getProperty(), od.isAscending(), fromString(vt.defaultSort()));
+		lvfb.setSort(od.getProperty(), od.isAscending(), fromString(vtw.getVt().defaultSort()));
 	}
 }

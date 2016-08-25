@@ -10,6 +10,7 @@ import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.TextArea;
@@ -28,29 +29,29 @@ public class FormFieldsFactory {
 	@Autowired
 	private TwinColSelectFieldFactory twinColSelectFieldFactory;
 	
-	public List<PropertyIdAndField> buildFields(VaadinTable vt, FormFields ffs) {
+	public List<PropertyIdAndField> buildFields(VaadinTableWrapper vtw, FormFields ffs) {
 		List<PropertyIdAndField> fields = Lists.newArrayList();
 		
         for(VaadinFormFieldWrapper vfw : ffs.getFields()) {
         	switch (vfw.getVff().fieldType()) {
 			case COMBO_BOX:
-				ComboBox cb = comboBoxFieldFactory.createCombo(vt, vfw);
+				ComboBox cb = comboBoxFieldFactory.createCombo(vtw, vfw);
 				addStyleName(vfw, cb);
 				fields.add(new PropertyIdAndField(vfw, cb));
 				break;
 			case TEXT_AREA:
-				TextArea ta = new TextArea(MsgUtil.getFieldMsg(messageSource, vt.messagePrefix(), vfw));
+				TextArea ta = new TextArea(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw));
 				ta.setNullRepresentation("");
 				addStyleName(vfw, ta);
 				fields.add(new PropertyIdAndField(vfw, ta));
 				break;
 			case TWIN_COL_SELECT:
-				TwinColSelect tcs = twinColSelectFieldFactory.create(vt, vfw);
+				TwinColSelect tcs = twinColSelectFieldFactory.create(vtw, vfw);
 				addStyleName(vfw, tcs);
 				fields.add(new PropertyIdAndField(vfw, tcs));
 				break;
 			default:
-				String caption = MsgUtil.getFieldMsg(messageSource, vt.messagePrefix(), vfw);
+				String caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw);
 				TextField tf = new TextField(caption);
 				tf.setNullRepresentation("");
 				addStyleName(vfw, tf);

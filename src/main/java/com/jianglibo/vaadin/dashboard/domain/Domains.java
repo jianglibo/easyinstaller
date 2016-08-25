@@ -21,6 +21,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonMethod;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
@@ -35,7 +36,7 @@ public class Domains implements ApplicationContextAware{
 	
 	Map<String, FormFields> formFields = Maps.newHashMap();
 
-	Map<String, VaadinTable> tables = Maps.newHashMap();
+	Map<String, VaadinTableWrapper> tables = Maps.newHashMap();
 	
 	Map<String, Object> repositories = Maps.newHashMap();
 	
@@ -43,8 +44,8 @@ public class Domains implements ApplicationContextAware{
 		return (RepositoryCommonMethod<?>) repositories.get(className);
 	}
 	
-	public RepositoryCommonCustom<?> getRepositoryCommonCustom(String className) {
-		return (RepositoryCommonCustom<?>) repositories.get(className);
+	public <T extends BaseEntity> RepositoryCommonCustom<T> getRepositoryCommonCustom(String className) {
+		return (RepositoryCommonCustom<T>) repositories.get(className);
 	}
 	
 	public JpaRepository<Long, BaseEntity> getJpaRepository(String className) {
@@ -58,9 +59,10 @@ public class Domains implements ApplicationContextAware{
 		
 		for(Class<?> clazz : clazzes) {
 			VaadinTable vt = clazz.getAnnotation(VaadinTable.class);
-			tableColumns.put(vt.name(), new VaadinTableColumns(processOneTableColumn(clazz)));
-			formFields.put(vt.name(), new FormFields(processOneTableForm(clazz)));
-			tables.put(vt.name(), vt);
+			VaadinTableWrapper vtw = new VaadinTableWrapper(vt, clazz.getSimpleName());
+			tableColumns.put(vtw.getName(), new VaadinTableColumns(processOneTableColumn(clazz)));
+			formFields.put(vtw.getName(), new FormFields(processOneTableForm(clazz)));
+			tables.put(vtw.getName(), vtw);
 		}
 	}
 	
@@ -122,7 +124,7 @@ public class Domains implements ApplicationContextAware{
 		return tableColumns;
 	}
 
-	public Map<String, VaadinTable> getTables() {
+	public Map<String, VaadinTableWrapper> getTables() {
 		return tables;
 	}
 

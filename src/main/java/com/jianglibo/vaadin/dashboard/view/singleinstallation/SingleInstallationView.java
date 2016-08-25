@@ -99,7 +99,7 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 		setSizeFull();
 		addStyleName("transactions");
 		
-		tableColumns = domains.getTableColumns().get(SingleInstallation.DOMAIN_NAME);
+		tableColumns = domains.getTableColumns().get(SingleInstallation.class.getSimpleName());
 		
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, false, true, "");
 		addComponent(header);
@@ -146,7 +146,7 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 	
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(SingleInstallation.DOMAIN_NAME), lvfb);
+		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(SingleInstallation.class.getSimpleName()), lvfb);
 		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
 	
@@ -218,7 +218,7 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 		eventBus.post(lvfb);
 		Long boxId = lvfb.getLong("boxid");
 		box = boxRepository.findOne(boxId);
-		header.setLabelTxt(MsgUtil.getListViewTitle(messageSource, SingleInstallation.DOMAIN_NAME, box.getName()));
+		header.setLabelTxt(MsgUtil.getListViewTitle(messageSource, SingleInstallation.class.getSimpleName(), box.getName()));
 	}
 
 	@Override

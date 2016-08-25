@@ -1,7 +1,5 @@
 package com.jianglibo.vaadin.dashboard.view.dummyview;
 
-import java.util.Collection;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +12,9 @@ import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
-import com.jianglibo.vaadin.dashboard.container.DummyContainer;
-import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.domain.Dummybox;
 import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
-import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
 import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
@@ -34,12 +28,9 @@ import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
-import com.jianglibo.vaadin.dashboard.util.TableUtil;
-import com.jianglibo.vaadin.dashboard.view.singleinstallation.SingleInstallationView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
@@ -84,10 +75,10 @@ public class DummyBoxView extends VerticalLayout implements View, SubscriberExce
 		setSizeFull();
 		addStyleName("transactions");
 		
-		tableColumns = domains.getTableColumns().get(Box.DOMAIN_NAME);
+		tableColumns = domains.getTableColumns().get(Dummybox.class.getSimpleName());
 		
 		
-		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, Box.DOMAIN_NAME));
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, Dummybox.class.getSimpleName()));
 		addComponent(header);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{ //
@@ -132,7 +123,7 @@ public class DummyBoxView extends VerticalLayout implements View, SubscriberExce
 	
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(Box.DOMAIN_NAME), lvfb);
+		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(Dummybox.class.getSimpleName()), lvfb);
 		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
 	

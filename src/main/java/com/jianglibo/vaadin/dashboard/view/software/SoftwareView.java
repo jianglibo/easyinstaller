@@ -86,10 +86,10 @@ public class SoftwareView extends VerticalLayout implements View, SubscriberExce
 		setSizeFull();
 		addStyleName("transactions");
 		
-		tableColumns = domains.getTableColumns().get(Software.DOMAIN_NAME);
+		tableColumns = domains.getTableColumns().get(Software.class.getSimpleName());
 		
 
-		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, Software.DOMAIN_NAME));
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, Software.class.getSimpleName()));
 		addComponent(header);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{ //
@@ -134,7 +134,7 @@ public class SoftwareView extends VerticalLayout implements View, SubscriberExce
 	
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(Software.DOMAIN_NAME), lvfb);
+		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(Software.class.getSimpleName()), lvfb);
 		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
 	

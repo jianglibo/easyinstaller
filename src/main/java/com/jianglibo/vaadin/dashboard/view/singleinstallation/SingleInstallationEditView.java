@@ -134,7 +134,7 @@ public class SingleInstallationEditView  extends VerticalLayout implements View 
 				
 		if (bid == 0) {
 			bean = new SingleInstallation();
-			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, SingleInstallation.DOMAIN_NAME + ".newtitle", box.getName()));
+			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, SingleInstallation.class.getSimpleName() + ".newtitle", box.getName()));
 		} else {
 			bean = repository.findOne(bid);
 			header.setLabelTxt(bean.getSoftware().getName());

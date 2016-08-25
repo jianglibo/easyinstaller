@@ -26,10 +26,8 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "software", uniqueConstraints = { @UniqueConstraint(columnNames = {"name"})})
-@VaadinTable(name= Software.DOMAIN_NAME,multiSelect = true,footerVisible=true, messagePrefix="domain.software.",styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
+@VaadinTable(multiSelect = true,footerVisible=true, messagePrefix="domain.software.",styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
 public class Software extends BaseEntity {
-	
-	public static final String DOMAIN_NAME = "software";
 	
 	@VaadinFormField
 	@VaadinTableColumn
