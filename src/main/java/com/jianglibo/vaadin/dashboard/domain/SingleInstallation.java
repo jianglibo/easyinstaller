@@ -8,11 +8,13 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
+import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByContainer;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
@@ -23,7 +25,9 @@ public class SingleInstallation extends BaseEntity {
 
 	@ManyToOne
 	@VaadinTableColumn
-	@VaadinFormField(fieldType=Ft.COMBO_BOX, jpql="SELECT s FROM Software AS s WHERE archived=false ORDER BY createdAt DESC")
+	@ComboBoxBackByContainer(entityClass = Software.class, itemCaptionPropertyId="name", pageLength=11)
+	@VaadinFormField(fieldType=Ft.COMBO_BOX)
+	@NotNull
 	private Software software;
 	
 	@ManyToMany

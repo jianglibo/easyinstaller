@@ -11,7 +11,7 @@ import com.jianglibo.vaadin.dashboard.domain.Software;
 
 
 @RepositoryRestResource(collectionResourceRel = "softwares", path = "softwares")
-public interface SoftwareRepository extends JpaRepository<Software, Long>, SoftwareRepositoryCustom, JpaSpecificationExecutor<Software> {
+public interface SoftwareRepository extends JpaRepository<Software, Long>, SoftwareRepositoryCustom<Software>, JpaSpecificationExecutor<Software>, RepositoryCommonMethod<Software> {
 
 	Page<Software> findByArchivedEquals(boolean trashed, Pageable pageable);
 

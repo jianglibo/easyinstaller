@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.util;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
 import com.jianglibo.vaadin.dashboard.config.ComboItem;
@@ -28,8 +30,18 @@ public class TwinColSelectFieldFactory {
 		this.appConfig = appConfigWrapper.unwrap();
 	}
 	
+	/**
+	 * Only implement yaml so far.
+	 * @param vtw
+	 * @param vffw
+	 * @return
+	 */
 	public TwinColSelect create(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		List<ComboItem> comboItems = appConfig.getComboDatas().get(vffw.getVff().comboKey());
+		Field field = vffw.getReflectField();
+		
+		ComboBoxBackByYaml cbbby = field.getAnnotation(ComboBoxBackByYaml.class);
+		
+		List<ComboItem> comboItems = appConfig.getComboDatas().get(cbbby.ymlKey());
 		String caption = null;
 		try {
 			caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw); 
@@ -40,9 +52,8 @@ public class TwinColSelectFieldFactory {
 		for(ComboItem ci : comboItems) {
 			Object v = convertItemValue(ci);
 			tcs.addItem(v);
-			tcs.setItemCaption(v, MsgUtil.getComboItemMsg(messageSource, vffw.getVff().comboKey(), ci));
+			tcs.setItemCaption(v, MsgUtil.getComboItemMsg(messageSource, cbbby.ymlKey(), ci));
 		}
-//		tcs.setSizeUndefined();
 		return tcs;
 	}
 	

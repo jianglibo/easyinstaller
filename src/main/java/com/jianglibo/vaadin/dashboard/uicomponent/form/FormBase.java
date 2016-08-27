@@ -10,7 +10,6 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory;
-import com.jianglibo.vaadin.dashboard.util.ReflectUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory.PropertyIdAndField;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -42,7 +41,7 @@ public abstract class FormBase<T> extends FormLayout {
 	
 	public FormBase(Class<T> clazz, MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory) {
 		this.clazz = clazz;
-		this.domainName = ReflectUtil.getDomainName(clazz);
+		this.domainName = clazz.getSimpleName();
 		this.domains = domains;
 		this.messageSource = messageSource;
 		this.formFieldsFactory = formFieldsFactory;

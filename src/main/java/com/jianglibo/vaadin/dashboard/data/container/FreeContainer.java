@@ -33,6 +33,7 @@ import com.vaadin.data.Container.Sortable;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.data.util.filter.UnsupportedFilterException;
 
 /**
@@ -67,11 +68,11 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	private String simpleClassName;
 
-	private Integer cachedSize;
-
 	private Sort defaultSort;
 
 	private List<T> currentWindow = Lists.newArrayList();
+	
+	private Filter filter;
 	
 	@Autowired
 	private Domains domains;
@@ -95,6 +96,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	 */
 	@Override
 	public Object nextItemId(Object itemId) {
+		LOGGER.info("{} called with parameter {}", "nextItemId", itemId.toString());
 		int idx = inWindowIdx(itemId);
 		if (idx == -1) {
 			return null;
@@ -110,6 +112,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public Object prevItemId(Object itemId) {
+		LOGGER.info("{} called with parameter {}", "prevItemId", itemId.toString());
 		int idx = inWindowIdx(itemId);
 		if (idx == -1) {
 			return null;
@@ -125,12 +128,14 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public Object firstItemId() {
+		LOGGER.info("{} called with parameter", "firstItemId" );
 		currentPage = 0;
 		return topItem();
 	}
 
 	@Override
 	public Object lastItemId() {
+		LOGGER.info("{} called with parameter", "lastItemId" );
 		currentPage = ManualPagable.lastPageNum(size(), perPage);
 		refreshWindow();
 		return bottomItem();
@@ -138,26 +143,31 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public boolean isFirstId(Object itemId) {
+		LOGGER.info("{} called with parameter {}", "isFirstId", itemId);
 		return false;
 	}
 
 	@Override
 	public boolean isLastId(Object itemId) {
+		LOGGER.info("{} called with parameter {}", "isLastId", itemId);
 		return false;
 	}
 
 	@Override
 	public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
+		LOGGER.info("{} called with parameter {}", "addItemAfter", previousItemId);
 		return null;
 	}
 
 	@Override
 	public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
+		LOGGER.info("{} called with parameter {} {}", "addItemAfter", previousItemId, newItemId);
 		return null;
 	}
 
 	@Override
 	public Item getItem(Object itemId) {
+		LOGGER.info("{} called with parameter {}.", "getItem", itemId);
 		if (itemId == null) {
 			return null;
 		}
@@ -188,16 +198,16 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public int size() {
-		if (cachedSize == null) {
-			return new Long(domains.getRepositoryCommonMethod(simpleClassName).countByArchivedEquals(trashed))
-					.intValue();
-		}
-		return cachedSize;
+		int i = new Long(domains.getRepositoryCommonCustom(simpleClassName).getFilteredNumber(filterString, trashed))
+				.intValue();
+		LOGGER.info("{} called with filterString {}, and return {}", "size", filterString,i);
+		return i;
 	}
 
 	@Override
 	public boolean containsId(Object itemId) {
-		return false;
+		LOGGER.info("{} called with parameter {} {}", "containsId", itemId);
+		return currentWindow.contains(itemId);
 	}
 
 	@Override
@@ -233,22 +243,36 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public void addContainerFilter(Filter filter) throws UnsupportedFilterException {
-
+		LOGGER.info("{} called with parameter {}", "addContainerFilter", filter.toString());
+		this.filter = filter;
+		if (filter instanceof SimpleStringFilter) {
+			SimpleStringFilter sfilter = (SimpleStringFilter)filter;
+			LOGGER.info("{} called with parameter {}", "addContainerFilter", sfilter.getFilterString());
+			this.filterString = sfilter.getFilterString();
+		}
+		refreshWindow();
 	}
 
 	@Override
 	public void removeContainerFilter(Filter filter) {
-
+		LOGGER.info("{} called with parameter {}", "removeContainerFilter", filter);
+		this.filter = null;
 	}
 
 	@Override
 	public void removeAllContainerFilters() {
-
+		LOGGER.info("{} called with parameter", "removeAllContainerFilter");
+		this.filter = null;
 	}
 
 	@Override
 	public Collection<Filter> getContainerFilters() {
-		return null;
+		LOGGER.info("{} called with parameter {}", "getContainerFilters");
+		if (this.filter == null) {
+			return Lists.newArrayList();
+		} else {
+			return Lists.newArrayList(filter);
+		}
 	}
 
 	@Override
@@ -340,7 +364,10 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
-		return null;
+		LOGGER.info("{} called with parameter {} {}", "getItemIds", startIndex, numberOfItems);
+		this.currentPage = startIndex/this.perPage;
+		refreshWindow();
+		return currentWindow;
 	}
 
 	@Override
@@ -355,7 +382,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	private void refreshWindow() {
 		ManualPagable pageable = new ManualPagable(currentPage, perPage, sort);
-		currentWindow = (List<T>) domains.getRepositoryCommonCustom(simpleClassName).getPage(pageable, filterString,
+		currentWindow = (List<T>) domains.getRepositoryCommonCustom(simpleClassName).getFilteredPage(pageable, filterString,
 				trashed);
 	}
 

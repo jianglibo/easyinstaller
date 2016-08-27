@@ -14,6 +14,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.themes.ValoTheme;
 
 
@@ -30,7 +31,7 @@ import com.vaadin.ui.themes.ValoTheme;
 public class Software extends BaseEntity {
 	
 	@VaadinFormField
-	@VaadinTableColumn
+	@VaadinTableColumn(alignment = Align.LEFT)
 	private String name;
 
 	@OneToMany
@@ -40,6 +41,16 @@ public class Software extends BaseEntity {
 	@Column(length=64000)
 	@VaadinFormField(fieldType=Ft.TEXT_AREA)
 	private String installTips;
+	
+	
+	public Software() {
+		
+	}
+	
+	public Software(String name) {
+		setName(name);
+	}
+
 
 	public String getInstallTips() {
 		return installTips;

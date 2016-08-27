@@ -4,12 +4,12 @@ public class VaadinTableWrapper {
 	
 	private VaadinTable vt;
 	
-	private String name;
+	private Class<?> clazz;
 
-	public VaadinTableWrapper(VaadinTable vt, String name) {
+	public VaadinTableWrapper(VaadinTable vt, Class<?> clazz) {
 		super();
 		this.vt = vt;
-		this.name = name;
+		this.clazz = clazz;
 	}
 
 	public VaadinTable getVt() {
@@ -21,11 +21,16 @@ public class VaadinTableWrapper {
 	}
 
 	public String getName() {
-		return name;
+		return clazz.getSimpleName();
 	}
 
-	public void setName(String name) {
-		this.name = name;
+
+	public Class<?> getClazz() {
+		return clazz;
+	}
+
+	public void setClazz(Class<?> clazz) {
+		this.clazz = clazz;
 	}
 
 

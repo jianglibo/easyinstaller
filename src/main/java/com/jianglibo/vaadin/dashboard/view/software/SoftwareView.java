@@ -81,7 +81,6 @@ public class SoftwareView extends VerticalLayout implements View, SubscriberExce
 		this.eventBus = new EventBus(this);
 		this.repository = repository;
 		this.domains = domains;
-		DashboardEventBus.register(uel);
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
@@ -192,6 +191,7 @@ public class SoftwareView extends VerticalLayout implements View, SubscriberExce
 
 	@Override
 	public void enter(final ViewChangeEvent event) {
+		DashboardEventBus.register(uel);
 		lvfb = new ListViewFragmentBuilder(event);
 		eventBus.post(lvfb);
 		

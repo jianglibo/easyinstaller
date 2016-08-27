@@ -41,15 +41,23 @@ public class Domains implements ApplicationContextAware{
 	Map<String, Object> repositories = Maps.newHashMap();
 	
 	public RepositoryCommonMethod<?> getRepositoryCommonMethod(String className) {
-		return (RepositoryCommonMethod<?>) repositories.get(className);
+		return (RepositoryCommonMethod<?>) getRepository(className);
 	}
 	
 	public <T extends BaseEntity> RepositoryCommonCustom<T> getRepositoryCommonCustom(String className) {
-		return (RepositoryCommonCustom<T>) repositories.get(className);
+		return (RepositoryCommonCustom<T>) getRepository(className);
 	}
 	
-	public JpaRepository<Long, BaseEntity> getJpaRepository(String className) {
-		return (JpaRepository<Long, BaseEntity>) repositories.get(className);
+	public <T extends BaseEntity> JpaRepository<Long, T> getJpaRepository(String className) {
+		return (JpaRepository<Long, T>) getRepository(className);
+	}
+	
+	private Object getRepository(String className) {
+		if (repositories.containsKey(className)) {
+			return repositories.get(className);
+		} else {
+			return repositories.get(className + "Repository");
+		}
 	}
 	
 	@PostConstruct
@@ -59,7 +67,7 @@ public class Domains implements ApplicationContextAware{
 		
 		for(Class<?> clazz : clazzes) {
 			VaadinTable vt = clazz.getAnnotation(VaadinTable.class);
-			VaadinTableWrapper vtw = new VaadinTableWrapper(vt, clazz.getSimpleName());
+			VaadinTableWrapper vtw = new VaadinTableWrapper(vt, clazz);
 			tableColumns.put(vtw.getName(), new VaadinTableColumns(processOneTableColumn(clazz)));
 			formFields.put(vtw.getName(), new FormFields(processOneTableForm(clazz)));
 			tables.put(vtw.getName(), vtw);
@@ -76,7 +84,7 @@ public class Domains implements ApplicationContextAware{
 	        	while(vfs.containsKey(i)) {
 	        		i++;
 	        	}
-	        	vfs.put(i, new VaadinFormFieldWrapper(vf, field.getName()));
+	        	vfs.put(i, new VaadinFormFieldWrapper(vf, field));
 	        }
 		}
 		
@@ -87,7 +95,7 @@ public class Domains implements ApplicationContextAware{
 	        	while(vfs.containsKey(i)) {
 	        		i++;
 	        	}
-	        	vfs.put(i, new VaadinFormFieldWrapper(vf, field.getName()));
+	        	vfs.put(i, new VaadinFormFieldWrapper(vf, field));
 	        }
 		}
 		return vfs.values();
@@ -103,7 +111,7 @@ public class Domains implements ApplicationContextAware{
 	        	while(sm.containsKey(i)) {
 	        		i++;
 	        	}
-	        	sm.put(i, new VaadinTableColumnWrapper(tc, field.getName()));
+	        	sm.put(i, new VaadinTableColumnWrapper(tc, field));
 	        }
 		}
 		
@@ -114,7 +122,7 @@ public class Domains implements ApplicationContextAware{
 	        	while(sm.containsKey(i)) {
 	        		i++;
 	        	}
-	        	sm.put(i, new VaadinTableColumnWrapper(tc, field.getName()));
+	        	sm.put(i, new VaadinTableColumnWrapper(tc, field));
 	        }
 		}
 		return sm.values();

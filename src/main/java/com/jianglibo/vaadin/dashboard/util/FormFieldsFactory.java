@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;

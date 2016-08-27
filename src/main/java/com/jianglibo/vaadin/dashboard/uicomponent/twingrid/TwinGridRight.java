@@ -4,7 +4,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.vaadin.maddon.ListContainer;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
@@ -21,6 +24,8 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
+@Component
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class TwinGridRight<T extends Collection<? extends BaseEntity>> extends VerticalLayout {
 
 	private TextField filterField;

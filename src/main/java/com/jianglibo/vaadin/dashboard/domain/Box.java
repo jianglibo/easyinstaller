@@ -16,6 +16,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
+import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByYaml;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
@@ -38,11 +39,15 @@ public class Box extends BaseEntity {
 	@VaadinFormField(order = 10)
 	private String name;
 	
+	/**
+	 * Owning side is which has no mappedBy property. So this IS NOT owning side.
+	 */
 	@ManyToMany(mappedBy = "boxes")
 	private Set<SingleInstallation> installations;
 	
 	@VaadinTableColumn(order=2)
-	@VaadinFormField(order = 20, fieldType=Ft.COMBO_BOX, comboKey="ostype")
+	@ComboBoxBackByYaml(ymlKey = "ostype")
+	@VaadinFormField(order = 20, fieldType=Ft.COMBO_BOX)
 	@NotNull
 	@NotEmpty
 	private String osType;

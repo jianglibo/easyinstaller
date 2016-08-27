@@ -3,6 +3,9 @@ package com.jianglibo.vaadin.dashboard.uicomponent.twingrid;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.vaadin.maddon.ListContainer;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
@@ -14,6 +17,8 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
+@Component
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class TwinGridLeft<T extends Collection<? extends BaseEntity>> extends VerticalLayout {
 	
 	private T value;

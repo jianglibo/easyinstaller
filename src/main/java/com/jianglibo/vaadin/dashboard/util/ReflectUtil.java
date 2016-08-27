@@ -11,8 +11,8 @@ public class ReflectUtil {
 		return null;
 	}
 	
-	public static String getDomainName(Class<?> clazz) {
-		return getStaticString(clazz, "DOMAIN_NAME");
-	}
+//	public static String getDomainName(Class<?> clazz) {
+//		return getStaticString(clazz, "DOMAIN_NAME");
+//	}
 
 }

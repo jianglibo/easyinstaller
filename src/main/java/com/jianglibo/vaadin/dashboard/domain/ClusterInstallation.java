@@ -8,6 +8,7 @@ import javax.persistence.Table;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
+import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByYaml;
 
 @SuppressWarnings("serial")
 @Entity
@@ -16,7 +17,8 @@ public class ClusterInstallation extends BaseEntity {
 	
 	private String name;
 	
-	@VaadinFormField(fieldType=Ft.COMBO_BOX, comboKey="clusterInstallationNames")
+	@VaadinFormField(fieldType=Ft.COMBO_BOX)
+	@ComboBoxBackByYaml(ymlKey = "clusterInstallationNames")
 	private String appname;
 	
 	@OneToMany

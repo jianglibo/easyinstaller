@@ -1,19 +1,21 @@
 package com.jianglibo.vaadin.dashboard.annotation;
 
+import java.lang.reflect.Field;
+
 public class VaadinFormFieldWrapper {
 
 	private VaadinFormField vff;
 	
-	private String name;
+	private Field reflectField;
 
-	public VaadinFormFieldWrapper(VaadinFormField vff, String name) {
+	public VaadinFormFieldWrapper(VaadinFormField vff, Field reflectField) {
 		super();
 		this.setVff(vff);
-		this.name = name;
+		this.reflectField = reflectField;
 	}
 	
 	public String getName() {
-		return name;
+		return reflectField.getName();
 	}
 
 	public VaadinFormField getVff() {
@@ -23,4 +25,10 @@ public class VaadinFormFieldWrapper {
 	public void setVff(VaadinFormField vff) {
 		this.vff = vff;
 	}
+
+	public Field getReflectField() {
+		return reflectField;
+	}
+	
+	
 }

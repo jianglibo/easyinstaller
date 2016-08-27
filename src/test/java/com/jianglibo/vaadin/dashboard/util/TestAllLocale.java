@@ -4,13 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.text.AttributeSet.FontAttribute;
-
 import org.junit.Test;
 import org.springframework.core.io.Resource;
 
 import com.jianglibo.vaadin.dashboard.Tutil;
-import com.vaadin.server.FontAwesome;
 
 public class TestAllLocale {
 

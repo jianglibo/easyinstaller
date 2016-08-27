@@ -82,15 +82,18 @@ public class BoxEditView  extends VerticalLayout implements View {
 		addComponent(header);
 		form = applicationContext.getBean(BoxForm.class).afterInjection(eventBus);
 		
-		BeanFieldGroup<Box> bfg = form.getFieldGroup();
+//		BeanFieldGroup<Box> bfg = form.getFieldGroup();
+//		
+//		TwinGridField<List<Box>> tl = applicationContext.getBean(TwinGridField.class).afterInjection(Box.class, 10);
+//		
+//		bfg.bind(tl, "");
+//		tl.setCaption("box");
+//		form.addComponent(tl);
 		
-		TwinGridField<List<Box>> tl = applicationContext.getBean(TwinGridField.class);
-		
-		bfg.bind(tl, "");
-		tl.setCaption("box");
 		StyleUtil.setOverflowAuto(form, true);
-		form.addComponent(tl);
+		
 		addComponent(form);
+		
 		form.setSizeFull();
 		
 		Component ft = buildFooter();

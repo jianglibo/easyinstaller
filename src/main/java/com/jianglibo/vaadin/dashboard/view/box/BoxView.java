@@ -81,7 +81,6 @@ public class BoxView extends VerticalLayout implements View, SubscriberException
 		this.eventBus = new EventBus(this);
 		this.repository = repository;
 		this.domains = domains;
-		DashboardEventBus.register(uel);
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
@@ -197,6 +196,7 @@ public class BoxView extends VerticalLayout implements View, SubscriberException
 
 	@Override
 	public void enter(final ViewChangeEvent event) {
+		DashboardEventBus.register(uel);
 		lvfb = new ListViewFragmentBuilder(event);
 		eventBus.post(lvfb);
 		LOGGER.info("parameter is: {}", event.getParameters());

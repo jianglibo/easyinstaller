@@ -1,15 +1,17 @@
 package com.jianglibo.vaadin.dashboard.annotation;
 
+import java.lang.reflect.Field;
+
 public class VaadinTableColumnWrapper {
 
 	private VaadinTableColumn vtc;
 	
-	private String name;
+	private Field reflectField;
 
-	public VaadinTableColumnWrapper(VaadinTableColumn vtc, String name) {
+	public VaadinTableColumnWrapper(VaadinTableColumn vtc,Field reflectField) {
 		super();
 		this.vtc = vtc;
-		this.name = name;
+		this.reflectField = reflectField;
 	}
 
 	public VaadinTableColumn getVtc() {
@@ -21,10 +23,14 @@ public class VaadinTableColumnWrapper {
 	}
 
 	public String getName() {
-		return name;
+		return reflectField.getName();
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public Field getReflectField() {
+		return reflectField;
+	}
+
+	public void setReflectField(Field reflectField) {
+		this.reflectField = reflectField;
 	};
 }
