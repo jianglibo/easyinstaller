@@ -12,10 +12,12 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
+import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByStringOptions;
 import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByYaml;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -46,7 +48,7 @@ public class Box extends BaseEntity {
 	private Set<SingleInstallation> installations;
 	
 	@VaadinTableColumn(order=2)
-	@ComboBoxBackByYaml(ymlKey = "ostype")
+	@ComboBoxBackByStringOptions(key = GlobalComboOptions.OS_TYPES)
 	@VaadinFormField(order = 20, fieldType=Ft.COMBO_BOX)
 	@NotNull
 	@NotEmpty

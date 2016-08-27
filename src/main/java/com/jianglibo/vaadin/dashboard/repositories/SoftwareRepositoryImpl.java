@@ -7,18 +7,16 @@ import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 
-public class SoftwareRepositoryImpl extends SimpleJpaRepository<Software, Long> implements SoftwareRepositoryCustom<Software> {
+public class SoftwareRepositoryImpl implements SoftwareRepositoryCustom<Software> {
 	
 	private final EntityManager em;
 	
 	@Autowired
 	public SoftwareRepositoryImpl(EntityManager em) {
-		super(Software.class, em);
 		this.em = em;
 	}
 

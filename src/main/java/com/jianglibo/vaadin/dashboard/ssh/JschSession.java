@@ -3,10 +3,8 @@ package com.jianglibo.vaadin.dashboard.ssh;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Function;
 
 import com.google.common.base.Strings;
-import com.google.common.io.ByteSink;
 import com.google.common.io.ByteStreams;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jcraft.jsch.ChannelExec;

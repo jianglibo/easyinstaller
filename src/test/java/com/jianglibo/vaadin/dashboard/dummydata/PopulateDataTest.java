@@ -29,7 +29,7 @@ public class PopulateDataTest extends Tbase {
 			sf.setName(s);
 		}
 		softwareRepository
-				.save(Tutil.randomStrings(100).stream().map(s -> new Software(s)).collect(Collectors.toList()));
+				.save(Tutil.randomStrings(100).stream().map(s -> new Software(s, "Centos")).collect(Collectors.toList()));
 		
 		count = softwareRepository.count();
 		assertThat(count, equalTo(100L));

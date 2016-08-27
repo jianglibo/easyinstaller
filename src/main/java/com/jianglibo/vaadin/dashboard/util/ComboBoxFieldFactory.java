@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard.util;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 
@@ -14,10 +15,12 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Component;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByContainer;
 import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByJpql;
+import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByStringOptions;
 import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
@@ -42,6 +45,9 @@ public class ComboBoxFieldFactory {
 	
 	@Autowired
 	private EntityManager entityManager;
+	
+	@Autowired
+	private GlobalComboOptions comboOptions;
 	
 	
 	@Autowired
@@ -75,12 +81,22 @@ public class ComboBoxFieldFactory {
 		} else if (field.isAnnotationPresent(ComboBoxBackByJpql.class)) {
 			ComboBoxBackByJpql cbbbj = field.getAnnotation(ComboBoxBackByJpql.class);
 			return buildJpqlCombox(cbbbj, vtw, vffw, cb);
+		} else if (field.isAnnotationPresent(ComboBoxBackByStringOptions.class)){
+			ComboBoxBackByStringOptions cbbbo = field.getAnnotation(ComboBoxBackByStringOptions.class);
+			return buildStringOptionCombox(cbbbo, vtw, vffw, cb);
 		} else {
 			return null;
 		}
 		
 	}
 	
+	private ComboBox buildStringOptionCombox(ComboBoxBackByStringOptions cbbbo, VaadinTableWrapper vtw,
+			VaadinFormFieldWrapper vffw, ComboBox cb) {
+		Set<String> options = comboOptions.getStringOptions(cbbbo.key());
+		cb.addItems(options);
+		return cb;
+	}
+
 	private ComboBox buildJpqlCombox(ComboBoxBackByJpql cbbbj, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw,
 			ComboBox cb) {
 		String jpql = cbbbj.jpql();
