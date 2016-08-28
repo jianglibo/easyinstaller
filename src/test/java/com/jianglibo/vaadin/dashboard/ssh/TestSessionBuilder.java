@@ -9,12 +9,11 @@ import java.io.IOException;
 import org.junit.Test;
 
 import com.jcraft.jsch.JSchException;
-import com.jianglibo.vaadin.dashboard.Tutil;
 import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult;
 import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult.ResultType;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 
-public class TestSessionBuilder extends Tutil {
+public class TestSessionBuilder extends SshBaset {
 
 	@Test
 	public void t() throws JSchException, IOException {

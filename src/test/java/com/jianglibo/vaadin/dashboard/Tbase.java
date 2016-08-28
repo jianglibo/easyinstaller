@@ -84,6 +84,11 @@ public abstract class Tbase {
 //        return objectMapper;
 //    }
 //
+    
+	public static void printme(Object o) {
+		System.out.println(o);
+	}
+	
     @Before
     public void before() {
         mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();

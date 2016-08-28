@@ -15,11 +15,10 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
-import com.jianglibo.vaadin.dashboard.Tutil;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
-public class TestSftp extends Tutil {
+public class TestSftp extends SshBaset {
 
 	@Test
 	public void t() throws JSchException, SftpException, IOException {
@@ -28,7 +27,7 @@ public class TestSftp extends Tutil {
 		sftpCh.connect();
 		InputStream is = ByteSource.wrap("abc".getBytes()).openStream();
 		sftpCh.put(is, "/root/ttt", ChannelSftp.OVERWRITE);
-		sftpCh.put("fixtures/filetoput.txt", "\\root\\filetoput.txt");
+		sftpCh.put("fixtures/filetoput.txt", "/root/filetoput.txt");
 		sftpCh.quit();
 
 		sftpCh = jsb.getSftpCh();
@@ -60,7 +59,11 @@ public class TestSftp extends Tutil {
 		ChannelSftp sftpCh = jsb.getSftpCh();
 		String dir = "/root/akak";
 		sftpCh.connect();
-		sftpCh.rmdir(dir);
+		try {
+			sftpCh.rmdir(dir);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 		sftpCh.mkdir(dir);
 		try {
 			sftpCh.mkdir(dir);

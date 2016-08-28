@@ -4,13 +4,14 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
 @VaadinTable(multiSelect=true, messagePrefix="domain.installstep.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
-@Table(name = "installstep", uniqueConstraints = { @UniqueConstraint(columnNames = {"name", "evn"}) })
+@Table(name = "installstep", uniqueConstraints = { @UniqueConstraint(columnNames = {"name", "runenv"}) })
 public class InstallStep extends BaseEntity {
 
 	/**
@@ -18,9 +19,11 @@ public class InstallStep extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	@NotNull
 	private String name;
 	
-	private String env;
+	@NotNull
+	private String runenv;
 	
 	private String description;
 	
@@ -39,13 +42,12 @@ public class InstallStep extends BaseEntity {
 		this.name = name;
 	}
 
-
-	public String getEnv() {
-		return env;
+	public String getRunenv() {
+		return runenv;
 	}
 
-	public void setEnv(String env) {
-		this.env = env;
+	public void setRunenv(String runenv) {
+		this.runenv = runenv;
 	}
 
 	public String getDescription() {

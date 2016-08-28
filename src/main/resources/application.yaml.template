@@ -84,6 +84,11 @@ application:
       - value: failure
     boxrole:
       - value: Java
+tests:
+  ssh-host: che.intranet.fh.gov.cn
+  ssh-keyfile: D:\cygwin64\home\admin\aaa
+  ssh-user: root
+  ssh-knownhosts-file: D:\cygwin64\home\admin\.ssh\known_hosts
   
 ---
 spring:
