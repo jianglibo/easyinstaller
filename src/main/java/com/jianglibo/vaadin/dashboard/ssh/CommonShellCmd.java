@@ -1,6 +1,6 @@
 package com.jianglibo.vaadin.dashboard.ssh;
 
-import com.jianglibo.vaadin.dashboard.ssh.JschExecuteResult.ResultType;
+import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult.ResultType;
 
 public class CommonShellCmd {
 	

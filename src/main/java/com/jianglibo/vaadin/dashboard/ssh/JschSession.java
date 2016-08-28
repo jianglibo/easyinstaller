@@ -12,7 +12,8 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.jianglibo.vaadin.dashboard.ssh.JschExecuteResult.ResultType;
+import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult;
+import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult.ResultType;
 
 public class JschSession {
 	
@@ -45,13 +46,13 @@ public class JschSession {
 				String err = baos.toString();
 				int ext = chExec.getExitStatus();
 				if (ext == 0) {
-					results.add(new BaseJschExecuteResult(Strings.isNullOrEmpty(out) ? err : out, 0));
+					results.add(new JschExecuteResult(Strings.isNullOrEmpty(out) ? err : out, 0));
 				} else {
-					results.add(new BaseJschExecuteResult(Strings.isNullOrEmpty(err) ? out : err, ext));
+					results.add(new JschExecuteResult(Strings.isNullOrEmpty(err) ? out : err, ext));
 				}
 				chExec.disconnect();
 			} catch (JSchException | IOException e) {
-				results.add(new BaseJschExecuteResult(e.getMessage(), Integer.MAX_VALUE, ResultType.EXP));
+				results.add(new JschExecuteResult(e.getMessage(), Integer.MAX_VALUE, ResultType.EXP));
 			}
 		}
 		return results;

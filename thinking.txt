@@ -1,0 +1,7 @@
+## What possible steps will a installation involves?
+
+1. execute command
+2. upload files
+3. upload generated content
+4. change configuration file
+5. 
