@@ -12,9 +12,9 @@ import javax.validation.constraints.NotNull;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByContainer;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
-import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByContainer;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")

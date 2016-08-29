@@ -15,9 +15,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByStringOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
-import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByStringOptions;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
@@ -56,7 +56,7 @@ public class Box extends BaseEntity {
 	@VaadinFormField(order = 30, fieldType=Ft.TEXT_AREA)
 	private String description;
 	
-	@VaadinFormField(order = 40, fieldType=Ft.TEXT_AREA)
+	@VaadinFormField(order = 40, fieldType=Ft.FILE_CONTENT_STRING)
 	@Lob
 	@Column(length=2000)
 	private String keyFileContent;

@@ -12,11 +12,11 @@ Vagrant.configure("2") do |config|
 
   # config.ssh.private_key_path = "G:\\cygwin64\\home\\Administrator\\.ssh"
 
-  config.ssh.insert_key = true
-
   config.vm.provider "virtualbox" do |v|
     v.memory = 512
   end
+
+  config.ssh.insert_key = false
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.

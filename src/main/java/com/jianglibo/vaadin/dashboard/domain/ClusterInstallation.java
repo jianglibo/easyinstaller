@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
-import com.jianglibo.vaadin.dashboard.annotation.combo.ComboBoxBackByYaml;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 
 @SuppressWarnings("serial")
 @Entity

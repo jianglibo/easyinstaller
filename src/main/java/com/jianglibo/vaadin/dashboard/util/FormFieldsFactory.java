@@ -3,6 +3,7 @@ package com.jianglibo.vaadin.dashboard.util;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
+import com.jianglibo.vaadin.dashboard.uicomponent.filecontentfield.FileContentField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.TextArea;
@@ -26,12 +28,16 @@ public class FormFieldsFactory {
 	private MessageSource messageSource;
 	
 	@Autowired
+	private ApplicationContext applicationContext;
+	
+	@Autowired
 	private TwinColSelectFieldFactory twinColSelectFieldFactory;
 	
 	public List<PropertyIdAndField> buildFields(VaadinTableWrapper vtw, FormFields ffs) {
 		List<PropertyIdAndField> fields = Lists.newArrayList();
-		
         for(VaadinFormFieldWrapper vfw : ffs.getFields()) {
+        	java.lang.reflect.Field field = vfw.getReflectField();
+        	
         	switch (vfw.getVff().fieldType()) {
 			case COMBO_BOX:
 				ComboBox cb = comboBoxFieldFactory.createCombo(vtw, vfw);
@@ -48,6 +54,12 @@ public class FormFieldsFactory {
 				TwinColSelect tcs = twinColSelectFieldFactory.create(vtw, vfw);
 				addStyleName(vfw, tcs);
 				fields.add(new PropertyIdAndField(vfw, tcs));
+				break;
+			case FILE_CONTENT_STRING:
+				FileContentField fcf = applicationContext.getBean(FileContentField.class);
+				fcf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw));
+				addStyleName(vfw, fcf);
+				fields.add(new PropertyIdAndField(vfw, fcf));
 				break;
 			default:
 				String caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw);

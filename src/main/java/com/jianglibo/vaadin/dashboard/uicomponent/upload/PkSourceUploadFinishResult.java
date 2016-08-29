@@ -1,14 +1,14 @@
-package com.jianglibo.vaadin.dashboard.event.view;
+package com.jianglibo.vaadin.dashboard.uicomponent.upload;
 
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 
-public class UploadFinishEvent {
+public class PkSourceUploadFinishResult {
 
 	private PkSource pkSource;
 	
 	private boolean newCreated;
 	
-	public UploadFinishEvent(PkSource pkSource) {
+	public PkSourceUploadFinishResult(PkSource pkSource) {
 		if (pkSource == null) {
 			setNewCreated(false);
 		} else {
@@ -16,8 +16,6 @@ public class UploadFinishEvent {
 		}
 		setPkSource(pkSource);
 	}
-	
-	
 
 	public PkSource getPkSource() {
 		return pkSource;
@@ -27,17 +25,11 @@ public class UploadFinishEvent {
 		this.pkSource = pkSource;
 	}
 
-
-
 	public boolean isNewCreated() {
 		return newCreated;
 	}
 
-
-
 	public void setNewCreated(boolean newCreated) {
 		this.newCreated = newCreated;
 	}
-
-	
 }

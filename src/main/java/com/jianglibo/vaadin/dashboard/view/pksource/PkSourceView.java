@@ -22,13 +22,15 @@ import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TrashedCheckBoxEvent;
-import com.jianglibo.vaadin.dashboard.event.view.UploadFinishEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.PkSourceUploadFinishResult;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.PkSourceUploadReceiver;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.UploadSuccessEventLinstener;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
@@ -45,7 +47,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = PkSourceView.VIEW_NAME)
-public class PkSourceView extends VerticalLayout implements View, SubscriberExceptionHandler {
+public class PkSourceView extends VerticalLayout
+		implements View, SubscriberExceptionHandler, UploadSuccessEventLinstener<PkSourceUploadFinishResult> {
 
 	/**
 	 * 
@@ -53,27 +56,26 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PkSourceView.class);
-	
 
 	public static final String VIEW_NAME = "pksource";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 
 	private final Table table;
-	
+
 	private TableController tableController;
-	
+
 	private ListViewFragmentBuilder lvfb;
 
 	private static final String[] DEFAULT_COLLAPSIBLE = { "length", "originFrom", "createdAt" };
-	
+
 	private EventBus eventBus;
-	
+
 	private final PkSourceRepository repository;
 	private final Domains domains;
-	
+
 	@Autowired
-	public PkSourceView(PkSourceRepository repository,Domains domains, MessageSource messageSource,
+	public PkSourceView(PkSourceRepository repository, Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.eventBus = new EventBus(this);
 		this.repository = repository;
@@ -81,20 +83,24 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
-		
-		HeaderLayout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, PkSource.class.getSimpleName()));
-		
-		Component uploader = applicationContext.getBean(ImmediateUploader.class).afterInjection(eventBus);
+
+		HeaderLayout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false,
+				MsgUtil.getListViewTitle(messageSource, PkSource.class.getSimpleName()));
+
+		PkSourceUploadReceiver receiver = applicationContext.getBean(PkSourceUploadReceiver.class).afterInjection(this);
+		Component uploader = applicationContext.getBean(ImmediateUploader.class).afterInjection(receiver);
 		StyleUtil.setMarginRightTen(uploader);
-		
+
 		header.addToToolbar(uploader, 0);
 		addComponent(header);
-		
-		ButtonGroup[] bgs = new ButtonGroup[]{new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE),new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
-		
+
+		ButtonGroup[] bgs = new ButtonGroup[] {
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE),
+						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH,
+						ButtonEnableType.ALWAYS)) };
+
 		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
-		
 
 		addComponent(tableController);
 		table = applicationContext.getBean(PkSourceTable.class).afterInjection(eventBus);
@@ -110,7 +116,6 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 		// DashboardEventBus.unregister(this);
 	}
 
-
 	private boolean defaultColumnsVisible() {
 		boolean result = true;
 		for (String propertyId : DEFAULT_COLLAPSIBLE) {
@@ -120,44 +125,37 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 		}
 		return result;
 	}
-	
+
 	@Subscribe
 	public void whenTotalPageChange(PageMetaEvent tpe) {
-		table.setColumnFooter("createdAt", String.valueOf(tpe.getTotalRecord()));	
+		table.setColumnFooter("createdAt", String.valueOf(tpe.getTotalRecord()));
 	}
-	
+
 	@Subscribe
 	public void whenCurrentPageChange(CurrentPageEvent cpe) {
 		String nvs = lvfb.setCurrentPage(cpe.getCurrentPage()).toNavigateString();
 		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
-	
+
 	@Subscribe
 	public void whenFilterStrChange(FilterStrEvent fse) {
 		String nvs = lvfb.setFilterStr(fse.getFilterStr()).toNavigateString();
 		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
-	
-	@Subscribe
-	public void whenUploadFinished(UploadFinishEvent ufe) {
-		PkSource pkSource = ufe.getPkSource();
-		if (pkSource != null && ufe.isNewCreated()) {
-			((PkSourceContainer)table.getContainerDataSource()).refresh();
-		}
-	}
-	
+
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
 		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(PkSource.class.getSimpleName()), lvfb);
 		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
-	
+
 	@Subscribe
 	public void whenTrashedCheckboxChange(TrashedCheckBoxEvent tce) {
-		String nvs = lvfb.setFilterStr("").setCurrentPage(1).setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
+		String nvs = lvfb.setFilterStr("").setCurrentPage(1)
+				.setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
 		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Subscribe
 	public void dynMenuClicked(DynMenuClickEvent dce) {
@@ -173,14 +171,15 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 					repository.save(b);
 				}
 			});
-			((PkSourceContainer)table.getContainerDataSource()).refresh();
+			((PkSourceContainer) table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.REFRESH:
-			((PkSourceContainer)table.getContainerDataSource()).refresh();
+			((PkSourceContainer) table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
 			selected = (Collection<PkSource>) table.getValue();
-			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
+			UI.getCurrent().getNavigator().navigateTo(
+					VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", dce.getBtnId());
@@ -209,6 +208,15 @@ public class PkSourceView extends VerticalLayout implements View, SubscriberExce
 	public void handleException(Throwable exception, SubscriberExceptionContext context) {
 		exception.printStackTrace();
 		LOGGER.info(exception.getMessage());
-		
+
+	}
+
+	@Override
+	public void onUploadSuccess(PkSourceUploadFinishResult ufe) {
+
+		PkSource pkSource = ufe.getPkSource();
+		if (pkSource != null && ufe.isNewCreated()) {
+			((PkSourceContainer) table.getContainerDataSource()).refresh();
+		}
 	}
 }

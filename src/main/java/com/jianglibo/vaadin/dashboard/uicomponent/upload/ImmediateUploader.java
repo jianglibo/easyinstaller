@@ -5,7 +5,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
-import com.google.common.eventbus.EventBus;
 import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
@@ -36,18 +35,15 @@ public class ImmediateUploader extends HorizontalLayout {
 	 private Label status = new Label("");
 
 	@Autowired
-	private UploadReceiver receiver;
-
-	@Autowired
 	private MessageSource messageSource;
 
 	private Upload upload;
 
 	private Button cancelBtn;
 
-	public Component afterInjection(EventBus eventBus) {
+	public Component afterInjection(UploadReceiver<?> receiver) {
 		setSpacing(true);
-		this.upload = new Upload("", receiver.afterInjection(eventBus));
+		this.upload = new Upload("", receiver);
 		this.upload.addStyleName("uploadwrapper");
 
 		addComponent(status);
