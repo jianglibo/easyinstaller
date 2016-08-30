@@ -19,7 +19,7 @@ import com.google.common.collect.Sets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
-import com.jianglibo.vaadin.dashboard.domain.InstallStep;
+import com.jianglibo.vaadin.dashboard.domain.InstallStepDefine;
 import com.jianglibo.vaadin.dashboard.repositories.InstallStepRepository;
 import com.jianglibo.vaadin.dashboard.ssh.StepConfig;
 
@@ -64,9 +64,9 @@ public class PreDefinedSteps {
 					if (name == null || ostype == null) {
 						LOGGER.error("{} must contains [name and ostype] item.", ms);
 					} else {
-						InstallStep installStep = installStepRepository.findByNameAndOstype(name, ostype);
+						InstallStepDefine installStep = installStepRepository.findByNameAndOstype(name, ostype);
 						if (installStep == null) {
-							installStep = new InstallStep();
+							installStep = new InstallStepDefine();
 						}
 						installStep.setName(name);
 						installStep.setOstype(ostype);

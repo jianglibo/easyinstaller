@@ -7,19 +7,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import com.jianglibo.vaadin.dashboard.domain.InstallStep;;
+import com.jianglibo.vaadin.dashboard.domain.InstallStepDefine;;
 
 
-@RepositoryRestResource(collectionResourceRel = "installsteps", path = "installsteps")
-public interface InstallStepRepository extends JpaRepository<InstallStep, Long>, InstallStepRepositoryCustom<InstallStep>, JpaSpecificationExecutor<InstallStep>, RepositoryCommonMethod<InstallStep> {
+@RepositoryRestResource(collectionResourceRel = "installstepdefines", path = "installstepdefines")
+public interface InstallStepRepository extends JpaRepository<InstallStepDefine, Long>, InstallStepRepositoryCustom<InstallStepDefine>, JpaSpecificationExecutor<InstallStepDefine>, RepositoryCommonMethod<InstallStepDefine> {
 
-	Page<InstallStep> findByArchivedEquals(boolean trashed, Pageable pageable);
+	Page<InstallStepDefine> findByArchivedEquals(boolean trashed, Pageable pageable);
 
 	long countByArchivedEquals(boolean trashed);
 	
-	InstallStep findByNameAndOstype(String name, String ostype);
+	InstallStepDefine findByNameAndOstype(String name, String ostype);
 
-	Page<InstallStep> findByNameContainingIgnoreCaseAndArchivedEquals(String filterStr, String filterStr2, boolean trashed,
+	Page<InstallStepDefine> findByNameContainingIgnoreCaseAndArchivedEquals(String filterStr, String filterStr2, boolean trashed,
 			Pageable pageable);
 
 	long countByNameContainingIgnoreCaseAndArchivedEquals(String filterStr, String filterStr2, boolean trashed);

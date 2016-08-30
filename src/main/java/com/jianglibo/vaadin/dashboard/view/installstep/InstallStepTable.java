@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Scope;
 
 import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.InstallStep;
+import com.jianglibo.vaadin.dashboard.domain.InstallStepDefine;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
 import com.vaadin.data.Property;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -16,14 +16,14 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class InstallStepTable extends TableBase<InstallStep> {
+public class InstallStepTable extends TableBase<InstallStepDefine> {
 	
 	@Autowired
 	private InstallStepContainer container;
 
 	@Autowired
 	public InstallStepTable(Domains domains, MessageSource messageSource) {
-		super(InstallStep.class, domains, messageSource);
+		super(InstallStepDefine.class, domains, messageSource);
 	}
 	
 	public Table afterInjection(EventBus eventBus) {

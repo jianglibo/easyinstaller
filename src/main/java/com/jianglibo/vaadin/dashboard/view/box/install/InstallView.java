@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.singleinstallation;
+package com.jianglibo.vaadin.dashboard.view.box.install;
 
 import java.util.Collection;
 
@@ -15,9 +15,8 @@ import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
-import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.SingleInstallation;
+import com.jianglibo.vaadin.dashboard.domain.Install;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
@@ -27,8 +26,7 @@ import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TrashedCheckBoxEvent;
-import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
-import com.jianglibo.vaadin.dashboard.repositories.SingleInstallationRepository;
+import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -44,22 +42,23 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@SpringView(name = SingleInstallationView.VIEW_NAME)
-public class SingleInstallationView extends VerticalLayout implements View, SubscriberExceptionHandler {
+@SpringView(name = InstallView.VIEW_NAME)
+public class InstallView extends VerticalLayout implements View, SubscriberExceptionHandler {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SingleInstallationView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(InstallView.class);
 	
 
-	public static final String VIEW_NAME = "singleinstallation";
+	public static final String VIEW_NAME = "install";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.APPLE;
 
@@ -75,45 +74,36 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 	
 	private UiEventListener uel = new UiEventListener();
 	
-	private final SingleInstallationRepository repository;
+	private final InstallRepository repository;
 	
 	private final Domains domains;
 	
-	private HeaderLayout header;
-	
-	private final MessageSource messageSource;
-	
 	@Autowired
-	private BoxRepository boxRepository;
-	
-	private Box box; 
-	
-	@Autowired
-	public SingleInstallationView(SingleInstallationRepository repository,Domains domains, MessageSource messageSource,
+	public InstallView(InstallRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.eventBus = new EventBus(this);
 		this.repository = repository;
 		this.domains = domains;
-		this.messageSource = messageSource;
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
 		
-		tableColumns = domains.getTableColumns().get(SingleInstallation.class.getSimpleName());
+		tableColumns = domains.getTableColumns().get(Install.class.getSimpleName());
 		
-		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, false, true, "");
+
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, false, true, MsgUtil.getListViewTitle(messageSource, Install.class.getSimpleName()));
 		addComponent(header);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{ //
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
 						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS)), //
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS))};
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
+//				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS))};
 		
 		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
 
 		addComponent(tableController);
-		table = applicationContext.getBean(SingleInstallationTable.class).afterInjection(eventBus);
+		table = applicationContext.getBean(InstallTable.class).afterInjection(eventBus);
 
 		addComponent(table);
 		setExpandRatio(table, 1);
@@ -122,7 +112,7 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 	@Override
 	public void detach() {
 		super.detach();
-		// A new instance of SingleInstallationView is created every time it's
+		// A new instance of TransactionsView is created every time it's
 		// navigated to so we'll need to clean up references to it on detach.
 		DashboardEventBus.unregister(uel);
 	}
@@ -146,7 +136,7 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 	
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(SingleInstallation.class.getSimpleName()), lvfb);
+		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(Install.class.getSimpleName()), lvfb);
 		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
 	
@@ -168,10 +158,10 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 	@SuppressWarnings("unchecked")
 	@Subscribe
 	public void dynMenuClicked(DynMenuClickEvent dce) {
-		Collection<SingleInstallation> selected;
+		Collection<Install> selected;
 		switch (dce.getBtnId()) {
 		case CommonMenuItemIds.DELETE:
-			selected = (Collection<SingleInstallation>) table.getValue();
+			selected = (Collection<Install>) table.getValue();
 			selected.forEach(b -> {
 				if (b.isArchived()) {
 					repository.delete(b);
@@ -180,17 +170,17 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 					repository.save(b);
 				}
 			});
-			((SingleInstallationContainer)table.getContainerDataSource()).refresh();
+			((InstallContainer)table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.REFRESH:
-			((SingleInstallationContainer)table.getContainerDataSource()).refresh();
+			((InstallContainer)table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
-			selected = (Collection<SingleInstallation>) table.getValue();
+			selected = (Collection<Install>) table.getValue();
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:
-			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/?boxid=" + box.getId() + "&pv=" + lvfb.toNavigateString());
+			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", dce.getBtnId());
@@ -216,13 +206,13 @@ public class SingleInstallationView extends VerticalLayout implements View, Subs
 		DashboardEventBus.register(uel);
 		lvfb = new ListViewFragmentBuilder(event);
 		eventBus.post(lvfb);
-		Long boxId = lvfb.getLong("boxid");
-		box = boxRepository.findOne(boxId);
-		header.setLabelTxt(MsgUtil.getListViewTitle(messageSource, SingleInstallation.class.getSimpleName(), box.getName()));
+		
+		LOGGER.info("parameter is: {}", event.getParameters());
 	}
 
 	@Override
 	public void handleException(Throwable exception, SubscriberExceptionContext context) {
 		exception.printStackTrace();
+		
 	}
 }

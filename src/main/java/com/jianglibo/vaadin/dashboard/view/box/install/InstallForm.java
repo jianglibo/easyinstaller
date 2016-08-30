@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.singleinstallation;
+package com.jianglibo.vaadin.dashboard.view.box.install;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -8,25 +8,25 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.SingleInstallation;
-import com.jianglibo.vaadin.dashboard.repositories.SingleInstallationRepository;
+import com.jianglibo.vaadin.dashboard.domain.Install;
+import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory;
 
 @SuppressWarnings("serial")
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class SingleInstallationForm extends FormBase<SingleInstallation> {
+public class InstallForm extends FormBase<Install> {
 	
-	private final SingleInstallationRepository repository;
+	private final InstallRepository repository;
 	
 	@Autowired
-	public SingleInstallationForm(MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory, SingleInstallationRepository repository) {
-		super(SingleInstallation.class, messageSource, domains, formFieldsFactory);
+	public InstallForm(MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory, InstallRepository repository) {
+		super(Install.class, messageSource, domains, formFieldsFactory);
 		this.repository = repository;
 	}
 	
-	public SingleInstallationForm afterInjection(EventBus eventBus) {
+	public InstallForm afterInjection(EventBus eventBus) {
 		defaultAfterInjection(eventBus);
 		return this;
 	}

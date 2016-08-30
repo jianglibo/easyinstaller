@@ -17,7 +17,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.InstallStep;
+import com.jianglibo.vaadin.dashboard.domain.InstallStepDefine;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.repositories.InstallStepRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
@@ -28,7 +28,7 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class InstallStepContainer extends JpaContainer<InstallStep>{
+public class InstallStepContainer extends JpaContainer<InstallStepDefine>{
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(InstallStepContainer.class);
 	
@@ -36,7 +36,7 @@ public class InstallStepContainer extends JpaContainer<InstallStep>{
 	
 	@Autowired
 	public InstallStepContainer(InstallStepRepository repository, Domains domains) {
-		super(InstallStep.class, domains);
+		super(InstallStepDefine.class, domains);
 		this.repository = repository;
 	}
 	
@@ -60,7 +60,7 @@ public class InstallStepContainer extends JpaContainer<InstallStep>{
 			pageable = new PageRequest(getCurrentPage() - 1, getPerPage(), getSort());
 		}
 		
-		Page<InstallStep> entities;
+		Page<InstallStepDefine> entities;
 		String filterStr = getFilterStr();
 		long total;
 		if (Strings.isNullOrEmpty(filterStr)) {

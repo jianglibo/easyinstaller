@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import com.google.gwt.thirdparty.guava.common.base.Strings;
-import com.jianglibo.vaadin.dashboard.domain.StepRun;
+import com.jianglibo.vaadin.dashboard.domain.InstallStep;
 
-public class StepRunRepositoryImpl implements StepRunRepositoryCustom<StepRun> {
+public class StepRunRepositoryImpl implements StepRunRepositoryCustom<InstallStep> {
 	
 	private final EntityManager em;
 	
@@ -22,7 +22,7 @@ public class StepRunRepositoryImpl implements StepRunRepositoryCustom<StepRun> {
 
 
 	@Override
-	public List<StepRun> getFilteredPage(Pageable page, String filterString, boolean trashed) {
+	public List<InstallStep> getFilteredPage(Pageable page, String filterString, boolean trashed) {
 		String jpql;
 		if (Strings.isNullOrEmpty(filterString)) {
 			jpql = "SELECT s FROM StepRun AS s";
@@ -30,14 +30,14 @@ public class StepRunRepositoryImpl implements StepRunRepositoryCustom<StepRun> {
 			jpql = "SELECT s FROM StepRun AS s WHERE s.name LIKE :name";
 		}
 		 
-		TypedQuery<StepRun> q =  em.createQuery(jpql, StepRun.class);
+		TypedQuery<InstallStep> q =  em.createQuery(jpql, InstallStep.class);
 		q.setFirstResult(page.getOffset());
 		q.setMaxResults(page.getPageSize());
 		
 		if (!Strings.isNullOrEmpty(filterString)) {
 			q.setParameter("name", RepositoryUtil.roundLike(filterString));
 		} 
-		List<StepRun> results = q.getResultList();
+		List<InstallStep> results = q.getResultList();
 		
 		return results;
 	}

@@ -1,84 +1,42 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
 
-import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
-@VaadinTable(multiSelect = true, messagePrefix = "domain.installstep.", footerVisible = true, styleNames = {
-		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
-@Table(name = "installstep", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "ostype" }) })
+@VaadinTable(multiSelect=true, messagePrefix="domain.installstep.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
+@Table(name = "installstep")
 public class InstallStep extends BaseEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	@NotNull
-	@VaadinTableColumn
-	@VaadinFormField(order = 10)
-	private String name;
-
-	private String runner;
-
-	@NotNull
-	@VaadinTableColumn
-	@VaadinFormField(order = 20)
-	private String ostype;
 	
-	@Lob
-	@Column(length = 64000)
-	@VaadinFormField(fieldType=Ft.TEXT_AREA, order = 30)
-	private String codeContent;
-
-	@Lob
-	@Column(length = 64000)
-	@VaadinFormField(fieldType=Ft.TEXT_AREA, order = 40)
-	private String kvpairs;
-
-	private boolean ifSuccessSkipNext;
-
-	public String getName() {
-		return name;
+	private String name;
+	
+	@OneToOne
+	private InstallStepDefine installStepDefine;
+	
+	@ManyToOne
+	private Install installation;
+	
+	@OneToOne
+	private JschExecuteResult result;
+	
+	private int order;
+	
+	public InstallStep() {
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getOstype() {
-		return ostype;
-	}
-
-	public void setOstype(String ostype) {
-		this.ostype = ostype;
-	}
-
-	public String getCodeContent() {
-		return codeContent;
-	}
-
-	public void setCodeContent(String codeContent) {
-		this.codeContent = codeContent;
-	}
-
-	public String getKvpairs() {
-		return kvpairs;
-	}
-
-	public void setKvpairs(String kvpairs) {
-		this.kvpairs = kvpairs;
+	
+	public InstallStep(Install installation, InstallStepDefine installStepDefine) {
+		setInstallation(installation);
+		setInstallStepDefine(installStepDefine);
 	}
 
 	@Override
@@ -86,19 +44,46 @@ public class InstallStep extends BaseEntity {
 		return null;
 	}
 
-	public boolean isIfSuccessSkipNext() {
-		return ifSuccessSkipNext;
+	public JschExecuteResult getResult() {
+		return result;
 	}
 
-	public void setIfSuccessSkipNext(boolean ifSuccessSkipNext) {
-		this.ifSuccessSkipNext = ifSuccessSkipNext;
+	public void setResult(JschExecuteResult result) {
+		this.result = result;
 	}
 
-	public String getRunner() {
-		return runner;
+	public int getOrder() {
+		return order;
 	}
 
-	public void setRunner(String runner) {
-		this.runner = runner;
+
+	public void setOrder(int order) {
+		this.order = order;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public InstallStepDefine getInstallStepDefine() {
+		return installStepDefine;
+	}
+
+	public void setInstallStepDefine(InstallStepDefine installStepDefine) {
+		this.installStepDefine = installStepDefine;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Install getInstallation() {
+		return installation;
+	}
+
+	public void setInstallation(Install installation) {
+		this.installation = installation;
+	}
+
+	
 }

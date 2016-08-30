@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.InstallStep;
+import com.jianglibo.vaadin.dashboard.domain.InstallStepDefine;
 import com.jianglibo.vaadin.dashboard.repositories.InstallStepRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory;
@@ -16,13 +16,13 @@ import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory;
 @SuppressWarnings("serial")
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class InstallStepForm extends FormBase<InstallStep> {
+public class InstallStepForm extends FormBase<InstallStepDefine> {
 	
 	private final InstallStepRepository repository;
 	
 	@Autowired
 	public InstallStepForm(MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory, InstallStepRepository repository) {
-		super(InstallStep.class, messageSource, domains, formFieldsFactory);
+		super(InstallStepDefine.class, messageSource, domains, formFieldsFactory);
 		this.repository = repository;
 	}
 	

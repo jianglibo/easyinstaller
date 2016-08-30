@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.singleinstallation;
+package com.jianglibo.vaadin.dashboard.view.box.install;
 
 
 import org.slf4j.Logger;
@@ -10,15 +10,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.SingleInstallation;
+import com.jianglibo.vaadin.dashboard.domain.Install;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
-import com.jianglibo.vaadin.dashboard.repositories.SingleInstallationRepository;
+import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -27,19 +28,19 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class SingleInstallationContainer extends JpaContainer<SingleInstallation>{
+public class InstallContainer extends JpaContainer<Install>{
 	
-	private static Logger LOGGER = LoggerFactory.getLogger(SingleInstallationContainer.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(InstallContainer.class);
 	
-	private final SingleInstallationRepository repository;
+	private final InstallRepository repository;
 	
 	@Autowired
-	public SingleInstallationContainer(SingleInstallationRepository repository, Domains domains) {
-		super(SingleInstallation.class, domains);
+	public InstallContainer(InstallRepository repository, Domains domains) {
+		super(Install.class, domains);
 		this.repository = repository;
 	}
 	
-	public SingleInstallationContainer afterInjection(EventBus eventBus, Table table) {
+	public InstallContainer afterInjection(EventBus eventBus, Table table) {
 		VaadinTableWrapper vtw = getDomains().getTables().get(Box.class.getSimpleName());
 		setupProperties(table, eventBus, SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
 		return this;
@@ -59,7 +60,7 @@ public class SingleInstallationContainer extends JpaContainer<SingleInstallation
 			pageable = new PageRequest(getCurrentPage() - 1, getPerPage(), getSort());
 		}
 		
-		Page<SingleInstallation> entities;
+		Page<Install> entities;
 		String filterStr = getFilterStr();
 		long total;
 //		if (Strings.isNullOrEmpty(filterStr)) {

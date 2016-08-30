@@ -15,7 +15,7 @@ import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.InstallStep;
+import com.jianglibo.vaadin.dashboard.domain.InstallStepDefine;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
@@ -85,10 +85,10 @@ public class InstallStepView extends VerticalLayout implements View, SubscriberE
 		setSizeFull();
 		addStyleName("transactions");
 		
-		tableColumns = domains.getTableColumns().get(InstallStep.class.getSimpleName());
+		tableColumns = domains.getTableColumns().get(InstallStepDefine.class.getSimpleName());
 		
 
-		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, InstallStep.class.getSimpleName()));
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, InstallStepDefine.class.getSimpleName()));
 		addComponent(header);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{ //
@@ -133,7 +133,7 @@ public class InstallStepView extends VerticalLayout implements View, SubscriberE
 	
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(InstallStep.class.getSimpleName()), lvfb);
+		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(InstallStepDefine.class.getSimpleName()), lvfb);
 		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
 	
@@ -146,10 +146,10 @@ public class InstallStepView extends VerticalLayout implements View, SubscriberE
 	@SuppressWarnings("unchecked")
 	@Subscribe
 	public void dynMenuClicked(DynMenuClickEvent dce) {
-		Collection<InstallStep> selected;
+		Collection<InstallStepDefine> selected;
 		switch (dce.getBtnId()) {
 		case CommonMenuItemIds.DELETE:
-			selected = (Collection<InstallStep>) table.getValue();
+			selected = (Collection<InstallStepDefine>) table.getValue();
 			selected.forEach(b -> {
 				if (b.isArchived()) {
 					repository.delete(b);
@@ -164,7 +164,7 @@ public class InstallStepView extends VerticalLayout implements View, SubscriberE
 			((InstallStepContainer)table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
-			selected = (Collection<InstallStep>) table.getValue();
+			selected = (Collection<InstallStepDefine>) table.getValue();
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:

@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
@@ -42,7 +43,7 @@ public class Box extends BaseEntity {
 	 * Owning side is which has no mappedBy property. So this IS NOT owning side.
 	 */
 	@OneToMany(mappedBy = "box")
-	private Set<Installation> installations;
+	private Set<Install> installations = Sets.newHashSet();
 	
 	@VaadinTableColumn(order=2)
 	@ComboBoxBackByStringOptions(key = GlobalComboOptions.OS_TYPES)
@@ -111,11 +112,11 @@ public class Box extends BaseEntity {
 	}
 
 
-	public Set<Installation> getInstallations() {
+	public Set<Install> getInstallations() {
 		return installations;
 	}
 
-	public void setInstallations(Set<Installation> installations) {
+	public void setInstallations(Set<Install> installations) {
 		this.installations = installations;
 	}
 

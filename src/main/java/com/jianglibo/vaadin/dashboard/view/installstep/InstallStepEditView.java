@@ -9,7 +9,7 @@ import org.springframework.context.MessageSource;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.domain.InstallStep;
+import com.jianglibo.vaadin.dashboard.domain.InstallStepDefine;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.InstallStepRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
@@ -50,7 +50,7 @@ public class InstallStepEditView  extends VerticalLayout implements View {
 
 	private EventBus eventBus;
 	
-	private InstallStep bean;
+	private InstallStepDefine bean;
     
     private HeaderLayout header;
     
@@ -124,8 +124,8 @@ public class InstallStepEditView  extends VerticalLayout implements View {
 		ifb = new ItemViewFragmentBuilder(event);
 		long bid = ifb.getBeanId();
 		if (bid == 0) {
-			bean = new InstallStep();
-			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, InstallStep.class.getSimpleName() + ".newtitle"));
+			bean = new InstallStepDefine();
+			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, InstallStepDefine.class.getSimpleName() + ".newtitle"));
 		} else {
 			bean = repository.findOne(bid);
 			header.setLabelTxt(bean.getName());

@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.singleinstallation;
+package com.jianglibo.vaadin.dashboard.view.box.install;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -6,9 +6,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
 import com.google.common.eventbus.EventBus;
-import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.SingleInstallation;
+import com.jianglibo.vaadin.dashboard.domain.Install;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
 import com.vaadin.data.Property;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -17,14 +16,14 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class SingleInstallationTable extends TableBase<SingleInstallation> {
+public class InstallTable extends TableBase<Install> {
 	
 	@Autowired
-	private SingleInstallationContainer container;
+	private InstallContainer container;
 
 	@Autowired
-	public SingleInstallationTable(Domains domains, MessageSource messageSource) {
-		super(SingleInstallation.class, domains, messageSource);
+	public InstallTable(Domains domains, MessageSource messageSource) {
+		super(Install.class, domains, messageSource);
 	}
 	
 	public Table afterInjection(EventBus eventBus) {
@@ -46,9 +45,6 @@ public class SingleInstallationTable extends TableBase<SingleInstallation> {
 		String result = super.formatPropertyValue(rowId, colId, property);
 		if (colId.equals("createdAt")) {
 			result = formatDate(DATEFORMAT, property);
-		} else if (colId.equals("software")) {
-			BaseEntity be = (BaseEntity) property.getValue();
-			result = be.getDisplayName();
 		}
 		return result;
 	}

@@ -34,7 +34,7 @@ import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.util.TableUtil;
-import com.jianglibo.vaadin.dashboard.view.singleinstallation.SingleInstallationView;
+import com.jianglibo.vaadin.dashboard.view.box.install.InstallView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -173,7 +173,7 @@ public class BoxView extends VerticalLayout implements View, SubscriberException
 			break;
 		case "installedSoftware":
 			selected = (Collection<Box>) table.getValue();
-			UI.getCurrent().getNavigator().navigateTo(SingleInstallationView.VIEW_NAME + "/?boxid=" + selected.iterator().next().getId() + "&pv=" + lvfb.toNavigateString());
+			UI.getCurrent().getNavigator().navigateTo(InstallView.VIEW_NAME + "/?boxid=" + selected.iterator().next().getId() + "&pv=" + lvfb.toNavigateString());
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", dce.getBtnId());

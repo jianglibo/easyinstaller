@@ -1,10 +1,9 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -44,14 +43,9 @@ public class Software extends BaseEntity {
 	@VaadinTableColumn()
 	@NotNull
 	private String ostype;
-
-	@OneToMany
-	private Set<PkSource> pksources;
 	
-	@Lob
-	@Column(length=64000)
-	@VaadinFormField(fieldType=Ft.TEXT_AREA)
-	private String installTips;
+	@OneToMany
+	private Set<InstallStepDefine> installStepDefines;
 	
 	
 	public Software() {
@@ -62,14 +56,11 @@ public class Software extends BaseEntity {
 		setName(name);
 		setOstype(ostype);
 	}
-
-
-	public String getInstallTips() {
-		return installTips;
-	}
-
-	public void setInstallTips(String installTips) {
-		this.installTips = installTips;
+	
+	public Install createNewInstall(){
+		Install in = new Install(this);
+		in.setInstallSteps(getInstallStepDefines().stream().map(isd -> new InstallStep(in, isd)).collect(Collectors.toList()));
+		return in;
 	}
 
 	public String getName() {
@@ -80,14 +71,6 @@ public class Software extends BaseEntity {
 		this.name = name;
 	}
 
-	public Set<PkSource> getPksources() {
-		return pksources;
-	}
-
-	public void setPksources(Set<PkSource> pksources) {
-		this.pksources = pksources;
-	}
-	
 	public String getOstype() {
 		return ostype;
 	}
@@ -104,5 +87,13 @@ public class Software extends BaseEntity {
 	@Override
 	public String getDisplayName() {
 		return name;
+	}
+
+	public Set<InstallStepDefine> getInstallStepDefines() {
+		return installStepDefines;
+	}
+
+	public void setInstallStepDefines(Set<InstallStepDefine> installStepDefines) {
+		this.installStepDefines = installStepDefines;
 	}
 }
