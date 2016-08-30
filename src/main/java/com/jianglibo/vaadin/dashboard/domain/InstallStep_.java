@@ -4,13 +4,13 @@ import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="Dali", date="2016-08-30T08:32:52.754+0800")
+@Generated(value="Dali", date="2016-08-30T16:32:08.784+0800")
 @StaticMetamodel(InstallStep.class)
 public class InstallStep_ extends BaseEntity_ {
 	public static volatile SingularAttribute<InstallStep, String> name;
-	public static volatile SingularAttribute<InstallStep, Boolean> ifSuccessSkipNext;
-	public static volatile SingularAttribute<InstallStep, String> ostype;
 	public static volatile SingularAttribute<InstallStep, String> runner;
+	public static volatile SingularAttribute<InstallStep, String> ostype;
 	public static volatile SingularAttribute<InstallStep, String> codeContent;
 	public static volatile SingularAttribute<InstallStep, String> kvpairs;
+	public static volatile SingularAttribute<InstallStep, Boolean> ifSuccessSkipNext;
 }
