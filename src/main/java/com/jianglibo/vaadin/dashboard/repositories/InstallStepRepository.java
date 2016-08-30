@@ -16,6 +16,8 @@ public interface InstallStepRepository extends JpaRepository<InstallStep, Long>,
 	Page<InstallStep> findByArchivedEquals(boolean trashed, Pageable pageable);
 
 	long countByArchivedEquals(boolean trashed);
+	
+	InstallStep findByNameAndOstype(String name, String ostype);
 
 	Page<InstallStep> findByNameContainingIgnoreCaseAndArchivedEquals(String filterStr, String filterStr2, boolean trashed,
 			Pageable pageable);

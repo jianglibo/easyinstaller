@@ -2,9 +2,7 @@ package com.jianglibo.vaadin.dashboard.domain;
 
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -56,10 +54,10 @@ public class Box extends BaseEntity {
 	@VaadinFormField(order = 30, fieldType=Ft.TEXT_AREA)
 	private String description;
 	
-	@VaadinFormField(order = 40, fieldType=Ft.FILE_CONTENT_STRING)
-	@Lob
-	@Column(length=2000)
-	private String keyFileContent;
+//	@VaadinFormField(order = 40, fieldType=Ft.FILE_CONTENT_STRING)
+//	@Lob
+//	@Column(length=2000)
+//	private String keyFileContent;
 	
 	@VaadinFormField(order = 50)
 	private String keyFilePath;
@@ -72,13 +70,13 @@ public class Box extends BaseEntity {
 		this.ip = ip;
 	}
 
-	public String getKeyFileContent() {
-		return keyFileContent;
-	}
-
-	public void setKeyFileContent(String keyFileContent) {
-		this.keyFileContent = keyFileContent;
-	}
+//	public String getKeyFileContent() {
+//		return keyFileContent;
+//	}
+//
+//	public void setKeyFileContent(String keyFileContent) {
+//		this.keyFileContent = keyFileContent;
+//	}
 
 	public String getKeyFilePath() {
 		return keyFilePath;

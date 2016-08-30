@@ -22,6 +22,8 @@ public class ApplicationConfig {
 	
 	private Path uploadDstPath;
 	
+	private String stepFolder;
+	
 	private Map<String, List<ComboItem>> comboDatas = Maps.newHashMap();
 	
 	public String getUploadDst() {
@@ -47,6 +49,7 @@ public class ApplicationConfig {
 		this.uploadDstPath = uploadDstPath;
 	}
 
+	
 	// properties different from origin config copy here.
 	public void after(ApplicationConfigCustom acc) {
 		// will change when new custom config item added.
@@ -68,5 +71,13 @@ public class ApplicationConfig {
 				uploadDstPath.toFile().mkdirs();
 			}
 		}
+	}
+
+	public String getStepFolder() {
+		return stepFolder;
+	}
+
+	public void setStepFolder(String stepFolder) {
+		this.stepFolder = stepFolder;
 	}
 }

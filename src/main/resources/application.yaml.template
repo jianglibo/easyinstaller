@@ -62,6 +62,7 @@ vaadin:
     sessionExpiredNotificationEnabled: true
 application:
   upload-dst: ~/easyinstaller-files
+  step-folder:
   combo-datas:
     ostype:
       - caption: CentOs

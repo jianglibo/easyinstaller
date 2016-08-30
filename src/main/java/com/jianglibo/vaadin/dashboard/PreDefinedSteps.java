@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
@@ -34,21 +33,24 @@ public class PreDefinedSteps {
 
 	@Autowired
 	private InstallStepRepository installStepRepository;
-	
-	private Yaml yaml;
 
 	@PostConstruct
 	public void post() throws IOException {
-		yaml = new Yaml();
 		Map<String, Resource> allSteps = Maps.newHashMap();
 		Set<String> stepNames = Sets.newHashSet();
-		Resource[] resources = applicationContext.getResources("classpath:com/jianglibo/vaadin/dashboard/ssh/step/*");
-		for (Resource rs : resources) {
+		Resource[] classpathResources = applicationContext.getResources("classpath:com/jianglibo/vaadin/dashboard/ssh/step/*");
+		Resource[] filepathResources = applicationContext.getResources("file:step/*");
+		for (Resource rs : classpathResources) {
 			String fn = rs.getFilename();
 			allSteps.put(fn, rs);
 			stepNames.add(Files.getNameWithoutExtension(fn));
 		}
-
+		for (Resource rs : filepathResources) {
+			String fn = rs.getFilename();
+			allSteps.put(fn, rs);
+			stepNames.add(Files.getNameWithoutExtension(fn));
+		}
+		
 		stepNames.forEach(sn -> {
 			String ms = sn + ".yml";
 			String cs = sn + ".code";
@@ -62,7 +64,10 @@ public class PreDefinedSteps {
 					if (name == null || ostype == null) {
 						LOGGER.error("{} must contains [name and ostype] item.", ms);
 					} else {
-						InstallStep installStep = new InstallStep();
+						InstallStep installStep = installStepRepository.findByNameAndOstype(name, ostype);
+						if (installStep == null) {
+							installStep = new InstallStep();
+						}
 						installStep.setName(name);
 						installStep.setOstype(ostype);
 						installStep.setKvpairs(s);

@@ -7,7 +7,10 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
@@ -23,19 +26,25 @@ public class InstallStep extends BaseEntity {
 	private static final long serialVersionUID = 1L;
 
 	@NotNull
+	@VaadinTableColumn
+	@VaadinFormField(order = 10)
 	private String name;
 
 	private String runner;
 
 	@NotNull
+	@VaadinTableColumn
+	@VaadinFormField(order = 20)
 	private String ostype;
 
 	@Lob
 	@Column(length = 64000)
+	@VaadinFormField(fieldType=Ft.TEXT_AREA, order = 30)
 	private String codeContent;
 
 	@Lob
 	@Column(length = 64000)
+	@VaadinFormField(fieldType=Ft.TEXT_AREA, order = 40)
 	private String kvpairs;
 
 	private boolean ifSuccessSkipNext;

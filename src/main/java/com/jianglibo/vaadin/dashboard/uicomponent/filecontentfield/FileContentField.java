@@ -31,6 +31,7 @@ public class FileContentField extends CustomField<String> implements UploadRecei
 	protected Component initContent() {
 		this.uploader = applicationContext.getBean(ImmediateUploader.class).afterInjection(this);
 		this.textArea = new TextArea();
+		this.textArea.setWidth("100%");
 		VerticalLayout vl = new VerticalLayout();
 		vl.addComponent(textArea);
 		vl.addComponent(uploader);
