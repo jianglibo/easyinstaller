@@ -36,7 +36,7 @@ public class InstallStep extends BaseEntity {
 	@VaadinTableColumn
 	@VaadinFormField(order = 20)
 	private String ostype;
-
+	
 	@Lob
 	@Column(length = 64000)
 	@VaadinFormField(fieldType=Ft.TEXT_AREA, order = 30)

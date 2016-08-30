@@ -3,7 +3,7 @@ package com.jianglibo.vaadin.dashboard.domain;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -41,8 +41,8 @@ public class Box extends BaseEntity {
 	/**
 	 * Owning side is which has no mappedBy property. So this IS NOT owning side.
 	 */
-	@ManyToMany(mappedBy = "boxes")
-	private Set<SingleInstallation> installations;
+	@OneToMany(mappedBy = "box")
+	private Set<Installation> installations;
 	
 	@VaadinTableColumn(order=2)
 	@ComboBoxBackByStringOptions(key = GlobalComboOptions.OS_TYPES)
@@ -110,11 +110,12 @@ public class Box extends BaseEntity {
 		this.osType = osType;
 	}
 
-	public Set<SingleInstallation> getInstallations() {
+
+	public Set<Installation> getInstallations() {
 		return installations;
 	}
 
-	public void setInstallations(Set<SingleInstallation> installations) {
+	public void setInstallations(Set<Installation> installations) {
 		this.installations = installations;
 	}
 
@@ -124,7 +125,6 @@ public class Box extends BaseEntity {
 
 	@Override
 	public String getDisplayName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

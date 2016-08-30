@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -21,6 +22,9 @@ public class StepRun extends BaseEntity {
 	
 	@OneToOne
 	private InstallStep installStep;
+	
+	@ManyToOne
+	private Installation installation;
 	
 	@OneToOne
 	private JschExecuteResult result;
@@ -65,10 +69,17 @@ public class StepRun extends BaseEntity {
 		return name;
 	}
 
-
-
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	public Installation getInstallation() {
+		return installation;
+	}
+
+	public void setInstallation(Installation installation) {
+		this.installation = installation;
+	}
+
+	
 }
