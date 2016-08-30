@@ -1,0 +1,4 @@
+name: Tcl
+ostype: Centos
+runner: executor
+executable: bash

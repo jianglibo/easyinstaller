@@ -1,7 +1,8 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -10,28 +11,33 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
-@VaadinTable(multiSelect=true, messagePrefix="domain.installstep.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
-@Table(name = "installstep", uniqueConstraints = { @UniqueConstraint(columnNames = {"name", "runenv"}) })
+@VaadinTable(multiSelect = true, messagePrefix = "domain.installstep.", footerVisible = true, styleNames = {
+		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+@Table(name = "installstep", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "ostype" }) })
 public class InstallStep extends BaseEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@NotNull
 	private String name;
-	
+
+	private String runner;
+
 	@NotNull
-	private String runenv;
-	
-	private String description;
-	
-	private int order;
-	
-	@OneToOne
-	private JschExecuteResult result;
-	
+	private String ostype;
+
+	@Lob
+	@Column(length = 64000)
+	private String codeContent;
+
+	@Lob
+	@Column(length = 64000)
+	private String kvpairs;
+
 	private boolean ifSuccessSkipNext;
 
 	public String getName() {
@@ -42,41 +48,33 @@ public class InstallStep extends BaseEntity {
 		this.name = name;
 	}
 
-	public String getRunenv() {
-		return runenv;
+	public String getOstype() {
+		return ostype;
 	}
 
-	public void setRunenv(String runenv) {
-		this.runenv = runenv;
+	public void setOstype(String ostype) {
+		this.ostype = ostype;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getCodeContent() {
+		return codeContent;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setCodeContent(String codeContent) {
+		this.codeContent = codeContent;
+	}
+
+	public String getKvpairs() {
+		return kvpairs;
+	}
+
+	public void setKvpairs(String kvpairs) {
+		this.kvpairs = kvpairs;
 	}
 
 	@Override
 	public String getDisplayName() {
 		return null;
-	}
-
-	public JschExecuteResult getResult() {
-		return result;
-	}
-
-	public void setResult(JschExecuteResult result) {
-		this.result = result;
-	}
-
-	public int getOrder() {
-		return order;
-	}
-
-	public void setOrder(int order) {
-		this.order = order;
 	}
 
 	public boolean isIfSuccessSkipNext() {
@@ -85,5 +83,13 @@ public class InstallStep extends BaseEntity {
 
 	public void setIfSuccessSkipNext(boolean ifSuccessSkipNext) {
 		this.ifSuccessSkipNext = ifSuccessSkipNext;
+	}
+
+	public String getRunner() {
+		return runner;
+	}
+
+	public void setRunner(String runner) {
+		this.runner = runner;
 	}
 }

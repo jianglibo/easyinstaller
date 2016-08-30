@@ -1,0 +1,91 @@
+package com.jianglibo.vaadin.dashboard;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
+import com.google.common.io.CharStreams;
+import com.google.common.io.Files;
+import com.google.gwt.thirdparty.guava.common.collect.Maps;
+import com.jianglibo.vaadin.dashboard.domain.InstallStep;
+import com.jianglibo.vaadin.dashboard.repositories.InstallStepRepository;
+
+@Component
+public class PreDefinedSteps {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(PreDefinedSteps.class);
+
+	@Autowired
+	private ApplicationContext applicationContext;
+
+	@Autowired
+	private InstallStepRepository installStepRepository;
+
+	@PostConstruct
+	public void post() throws IOException {
+		Map<String, Resource> allSteps = Maps.newHashMap();
+		Set<String> stepNames = Sets.newHashSet();
+		Resource[] resources = applicationContext.getResources("classpath:com/jianglibo/vaadin/dashboard/ssh/step/*");
+		for (Resource rs : resources) {
+			String fn = rs.getFilename();
+			allSteps.put(fn, rs);
+			stepNames.add(Files.getNameWithoutExtension(fn));
+		}
+
+		stepNames.forEach(sn -> {
+			String ms = sn + ".map";
+			String cs = sn + ".code";
+			if (allSteps.containsKey(ms) && allSteps.containsKey(cs)) {
+				try {
+					String s = CharStreams.toString(new InputStreamReader(allSteps.get(ms).getInputStream(), Charsets.UTF_8));
+					String c = CharStreams.toString(new InputStreamReader(allSteps.get(cs).getInputStream(), Charsets.UTF_8));
+					Map<String, String> map = translateStepMap(s);
+					String name = map.get("name");
+					String ostype = map.get("ostype");
+					if (name == null || ostype == null) {
+						LOGGER.error("{} must contains [name and ostype] item.", ms);
+					} else {
+						InstallStep installStep = new InstallStep();
+						installStep.setName(name);
+						installStep.setOstype(ostype);
+						installStep.setKvpairs(s);
+						installStep.setCodeContent(c);
+						installStepRepository.save(installStep);
+					}
+				} catch (Exception e) {
+					LOGGER.error("{} must encoded in utf-8.", ms);
+				}
+			} else {
+				LOGGER.error("found unnormal files in step package. [{}]", sn);
+			}
+		});
+	}
+
+	public static Map<String, String> translateStepMap(String s) throws IOException {
+		Map<String, String> map = Maps.newHashMap();
+		List<String> pairs = CharStreams.readLines(new StringReader(s));
+		pairs.forEach(kv -> {
+			String[] ss = kv.split("=", 2);
+			if (ss.length == 2) {
+				map.put(ss[0].trim(), ss[1].trim());
+			} else {
+				LOGGER.error("line '{}' can not split to a pair.", kv);
+			}
+		});
+		return map;
+	}
+}
