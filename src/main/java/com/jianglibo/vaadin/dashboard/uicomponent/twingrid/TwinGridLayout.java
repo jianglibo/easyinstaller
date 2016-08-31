@@ -7,8 +7,12 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 
 @SuppressWarnings("serial")
@@ -18,14 +22,13 @@ public class TwinGridLayout<T extends Collection<? extends BaseEntity>> extends 
 	
 	@Autowired
 	private ApplicationContext applicationContext;
-	
-	private TwinGridLeft<T> left;
-	
-	private TwinGridRight<T> right;
 
-	public TwinGridLayout<T> afterInjection(Class<T> clazz, int perPage) {
-		left = applicationContext.getBean(TwinGridLeft.class);
-		right = applicationContext.getBean(TwinGridRight.class).afterInjection(clazz, perPage);
+	@SuppressWarnings("unchecked")
+	public Component afterInjection(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		TwinGridFieldDescription tgfd = vffw.getReflectField().getAnnotation(TwinGridFieldDescription.class);
+		
+		TwinGridLeft<T> left = applicationContext.getBean(TwinGridLeft.class).afterInjection(vffw, tgfd);
+		TwinGridRight<T> right = applicationContext.getBean(TwinGridRight.class).afterInjection(vffw, tgfd);
 		
 		addComponent(left);
 		addComponent(right);
@@ -34,12 +37,7 @@ public class TwinGridLayout<T extends Collection<? extends BaseEntity>> extends 
 		setExpandRatio(right, 1);
 		return this;
 	}
+	
 
-	public TwinGridLeft<T> getLeft() {
-		return left;
-	}
 
-	public TwinGridRight<T> getRight() {
-		return right;
-	}
 }

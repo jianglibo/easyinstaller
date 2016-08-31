@@ -70,7 +70,7 @@ public class PkSourceEditView  extends VerticalLayout implements View {
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(PkSourceForm.class).afterInjection(eventBus);
+		form = applicationContext.getBean(PkSourceForm.class).afterInjection(eventBus, true);
 		addComponent(form);
 		addComponent(buildFooter());
 		setExpandRatio(form, 1);

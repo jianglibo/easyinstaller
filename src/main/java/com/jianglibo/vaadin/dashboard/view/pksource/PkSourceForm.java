@@ -26,8 +26,8 @@ public class PkSourceForm extends FormBase<PkSource>{
 		this.repository = repository;
 	}
 	
-	public PkSourceForm afterInjection(EventBus eventBus) {
-		defaultAfterInjection(eventBus);
+	public PkSourceForm afterInjection(EventBus eventBus, boolean attachFields) {
+		defaultAfterInjection(eventBus,attachFields);
 		return this;
 	}
 

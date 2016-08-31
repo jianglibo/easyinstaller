@@ -73,7 +73,7 @@ public class StepDefineEditView  extends VerticalLayout implements View {
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(StepDefineForm.class).afterInjection(eventBus);
+		form = applicationContext.getBean(StepDefineForm.class).afterInjection(eventBus, true);
 		addComponent(form);
 		Component ft = buildFooter();
 		addComponent(ft);

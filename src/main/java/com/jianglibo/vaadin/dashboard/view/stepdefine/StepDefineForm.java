@@ -26,8 +26,8 @@ public class StepDefineForm extends FormBase<StepDefine> {
 		this.repository = repository;
 	}
 	
-	public StepDefineForm afterInjection(EventBus eventBus) {
-		defaultAfterInjection(eventBus);
+	public StepDefineForm afterInjection(EventBus eventBus, boolean attachFields) {
+		defaultAfterInjection(eventBus, attachFields);
 		return this;
 	}
 

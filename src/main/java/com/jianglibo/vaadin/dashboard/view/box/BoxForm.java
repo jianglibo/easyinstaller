@@ -26,8 +26,8 @@ public class BoxForm extends FormBase<Box> {
 		this.repository = repository;
 	}
 	
-	public BoxForm afterInjection(EventBus eventBus) {
-		defaultAfterInjection(eventBus);
+	public BoxForm afterInjection(EventBus eventBus, boolean attachFields) {
+		defaultAfterInjection(eventBus, attachFields);
 		return this;
 	}
 

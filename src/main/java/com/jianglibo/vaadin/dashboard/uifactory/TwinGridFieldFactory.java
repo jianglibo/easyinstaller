@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
-import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.GridField;
+import com.jianglibo.vaadin.dashboard.uicomponent.twingrid.TwinGridField;
 
 @Component
-public class GridFieldFactory {
+public class TwinGridFieldFactory {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 	
 	@SuppressWarnings("unchecked")
-	public GridField<Collection<? extends BaseEntity>> create(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		return applicationContext.getBean(GridField.class).afterInjection(vtw, vffw);
+	public TwinGridField<Collection<? extends BaseEntity>> create(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		return applicationContext.getBean(TwinGridField.class).afterInjection(vtw, vffw);
 	}
 }

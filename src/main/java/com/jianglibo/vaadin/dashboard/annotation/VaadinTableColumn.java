@@ -18,4 +18,5 @@ public @interface VaadinTableColumn {
 	boolean visible() default true;
 	boolean collapsed() default false;
 	boolean autoCollapsed() default false;
+	String convertor() default "";
 }

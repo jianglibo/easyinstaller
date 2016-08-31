@@ -80,7 +80,7 @@ public class BoxEditView  extends VerticalLayout implements View {
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, false, true, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(BoxForm.class).afterInjection(eventBus);
+		form = applicationContext.getBean(BoxForm.class).afterInjection(eventBus, true);
 		
 //		BeanFieldGroup<Box> bfg = form.getFieldGroup();
 //		

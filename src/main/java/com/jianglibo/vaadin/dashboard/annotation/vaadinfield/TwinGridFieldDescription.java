@@ -9,10 +9,12 @@ import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 @Target({ java.lang.annotation.ElementType.FIELD })
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Documented
-public @interface GridFieldDescription {
-	String[] columns();
-	Class<? extends BaseEntity> clazz();
-	int pageLength() default 10;
+public @interface TwinGridFieldDescription {
+	String[] leftColumns();
+	String[] rightColumns();
+	Class<? extends BaseEntity> leftClazz();
+	Class<? extends BaseEntity> rightClazz();
+	int leftPageLength() default 10;
+	int rightPageLength() default 10;
 	boolean showEditIcon() default false;
-	String convertor() default "";
 }

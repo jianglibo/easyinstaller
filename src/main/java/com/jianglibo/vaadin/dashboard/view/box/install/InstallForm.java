@@ -26,8 +26,8 @@ public class InstallForm extends FormBase<Install> {
 		this.repository = repository;
 	}
 	
-	public InstallForm afterInjection(EventBus eventBus) {
-		defaultAfterInjection(eventBus);
+	public InstallForm afterInjection(EventBus eventBus, boolean attachFields) {
+		defaultAfterInjection(eventBus, attachFields);
 		return this;
 	}
 

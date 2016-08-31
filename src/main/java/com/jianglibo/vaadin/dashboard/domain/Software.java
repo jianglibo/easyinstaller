@@ -1,21 +1,24 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByStringOptions;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -45,8 +48,12 @@ public class Software extends BaseEntity {
 	private String ostype;
 	
 	@OneToMany
-	private Set<StepDefine> stepDefines;
+	@TwinGridFieldDescription(leftClazz=OrderedStepDefine.class, rightClazz=StepDefine.class, leftPageLength = 100, rightColumns={"name", "ostype"}, leftColumns={"position", "stepDefine"})
+	@VaadinFormField(fieldType = Ft.TWIN_COL_SELECT, order = 30)
+	private List<OrderedStepDefine> stepDefines = Lists.newArrayList();
 	
+	@Lob
+	private String sortedIds;
 	
 	public Software() {
 		
@@ -89,13 +96,19 @@ public class Software extends BaseEntity {
 		return name;
 	}
 
-	public Set<StepDefine> getStepDefines() {
+	public List<OrderedStepDefine> getStepDefines() {
 		return stepDefines;
 	}
 
-	public void setStepDefines(Set<StepDefine> stepDefines) {
+	public void setStepDefines(List<OrderedStepDefine> stepDefines) {
 		this.stepDefines = stepDefines;
 	}
 
+	public String getSortedIds() {
+		return sortedIds;
+	}
 
+	public void setSortedIds(String sortedIds) {
+		this.sortedIds = sortedIds;
+	}
 }

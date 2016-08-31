@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.GridFieldDescription;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
+import com.jianglibo.vaadin.dashboard.data.vaadinconverter.VaadinGridUtil;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -35,6 +35,7 @@ public class GridFieldGrid<T extends Collection<? extends BaseEntity>> extends V
 	@Autowired
 	private MessageSource messageSource;
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public GridFieldGrid<T> afterInjection(GridFieldDescription dfd) {
 		setWidth(100.0f, Unit.PERCENTAGE);
 		filterField = new TextField();
@@ -47,14 +48,9 @@ public class GridFieldGrid<T extends Collection<? extends BaseEntity>> extends V
 		VaadinTableWrapper vtw = domains.getTables().get(dfd.clazz().getSimpleName());
 		
 		Grid grid = new Grid();
-		String[] colnames = dfd.columns();
+		String[] allcolnames = dfd.columns();
 		
-		grid.setColumns(colnames);
-		
-		for(String cn : colnames){
-			Grid.Column col = grid.getColumn(cn);
-			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), cn));
-		}
+		VaadinGridUtil.setupColumns(applicationContext, allcolnames, grid, messageSource, vtw);
 		
 //		grid.setColumnOrder("name");
 

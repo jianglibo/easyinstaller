@@ -73,7 +73,7 @@ public class SoftwareEditView  extends VerticalLayout implements View {
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus);
+		form = applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus, true);
 		addComponent(form);
 		Component ft = buildFooter();
 		addComponent(ft);

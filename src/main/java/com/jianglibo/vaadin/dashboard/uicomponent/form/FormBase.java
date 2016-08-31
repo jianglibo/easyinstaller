@@ -39,6 +39,10 @@ public abstract class FormBase<T> extends FormLayout {
 	
 	protected String domainName;
 	
+	private boolean attachFields;
+	
+	private List<PropertyIdAndField> fields;
+	
 	public FormBase(Class<T> clazz, MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory) {
 		this.clazz = clazz;
 		this.domainName = clazz.getSimpleName();
@@ -47,25 +51,28 @@ public abstract class FormBase<T> extends FormLayout {
 		this.formFieldsFactory = formFieldsFactory;
 	}
 	
-	protected void defaultAfterInjection(EventBus eventBus) {
+	protected void defaultAfterInjection(EventBus eventBus, boolean attachFields) {
 		this.eventBus = eventBus;
+		this.attachFields = attachFields;
 		eventBus.register(this);
 		fieldGroup = new BeanFieldGroup<T>(clazz);
 		addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         addEnterListener();
         addEscapeListener();
-        createTable();
+        create();
 	}
 	
-	public void createTable() {
+	public void create() {
         VaadinTableWrapper vtw = domains.getTables().get(domainName);
         FormFields ffs = domains.getFormFields().get(domainName);
         
-        List<PropertyIdAndField> fields = formFieldsFactory.buildFields(vtw, ffs);
+        fields = formFieldsFactory.buildFields(vtw, ffs);
         
         for(PropertyIdAndField paf : fields) {
 			fieldGroup.bind(paf.getField(), paf.getPropertyId());
-			addComponent(paf.getField());
+			if (attachFields) {
+				addComponent(paf.getField());
+			}
         }
         StyleUtil.setMarginTopTwenty(this);
 	}
@@ -130,5 +137,13 @@ public abstract class FormBase<T> extends FormLayout {
 
 	public void setFieldGroup(BeanFieldGroup<T> fieldGroup) {
 		this.fieldGroup = fieldGroup;
+	}
+
+	public List<PropertyIdAndField> getFields() {
+		return fields;
+	}
+
+	public void setFields(List<PropertyIdAndField> fields) {
+		this.fields = fields;
 	}
 }

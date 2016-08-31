@@ -26,8 +26,8 @@ public class StepRunForm extends FormBase<StepRun> {
 		this.repository = repository;
 	}
 	
-	public StepRunForm afterInjection(EventBus eventBus) {
-		defaultAfterInjection(eventBus);
+	public StepRunForm afterInjection(EventBus eventBus, boolean attachFields) {
+		defaultAfterInjection(eventBus, attachFields);
 		return this;
 	}
 

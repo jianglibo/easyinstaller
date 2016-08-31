@@ -41,8 +41,6 @@ public class FormFieldsFactory {
 	public List<PropertyIdAndField> buildFields(VaadinTableWrapper vtw, FormFields ffs) {
 		List<PropertyIdAndField> fields = Lists.newArrayList();
         for(VaadinFormFieldWrapper vfw : ffs.getFields()) {
-        	java.lang.reflect.Field field = vfw.getReflectField();
-        	
         	switch (vfw.getVff().fieldType()) {
 			case COMBO_BOX:
 				ComboBox cb = comboBoxFieldFactory.create(vtw, vfw);
@@ -72,6 +70,8 @@ public class FormFieldsFactory {
 				addStyleName(vfw, gf);
 				fields.add(new PropertyIdAndField(vfw, gf));
 				break;
+			case TWIN_GRID:
+				
 			default:
 				String caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw);
 				TextField tf = new TextField(caption);

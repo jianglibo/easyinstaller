@@ -26,8 +26,8 @@ public class SoftwareForm extends FormBase<Software> {
 		this.repository = repository;
 	}
 	
-	public SoftwareForm afterInjection(EventBus eventBus) {
-		defaultAfterInjection(eventBus);
+	public SoftwareForm afterInjection(EventBus eventBus, boolean attachFields) {
+		defaultAfterInjection(eventBus, attachFields);
 		return this;
 	}
 
