@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.installstep;
+package com.jianglibo.vaadin.dashboard.view.steprun;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +9,10 @@ import org.springframework.context.MessageSource;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.domain.InstallStepDefine;
+import com.jianglibo.vaadin.dashboard.domain.StepRun;
+import com.jianglibo.vaadin.dashboard.domain.StepDefine;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
-import com.jianglibo.vaadin.dashboard.repositories.InstallStepRepository;
+import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
@@ -31,35 +32,35 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 
-@SpringView(name = InstallStepEditView.VIEW_NAME)
-public class InstallStepEditView  extends VerticalLayout implements View {
+@SpringView(name = StepRunEditView.VIEW_NAME)
+public class StepRunEditView  extends VerticalLayout implements View {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(InstallStepEditView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(StepRunEditView.class);
 	
 	private final MessageSource messageSource;
 	
-	private final InstallStepRepository repository;
+	private final StepRunRepository repository;
 
-	public static final String VIEW_NAME = InstallStepView.VIEW_NAME + "/edit";
+	public static final String VIEW_NAME = StepRunView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 
 	private EventBus eventBus;
 	
-	private InstallStepDefine bean;
+	private StepRun bean;
     
     private HeaderLayout header;
     
     private ItemViewFragmentBuilder ifb;
     
-    private InstallStepForm form;
+    private StepRunForm form;
     
 	@Autowired
-	public InstallStepEditView(InstallStepRepository repository, MessageSource messageSource,
+	public StepRunEditView(StepRunRepository repository, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.messageSource = messageSource;
 		this.repository= repository;
@@ -73,7 +74,7 @@ public class InstallStepEditView  extends VerticalLayout implements View {
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(InstallStepForm.class).afterInjection(eventBus);
+		form = applicationContext.getBean(StepRunForm.class).afterInjection(eventBus);
 		addComponent(form);
 		Component ft = buildFooter();
 		addComponent(ft);
@@ -113,7 +114,7 @@ public class InstallStepEditView  extends VerticalLayout implements View {
 	public void onBackBtnClicked(HistoryBackEvent hbe) {
 		String bu = ifb.getPreviousView();
 		if (Strings.isNullOrEmpty(bu)) {
-			bu = InstallStepView.VIEW_NAME;
+			bu = StepRunView.VIEW_NAME;
 		}
 		UI.getCurrent().getNavigator().navigateTo(bu);
 	}
@@ -124,11 +125,11 @@ public class InstallStepEditView  extends VerticalLayout implements View {
 		ifb = new ItemViewFragmentBuilder(event);
 		long bid = ifb.getBeanId();
 		if (bid == 0) {
-			bean = new InstallStepDefine();
-			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, InstallStepDefine.class.getSimpleName() + ".newtitle"));
+			bean = new StepRun();
+			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, StepDefine.class.getSimpleName() + ".newtitle"));
 		} else {
 			bean = repository.findOne(bid);
-			header.setLabelTxt(bean.getName());
+			header.setLabelTxt(bean.getStepDefine().toString());
 		}
         form.setItemDataSource(bean);
 	}

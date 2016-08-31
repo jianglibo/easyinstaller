@@ -32,6 +32,4 @@ public class VaadinTableWrapper {
 	public void setClazz(Class<?> clazz) {
 		this.clazz = clazz;
 	}
-
-
 }

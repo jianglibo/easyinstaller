@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.installstep;
+package com.jianglibo.vaadin.dashboard.view.steprun;
 
 import java.util.Collection;
 
@@ -15,7 +15,7 @@ import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.InstallStepDefine;
+import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
@@ -24,7 +24,7 @@ import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TrashedCheckBoxEvent;
-import com.jianglibo.vaadin.dashboard.repositories.InstallStepRepository;
+import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -44,18 +44,18 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@SpringView(name = InstallStepView.VIEW_NAME)
-public class InstallStepView extends VerticalLayout implements View, SubscriberExceptionHandler {
+@SpringView(name = StepRunView.VIEW_NAME)
+public class StepRunView extends VerticalLayout implements View, SubscriberExceptionHandler {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(InstallStepView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(StepRunView.class);
 	
 
-	public static final String VIEW_NAME = "installstep";
+	public static final String VIEW_NAME = "steprun";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.APPLE;
 
@@ -71,12 +71,12 @@ public class InstallStepView extends VerticalLayout implements View, SubscriberE
 	
 	private UiEventListener uel = new UiEventListener();
 	
-	private final InstallStepRepository repository;
+	private final StepRunRepository repository;
 	
 	private final Domains domains;
 	
 	@Autowired
-	public InstallStepView(InstallStepRepository repository,Domains domains, MessageSource messageSource,
+	public StepRunView(StepRunRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.eventBus = new EventBus(this);
 		this.repository = repository;
@@ -85,10 +85,10 @@ public class InstallStepView extends VerticalLayout implements View, SubscriberE
 		setSizeFull();
 		addStyleName("transactions");
 		
-		tableColumns = domains.getTableColumns().get(InstallStepDefine.class.getSimpleName());
+		tableColumns = domains.getTableColumns().get(StepRun.class.getSimpleName());
 		
 
-		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, InstallStepDefine.class.getSimpleName()));
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, StepRun.class.getSimpleName()));
 		addComponent(header);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{ //
@@ -100,7 +100,7 @@ public class InstallStepView extends VerticalLayout implements View, SubscriberE
 		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
 
 		addComponent(tableController);
-		table = applicationContext.getBean(InstallStepTable.class).afterInjection(eventBus);
+		table = applicationContext.getBean(StepRunTable.class).afterInjection(eventBus);
 
 		addComponent(table);
 		setExpandRatio(table, 1);
@@ -133,7 +133,7 @@ public class InstallStepView extends VerticalLayout implements View, SubscriberE
 	
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(InstallStepDefine.class.getSimpleName()), lvfb);
+		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(StepRun.class.getSimpleName()), lvfb);
 		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
 	
@@ -146,10 +146,10 @@ public class InstallStepView extends VerticalLayout implements View, SubscriberE
 	@SuppressWarnings("unchecked")
 	@Subscribe
 	public void dynMenuClicked(DynMenuClickEvent dce) {
-		Collection<InstallStepDefine> selected;
+		Collection<StepRun> selected;
 		switch (dce.getBtnId()) {
 		case CommonMenuItemIds.DELETE:
-			selected = (Collection<InstallStepDefine>) table.getValue();
+			selected = (Collection<StepRun>) table.getValue();
 			selected.forEach(b -> {
 				if (b.isArchived()) {
 					repository.delete(b);
@@ -158,13 +158,13 @@ public class InstallStepView extends VerticalLayout implements View, SubscriberE
 					repository.save(b);
 				}
 			});
-			((InstallStepContainer)table.getContainerDataSource()).refresh();
+			((StepRunContainer)table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.REFRESH:
-			((InstallStepContainer)table.getContainerDataSource()).refresh();
+			((StepRunContainer)table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
-			selected = (Collection<InstallStepDefine>) table.getValue();
+			selected = (Collection<StepRun>) table.getValue();
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:

@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.box.install;
+package com.jianglibo.vaadin.dashboard.view.stepdefine;
 
 import java.util.Collection;
 
@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
-import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.SubscriberExceptionContext;
@@ -16,17 +15,16 @@ import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.Install;
+import com.jianglibo.vaadin.dashboard.domain.StepDefine;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
 import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
 import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
-import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TrashedCheckBoxEvent;
-import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
+import com.jianglibo.vaadin.dashboard.repositories.StepDefineRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -36,7 +34,6 @@ import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.util.TableUtil;
-import com.jianglibo.vaadin.dashboard.view.box.BoxView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -47,18 +44,18 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@SpringView(name = InstallView.VIEW_NAME)
-public class InstallView extends VerticalLayout implements View, SubscriberExceptionHandler {
+@SpringView(name = StepDefineView.VIEW_NAME)
+public class StepDefineView extends VerticalLayout implements View, SubscriberExceptionHandler {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(InstallView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(StepDefineView.class);
 	
 
-	public static final String VIEW_NAME = "install";
+	public static final String VIEW_NAME = "stepdefine";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.APPLE;
 
@@ -74,12 +71,12 @@ public class InstallView extends VerticalLayout implements View, SubscriberExcep
 	
 	private UiEventListener uel = new UiEventListener();
 	
-	private final InstallRepository repository;
+	private final StepDefineRepository repository;
 	
 	private final Domains domains;
 	
 	@Autowired
-	public InstallView(InstallRepository repository,Domains domains, MessageSource messageSource,
+	public StepDefineView(StepDefineRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.eventBus = new EventBus(this);
 		this.repository = repository;
@@ -88,22 +85,22 @@ public class InstallView extends VerticalLayout implements View, SubscriberExcep
 		setSizeFull();
 		addStyleName("transactions");
 		
-		tableColumns = domains.getTableColumns().get(Install.class.getSimpleName());
+		tableColumns = domains.getTableColumns().get(StepDefine.class.getSimpleName());
 		
 
-		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, false, true, MsgUtil.getListViewTitle(messageSource, Install.class.getSimpleName()));
+		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, StepDefine.class.getSimpleName()));
 		addComponent(header);
 		
 		ButtonGroup[] bgs = new ButtonGroup[]{ //
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
 						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS)),
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS)),//
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS))};
 		
 		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
 
 		addComponent(tableController);
-		table = applicationContext.getBean(InstallTable.class).afterInjection(eventBus);
+		table = applicationContext.getBean(StepDefineTable.class).afterInjection(eventBus);
 
 		addComponent(table);
 		setExpandRatio(table, 1);
@@ -136,7 +133,7 @@ public class InstallView extends VerticalLayout implements View, SubscriberExcep
 	
 	@Subscribe
 	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(Install.class.getSimpleName()), lvfb);
+		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(StepDefine.class.getSimpleName()), lvfb);
 		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
 	
@@ -146,22 +143,13 @@ public class InstallView extends VerticalLayout implements View, SubscriberExcep
 		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
 	
-	@Subscribe
-	public void onBackBtnClicked(HistoryBackEvent hbe) {
-		String bu = lvfb.getPreviousView();
-		if (Strings.isNullOrEmpty(bu)) {
-			bu = BoxView.VIEW_NAME;
-		}
-		UI.getCurrent().getNavigator().navigateTo(bu);
-	}
-	
 	@SuppressWarnings("unchecked")
 	@Subscribe
 	public void dynMenuClicked(DynMenuClickEvent dce) {
-		Collection<Install> selected;
+		Collection<StepDefine> selected;
 		switch (dce.getBtnId()) {
 		case CommonMenuItemIds.DELETE:
-			selected = (Collection<Install>) table.getValue();
+			selected = (Collection<StepDefine>) table.getValue();
 			selected.forEach(b -> {
 				if (b.isArchived()) {
 					repository.delete(b);
@@ -170,13 +158,13 @@ public class InstallView extends VerticalLayout implements View, SubscriberExcep
 					repository.save(b);
 				}
 			});
-			((InstallContainer)table.getContainerDataSource()).refresh();
+			((StepDefineContainer)table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.REFRESH:
-			((InstallContainer)table.getContainerDataSource()).refresh();
+			((StepDefineContainer)table.getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
-			selected = (Collection<Install>) table.getValue();
+			selected = (Collection<StepDefine>) table.getValue();
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:

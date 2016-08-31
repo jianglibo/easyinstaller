@@ -11,7 +11,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
-import com.jianglibo.vaadin.dashboard.util.FormFieldsFactory;
+import com.jianglibo.vaadin.dashboard.uifactory.FormFieldsFactory;
 
 @SuppressWarnings("serial")
 @Component

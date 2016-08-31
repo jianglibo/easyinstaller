@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.installstep;
+package com.jianglibo.vaadin.dashboard.view.stepdefine;
 
 
 import org.slf4j.Logger;
@@ -17,9 +17,9 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.InstallStepDefine;
+import com.jianglibo.vaadin.dashboard.domain.StepDefine;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
-import com.jianglibo.vaadin.dashboard.repositories.InstallStepRepository;
+import com.jianglibo.vaadin.dashboard.repositories.StepDefineRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -28,19 +28,19 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class InstallStepContainer extends JpaContainer<InstallStepDefine>{
+public class StepDefineContainer extends JpaContainer<StepDefine>{
 	
-	private static Logger LOGGER = LoggerFactory.getLogger(InstallStepContainer.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(StepDefineContainer.class);
 	
-	private final InstallStepRepository repository;
+	private final StepDefineRepository repository;
 	
 	@Autowired
-	public InstallStepContainer(InstallStepRepository repository, Domains domains) {
-		super(InstallStepDefine.class, domains);
+	public StepDefineContainer(StepDefineRepository repository, Domains domains) {
+		super(StepDefine.class, domains);
 		this.repository = repository;
 	}
 	
-	public InstallStepContainer afterInjection(EventBus eventBus, Table table) {
+	public StepDefineContainer afterInjection(EventBus eventBus, Table table) {
 		VaadinTableWrapper vtw = getDomains().getTables().get(Box.class.getSimpleName());
 		setupProperties(table, eventBus, SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
 		return this;
@@ -60,7 +60,7 @@ public class InstallStepContainer extends JpaContainer<InstallStepDefine>{
 			pageable = new PageRequest(getCurrentPage() - 1, getPerPage(), getSort());
 		}
 		
-		Page<InstallStepDefine> entities;
+		Page<StepDefine> entities;
 		String filterStr = getFilterStr();
 		long total;
 		if (Strings.isNullOrEmpty(filterStr)) {

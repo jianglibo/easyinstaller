@@ -16,6 +16,16 @@ public class VaadinTableColumns {
 		this.columns = columns;
 	}
 	
+	public List<String> getSortableContainerPropertyIds() {
+		List<String> sortables = Lists.newArrayList();
+		for(VaadinTableColumnWrapper vcw: columns) {
+			if (vcw.getVtc().sortable()) {
+				sortables.add(vcw.getName());
+			}
+		}
+		return sortables;
+	}
+	
 	public String[] getVisibleColumns() {
 		List<String> visibles = Lists.newArrayList();
 		for(VaadinTableColumnWrapper tc : columns) {

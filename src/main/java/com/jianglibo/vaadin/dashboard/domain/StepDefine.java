@@ -14,11 +14,11 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
-@VaadinTable(multiSelect = true, messagePrefix = "domain.installstepdefine.", footerVisible = true, styleNames = {
+@VaadinTable(multiSelect = true, messagePrefix = "domain.stepdefine.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
-@Table(name = "installstepdefine", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "ostype" }) })
-public class InstallStepDefine extends BaseEntity {
+@Table(name = "stepdefine", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "ostype" }) })
+public class StepDefine extends BaseEntity {
 
 	/**
 	 * 

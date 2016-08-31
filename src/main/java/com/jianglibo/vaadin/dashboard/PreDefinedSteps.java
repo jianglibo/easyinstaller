@@ -19,8 +19,8 @@ import com.google.common.collect.Sets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
-import com.jianglibo.vaadin.dashboard.domain.InstallStepDefine;
-import com.jianglibo.vaadin.dashboard.repositories.InstallStepRepository;
+import com.jianglibo.vaadin.dashboard.domain.StepDefine;
+import com.jianglibo.vaadin.dashboard.repositories.StepDefineRepository;
 import com.jianglibo.vaadin.dashboard.ssh.StepConfig;
 
 @Component
@@ -32,7 +32,7 @@ public class PreDefinedSteps {
 	private ApplicationContext applicationContext;
 
 	@Autowired
-	private InstallStepRepository installStepRepository;
+	private StepDefineRepository stepDefineRepository;
 
 	@PostConstruct
 	public void post() throws IOException {
@@ -64,15 +64,15 @@ public class PreDefinedSteps {
 					if (name == null || ostype == null) {
 						LOGGER.error("{} must contains [name and ostype] item.", ms);
 					} else {
-						InstallStepDefine installStep = installStepRepository.findByNameAndOstype(name, ostype);
-						if (installStep == null) {
-							installStep = new InstallStepDefine();
+						StepDefine stepDefine = stepDefineRepository.findByNameAndOstype(name, ostype);
+						if (stepDefine == null) {
+							stepDefine = new StepDefine();
 						}
-						installStep.setName(name);
-						installStep.setOstype(ostype);
-						installStep.setKvpairs(s);
-						installStep.setCodeContent(c);
-						installStepRepository.save(installStep);
+						stepDefine.setName(name);
+						stepDefine.setOstype(ostype);
+						stepDefine.setKvpairs(s);
+						stepDefine.setCodeContent(c);
+						stepDefineRepository.save(stepDefine);
 					}
 				} catch (Exception e) {
 					LOGGER.error("{} must encoded in utf-8.", ms);

@@ -349,7 +349,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public Collection<?> getSortableContainerPropertyIds() {
-		return null;
+		return domains.getTableColumns().get(clazz.getSimpleName()).getSortableContainerPropertyIds();
 	}
 
 	@Override

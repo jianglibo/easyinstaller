@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.installstep;
+package com.jianglibo.vaadin.dashboard.view.stepdefine;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -9,7 +9,7 @@ import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
 @MainMenu(menuOrder = 10)
-public class InstallStepViewMenuItem implements MenuItemWrapper {
+public class StepDefineViewMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;
 
@@ -17,9 +17,9 @@ public class InstallStepViewMenuItem implements MenuItemWrapper {
 	
 	
 	@Autowired
-	public InstallStepViewMenuItem(MessageSource messageSource) {
+	public StepDefineViewMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.menuItem = new ValoMenuItemButton(InstallStepView.VIEW_NAME, InstallStepView.ICON_VALUE, messageSource);
+		this.menuItem = new ValoMenuItemButton(StepDefineView.VIEW_NAME, StepDefineView.ICON_VALUE, messageSource);
 	}
 	
 	public Component getMenuItem() {

@@ -45,7 +45,7 @@ public class Software extends BaseEntity {
 	private String ostype;
 	
 	@OneToMany
-	private Set<InstallStepDefine> installStepDefines;
+	private Set<StepDefine> stepDefines;
 	
 	
 	public Software() {
@@ -59,7 +59,7 @@ public class Software extends BaseEntity {
 	
 	public Install createNewInstall(){
 		Install in = new Install(this);
-		in.setInstallSteps(getInstallStepDefines().stream().map(isd -> new InstallStep(in, isd)).collect(Collectors.toList()));
+		in.setStepRuns(getStepDefines().stream().map(isd -> new StepRun(in, isd)).collect(Collectors.toList()));
 		return in;
 	}
 
@@ -89,11 +89,13 @@ public class Software extends BaseEntity {
 		return name;
 	}
 
-	public Set<InstallStepDefine> getInstallStepDefines() {
-		return installStepDefines;
+	public Set<StepDefine> getStepDefines() {
+		return stepDefines;
 	}
 
-	public void setInstallStepDefines(Set<InstallStepDefine> installStepDefines) {
-		this.installStepDefines = installStepDefines;
+	public void setStepDefines(Set<StepDefine> stepDefines) {
+		this.stepDefines = stepDefines;
 	}
+
+
 }

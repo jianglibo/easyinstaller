@@ -9,9 +9,9 @@ import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 @Target({ java.lang.annotation.ElementType.FIELD })
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Documented
-public @interface ComboBoxBackByContainer {
-	Class<? extends BaseEntity> entityClass();
+public @interface GridFieldDescription {
+	String[] columns();
+	Class<? extends BaseEntity> clazz();
 	int pageLength() default 10;
-	boolean allowNewComboOption() default false;
-	String itemCaptionPropertyId() default "displayName";
+	boolean showEditIcon() default false;
 }

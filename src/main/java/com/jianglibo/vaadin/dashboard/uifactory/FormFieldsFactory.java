@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.util;
+package com.jianglibo.vaadin.dashboard.uifactory;
 
 import java.util.List;
 
@@ -12,6 +12,8 @@ import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.uicomponent.filecontentfield.FileContentField;
+import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.GridField;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.TextArea;
@@ -23,6 +25,9 @@ public class FormFieldsFactory {
 	
 	@Autowired
 	private ComboBoxFieldFactory comboBoxFieldFactory;
+	
+	@Autowired
+	private GridFieldFactory gridFieldFactory;
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -40,7 +45,7 @@ public class FormFieldsFactory {
         	
         	switch (vfw.getVff().fieldType()) {
 			case COMBO_BOX:
-				ComboBox cb = comboBoxFieldFactory.createCombo(vtw, vfw);
+				ComboBox cb = comboBoxFieldFactory.create(vtw, vfw);
 				addStyleName(vfw, cb);
 				fields.add(new PropertyIdAndField(vfw, cb));
 				break;
@@ -60,6 +65,12 @@ public class FormFieldsFactory {
 				fcf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw));
 				addStyleName(vfw, fcf);
 				fields.add(new PropertyIdAndField(vfw, fcf));
+				break;
+			case GRID:
+				GridField<?> gf = gridFieldFactory.create(vtw, vfw).afterInjection(vtw, vfw);
+				gf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw));
+				addStyleName(vfw, gf);
+				fields.add(new PropertyIdAndField(vfw, gf));
 				break;
 			default:
 				String caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw);

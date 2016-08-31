@@ -11,48 +11,59 @@ import javax.persistence.Table;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByContainer;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.GridFieldDescription;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.vaadin.ui.themes.ValoTheme;
-
 
 /**
  * An installation combined with stepruns. Not shared between boxes.
+ * 
  * @author jianglibo@gmail.com
  *
  */
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "install")
-@VaadinTable(multiSelect = true,footerVisible=true, messagePrefix="domain.install.",styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
+@VaadinTable(multiSelect = true, footerVisible = true, messagePrefix = "domain.install.", styleNames = {
+		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
 public class Install extends BaseEntity {
-	
-	@OneToMany(mappedBy="installation")
-	@OrderBy("order ASC")
-	private List<InstallStep> installSteps = Lists.newArrayList();
 
 	@OneToOne
 	@VaadinTableColumn
+	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 10)
+	@ComboBoxBackByContainer(entityClass = StepRun.class, pageLength = 10)
 	private Software software;
-	
+
+	@OneToMany(mappedBy = "install")
+	@OrderBy("position ASC")
+	@VaadinFormField(fieldType = Ft.GRID, order = 20)
+	@GridFieldDescription(columns = { "stepDefine", "position" }, clazz = StepRun.class)
+	private List<StepRun> stepRuns = Lists.newArrayList();
+
 	@ManyToOne
 	private Box box;
-	
+
 	@OneToOne
-	private InstallStep lastStep;
-	
+	private StepRun lastStep;
+
 	public Install() {
 	}
-	
+
 	public Install(Software software) {
 		setSoftware(software);
 	}
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).add("name", getSoftware().getName()).add("ostye", getSoftware().getOstype()).toString();
+		return Objects.toStringHelper(this).add("name", getSoftware().getName()).add("ostye", getSoftware().getOstype())
+				.toString();
 	}
-	
+
 	@Override
 	public String getDisplayName() {
 		return null;
@@ -66,19 +77,19 @@ public class Install extends BaseEntity {
 		this.box = box;
 	}
 
-	public List<InstallStep> getInstallSteps() {
-		return installSteps;
+	public List<StepRun> getStepRuns() {
+		return stepRuns;
 	}
 
-	public void setInstallSteps(List<InstallStep> installSteps) {
-		this.installSteps = installSteps;
+	public void setStepRuns(List<StepRun> stepRuns) {
+		this.stepRuns = stepRuns;
 	}
 
-	public InstallStep getLastStep() {
+	public StepRun getLastStep() {
 		return lastStep;
 	}
 
-	public void setLastStep(InstallStep lastStep) {
+	public void setLastStep(StepRun lastStep) {
 		this.lastStep = lastStep;
 	}
 

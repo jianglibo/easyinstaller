@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.util;
+package com.jianglibo.vaadin.dashboard.uifactory;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -14,6 +14,7 @@ import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
 import com.jianglibo.vaadin.dashboard.config.ComboItem;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.ui.TwinColSelect;
 
 

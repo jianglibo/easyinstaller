@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.util;
+package com.jianglibo.vaadin.dashboard.uifactory;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -27,6 +27,7 @@ import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
 import com.jianglibo.vaadin.dashboard.config.ComboItem;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
 
@@ -56,7 +57,7 @@ public class ComboBoxFieldFactory {
 		this.appConfig = appConfigWrapper.unwrap();
 	}
 	
-	public ComboBox createCombo(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+	public ComboBox create(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		
 		String caption = null;
 		try {
