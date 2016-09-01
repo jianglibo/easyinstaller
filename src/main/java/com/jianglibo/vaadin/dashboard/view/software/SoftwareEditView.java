@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.software;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +12,12 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.domain.StepDefine;
+import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickListener;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
+import com.jianglibo.vaadin.dashboard.uicomponent.twingrid.TwinGridField;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
@@ -26,6 +32,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -75,6 +82,18 @@ public class SoftwareEditView  extends VerticalLayout implements View {
 		addComponent(header);
 		form = applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus, true);
 		addComponent(form);
+		
+		TwinGridField<List<StepDefine>> stepDefinesField;
+		
+		stepDefinesField = (TwinGridField<List<StepDefine>>) form.getFields().stream().filter(paf -> paf.getPropertyId().equals("stepDefines")).findFirst().get().getField();
+		
+		stepDefinesField.addItemClickListener(new TwinGridFieldItemClickListener() {
+			@Override
+			public void itemClicked(TwinGridFieldItemClickEvent event) {
+				Notification.show(event.isLeftClicked() + "");
+			}
+		});
+		
 		Component ft = buildFooter();
 		addComponent(ft);
 		setComponentAlignment(form, Alignment.TOP_LEFT);

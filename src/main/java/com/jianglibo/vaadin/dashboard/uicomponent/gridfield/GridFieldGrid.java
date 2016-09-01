@@ -46,7 +46,7 @@ public class GridFieldGrid<T extends Collection<? extends BaseEntity>> extends V
 		
 		String[] allcolnames = dfd.columns();
 		
-		GridMeta gridMeta = VaadinGridUtil.setupColumns(applicationContext, allcolnames, messageSource, vtw);
+		GridMeta gridMeta = VaadinGridUtil.setupGrid(applicationContext, allcolnames, messageSource, vtw);
 		Grid grid = gridMeta.getGrid();
 		
 		grid.setContainerDataSource(fc);

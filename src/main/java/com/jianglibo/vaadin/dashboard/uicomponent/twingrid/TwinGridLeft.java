@@ -17,6 +17,12 @@ import com.jianglibo.vaadin.dashboard.data.vaadinconverter.VaadinGridUtil;
 import com.jianglibo.vaadin.dashboard.data.vaadinconverter.VaadinGridUtil.GridMeta;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickListener;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.GeneratedPropertyContainer;
+import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
 
@@ -24,6 +30,8 @@ import com.vaadin.ui.VerticalLayout;
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class TwinGridLeft<T extends Collection<? extends BaseEntity>> extends VerticalLayout {
+	
+	private static final String REMOVE_FROM_LEFT = "removeFromLeft";
 	
 	@Autowired
 	private Domains domains;
@@ -33,19 +41,53 @@ public class TwinGridLeft<T extends Collection<? extends BaseEntity>> extends Ve
 	
 	@Autowired
 	private ApplicationContext applicationContext;
+	
+	private TwinGridFieldItemClickListener itemClickListener;
+	
+	private FreeContainer freeContainer;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public TwinGridLeft<T> afterInjection(VaadinFormFieldWrapper vffw, TwinGridFieldDescription tgfd) {
-		FreeContainer fc = applicationContext.getBean(FreeContainer.class).afterInjection(tgfd.leftClazz(), tgfd.leftPageLength());
+	public TwinGridLeft<T> afterInjection(VaadinFormFieldWrapper vffw, TwinGridFieldDescription tgfd, TwinGridLayout<T> tgl) {
+		
+		freeContainer = applicationContext.getBean(FreeContainer.class).afterInjection(tgfd.leftClazz(), tgfd.leftPageLength());
+		
+		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(freeContainer);
+
+		gpcontainer.addGeneratedProperty(REMOVE_FROM_LEFT, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				return FontAwesome.MINUS_SQUARE_O.getHtml();
+			}
+
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
 		
 		VaadinTableWrapper vtw = domains.getTables().get(tgfd.leftClazz().getSimpleName());
 		
 		String[] allcolnames = tgfd.leftColumns();
 		
-		GridMeta gridMeta = VaadinGridUtil.setupColumns(applicationContext, allcolnames, messageSource, vtw);
+		GridMeta gridMeta = VaadinGridUtil.setupGrid(applicationContext, allcolnames, messageSource, vtw, REMOVE_FROM_LEFT);
 		Grid grid = gridMeta.getGrid();
-		grid.setContainerDataSource(fc);
+		grid.setContainerDataSource(gpcontainer);
 		addComponent(grid);
+		
+		grid.addItemClickListener(event -> {
+			if (event.getPropertyId().equals(REMOVE_FROM_LEFT)) {
+				itemClickListener.itemClicked(new TwinGridFieldItemClickEvent(event.getItemId(), true));
+				tgl.refreshValue();
+			}
+		});
 		return this;
+	}
+
+	public void addItemClickListener(TwinGridFieldItemClickListener itemClickListener) {
+		this.itemClickListener = itemClickListener;
+	}
+
+	public FreeContainer getFreeContainer() {
+		return freeContainer;
 	}
 }

@@ -9,6 +9,7 @@ import org.springframework.context.MessageSource;
 import com.google.common.collect.Maps;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.GridFieldDescription;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Grid;
@@ -16,7 +17,7 @@ import com.vaadin.ui.Grid.SelectionMode;
 
 public class VaadinGridUtil {
 
-	public static GridMeta setupColumns(ApplicationContext applicationContext, String[] allcolnames, MessageSource messageSource, VaadinTableWrapper vtw, String...generatedFields) {
+	public static GridMeta setupGrid(ApplicationContext applicationContext, String[] allcolnames, MessageSource messageSource, VaadinTableWrapper vtw, String...generatedFields) {
 		Map<String, String> convertormap = Maps.newHashMap();
 		List<String> colnames = Lists.newArrayList(generatedFields);
 		
@@ -29,7 +30,6 @@ public class VaadinGridUtil {
 				colnames.add(s);
 			}
 		}
-		
 		
 		Grid grid = new Grid();
 		grid.setColumns(colnames.toArray(new String[]{}));

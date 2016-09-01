@@ -17,4 +17,6 @@ public @interface TwinGridFieldDescription {
 	int leftPageLength() default 10;
 	int rightPageLength() default 10;
 	boolean showEditIcon() default false;
+	boolean showLeftFilter() default false;
+	boolean showRightFilter() default false;
 }

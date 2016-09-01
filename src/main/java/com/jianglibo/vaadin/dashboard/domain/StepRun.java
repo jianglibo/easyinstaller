@@ -4,7 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
@@ -12,7 +11,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
 @VaadinTable(multiSelect=true, messagePrefix="domain.steprun.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
-@Table(name = "steprun", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "ostype" }) })
+@Table(name = "steprun")
 public class StepRun extends BaseEntity {
 
 	/**

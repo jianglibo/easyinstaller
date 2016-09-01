@@ -391,6 +391,12 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		notifyItemSetChanged();
 	}
 	
+	public void refreshWindow(int currentPage) {
+		this.currentPage = currentPage;
+		refreshWindow();
+	}
+
+	
     private void notifyItemSetChanged() {
         ItemSetChangeEvent event  = new ItemSetChangeEvent() {
 			@Override

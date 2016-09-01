@@ -19,6 +19,8 @@ import com.jianglibo.vaadin.dashboard.data.vaadinconverter.VaadinGridUtil;
 import com.jianglibo.vaadin.dashboard.data.vaadinconverter.VaadinGridUtil.GridMeta;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
@@ -50,9 +52,11 @@ public class TwinGridRight<T extends Collection<? extends BaseEntity>> extends V
 
 	@Autowired
 	private MessageSource messageSource;
+	
+	private TwinGridFieldItemClickListener itemClickListener;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public TwinGridRight<T> afterInjection(VaadinFormFieldWrapper vffw, TwinGridFieldDescription tgfd) {
+	public TwinGridRight<T> afterInjection(VaadinFormFieldWrapper vffw, TwinGridFieldDescription tgfd, TwinGridLayout<T> tgl) {
 		setWidth(100.0f, Unit.PERCENTAGE);
 
 		FreeContainer fc1 = applicationContext.getBean(FreeContainer.class).afterInjection(tgfd.rightClazz(),
@@ -80,7 +84,7 @@ public class TwinGridRight<T extends Collection<? extends BaseEntity>> extends V
 
 		String[] allcolnames = tgfd.rightColumns();
 
-		GridMeta gridMeta = VaadinGridUtil.setupColumns(applicationContext, allcolnames, messageSource, vtw,
+		GridMeta gridMeta = VaadinGridUtil.setupGrid(applicationContext, allcolnames, messageSource, vtw,
 				ADD_TO_LEFT_COL_NAME);
 
 		Grid grid = gridMeta.getGrid();
@@ -113,7 +117,16 @@ public class TwinGridRight<T extends Collection<? extends BaseEntity>> extends V
 			gpcontainer.addContainerFilter(new SimpleStringFilter("", change.getText(), true, false));
 
 		});
+		grid.addItemClickListener(event -> {
+			if (event.getPropertyId().equals(ADD_TO_LEFT_COL_NAME)) {
+				itemClickListener.itemClicked(new TwinGridFieldItemClickEvent(event.getItemId(), false));
+				tgl.refreshValue();
+			}
+		});
 		return this;
+	}
 
+	public void addItemClickListener(TwinGridFieldItemClickListener itemClickListener) {
+		this.itemClickListener = itemClickListener;
 	}
 }

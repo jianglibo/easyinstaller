@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 @Target({ java.lang.annotation.ElementType.TYPE })
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Documented
-public @interface SoftwareInstaller {
+public @interface PreDefinedSoftware {
 	String name();
 	String ostype() default "Centos";
 }
