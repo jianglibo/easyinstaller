@@ -1,4 +1,5 @@
+# available runners: SshExecRunner 
 name: Tcl
 ostype: Centos
-runner: executor
+runner: SshExecRunner
 executable: bash

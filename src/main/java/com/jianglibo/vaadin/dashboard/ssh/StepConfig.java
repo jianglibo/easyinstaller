@@ -28,6 +28,10 @@ public class StepConfig {
 		return (String) localMap.get(idx);
 	}
 	
+	public String getRunner() {
+		return (String) map.get("runner");
+	}
+	
 	public String getName() {
 		return (String) map.get("name");
 	}

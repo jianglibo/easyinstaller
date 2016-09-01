@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
@@ -61,7 +62,8 @@ public class PreDefinedSteps {
 					StepConfig stepConfig = new StepConfig(s);
 					String name = stepConfig.getName();
 					String ostype = stepConfig.getOstype();
-					if (name == null || ostype == null) {
+					String runner = stepConfig.getRunner();
+					if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(ostype) || Strings.isNullOrEmpty(runner)) {
 						LOGGER.error("{} must contains [name and ostype] item.", ms);
 					} else {
 						StepDefine stepDefine = stepDefineRepository.findByNameAndOstype(name, ostype);
@@ -70,7 +72,8 @@ public class PreDefinedSteps {
 						}
 						stepDefine.setName(name);
 						stepDefine.setOstype(ostype);
-						stepDefine.setKvpairs(s);
+						stepDefine.setRunner(runner);
+						stepDefine.setYmlContent(s);
 						stepDefine.setCodeContent(c);
 						stepDefineRepository.save(stepDefine);
 					}

@@ -12,12 +12,13 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionMode;
 
 public class VaadinGridUtil {
 
-	public static void setupColumns(ApplicationContext applicationContext, String[] allcolnames, Grid grid, MessageSource messageSource, VaadinTableWrapper vtw) {
+	public static GridMeta setupColumns(ApplicationContext applicationContext, String[] allcolnames, MessageSource messageSource, VaadinTableWrapper vtw, String...generatedFields) {
 		Map<String, String> convertormap = Maps.newHashMap();
-		List<String> colnames = Lists.newArrayList();
+		List<String> colnames = Lists.newArrayList(generatedFields);
 		
 		for(String s : allcolnames) {
 			if (s.contains("!")) {
@@ -30,8 +31,9 @@ public class VaadinGridUtil {
 		}
 		
 		
-		grid.setColumns(colnames);
-		
+		Grid grid = new Grid();
+		grid.setColumns(colnames.toArray(new String[]{}));
+		grid.setSelectionMode(SelectionMode.NONE);
 		for(String cn : colnames){
 			Grid.Column col = grid.getColumn(cn);
 			if (convertormap.containsKey(cn)) {
@@ -40,6 +42,40 @@ public class VaadinGridUtil {
 			}
 			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), cn));
 		}
+		return new GridMeta(colnames, grid, convertormap);
+	}
+	
+	public static class GridMeta {
+		private String[] colnames;
+		private Grid grid;
+		private Map<String, String> convertormap;
+		
+		public GridMeta(List<String> colnames, Grid grid, Map<String, String> convertormap) {
+			super();
+			this.colnames = colnames.toArray(new String[]{});
+			this.grid = grid;
+			this.convertormap = convertormap;
+		}
+		public String[] getColnames() {
+			return colnames;
+		}
+		public void setColnames(String[] colnames) {
+			this.colnames = colnames;
+		}
+		public Grid getGrid() {
+			return grid;
+		}
+		public void setGrid(Grid grid) {
+			this.grid = grid;
+		}
+		public Map<String, String> getConvertormap() {
+			return convertormap;
+		}
+		public void setConvertormap(Map<String, String> convertormap) {
+			this.convertormap = convertormap;
+		}
+		
+		
 	}
 	
 }

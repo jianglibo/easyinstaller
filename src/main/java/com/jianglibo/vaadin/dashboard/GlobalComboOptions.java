@@ -16,6 +16,8 @@ public class GlobalComboOptions {
 	
 	public static final String OS_TYPES = "ostypes";
 	
+	public static final String RUNNERS = "runners";
+	
 	private Map<String, Set<String>> stringOptions = Maps.newHashMap();
 	
 	
@@ -34,7 +36,7 @@ public class GlobalComboOptions {
 		return stringOptions.get(key);
 	}
 
-	public Map<String, Set<String>> getStringOptions() {
+	public Map<String, Set<String>> getWholeStringMap() {
 		return stringOptions;
 	}
 }

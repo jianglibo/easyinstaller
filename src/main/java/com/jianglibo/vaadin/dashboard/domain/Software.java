@@ -49,7 +49,7 @@ public class Software extends BaseEntity {
 	
 	@OneToMany
 	@TwinGridFieldDescription(leftClazz=OrderedStepDefine.class, rightClazz=StepDefine.class, leftPageLength = 100, rightColumns={"name", "ostype"}, leftColumns={"position", "stepDefine"})
-	@VaadinFormField(fieldType = Ft.TWIN_COL_SELECT, order = 30)
+	@VaadinFormField(fieldType = Ft.TWIN_GRID, order = 30)
 	private List<OrderedStepDefine> stepDefines = Lists.newArrayList();
 	
 	@Lob

@@ -13,6 +13,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.uicomponent.filecontentfield.FileContentField;
 import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.GridField;
+import com.jianglibo.vaadin.dashboard.uicomponent.twingrid.TwinGridField;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
@@ -37,6 +38,9 @@ public class FormFieldsFactory {
 	
 	@Autowired
 	private TwinColSelectFieldFactory twinColSelectFieldFactory;
+	
+	@Autowired
+	private TwinGridFieldFactory twinGridFieldFactory;
 	
 	public List<PropertyIdAndField> buildFields(VaadinTableWrapper vtw, FormFields ffs) {
 		List<PropertyIdAndField> fields = Lists.newArrayList();
@@ -65,13 +69,17 @@ public class FormFieldsFactory {
 				fields.add(new PropertyIdAndField(vfw, fcf));
 				break;
 			case GRID:
-				GridField<?> gf = gridFieldFactory.create(vtw, vfw).afterInjection(vtw, vfw);
+				GridField<?> gf = gridFieldFactory.create(vtw, vfw);
 				gf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw));
 				addStyleName(vfw, gf);
 				fields.add(new PropertyIdAndField(vfw, gf));
 				break;
 			case TWIN_GRID:
-				
+				TwinGridField<?> tgf = twinGridFieldFactory.create(vtw, vfw);
+				tgf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw));
+				addStyleName(vfw, tgf);
+				fields.add(new PropertyIdAndField(vfw, tgf));
+				break;
 			default:
 				String caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw);
 				TextField tf = new TextField(caption);

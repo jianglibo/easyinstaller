@@ -50,6 +50,9 @@ import com.vaadin.data.util.filter.UnsupportedFilterException;
 public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, ItemSetChangeNotifier,
 		PropertySetChangeNotifier, Buffered, Container.Filterable, Serializable {
 
+	
+	private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();
+	
 	private static Logger LOGGER = LoggerFactory.getLogger(FreeContainer.class);
 
 	private int perPage;
@@ -250,6 +253,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 			LOGGER.info("{} called with parameter {}", "addContainerFilter", sfilter.getFilterString());
 			this.filterString = sfilter.getFilterString();
 		}
+		this.currentPage = 0;
 		refreshWindow();
 	}
 
@@ -321,7 +325,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public void addItemSetChangeListener(ItemSetChangeListener listener) {
-
+		itemSetChangeListeners.add(listener);
 	}
 
 	@Override
@@ -384,7 +388,20 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		ManualPagable pageable = new ManualPagable(currentPage, perPage, sort);
 		currentWindow = (List<T>) domains.getRepositoryCommonCustom(simpleClassName).getFilteredPage(pageable, filterString,
 				trashed);
+		notifyItemSetChanged();
 	}
+	
+    private void notifyItemSetChanged() {
+        ItemSetChangeEvent event  = new ItemSetChangeEvent() {
+			@Override
+			public Container getContainer() {
+				return FreeContainer.this;
+			}
+		};
+        for (ItemSetChangeListener listener : itemSetChangeListeners) {
+            listener.containerItemSetChange(event);
+        }
+    }
 
 	private int inWindowIdx(Object itemId) {
 		int idx = currentWindow.indexOf(itemId);

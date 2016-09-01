@@ -8,6 +8,5 @@ import java.lang.annotation.Target;
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Documented
 public @interface Runner {
-	String name();
-	String ostype() default "Centos";
+	String value();
 }

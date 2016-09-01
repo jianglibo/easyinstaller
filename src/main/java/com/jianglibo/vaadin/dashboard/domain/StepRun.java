@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
@@ -11,13 +12,19 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
 @VaadinTable(multiSelect=true, messagePrefix="domain.steprun.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
-@Table(name = "steprun")
+@Table(name = "steprun", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "ostype" }) })
 public class StepRun extends BaseEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	@VaadinTableColumn(order = 10)
+	private String name;
+	
+	@VaadinTableColumn(order = 20)
+	private String ostype;
 	
 	@ManyToOne
 	private StepDefine stepDefine;
@@ -42,7 +49,7 @@ public class StepRun extends BaseEntity {
 
 	@Override
 	public String getDisplayName() {
-		return null;
+		return String.format("[%s,%s,%s]", getName(), getOstype(), getId());
 	}
 
 	public JschExecuteResult getResult() {
@@ -76,5 +83,21 @@ public class StepRun extends BaseEntity {
 
 	public void setInstall(Install install) {
 		this.install = install;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getOstype() {
+		return ostype;
+	}
+
+	public void setOstype(String ostype) {
+		this.ostype = ostype;
 	}
 }

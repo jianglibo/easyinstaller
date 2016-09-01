@@ -14,6 +14,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.data.vaadinconverter.VaadinGridUtil;
+import com.jianglibo.vaadin.dashboard.data.vaadinconverter.VaadinGridUtil.GridMeta;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.vaadin.ui.Grid;
@@ -39,18 +40,10 @@ public class TwinGridLeft<T extends Collection<? extends BaseEntity>> extends Ve
 		
 		VaadinTableWrapper vtw = domains.getTables().get(tgfd.leftClazz().getSimpleName());
 		
-		Grid grid = new Grid();
 		String[] allcolnames = tgfd.leftColumns();
 		
-		VaadinGridUtil.setupColumns(applicationContext, allcolnames, grid, messageSource, vtw);
-		
-//		grid.setColumnOrder("name");
-//		HeaderRow filterRow = grid.appendHeaderRow();
-//
-//		HeaderCell cell = filterRow.getCell("name");
-//		cell.setComponent(filterField);
-//
-//		grid.setSortOrder(Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+		GridMeta gridMeta = VaadinGridUtil.setupColumns(applicationContext, allcolnames, messageSource, vtw);
+		Grid grid = gridMeta.getGrid();
 		grid.setContainerDataSource(fc);
 		addComponent(grid);
 		return this;
