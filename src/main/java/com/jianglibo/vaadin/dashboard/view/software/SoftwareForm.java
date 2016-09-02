@@ -30,10 +30,16 @@ public class SoftwareForm extends FormBase<Software> {
 		defaultAfterInjection(eventBus, attachFields);
 		return this;
 	}
-
+	
 	@Override
 	public boolean saveToRepo() {
         repository.save(getWrappedBean());
 		return true;
+	}
+
+	@Override
+	public FormBase<Software> done() {
+		defaultDone();
+		return this;
 	}
 }

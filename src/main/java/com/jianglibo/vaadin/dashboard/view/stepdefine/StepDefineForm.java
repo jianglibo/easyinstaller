@@ -36,4 +36,10 @@ public class StepDefineForm extends FormBase<StepDefine> {
         repository.save(getWrappedBean());
 		return true;
 	}
+
+	@Override
+	public StepDefineForm done() {
+		defaultDone();
+		return this;
+	}
 }

@@ -1,10 +1,12 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.form;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
+import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -12,18 +14,26 @@ import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.uifactory.FormFieldsFactory;
 import com.jianglibo.vaadin.dashboard.uifactory.FormFieldsFactory.PropertyIdAndField;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
+import com.jianglibo.vaadin.dashboard.vo.HandMakeField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Page;
 import com.vaadin.shared.Position;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+/**
+ * It's better to allow hand make fields to participating.
+ * @author jianglibo@gmail.com
+ *
+ * @param <T>
+ */
 @SuppressWarnings("serial")
 public abstract class FormBase<T> extends FormLayout {
 
@@ -43,6 +53,9 @@ public abstract class FormBase<T> extends FormLayout {
 	
 	private List<PropertyIdAndField> fields;
 	
+	@SuppressWarnings("rawtypes")
+	private Map<String, HandMakeField> handMakeFields = Maps.newHashMap();
+	
 	public FormBase(Class<T> clazz, MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory) {
 		this.clazz = clazz;
 		this.domainName = clazz.getSimpleName();
@@ -51,7 +64,7 @@ public abstract class FormBase<T> extends FormLayout {
 		this.formFieldsFactory = formFieldsFactory;
 	}
 	
-	protected void defaultAfterInjection(EventBus eventBus, boolean attachFields) {
+	public void defaultAfterInjection(EventBus eventBus, boolean attachFields) {
 		this.eventBus = eventBus;
 		this.attachFields = attachFields;
 		eventBus.register(this);
@@ -59,14 +72,22 @@ public abstract class FormBase<T> extends FormLayout {
 		addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         addEnterListener();
         addEscapeListener();
-        create();
 	}
 	
-	public void create() {
+	@SuppressWarnings("rawtypes")
+	public FormBase<T> addHandMakeFields(HandMakeField handMakeField) {
+		this.handMakeFields.put(handMakeField.getName(), handMakeField);
+		return this;
+	}
+	
+	public abstract FormBase<T> done();
+	
+	
+	public void defaultDone() {
         VaadinTableWrapper vtw = domains.getTables().get(domainName);
         FormFields ffs = domains.getFormFields().get(domainName);
         
-        fields = formFieldsFactory.buildFields(vtw, ffs);
+        fields = formFieldsFactory.buildFields(vtw, ffs, handMakeFields);
         
         for(PropertyIdAndField paf : fields) {
 			fieldGroup.bind(paf.getField(), paf.getPropertyId());

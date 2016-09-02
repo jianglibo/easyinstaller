@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.box.install;
+package com.jianglibo.vaadin.dashboard.view.install;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -35,5 +35,11 @@ public class InstallForm extends FormBase<Install> {
 	public boolean saveToRepo() {
         repository.save(getWrappedBean());
 		return true;
+	}
+
+	@Override
+	public InstallForm done() {
+		defaultDone();
+		return this;
 	}
 }

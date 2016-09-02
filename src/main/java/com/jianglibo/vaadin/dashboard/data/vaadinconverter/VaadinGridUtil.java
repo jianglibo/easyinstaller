@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.GridFieldDescription;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Grid;
@@ -17,7 +18,7 @@ import com.vaadin.ui.Grid.SelectionMode;
 
 public class VaadinGridUtil {
 
-	public static GridMeta setupGrid(ApplicationContext applicationContext, String[] allcolnames, MessageSource messageSource, VaadinTableWrapper vtw, String...generatedFields) {
+	public static GridMeta setupGrid(ApplicationContext applicationContext, String[] allcolnames, MessageSource messageSource, VaadinTableWrapper vtw,Class<?> fildClazz, String...generatedFields) {
 		Map<String, String> convertormap = Maps.newHashMap();
 		List<String> colnames = Lists.newArrayList(generatedFields);
 		
@@ -38,6 +39,9 @@ public class VaadinGridUtil {
 			Grid.Column col = grid.getColumn(cn);
 			if (convertormap.containsKey(cn)) {
 				Converter cv = (Converter) applicationContext.getBean(convertormap.get(cn));
+				if (cv instanceof EntityStringConverter) {
+					cv = ((EntityStringConverter) cv).afterInjection(fildClazz);
+				}
 				col.setConverter(cv);
 			}
 			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), cn));

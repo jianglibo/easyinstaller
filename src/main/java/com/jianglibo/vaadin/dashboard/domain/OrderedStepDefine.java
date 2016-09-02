@@ -22,6 +22,16 @@ public class OrderedStepDefine extends BaseEntity {
 	
 	@VaadinTableColumn(order = 10)
 	private int position;
+	
+	
+	public OrderedStepDefine() {
+	}
+	
+	public OrderedStepDefine(StepDefine stepDefine, int position) {
+		this.stepDefine = stepDefine;
+		this.position = position;
+	}
+
 
 	@Override
 	public String getDisplayName() {

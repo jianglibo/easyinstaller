@@ -36,4 +36,10 @@ public class PkSourceForm extends FormBase<PkSource>{
 		repository.save(getWrappedBean());
 		return true;
 	}
+
+	@Override
+	public PkSourceForm done() {
+		defaultDone();
+		return this;
+	}
 }

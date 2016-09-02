@@ -22,6 +22,6 @@ public interface SoftwareRepository extends JpaRepository<Software, Long>, Softw
 
 	long countByNameContainingIgnoreCaseAndArchivedEquals(String filterStr, String filterStr2, boolean trashed);
 	
-	Software findOneByNameAndOstype(String name, String ostype);
+	Software findByNameAndOstype(String name, String ostype);
 
 }

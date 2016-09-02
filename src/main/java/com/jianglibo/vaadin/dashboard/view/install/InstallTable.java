@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.box.install;
+package com.jianglibo.vaadin.dashboard.view.install;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;

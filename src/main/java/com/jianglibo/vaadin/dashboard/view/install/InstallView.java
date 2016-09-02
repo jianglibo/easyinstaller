@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.box.install;
+package com.jianglibo.vaadin.dashboard.view.install;
 
 import java.util.Collection;
 

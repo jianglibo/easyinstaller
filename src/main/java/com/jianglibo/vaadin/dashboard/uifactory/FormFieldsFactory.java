@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.uifactory;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -15,6 +16,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.filecontentfield.FileContentFi
 import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.GridField;
 import com.jianglibo.vaadin.dashboard.uicomponent.twingrid.TwinGridField;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
+import com.jianglibo.vaadin.dashboard.vo.HandMakeField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.TextArea;
@@ -42,50 +44,54 @@ public class FormFieldsFactory {
 	@Autowired
 	private TwinGridFieldFactory twinGridFieldFactory;
 	
-	public List<PropertyIdAndField> buildFields(VaadinTableWrapper vtw, FormFields ffs) {
+	public List<PropertyIdAndField> buildFields(VaadinTableWrapper vtw, FormFields ffs, Map<String, HandMakeField> handMakeFields) {
 		List<PropertyIdAndField> fields = Lists.newArrayList();
-        for(VaadinFormFieldWrapper vfw : ffs.getFields()) {
-        	switch (vfw.getVff().fieldType()) {
+        for(VaadinFormFieldWrapper vffw : ffs.getFields()) {
+        	switch (vffw.getVff().fieldType()) {
 			case COMBO_BOX:
-				ComboBox cb = comboBoxFieldFactory.create(vtw, vfw);
-				addStyleName(vfw, cb);
-				fields.add(new PropertyIdAndField(vfw, cb));
+				ComboBox cb = comboBoxFieldFactory.create(vtw, vffw);
+				addStyleName(vffw, cb);
+				fields.add(new PropertyIdAndField(vffw, cb));
+				break;
+			case HAND_MAKER:
+				HandMakeField hmf = handMakeFields.get(vffw.getName());
+				fields.add(new PropertyIdAndField(vffw, hmf.getAfield()));
 				break;
 			case TEXT_AREA:
-				TextArea ta = new TextArea(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw));
+				TextArea ta = new TextArea(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
 				ta.setNullRepresentation("");
-				addStyleName(vfw, ta);
-				fields.add(new PropertyIdAndField(vfw, ta));
+				addStyleName(vffw, ta);
+				fields.add(new PropertyIdAndField(vffw, ta));
 				break;
 			case TWIN_COL_SELECT:
-				TwinColSelect tcs = twinColSelectFieldFactory.create(vtw, vfw);
-				addStyleName(vfw, tcs);
-				fields.add(new PropertyIdAndField(vfw, tcs));
+				TwinColSelect tcs = twinColSelectFieldFactory.create(vtw, vffw);
+				addStyleName(vffw, tcs);
+				fields.add(new PropertyIdAndField(vffw, tcs));
 				break;
 			case FILE_CONTENT_STRING:
 				FileContentField fcf = applicationContext.getBean(FileContentField.class);
-				fcf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw));
-				addStyleName(vfw, fcf);
-				fields.add(new PropertyIdAndField(vfw, fcf));
+				fcf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
+				addStyleName(vffw, fcf);
+				fields.add(new PropertyIdAndField(vffw, fcf));
 				break;
 			case GRID:
-				GridField<?> gf = gridFieldFactory.create(vtw, vfw);
-				gf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw));
-				addStyleName(vfw, gf);
-				fields.add(new PropertyIdAndField(vfw, gf));
+				GridField<?> gf = gridFieldFactory.create(vtw, vffw);
+				gf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
+				addStyleName(vffw, gf);
+				fields.add(new PropertyIdAndField(vffw, gf));
 				break;
 			case TWIN_GRID:
-				TwinGridField<?> tgf = twinGridFieldFactory.create(vtw, vfw);
-				tgf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw));
-				addStyleName(vfw, tgf);
-				fields.add(new PropertyIdAndField(vfw, tgf));
+				TwinGridField<?> tgf = twinGridFieldFactory.create(vtw, vffw);
+				tgf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
+				addStyleName(vffw, tgf);
+				fields.add(new PropertyIdAndField(vffw, tgf));
 				break;
 			default:
-				String caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vfw);
+				String caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw);
 				TextField tf = new TextField(caption);
 				tf.setNullRepresentation("");
-				addStyleName(vfw, tf);
-				fields.add(new PropertyIdAndField(vfw, tf));
+				addStyleName(vffw, tf);
+				fields.add(new PropertyIdAndField(vffw, tf));
 				break;
 			}
         }

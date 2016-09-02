@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.box.install;
+package com.jianglibo.vaadin.dashboard.view.install;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,7 @@ public class InstallEditView  extends VerticalLayout implements View {
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(InstallForm.class).afterInjection(eventBus, true);
+		form = applicationContext.getBean(InstallForm.class).afterInjection(eventBus, true).done();
 		addComponent(form);
 		Component ft = buildFooter();
 		addComponent(ft);

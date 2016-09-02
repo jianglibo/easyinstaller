@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,13 +17,19 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
+import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.domain.StepDefine;
+import com.jianglibo.vaadin.dashboard.domain.OrderedStepDefine;
+import com.jianglibo.vaadin.dashboard.repositories.OrderedStepDefineRepository;
+import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.repositories.StepDefineRepository;
 import com.jianglibo.vaadin.dashboard.ssh.StepConfig;
+import com.jianglibo.vaadin.dashboard.vo.NameOstype;
 
 @Component
 public class PreDefinedSteps {
@@ -35,11 +42,21 @@ public class PreDefinedSteps {
 	@Autowired
 	private StepDefineRepository stepDefineRepository;
 
+	@Autowired
+	private OrderedStepDefineRepository orderedStepDefineRepository;
+
+	@Autowired
+	private SoftwareRepository softwareRepository;
+
+	@Autowired
+	private PreDefinedSoftwares preDefinedSoftwares;
+
 	@PostConstruct
 	public void post() throws IOException {
 		Map<String, Resource> allSteps = Maps.newHashMap();
 		Set<String> stepNames = Sets.newHashSet();
-		Resource[] classpathResources = applicationContext.getResources("classpath:com/jianglibo/vaadin/dashboard/ssh/step/*");
+		Resource[] classpathResources = applicationContext
+				.getResources("classpath:com/jianglibo/vaadin/dashboard/ssh/step/*");
 		Resource[] filepathResources = applicationContext.getResources("file:step/*");
 		for (Resource rs : classpathResources) {
 			String fn = rs.getFilename();
@@ -51,14 +68,16 @@ public class PreDefinedSteps {
 			allSteps.put(fn, rs);
 			stepNames.add(Files.getNameWithoutExtension(fn));
 		}
-		
+
 		stepNames.forEach(sn -> {
 			String ms = sn + ".yml";
 			String cs = sn + ".code";
 			if (allSteps.containsKey(ms) && allSteps.containsKey(cs)) {
 				try {
-					String s = CharStreams.toString(new InputStreamReader(allSteps.get(ms).getInputStream(), Charsets.UTF_8));
-					String c = CharStreams.toString(new InputStreamReader(allSteps.get(cs).getInputStream(), Charsets.UTF_8));
+					String s = CharStreams
+							.toString(new InputStreamReader(allSteps.get(ms).getInputStream(), Charsets.UTF_8));
+					String c = CharStreams
+							.toString(new InputStreamReader(allSteps.get(cs).getInputStream(), Charsets.UTF_8));
 					StepConfig stepConfig = new StepConfig(s);
 					String name = stepConfig.getName();
 					String ostype = stepConfig.getOstype();
@@ -84,21 +103,46 @@ public class PreDefinedSteps {
 				LOGGER.error("found unnormal files in step package. [{}]", sn);
 			}
 		});
+
+		insertPreDefinedSoftwares();
 	}
 
-//	public Map<String, String> translateStepMap(String s) throws IOException {
-//		Map<String, Object> mp = (Map<String, Object>) yaml.load(s);
-//		return null;
-//		Map<String, String> map = Maps.newHashMap();
-//		List<String> pairs = CharStreams.readLines(new StringReader(s));
-//		pairs.forEach(kv -> {
-//			String[] ss = kv.split("=", 2);
-//			if (ss.length == 2) {
-//				map.put(ss[0].trim(), ss[1].trim());
-//			} else {
-//				LOGGER.error("line '{}' can not split to a pair.", kv);
-//			}
-//		});
-//		return map;
-//	}
+	private void insertPreDefinedSoftwares() {
+		preDefinedSoftwares.getPredefined().stream().forEach(pds -> {
+			Software sw = softwareRepository.findByNameAndOstype(pds.getName(), pds.getOstype());
+			List<NameOstype> nos = pds.getNameOstypes();
+			List<StepDefine> sds = Lists.newArrayList();
+			nos.stream().forEach(no -> {
+				StepDefine sd = stepDefineRepository.findByNameAndOstype(no.getName(), no.getOstype());
+				if (sd == null) {
+					LOGGER.error("softwares->predefined->{}:{}, contains unknown stepdefine: {}: {}", pds.getName(),
+							pds.getOstype(), no.getName(), no.getOstype());
+				} else {
+					sds.add(sd);
+				}
+			});
+			
+			// All step found
+			if (nos.size() == sds.size()) {
+				if (sw == null) {
+					sw = new Software(pds.getName(), pds.getOstype());
+				} else {
+					List<OrderedStepDefine> preExists = sw.getOrderedStepDefines();
+					sw.setOrderedStepDefines(Lists.newArrayList());
+					sw.getOrderedStepDefines().forEach(d -> {
+						orderedStepDefineRepository.delete(d);
+					});
+				}
+				List<OrderedStepDefine> ordered = Lists.newArrayList();
+				for(int i = 0; i< sds.size(); i++) {
+					OrderedStepDefine od = new OrderedStepDefine(sds.get(i), (i+1) * 50);
+					orderedStepDefineRepository.save(od);
+					ordered.add(od);
+				}
+				sw.setOrderedStepDefines(ordered);
+				softwareRepository.save(sw);
+			}
+		});
+	}
+
 }

@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -22,51 +24,60 @@ import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescri
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.themes.ValoTheme;
 
-
 /**
  * A installation can not exists alone, It must install to a machine.
+ * 
  * @author jianglibo@gmail.com
  *
  */
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "software", uniqueConstraints = { @UniqueConstraint(columnNames = {"name", "ostype"})})
-@VaadinTable(multiSelect = true,footerVisible=true, messagePrefix="domain.software.",styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
+@Table(name = "software", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "ostype" }) })
+@VaadinTable(multiSelect = true, footerVisible = true, messagePrefix = "domain.software.", styleNames = {
+		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
 public class Software extends BaseEntity {
-	
+
 	@ComboBoxBackByStringOptions(key = GlobalComboOptions.SOFTWARE_NAMES)
 	@VaadinFormField(fieldType = Ft.COMBO_BOX)
 	@VaadinTableColumn(alignment = Align.LEFT)
 	@NotNull
 	private String name;
-	
+
 	@ComboBoxBackByStringOptions(key = GlobalComboOptions.OS_TYPES)
 	@VaadinFormField(fieldType = Ft.COMBO_BOX)
 	@VaadinTableColumn()
 	@NotNull
 	private String ostype;
-	
-	@OneToMany
-	@TwinGridFieldDescription(leftClazz=OrderedStepDefine.class, rightClazz=StepDefine.class, leftPageLength = 100, rightColumns={"name", "ostype"}, leftColumns={"position", "stepDefine"})
+
+	@OneToMany(fetch = FetchType.EAGER)
+	@OrderBy("position ASC")
+	@TwinGridFieldDescription(leftClazz = OrderedStepDefine.class, rightClazz = StepDefine.class, leftPageLength = 100, rightColumns = {
+			"name", "ostype" }, leftColumns = { "position", "stepDefine!entityStringConverter" })
 	@VaadinFormField(fieldType = Ft.TWIN_GRID, order = 30)
-	private List<OrderedStepDefine> stepDefines = Lists.newArrayList();
-	
+	private List<OrderedStepDefine> orderedStepDefines = Lists.newArrayList();
+
+	/**
+	 * when orderedStepDefines changes name, change static file bellow too.
+	 */
+	public static final String orderedStepDefinesFieldName = "orderedStepDefines";
+
 	@Lob
 	private String sortedIds;
-	
+
 	public Software() {
-		
+
 	}
-	
+
 	public Software(String name, String ostype) {
 		setName(name);
 		setOstype(ostype);
 	}
-	
-	public Install createNewInstall(){
+
+	public Install createNewInstall() {
 		Install in = new Install(this);
-		in.setStepRuns(getStepDefines().stream().map(isd -> new StepRun(in, isd)).collect(Collectors.toList()));
+		in.setStepRuns(getOrderedStepDefines().stream().map(isd -> new StepRun(in, isd)).collect(Collectors.toList()));
 		return in;
 	}
 
@@ -96,12 +107,12 @@ public class Software extends BaseEntity {
 		return name;
 	}
 
-	public List<OrderedStepDefine> getStepDefines() {
-		return stepDefines;
+	public List<OrderedStepDefine> getOrderedStepDefines() {
+		return orderedStepDefines;
 	}
 
-	public void setStepDefines(List<OrderedStepDefine> stepDefines) {
-		this.stepDefines = stepDefines;
+	public void setOrderedStepDefines(List<OrderedStepDefine> orderedStepDefines) {
+		this.orderedStepDefines = orderedStepDefines;
 	}
 
 	public String getSortedIds() {

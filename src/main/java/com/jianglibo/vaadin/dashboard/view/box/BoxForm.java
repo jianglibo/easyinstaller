@@ -36,4 +36,10 @@ public class BoxForm extends FormBase<Box> {
         repository.save(getWrappedBean());
 		return true;
 	}
+
+	@Override
+	public BoxForm done() {
+		defaultDone();
+		return this;
+	}
 }

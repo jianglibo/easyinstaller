@@ -84,7 +84,7 @@ public class TwinGridRight<T extends Collection<? extends BaseEntity>> extends V
 
 		String[] allcolnames = tgfd.rightColumns();
 
-		GridMeta gridMeta = VaadinGridUtil.setupGrid(applicationContext, allcolnames, messageSource, vtw,
+		GridMeta gridMeta = VaadinGridUtil.setupGrid(applicationContext, allcolnames, messageSource, vtw, tgfd.rightClazz(),
 				ADD_TO_LEFT_COL_NAME);
 
 		Grid grid = gridMeta.getGrid();

@@ -25,6 +25,7 @@ import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 @SuppressWarnings("serial")
 @Component
@@ -69,11 +70,15 @@ public class TwinGridLeft<T extends Collection<? extends BaseEntity>> extends Ve
 		
 		String[] allcolnames = tgfd.leftColumns();
 		
-		GridMeta gridMeta = VaadinGridUtil.setupGrid(applicationContext, allcolnames, messageSource, vtw, REMOVE_FROM_LEFT);
+		GridMeta gridMeta = VaadinGridUtil.setupGrid(applicationContext, allcolnames, messageSource, vtw, tgfd.leftClazz(), REMOVE_FROM_LEFT);
 		Grid grid = gridMeta.getGrid();
 		grid.setContainerDataSource(gpcontainer);
 		addComponent(grid);
 		
+		Grid.Column removeFromLeftColumn = grid.getColumn(REMOVE_FROM_LEFT);
+
+		removeFromLeftColumn.setRenderer(new HtmlRenderer());
+		removeFromLeftColumn.setHeaderCaption("");
 		grid.addItemClickListener(event -> {
 			if (event.getPropertyId().equals(REMOVE_FROM_LEFT)) {
 				itemClickListener.itemClicked(new TwinGridFieldItemClickEvent(event.getItemId(), true));

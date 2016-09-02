@@ -85,7 +85,7 @@ public class SoftwareEditView  extends VerticalLayout implements View {
 		
 		TwinGridField<List<StepDefine>> stepDefinesField;
 		
-		stepDefinesField = (TwinGridField<List<StepDefine>>) form.getFields().stream().filter(paf -> paf.getPropertyId().equals("stepDefines")).findFirst().get().getField();
+		stepDefinesField = (TwinGridField<List<StepDefine>>) form.getFields().stream().filter(paf -> paf.getPropertyId().equals(Software.orderedStepDefinesFieldName)).findFirst().get().getField();
 		
 		stepDefinesField.addItemClickListener(new TwinGridFieldItemClickListener() {
 			@Override

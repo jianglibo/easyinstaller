@@ -33,6 +33,7 @@ public class EntityStringConverter<T extends BaseEntity> implements Converter<St
 	private EntityManager em;
 	
 	public EntityStringConverter<T> afterInjection(Class<T> clazz) {
+		this.clazz = clazz;
 		return this;
 	}
 

@@ -36,4 +36,10 @@ public class StepRunForm extends FormBase<StepRun> {
         repository.save(getWrappedBean());
 		return true;
 	}
+
+	@Override
+	public StepRunForm done() {
+		defaultDone();
+		return this;
+	}
 }
