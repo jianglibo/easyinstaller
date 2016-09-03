@@ -11,7 +11,7 @@ import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
-import com.jianglibo.vaadin.dashboard.uifactory.FormFieldsFactory;
+import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 
 @SuppressWarnings("serial")
 @Component
@@ -21,8 +21,8 @@ public class BoxForm extends FormBase<Box> {
 	private final BoxRepository repository;
 	
 	@Autowired
-	public BoxForm(MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory, BoxRepository repository) {
-		super(Box.class, messageSource, domains, formFieldsFactory);
+	public BoxForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories, BoxRepository repository) {
+		super(Box.class, messageSource, domains, fieldFactories);
 		this.repository = repository;
 	}
 	

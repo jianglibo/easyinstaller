@@ -40,7 +40,7 @@ public class GridFieldGrid<T extends Collection<? extends BaseEntity>> extends V
 	public GridFieldGrid<T> afterInjection(GridFieldDescription dfd) {
 		setWidth(100.0f, Unit.PERCENTAGE);
 
-		FreeContainer fc = applicationContext.getBean(FreeContainer.class).afterInjection(dfd.clazz(), dfd.pageLength());
+		FreeContainer fc = new FreeContainer(domains, dfd.clazz(), dfd.pageLength());
 		
 		VaadinTableWrapper vtw = domains.getTables().get(dfd.clazz().getSimpleName());
 		

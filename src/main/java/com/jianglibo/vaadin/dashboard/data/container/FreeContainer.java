@@ -12,12 +12,8 @@ import org.apache.commons.beanutils.WrapDynaClass;
 import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.stereotype.Component;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.data.ManualPagable;
@@ -26,6 +22,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.vaadin.data.Buffered;
 import com.vaadin.data.Container;
+import com.vaadin.data.ContainerHelpers;
 import com.vaadin.data.Container.Indexed;
 import com.vaadin.data.Container.ItemSetChangeNotifier;
 import com.vaadin.data.Container.PropertySetChangeNotifier;
@@ -37,22 +34,24 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.data.util.filter.UnsupportedFilterException;
 
 /**
- * Maybe use a window is more convenient.
- * This class has some code copy and paste from @ListContainer
+ * Maybe use a window is more convenient. This class has some code copy and
+ * paste from @ListContainer
  * 
  * @author jianglibo@gmail.com
  *
  * @param <T>
  */
-@SuppressWarnings("serial")
-@Component
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+
 public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, ItemSetChangeNotifier,
 		PropertySetChangeNotifier, Buffered, Container.Filterable, Serializable {
 
-	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();
-	
+
 	private static Logger LOGGER = LoggerFactory.getLogger(FreeContainer.class);
 
 	private int perPage;
@@ -61,7 +60,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	private String filterString;
 
-	private int currentPage;
+	private int currentPage = -1;
 
 	private Sort sort;
 
@@ -74,24 +73,153 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	private Sort defaultSort;
 
 	private List<T> currentWindow = Lists.newArrayList();
-	
+
 	private Filter filter;
-	
-	@Autowired
+
 	private Domains domains;
-	
-	public FreeContainer<T> afterInjection(Class<T> clazz, int perPage) {
+
+	public FreeContainer(Domains domains, Class<T> clazz, int perPage) {
+		this.domains = domains;
 		this.clazz = clazz;
 		this.simpleClassName = clazz.getSimpleName();
 		this.defaultSort = SortUtil.fromString(domains.getTables().get(clazz.getSimpleName()).getVt().defaultSort());
 		this.sort = this.defaultSort;
 		this.perPage = perPage;
-		return this;
+	}
+	
+	
+
+	public List<ItemSetChangeListener> getItemSetChangeListeners() {
+		return itemSetChangeListeners;
 	}
 
-	public FreeContainer() {
 
+
+	public void setItemSetChangeListeners(List<ItemSetChangeListener> itemSetChangeListeners) {
+		this.itemSetChangeListeners = itemSetChangeListeners;
 	}
+
+
+
+	public int getPerPage() {
+		return perPage;
+	}
+
+
+
+	public void setPerPage(int perPage) {
+		this.perPage = perPage;
+	}
+
+
+
+	public boolean isTrashed() {
+		return trashed;
+	}
+
+
+
+	public void setTrashed(boolean trashed) {
+		this.trashed = trashed;
+	}
+
+
+
+	public String getFilterString() {
+		return filterString;
+	}
+
+
+
+	public void setFilterString(String filterString) {
+		this.filterString = filterString;
+	}
+
+
+
+	public int getCurrentPage() {
+		return currentPage;
+	}
+
+
+
+	public void setCurrentPage(int currentPage) {
+		this.currentPage = currentPage;
+	}
+
+
+
+	public Sort getSort() {
+		return sort;
+	}
+
+
+
+	public void setSort(Sort sort) {
+		this.sort = sort;
+	}
+
+
+
+	public boolean isEnableSort() {
+		return enableSort;
+	}
+
+
+
+	public void setEnableSort(boolean enableSort) {
+		this.enableSort = enableSort;
+	}
+
+
+
+	public String getSimpleClassName() {
+		return simpleClassName;
+	}
+
+
+
+	public void setSimpleClassName(String simpleClassName) {
+		this.simpleClassName = simpleClassName;
+	}
+
+
+
+	public Sort getDefaultSort() {
+		return defaultSort;
+	}
+
+
+
+	public void setDefaultSort(Sort defaultSort) {
+		this.defaultSort = defaultSort;
+	}
+
+
+
+	public List<T> getCurrentWindow() {
+		return currentWindow;
+	}
+
+
+
+	public void setCurrentWindow(List<T> currentWindow) {
+		this.currentWindow = currentWindow;
+	}
+
+
+
+	public Filter getFilter() {
+		return filter;
+	}
+
+
+
+	public void setFilter(Filter filter) {
+		this.filter = filter;
+	}
+
+
 
 	/**
 	 * Can I believe itemId always in currentWindow? If so, the block of code
@@ -106,7 +234,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		}
 		if (atWindowBottom(itemId)) {
 			currentPage++;
-			refreshWindow();
+			fetchPage();
 			return topItem();
 		} else {
 			return currentWindow.get(idx + 1);
@@ -122,7 +250,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		}
 		if (atWindowTop(itemId)) {
 			currentPage--;
-			refreshWindow();
+			fetchPage();
 			return bottomItem();
 		} else {
 			return currentWindow.get(idx - 1);
@@ -131,16 +259,16 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public Object firstItemId() {
-		LOGGER.info("{} called with parameter", "firstItemId" );
+		LOGGER.info("{} called with parameter", "firstItemId");
 		currentPage = 0;
 		return topItem();
 	}
 
 	@Override
 	public Object lastItemId() {
-		LOGGER.info("{} called with parameter", "lastItemId" );
+		LOGGER.info("{} called with parameter", "lastItemId");
 		currentPage = ManualPagable.lastPageNum(size(), perPage);
-		refreshWindow();
+		fetchPage();
 		return bottomItem();
 	}
 
@@ -174,12 +302,12 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		if (itemId == null) {
 			return null;
 		}
-		return new DynaBeanItem<T>((T) itemId);
+		return new DynaBeanItem((T)itemId);
 	}
 
 	@Override
 	public Collection<?> getItemIds() {
-		return currentWindow;
+		return null;
 	}
 
 	@Override
@@ -189,21 +317,21 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public Class<?> getType(Object propertyId) {
-        final Class<?> type = getDynaClass().getDynaProperty(propertyId.toString()).getType();
-        if(type.isPrimitive()) {
-            // Vaadin can't handle primitive types in _all_ places, so use
-            // wrappers instead. FieldGroup works, but e.g. Table in _editable_ 
-            // mode fails for some reason
-            return ClassUtils.primitiveToWrapper(type);
-        }
-        return type;
+		final Class<?> type = getDynaClass().getDynaProperty(propertyId.toString()).getType();
+		if (type.isPrimitive()) {
+			// Vaadin can't handle primitive types in _all_ places, so use
+			// wrappers instead. FieldGroup works, but e.g. Table in _editable_
+			// mode fails for some reason
+			return ClassUtils.primitiveToWrapper(type);
+		}
+		return type;
 	}
 
 	@Override
 	public int size() {
 		int i = new Long(domains.getRepositoryCommonCustom(simpleClassName).getFilteredNumber(filterString, trashed))
 				.intValue();
-		LOGGER.info("{} called with filterString {}, and return {}", "size", filterString,i);
+		LOGGER.info("{} called with filterString {}, and return {}", "size", filterString, i);
 		return i;
 	}
 
@@ -249,12 +377,12 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		LOGGER.info("{} called with parameter {}", "addContainerFilter", filter.toString());
 		this.filter = filter;
 		if (filter instanceof SimpleStringFilter) {
-			SimpleStringFilter sfilter = (SimpleStringFilter)filter;
+			SimpleStringFilter sfilter = (SimpleStringFilter) filter;
 			LOGGER.info("{} called with parameter {}", "addContainerFilter", sfilter.getFilterString());
 			this.filterString = sfilter.getFilterString();
 		}
 		this.currentPage = 0;
-		refreshWindow();
+		fetchPage();
 	}
 
 	@Override
@@ -361,17 +489,32 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		return 0;
 	}
 
+	/**
+	 * called by ContainerHelpers.getItemIdsUsingGetIdByIndex
+	 */
 	@Override
 	public Object getIdByIndex(int index) {
-		return null;
+		int inPage = index/perPage;
+		if (inPage != this.currentPage) {
+			this.currentPage = inPage;
+			fetchPage();
+		}
+		int inIdx = index % this.perPage;
+		return currentWindow.get(inIdx);
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
-		LOGGER.info("{} called with parameter {} {}", "getItemIds", startIndex, numberOfItems);
-		this.currentPage = startIndex/this.perPage;
-		refreshWindow();
-		return currentWindow;
+		// LOGGER.info("{} called with parameter {} {}", "getItemIds",
+		// startIndex, numberOfItems);
+		// int newStartPage = startIndex/this.perPage;
+		// this.currentPage = newStartPage;
+		// refreshWindow();
+		// return currentWindow;
+		return ContainerHelpers.getItemIdsUsingGetIdByIndex(startIndex, numberOfItems, this);
 	}
 
 	@Override
@@ -384,30 +527,29 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		return null;
 	}
 
-	private void refreshWindow() {
+	@SuppressWarnings("unchecked")
+	public void fetchPage() {
 		ManualPagable pageable = new ManualPagable(currentPage, perPage, sort);
-		currentWindow = (List<T>) domains.getRepositoryCommonCustom(simpleClassName).getFilteredPage(pageable, filterString,
-				trashed);
-		notifyItemSetChanged();
-	}
-	
-	public void refreshWindow(int currentPage) {
-		this.currentPage = currentPage;
-		refreshWindow();
+		currentWindow = (List<T>) domains.getRepositoryCommonCustom(simpleClassName).getFilteredPage(pageable,
+				filterString, trashed);
 	}
 
-	
-    private void notifyItemSetChanged() {
-        ItemSetChangeEvent event  = new ItemSetChangeEvent() {
+	public void refreshWindow(int currentPage) {
+		this.currentPage = currentPage;
+		fetchPage();
+	}
+
+	private void notifyItemSetChanged() {
+		ItemSetChangeEvent event = new ItemSetChangeEvent() {
 			@Override
 			public Container getContainer() {
 				return FreeContainer.this;
 			}
 		};
-        for (ItemSetChangeListener listener : itemSetChangeListeners) {
-            listener.containerItemSetChange(event);
-        }
-    }
+		for (ItemSetChangeListener listener : itemSetChangeListeners) {
+			listener.containerItemSetChange(event);
+		}
+	}
 
 	private int inWindowIdx(Object itemId) {
 		int idx = currentWindow.indexOf(itemId);
@@ -440,25 +582,63 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	}
 
 	// Code bellow Copy and paste from @ListContainer
-	
+
 	@Override
 	public Collection<String> getContainerPropertyIds() {
-        ArrayList<String> properties = new ArrayList<String>();
-        if (getDynaClass() != null) {
-            for (DynaProperty db : getDynaClass().getDynaProperties()) {
-                properties.add(db.getName());
-            }
-            properties.remove("class");
-        }
-        return properties;
+		ArrayList<String> properties = new ArrayList<String>();
+		if (getDynaClass() != null) {
+			for (DynaProperty db : getDynaClass().getDynaProperties()) {
+				properties.add(db.getName());
+			}
+			properties.remove("class");
+		}
+		return properties;
 	}
 
 	private WrapDynaClass getDynaClass() {
 		return WrapDynaClass.createDynaClass(clazz);
 	}
 
-	public class DynaBeanItem<T> implements Item {
+	@SuppressWarnings("serial")
+	public class DynaBeanItem implements Item {
 
+		private T bean;
+
+		private transient DynaBean db;
+
+		public DynaBeanItem(T bean) {
+			this.bean = bean;
+		}
+
+		private DynaBean getDynaBean() {
+			if (db == null) {
+				db = new WrapDynaBean(bean);
+			}
+			return db;
+		}
+
+		@Override
+		public Property<?> getItemProperty(Object id) {
+			return new DynaProperty(id.toString());
+		}
+
+		@Override
+		public Collection<String> getItemPropertyIds() {
+			return FreeContainer.this.getContainerPropertyIds();
+		}
+
+		@Override
+		public boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+		
+
+		@Override
+		public boolean removeItemProperty(Object id) throws UnsupportedOperationException {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+		
+		
 		private class DynaProperty implements Property {
 
 			private final String propertyName;
@@ -478,7 +658,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 			}
 
 			@Override
-			public Class getType() {
+			public Class<?> getType() {
 				return FreeContainer.this.getType(propertyName);
 			}
 
@@ -492,41 +672,6 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 				throw new UnsupportedOperationException("Not supported yet.");
 			}
 
-		}
-
-		private T bean;
-
-		private transient DynaBean db;
-
-		public DynaBeanItem(T bean) {
-			this.bean = bean;
-		}
-
-		private DynaBean getDynaBean() {
-			if (db == null) {
-				db = new WrapDynaBean(bean);
-			}
-			return db;
-		}
-
-		@Override
-		public Property getItemProperty(Object id) {
-			return new DynaProperty(id.toString());
-		}
-
-		@Override
-		public Collection<String> getItemPropertyIds() {
-			return FreeContainer.this.getContainerPropertyIds();
-		}
-
-		@Override
-		public boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
-		@Override
-		public boolean removeItemProperty(Object id) throws UnsupportedOperationException {
-			throw new UnsupportedOperationException("Not supported yet.");
 		}
 	}
 

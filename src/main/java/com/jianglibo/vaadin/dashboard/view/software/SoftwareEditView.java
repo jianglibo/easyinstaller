@@ -11,6 +11,8 @@ import org.springframework.context.MessageSource;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.domain.StepDefine;
 import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickEvent;
@@ -18,10 +20,13 @@ import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickListener;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.twingrid.TwinGridField;
+import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.TwinGridOrderedStepDefine;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
+import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
+import com.jianglibo.vaadin.dashboard.vo.HandMakeField;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -31,6 +36,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
@@ -39,7 +45,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 
 @SpringView(name = SoftwareEditView.VIEW_NAME)
-public class SoftwareEditView  extends VerticalLayout implements View {
+public class SoftwareEditView  extends VerticalLayout implements View, HandMakeFieldsListener {
 	/**
 	 * 
 	 */
@@ -65,12 +71,15 @@ public class SoftwareEditView  extends VerticalLayout implements View {
     
     private SoftwareForm form;
     
+    private ApplicationContext applicationContext;
+    
 	@Autowired
 	public SoftwareEditView(SoftwareRepository repository, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.messageSource = messageSource;
 		this.repository= repository;
 		this.eventBus = new EventBus(this.getClass().getName());
+		this.applicationContext = applicationContext;
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
@@ -80,25 +89,34 @@ public class SoftwareEditView  extends VerticalLayout implements View {
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus, true);
+		
+		form = (SoftwareForm) applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus, true).addHandMakeFieldsListener(this).done();
+		
 		addComponent(form);
 		
-		TwinGridField<List<StepDefine>> stepDefinesField;
-		
-		stepDefinesField = (TwinGridField<List<StepDefine>>) form.getFields().stream().filter(paf -> paf.getPropertyId().equals(Software.orderedStepDefinesFieldName)).findFirst().get().getField();
-		
-		stepDefinesField.addItemClickListener(new TwinGridFieldItemClickListener() {
-			@Override
-			public void itemClicked(TwinGridFieldItemClickEvent event) {
-				Notification.show(event.isLeftClicked() + "");
-			}
-		});
+//		TwinGridField<List<StepDefine>> stepDefinesField;
+//		
+//		stepDefinesField = (TwinGridField<List<StepDefine>>) form.getFields().stream().filter(paf -> paf.getPropertyId().equals(Software.orderedStepDefinesFieldName)).findFirst().get().getField();
+//		
+//		stepDefinesField.addItemClickListener(new TwinGridFieldItemClickListener() {
+//			@Override
+//			public void itemClicked(TwinGridFieldItemClickEvent event) {
+//				Notification.show(event.isLeftClicked() + "");
+//			}
+//		});
 		
 		Component ft = buildFooter();
 		addComponent(ft);
 		setComponentAlignment(form, Alignment.TOP_LEFT);
 		setExpandRatio(form, 1);
 	}
+	
+	@Override
+	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		TwinGridOrderedStepDefine tg = applicationContext.getBean(TwinGridOrderedStepDefine.class).afterInjection(vtw, vffw);
+		return tg;
+	}
+
 	
     @SuppressWarnings("serial")
 	private Component buildFooter() {
@@ -151,4 +169,5 @@ public class SoftwareEditView  extends VerticalLayout implements View {
 		}
         form.setItemDataSource(bean);
 	}
+
 }

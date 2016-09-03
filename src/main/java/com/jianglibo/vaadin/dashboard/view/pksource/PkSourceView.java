@@ -88,7 +88,7 @@ public class PkSourceView extends VerticalLayout
 				MsgUtil.getListViewTitle(messageSource, PkSource.class.getSimpleName()));
 
 		PkSourceUploadReceiver receiver = applicationContext.getBean(PkSourceUploadReceiver.class).afterInjection(this);
-		Component uploader = applicationContext.getBean(ImmediateUploader.class).afterInjection(receiver);
+		Component uploader = new ImmediateUploader(messageSource, receiver);
 		StyleUtil.setMarginRightTen(uploader);
 
 		header.addToToolbar(uploader, 0);

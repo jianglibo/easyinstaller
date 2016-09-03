@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Component;
@@ -27,6 +26,7 @@ import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
 import com.jianglibo.vaadin.dashboard.config.ComboItem;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
+import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
@@ -42,7 +42,7 @@ public class ComboBoxFieldFactory {
 	private final ApplicationConfig appConfig;
 	
 	@Autowired
-	private ApplicationContext applicationContext;
+	private Domains domains;
 	
 	@Autowired
 	private EntityManager entityManager;
@@ -127,7 +127,7 @@ public class ComboBoxFieldFactory {
 	}
 	
 	private ComboBox buildContainerCombox(ComboBoxBackByContainer cbbbc, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw, ComboBox cb) {
-		FreeContainer<? extends BaseEntity> fc = applicationContext.getBean(FreeContainer.class).afterInjection(cbbbc.entityClass(), cbbbc.pageLength());
+		FreeContainer<? extends BaseEntity> fc = new FreeContainer<>(domains, cbbbc.entityClass(),cbbbc.pageLength());
 		cb.setItemCaptionMode(ItemCaptionMode.PROPERTY);
 		cb.setItemCaptionPropertyId(cbbbc.itemCaptionPropertyId());
 		cb.setContainerDataSource(fc);

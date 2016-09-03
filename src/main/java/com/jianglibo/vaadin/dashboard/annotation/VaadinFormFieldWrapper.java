@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.annotation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 public class VaadinFormFieldWrapper {
@@ -12,6 +13,10 @@ public class VaadinFormFieldWrapper {
 		super();
 		this.setVff(vff);
 		this.reflectField = reflectField;
+	}
+	
+	public <T extends Annotation> T getExtraAnotation(Class<T> annotionType) {
+		return reflectField.getAnnotation(annotionType);
 	}
 	
 	public String getName() {

@@ -11,7 +11,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
-import com.jianglibo.vaadin.dashboard.uifactory.FormFieldsFactory;
+import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 
 @SuppressWarnings("serial")
 @Component
@@ -21,8 +21,8 @@ public class PkSourceForm extends FormBase<PkSource>{
 	private final PkSourceRepository repository;
 	
 	@Autowired
-	public PkSourceForm(MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory, PkSourceRepository repository) {
-		super(PkSource.class, messageSource, domains, formFieldsFactory);
+	public PkSourceForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories, PkSourceRepository repository) {
+		super(PkSource.class, messageSource, domains, fieldFactories);
 		this.repository = repository;
 	}
 	

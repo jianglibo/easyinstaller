@@ -30,6 +30,7 @@ public class TwinGridLayout<T extends Collection<? extends BaseEntity>> extends 
 
 	@SuppressWarnings("unchecked")
 	public Component afterInjection(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		setWidth("100%");
 		TwinGridFieldDescription tgfd = vffw.getReflectField().getAnnotation(TwinGridFieldDescription.class);
 		
 		setLeft(applicationContext.getBean(TwinGridLeft.class).afterInjection(vffw, tgfd, this));

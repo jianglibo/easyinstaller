@@ -11,7 +11,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.StepDefine;
 import com.jianglibo.vaadin.dashboard.repositories.StepDefineRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
-import com.jianglibo.vaadin.dashboard.uifactory.FormFieldsFactory;
+import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 
 @SuppressWarnings("serial")
 @Component
@@ -21,8 +21,8 @@ public class StepDefineForm extends FormBase<StepDefine> {
 	private final StepDefineRepository repository;
 	
 	@Autowired
-	public StepDefineForm(MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory, StepDefineRepository repository) {
-		super(StepDefine.class, messageSource, domains, formFieldsFactory);
+	public StepDefineForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,StepDefineRepository repository) {
+		super(StepDefine.class, messageSource, domains, fieldFactories);
 		this.repository = repository;
 	}
 	

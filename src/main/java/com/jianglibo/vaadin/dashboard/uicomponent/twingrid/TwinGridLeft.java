@@ -45,12 +45,11 @@ public class TwinGridLeft<T extends Collection<? extends BaseEntity>> extends Ve
 	
 	private TwinGridFieldItemClickListener itemClickListener;
 	
-	private FreeContainer freeContainer;
+	private FreeContainer<?> freeContainer;
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public TwinGridLeft<T> afterInjection(VaadinFormFieldWrapper vffw, TwinGridFieldDescription tgfd, TwinGridLayout<T> tgl) {
 		
-		freeContainer = applicationContext.getBean(FreeContainer.class).afterInjection(tgfd.leftClazz(), tgfd.leftPageLength());
+		freeContainer = new FreeContainer<>(domains, tgfd.leftClazz(), tgfd.leftPageLength());
 		
 		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(freeContainer);
 
@@ -92,7 +91,7 @@ public class TwinGridLeft<T extends Collection<? extends BaseEntity>> extends Ve
 		this.itemClickListener = itemClickListener;
 	}
 
-	public FreeContainer getFreeContainer() {
+	public FreeContainer<?> getFreeContainer() {
 		return freeContainer;
 	}
 }

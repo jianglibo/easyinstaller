@@ -11,7 +11,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Install;
 import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
-import com.jianglibo.vaadin.dashboard.uifactory.FormFieldsFactory;
+import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 
 @SuppressWarnings("serial")
 @Component
@@ -21,8 +21,8 @@ public class InstallForm extends FormBase<Install> {
 	private final InstallRepository repository;
 	
 	@Autowired
-	public InstallForm(MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory, InstallRepository repository) {
-		super(Install.class, messageSource, domains, formFieldsFactory);
+	public InstallForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories, InstallRepository repository) {
+		super(Install.class, messageSource, domains, fieldFactories);
 		this.repository = repository;
 	}
 	

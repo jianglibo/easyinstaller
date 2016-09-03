@@ -1,17 +1,12 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.upload;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 
 import com.vaadin.server.Page;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -28,22 +23,17 @@ import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 
 @SuppressWarnings("serial")
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ImmediateUploader extends HorizontalLayout {
 
 	 private Label status = new Label("");
 
-	@Autowired
-	private MessageSource messageSource;
-
 	private Upload upload;
 
 	private Button cancelBtn;
-
-	public Component afterInjection(UploadReceiver<?> receiver) {
+	
+	public ImmediateUploader(MessageSource messageSource, UploadReceiver<?> uploadReceiver) {
 		setSpacing(true);
-		this.upload = new Upload("", receiver);
+		this.upload = new Upload("", uploadReceiver);
 		this.upload.addStyleName("uploadwrapper");
 
 		addComponent(status);
@@ -94,7 +84,7 @@ public class ImmediateUploader extends HorizontalLayout {
 		upload.addSucceededListener(new SucceededListener() {
 			@Override
 			public void uploadSucceeded(SucceededEvent event) {
-				receiver.uploadSuccessed();
+				uploadReceiver.uploadSuccessed();
 				new Notification(messageSource.getMessage("component.upload.success", new String[]{event.getFilename()}, UI.getCurrent().getLocale()), "", Notification.Type.TRAY_NOTIFICATION)
 				.show(Page.getCurrent());
 			}
@@ -104,7 +94,7 @@ public class ImmediateUploader extends HorizontalLayout {
 		upload.addFailedListener(new FailedListener() {
 			@Override
 			public void uploadFailed(FailedEvent event) {
-				receiver.uploadNotSuccess();
+				uploadReceiver.uploadNotSuccess();
 				new Notification(messageSource.getMessage("component.upload.fail", new String[]{event.getFilename()}, UI.getCurrent().getLocale()), "", Notification.Type.ERROR_MESSAGE)
 				.show(Page.getCurrent());
 			}
@@ -118,6 +108,5 @@ public class ImmediateUploader extends HorizontalLayout {
 				upload.setVisible(true);
 			}
 		});
-		return this;
 	}
 }

@@ -23,7 +23,7 @@ public class OrderedStepDefineRepositoryImpl implements StepRunRepositoryCustom<
 
 	@Override
 	public List<OrderedStepDefine> getFilteredPage(Pageable page, String filterString, boolean trashed) {
-		String jpql = "SELECT s FROM " + OrderedStepDefine.class.getSimpleName() +  "  AS s";
+		String jpql = "SELECT DISTINCT(s) FROM " + OrderedStepDefine.class.getSimpleName() +  "  AS s";
 		 
 		TypedQuery<OrderedStepDefine> q =  em.createQuery(jpql, OrderedStepDefine.class);
 		q.setFirstResult(page.getOffset());

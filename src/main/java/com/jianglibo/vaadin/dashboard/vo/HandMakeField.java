@@ -8,6 +8,12 @@ public class HandMakeField<T extends Field<?>> {
 	
 	private T afield;
 
+	public HandMakeField(String name, T afield) {
+		super();
+		this.name = name;
+		this.afield = afield;
+	}
+
 	public String getName() {
 		return name;
 	}

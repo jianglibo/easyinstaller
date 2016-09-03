@@ -59,8 +59,7 @@ public class TwinGridRight<T extends Collection<? extends BaseEntity>> extends V
 	public TwinGridRight<T> afterInjection(VaadinFormFieldWrapper vffw, TwinGridFieldDescription tgfd, TwinGridLayout<T> tgl) {
 		setWidth(100.0f, Unit.PERCENTAGE);
 
-		FreeContainer fc1 = applicationContext.getBean(FreeContainer.class).afterInjection(tgfd.rightClazz(),
-				tgfd.rightPageLength());
+		FreeContainer fc1 = new FreeContainer(domains, tgfd.rightClazz(),tgfd.rightPageLength());
 
 		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(fc1);
 

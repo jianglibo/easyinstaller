@@ -11,7 +11,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
-import com.jianglibo.vaadin.dashboard.uifactory.FormFieldsFactory;
+import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 
 @SuppressWarnings("serial")
 @Component
@@ -21,8 +21,8 @@ public class StepRunForm extends FormBase<StepRun> {
 	private final StepRunRepository repository;
 	
 	@Autowired
-	public StepRunForm(MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory, StepRunRepository repository) {
-		super(StepRun.class, messageSource, domains, formFieldsFactory);
+	public StepRunForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories, StepRunRepository repository) {
+		super(StepRun.class, messageSource, domains, fieldFactories);
 		this.repository = repository;
 	}
 	

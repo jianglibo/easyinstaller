@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
@@ -30,6 +32,11 @@ public class OrderedStepDefine extends BaseEntity {
 	public OrderedStepDefine(StepDefine stepDefine, int position) {
 		this.stepDefine = stepDefine;
 		this.position = position;
+	}
+	
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("position", getPosition()).add("stepDefine", getStepDefine()).toString();
 	}
 
 

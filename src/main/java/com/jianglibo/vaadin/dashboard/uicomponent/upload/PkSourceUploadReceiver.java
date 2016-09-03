@@ -22,7 +22,6 @@ import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload.Receiver;
 
 
 @SuppressWarnings("serial")

@@ -11,7 +11,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
-import com.jianglibo.vaadin.dashboard.uifactory.FormFieldsFactory;
+import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 
 @SuppressWarnings("serial")
 @Component
@@ -21,8 +21,8 @@ public class SoftwareForm extends FormBase<Software> {
 	private final SoftwareRepository repository;
 	
 	@Autowired
-	public SoftwareForm(MessageSource messageSource, Domains domains, FormFieldsFactory formFieldsFactory, SoftwareRepository repository) {
-		super(Software.class, messageSource, domains, formFieldsFactory);
+	public SoftwareForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories, SoftwareRepository repository) {
+		super(Software.class, messageSource, domains, fieldFactories);
 		this.repository = repository;
 	}
 	

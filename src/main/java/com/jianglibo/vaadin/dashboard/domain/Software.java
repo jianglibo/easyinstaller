@@ -54,8 +54,9 @@ public class Software extends BaseEntity {
 	@OneToMany(fetch = FetchType.EAGER)
 	@OrderBy("position ASC")
 	@TwinGridFieldDescription(leftClazz = OrderedStepDefine.class, rightClazz = StepDefine.class, leftPageLength = 100, rightColumns = {
-			"name", "ostype" }, leftColumns = { "position", "stepDefine!entityStringConverter" })
-	@VaadinFormField(fieldType = Ft.TWIN_GRID, order = 30)
+			"name", "ostype" }, leftColumns = { "position", "stepDefine" })
+	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 30)
+	
 	private List<OrderedStepDefine> orderedStepDefines = Lists.newArrayList();
 
 	/**
