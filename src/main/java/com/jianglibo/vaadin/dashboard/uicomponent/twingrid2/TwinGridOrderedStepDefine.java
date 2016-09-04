@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.twingrid2;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
+import com.google.common.collect.Collections2;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -44,10 +47,11 @@ public class TwinGridOrderedStepDefine extends BaseTwinGridField<List<OrderedSte
 
 	@Override
 	public void itemClicked(TwinGridFieldItemClickEvent twinGridFieldItemClickEvent) {
-		List<OrderedStepDefine> osds = (List<OrderedStepDefine>) getInternalValue();
+		List<OrderedStepDefine> osds = (List<OrderedStepDefine>) getValue();
+		List<OrderedStepDefine> newOsds = Lists.newArrayList(osds);
 		if (twinGridFieldItemClickEvent.isLeftClicked()) {
 			OrderedStepDefine osd = (OrderedStepDefine) twinGridFieldItemClickEvent.getItemValue();
-			osds.remove(osd);
+			newOsds.remove(osd);
 		} else {
 			StepDefine sd = (StepDefine) twinGridFieldItemClickEvent.getItemValue();
 			int position = 0;
@@ -55,10 +59,9 @@ public class TwinGridOrderedStepDefine extends BaseTwinGridField<List<OrderedSte
 				position = osds.get(osds.size() - 1).getPosition() + 50;
 			}
 			OrderedStepDefine osd = orderedStepDefineRepository.save(new OrderedStepDefine(sd, position));
-			osds.add(osd);
+			newOsds.add(osd);
 		}
-		setInternalValue(osds);
-		commit();
+		setValue(newOsds);
 	}
 
 }
