@@ -1,19 +1,21 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.twingrid2;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 
+import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
+import com.jianglibo.vaadin.dashboard.data.container.AllowEmptySortListContainer;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickEvent;
-import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickListener;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.GeneratedPropertyContainer;
@@ -33,13 +35,15 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 /**
  * Every field need to know @VaadinFormFieldWrapper and @VaadinTableWrapper
  * 
+ * Field's datasource has no relation to leftGrid's datasource.  
+ * 
  * @author jianglibo@gmail.com
  *
  * @param <LC>
  * @param <L>
  * @param <R>
  */
-public class BaseTwinGridField<LC extends Collection<L>, L extends BaseEntity, R extends BaseEntity>
+public abstract class BaseTwinGridField<LC extends Collection<L>, L extends BaseEntity, R extends BaseEntity>
 		extends CustomField<LC> {
 	
 	/**
@@ -59,10 +63,6 @@ public class BaseTwinGridField<LC extends Collection<L>, L extends BaseEntity, R
 
 	private final Class<R> rightClazz;
 
-	private FreeContainer<L> leftContainer;
-
-	private FreeContainer<R> rightContainer;
-
 	private String[] leftColumnNames;
 	
 	private String[] rightColumnNames;
@@ -71,6 +71,12 @@ public class BaseTwinGridField<LC extends Collection<L>, L extends BaseEntity, R
 	
 	private VaadinFormFieldWrapper vffw;
 	
+	private Grid leftGrid;
+	
+	private Grid rightGrid;
+	
+	private MyValueChangeListener vc;
+	
 	public BaseTwinGridField(Class<L> leftClazz, String[] leftColumnNames, Class<R> rightClazz, String[] rightColumnNames, Domains domains, MessageSource messageSource) {
 		this.leftClazz = leftClazz;
 		this.rightClazz = rightClazz;
@@ -78,60 +84,68 @@ public class BaseTwinGridField<LC extends Collection<L>, L extends BaseEntity, R
 		this.rightColumnNames = rightColumnNames;
 		this.domains = domains;
 		this.messageSource = messageSource;
+		vc = new MyValueChangeListener();
+		addValueChangeListener(vc);
 	}
-
-	/**
-	 * I don't know when initContent will called.
-	 */
-	private TwinGridFieldItemClickListener itemClickListener;
-
-	public void addItemClickListener(TwinGridFieldItemClickListener itemClickListener) {
-		// this.itemClickListener = itemClickListener;
-		// if (twinGridLayout != null) {
-		// twinGridLayout.addItemClickListener(itemClickListener);
-		// this.itemClickListener = null;
-		// }
-	}
-
-//	public BaseTwinGridField<LC, L, R> afterInjection(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-//		this.vtw = vtw;
-//		this.vffw = vffw;
-//		return this;
-//	}
-
+	
 	@Override
 	protected Component initContent() {
 		return fieldContentToReturn;
 	}
 	
-	protected FreeContainer<L> createLeftContainer(VaadinFormFieldWrapper vffw) {
-		return new FreeContainer<>(domains, leftClazz, vffw.getExtraAnotation(TwinGridFieldDescription.class).leftPageLength());
+	protected GeneratedPropertyContainer createLeftContainer(VaadinFormFieldWrapper vffw, List<L> lc) {
+		AllowEmptySortListContainer<L> lcc = new AllowEmptySortListContainer<L>(leftClazz, lc);
+		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(lcc);
+
+		gpcontainer.addGeneratedProperty(LEFT_ICON_COL, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				return FontAwesome.MINUS_SQUARE_O.getHtml();
+			}
+
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
+		return gpcontainer;
 	}
 	
-	protected FreeContainer<R> createRightContainer(VaadinFormFieldWrapper vffw) {
-		return new FreeContainer<>(domains, rightClazz, vffw.getExtraAnotation(TwinGridFieldDescription.class).rightPageLength());
+	protected GeneratedPropertyContainer createRightContainer(VaadinFormFieldWrapper vffw) {
+		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(new FreeContainer<>(domains, rightClazz, vffw.getExtraAnotation(TwinGridFieldDescription.class).rightPageLength()));
+
+		gpcontainer.addGeneratedProperty(RIGHT_ICON_COL, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				return FontAwesome.PLUS_SQUARE_O.getHtml();
+			}
+
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
+		return gpcontainer;
 	}
 
 	protected void buildTwinGridContent(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		setVffw(vffw);
-		leftContainer = createLeftContainer(vffw);
-		rightContainer = createRightContainer(vffw);
 		HorizontalLayout hl = new HorizontalLayout();
 		setWidth(100.0f, Unit.PERCENTAGE);
 		hl.setWidth(100.0f, Unit.PERCENTAGE);
 		
 		setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
 		
-		Grid left = getOneGrid(leftClazz, LEFT_ICON_COL, leftContainer, leftColumnNames, FontAwesome.MINUS_SQUARE_O.getHtml());
-		Grid right = getOneGrid(rightClazz, RIGHT_ICON_COL, rightContainer, rightColumnNames, FontAwesome.PLUS_SQUARE_O.getHtml());
-		left.setWidth(100.0f, Unit.PERCENTAGE);
-		right.setWidth(100.0f, Unit.PERCENTAGE);
+		leftGrid = getOneGrid(leftClazz, LEFT_ICON_COL, createLeftContainer(vffw, Lists.newArrayList()), leftColumnNames, true);
+		rightGrid = getOneGrid(rightClazz, RIGHT_ICON_COL, createRightContainer(vffw), rightColumnNames, false);
+		leftGrid.setWidth(100.0f, Unit.PERCENTAGE);
+		rightGrid.setWidth(100.0f, Unit.PERCENTAGE);
 
-		hl.addComponent(left);
-		hl.addComponent(right);
+		hl.addComponent(leftGrid);
+		hl.addComponent(rightGrid);
 
-		hl.setExpandRatio(left, 1);
-		hl.setExpandRatio(right, 1);
+		hl.setExpandRatio(leftGrid, 1);
+		hl.setExpandRatio(rightGrid, 1);
 		fieldContentToReturn = hl;
 	}
 
@@ -141,8 +155,7 @@ public class BaseTwinGridField<LC extends Collection<L>, L extends BaseEntity, R
 		return (Class<LC>) Collection.class;
 	}
 
-	@SuppressWarnings("serial")
-	private Grid getOneGrid(Class<?> clazz, String extraColName, FreeContainer<?> freeComtainer,String[] colnames, String iconHtml) {
+	private Grid getOneGrid(Class<?> clazz, String extraColName, GeneratedPropertyContainer gpcontainer,String[] colnames, boolean isLeft) {
 		
 		String[] allcolumns = new String[colnames.length + 1];
 		allcolumns[0] = extraColName;
@@ -151,19 +164,6 @@ public class BaseTwinGridField<LC extends Collection<L>, L extends BaseEntity, R
 		}
 		
 		setWidth(100.0f, Unit.PERCENTAGE);
-		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(freeComtainer);
-
-		gpcontainer.addGeneratedProperty(extraColName, new PropertyValueGenerator<String>() {
-			@Override
-			public String getValue(Item item, Object itemId, Object propertyId) {
-				return iconHtml;
-			}
-
-			@Override
-			public Class<String> getType() {
-				return String.class;
-			}
-		});
 
 		TextField filterField = new TextField();
 		filterField.setWidth(100.0f, Unit.PERCENTAGE);
@@ -204,13 +204,15 @@ public class BaseTwinGridField<LC extends Collection<L>, L extends BaseEntity, R
 		});
 		grid.addItemClickListener(event -> {
 			if (event.getPropertyId().equals(extraColName)) {
-				itemClickListener.itemClicked(new TwinGridFieldItemClickEvent(event.getItemId(), false));
+				BaseTwinGridField.this.itemClicked(new TwinGridFieldItemClickEvent(event.getItemId(), isLeft));
 				BaseTwinGridField.this.refreshValue();
 			}
 		});
 		return grid;
 	}
 	
+	public abstract void itemClicked(TwinGridFieldItemClickEvent twinGridFieldItemClickEvent);
+
 	public MessageSource getMessageSource() {
 		return messageSource;
 	}
@@ -226,21 +228,17 @@ public class BaseTwinGridField<LC extends Collection<L>, L extends BaseEntity, R
 		this.vffw = vffw;
 	}
 
-	public FreeContainer<L> getLeftContainer() {
-		return leftContainer;
-	}
 
-	public void setLeftContainer(FreeContainer<L> leftContainer) {
-		this.leftContainer = leftContainer;
-	}
 
-	public FreeContainer<R> getRightContainer() {
-		return rightContainer;
-	}
-
-	public void setRightContainer(FreeContainer<R> rightContainer) {
-		this.rightContainer = rightContainer;
+	public Domains getDomains() {
+		return domains;
 	}
 	
-	
+	@SuppressWarnings("serial")
+	public class MyValueChangeListener implements ValueChangeListener {
+		@Override
+		public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+			BaseTwinGridField.this.leftGrid.setContainerDataSource(createLeftContainer(vffw, (List<L>) event.getProperty().getValue()));
+		}
+	}
 }

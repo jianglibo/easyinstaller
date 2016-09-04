@@ -50,6 +50,9 @@ public class PreDefinedSteps {
 
 	@Autowired
 	private PreDefinedSoftwares preDefinedSoftwares;
+	
+	@Autowired
+	private GlobalComboOptions globalComboOptions;
 
 	@PostConstruct
 	public void post() throws IOException {
@@ -122,6 +125,8 @@ public class PreDefinedSteps {
 				}
 			});
 			
+
+			
 			// All step found
 			if (nos.size() == sds.size()) {
 				if (sw == null) {
@@ -143,6 +148,20 @@ public class PreDefinedSteps {
 				softwareRepository.save(sw);
 			}
 		});
+		
+		Set<String> softwareNames = Sets.newHashSet();
+		Set<String> ostypes = Sets.newHashSet();
+		
+		List<Software> softwares = softwareRepository.findAll();
+		softwares.stream().forEach(sf -> {
+			softwareNames.add(sf.getName());
+			ostypes.add(sf.getOstype());
+		});
+		
+		globalComboOptions.getWholeStringMap().put(GlobalComboOptions.SOFTWARE_NAMES, softwareNames);
+		globalComboOptions.getWholeStringMap().put(GlobalComboOptions.OS_TYPES, ostypes);
+		
+
 	}
 
 }

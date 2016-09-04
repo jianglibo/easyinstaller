@@ -56,7 +56,6 @@ public class Software extends BaseEntity {
 	@TwinGridFieldDescription(leftClazz = OrderedStepDefine.class, rightClazz = StepDefine.class, leftPageLength = 100, rightColumns = {
 			"name", "ostype" }, leftColumns = { "position", "stepDefine" })
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 30)
-	
 	private List<OrderedStepDefine> orderedStepDefines = Lists.newArrayList();
 
 	/**

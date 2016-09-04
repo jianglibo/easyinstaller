@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
-import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickListener;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -28,18 +27,13 @@ public class TwinGridField<T extends Collection<? extends BaseEntity>> extends C
 	
 	private TwinGridLayout<T> twinGridLayout;
 	
-	/**
-	 * I don't know when initContent will called.
-	 */
-	private TwinGridFieldItemClickListener itemClickListener;
-	
-	public void addItemClickListener(TwinGridFieldItemClickListener itemClickListener) {
-		this.itemClickListener = itemClickListener;
-		if (twinGridLayout != null) {
-			twinGridLayout.addItemClickListener(itemClickListener);
-			this.itemClickListener = null;
-		}
-	}
+//	public void addItemClickListener(TwinGridFieldItemClickListener itemClickListener) {
+//		this.itemClickListener = itemClickListener;
+//		if (twinGridLayout != null) {
+//			twinGridLayout.addItemClickListener(itemClickListener);
+//			this.itemClickListener = null;
+//		}
+//	}
 	
 	public TwinGridField<T> afterInjection(VaadinTableWrapper vtw,
 			VaadinFormFieldWrapper vffw) {
@@ -51,9 +45,9 @@ public class TwinGridField<T extends Collection<? extends BaseEntity>> extends C
 	@Override
 	protected Component initContent() {
 		twinGridLayout = (TwinGridLayout<T>) applicationContext.getBean(TwinGridLayout.class).afterInjection(vtw, vffw);
-		if (itemClickListener != null) {
-			twinGridLayout.addItemClickListener(itemClickListener);
-		}
+//		if (itemClickListener != null) {
+//			twinGridLayout.addItemClickListener(itemClickListener);
+//		}
 		return twinGridLayout;
 	}
 

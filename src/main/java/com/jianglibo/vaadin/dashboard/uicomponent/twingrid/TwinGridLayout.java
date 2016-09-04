@@ -11,7 +11,6 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
-import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickListener;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -44,13 +43,13 @@ public class TwinGridLayout<T extends Collection<? extends BaseEntity>> extends 
 		return this;
 	}
 	
-	public void addItemClickListener(TwinGridFieldItemClickListener itemClickListener) {
-		getLeft().addItemClickListener(itemClickListener);
-		getRight().addItemClickListener(itemClickListener);
-	}
+//	public void addItemClickListener(TwinGridFieldItemClickListener itemClickListener) {
+//		getLeft().addItemClickListener(itemClickListener);
+//		getRight().addItemClickListener(itemClickListener);
+//	}
 	
 	public void refreshValue() {
-		getLeft().getFreeContainer().refreshWindow(0);
+		getLeft().getFreeContainer().refresh();
 	}
 
 	public TwinGridLeft<T> getLeft() {

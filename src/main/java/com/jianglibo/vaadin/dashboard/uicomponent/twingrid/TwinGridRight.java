@@ -20,7 +20,6 @@ import com.jianglibo.vaadin.dashboard.data.vaadinconverter.VaadinGridUtil.GridMe
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickEvent;
-import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
@@ -53,7 +52,7 @@ public class TwinGridRight<T extends Collection<? extends BaseEntity>> extends V
 	@Autowired
 	private MessageSource messageSource;
 	
-	private TwinGridFieldItemClickListener itemClickListener;
+//	private TwinGridFieldItemClickListener itemClickListener;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public TwinGridRight<T> afterInjection(VaadinFormFieldWrapper vffw, TwinGridFieldDescription tgfd, TwinGridLayout<T> tgl) {
@@ -118,14 +117,14 @@ public class TwinGridRight<T extends Collection<? extends BaseEntity>> extends V
 		});
 		grid.addItemClickListener(event -> {
 			if (event.getPropertyId().equals(ADD_TO_LEFT_COL_NAME)) {
-				itemClickListener.itemClicked(new TwinGridFieldItemClickEvent(event.getItemId(), false));
+//				itemClickListener.itemClicked(new TwinGridFieldItemClickEvent(event.getItemId(), false));
 				tgl.refreshValue();
 			}
 		});
 		return this;
 	}
 
-	public void addItemClickListener(TwinGridFieldItemClickListener itemClickListener) {
-		this.itemClickListener = itemClickListener;
-	}
+//	public void addItemClickListener(TwinGridFieldItemClickListener itemClickListener) {
+//		this.itemClickListener = itemClickListener;
+//	}
 }

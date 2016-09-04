@@ -86,92 +86,62 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		this.sort = this.defaultSort;
 		this.perPage = perPage;
 	}
-	
-	
 
 	public List<ItemSetChangeListener> getItemSetChangeListeners() {
 		return itemSetChangeListeners;
 	}
 
-
-
 	public void setItemSetChangeListeners(List<ItemSetChangeListener> itemSetChangeListeners) {
 		this.itemSetChangeListeners = itemSetChangeListeners;
 	}
-
-
 
 	public int getPerPage() {
 		return perPage;
 	}
 
-
-
 	public void setPerPage(int perPage) {
 		this.perPage = perPage;
 	}
-
-
 
 	public boolean isTrashed() {
 		return trashed;
 	}
 
-
-
 	public void setTrashed(boolean trashed) {
 		this.trashed = trashed;
 	}
-
-
 
 	public String getFilterString() {
 		return filterString;
 	}
 
-
-
 	public void setFilterString(String filterString) {
 		this.filterString = filterString;
 	}
-
-
 
 	public int getCurrentPage() {
 		return currentPage;
 	}
 
-
-
 	public void setCurrentPage(int currentPage) {
 		this.currentPage = currentPage;
 	}
-
-
 
 	public Sort getSort() {
 		return sort;
 	}
 
-
-
 	public void setSort(Sort sort) {
 		this.sort = sort;
 	}
-
-
 
 	public boolean isEnableSort() {
 		return enableSort;
 	}
 
-
-
 	public void setEnableSort(boolean enableSort) {
 		this.enableSort = enableSort;
 	}
-
-
 
 	public String getSimpleClassName() {
 		return simpleClassName;
@@ -508,12 +478,6 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	 */
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
-		// LOGGER.info("{} called with parameter {} {}", "getItemIds",
-		// startIndex, numberOfItems);
-		// int newStartPage = startIndex/this.perPage;
-		// this.currentPage = newStartPage;
-		// refreshWindow();
-		// return currentWindow;
 		return ContainerHelpers.getItemIdsUsingGetIdByIndex(startIndex, numberOfItems, this);
 	}
 
@@ -534,12 +498,14 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 				filterString, trashed);
 	}
 
-	public void refreshWindow(int currentPage) {
-		this.currentPage = currentPage;
-		fetchPage();
+	public void refresh() {
+		this.currentPage = 0;
+		this.filter = null;
+		notifyItemSetChanged();
 	}
 
-	private void notifyItemSetChanged() {
+	@SuppressWarnings("serial")
+	protected void notifyItemSetChanged() {
 		ItemSetChangeEvent event = new ItemSetChangeEvent() {
 			@Override
 			public Container getContainer() {
@@ -671,8 +637,6 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 			public void setReadOnly(boolean newStatus) {
 				throw new UnsupportedOperationException("Not supported yet.");
 			}
-
 		}
 	}
-
 }
