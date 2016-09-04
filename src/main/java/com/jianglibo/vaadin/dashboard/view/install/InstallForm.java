@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.install;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
@@ -9,7 +11,9 @@ import org.springframework.stereotype.Component;
 import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Install;
+import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
+import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 
@@ -20,10 +24,13 @@ public class InstallForm extends FormBase<Install> {
 	
 	private final InstallRepository repository;
 	
+	private final StepRunRepository stepRunRepository;
+	
 	@Autowired
-	public InstallForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories, InstallRepository repository) {
+	public InstallForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories, InstallRepository repository, StepRunRepository stepRunRepository) {
 		super(Install.class, messageSource, domains, fieldFactories);
 		this.repository = repository;
+		this.stepRunRepository = stepRunRepository;
 	}
 	
 	public InstallForm afterInjection(EventBus eventBus, boolean attachFields) {
@@ -33,7 +40,13 @@ public class InstallForm extends FormBase<Install> {
 
 	@Override
 	public boolean saveToRepo() {
-        repository.save(getWrappedBean());
+		Install in = getWrappedBean();
+		List<StepRun> stepRuns = in.getStepRuns();
+		Install inf = repository.save(in);
+        stepRuns.stream().forEach(st -> {
+        	st.setInstall(inf);
+        	stepRunRepository.save(st);
+        });
 		return true;
 	}
 

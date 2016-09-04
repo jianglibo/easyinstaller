@@ -15,22 +15,19 @@ import com.jianglibo.vaadin.dashboard.data.container.AllowEmptySortListContainer
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.event.ui.TwinGridFieldItemClickEvent;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Grid.HeaderCell;
 import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.renderers.HtmlRenderer;
 
 /**
  * Every field need to know @VaadinFormFieldWrapper and @VaadinTableWrapper
@@ -50,8 +47,6 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final String LEFT_ICON_COL = "removeFromLeft";
-	private static final String RIGHT_ICON_COL = "addToLeft";
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(BaseTwinGridField.class);
 
@@ -63,13 +58,11 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 
 	private final Class<R> rightClazz;
 
-	private String[] leftColumnNames;
-	
-	private String[] rightColumnNames;
-	
 	private Component fieldContentToReturn;
 	
 	private VaadinFormFieldWrapper vffw;
+	
+	private VaadinTableWrapper vtw;
 	
 	private Grid leftGrid;
 	
@@ -77,58 +70,16 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 	
 	private MyValueChangeListener vc;
 	
-	public BaseTwinGridField(Class<L> leftClazz, String[] leftColumnNames, Class<R> rightClazz, String[] rightColumnNames, Domains domains, MessageSource messageSource) {
+	public BaseTwinGridField(Class<L> leftClazz, Class<R> rightClazz, Domains domains, MessageSource messageSource) {
 		this.leftClazz = leftClazz;
 		this.rightClazz = rightClazz;
-		this.leftColumnNames = leftColumnNames;
-		this.rightColumnNames = rightColumnNames;
 		this.domains = domains;
 		this.messageSource = messageSource;
 		vc = new MyValueChangeListener();
 		addValueChangeListener(vc);
 	}
 	
-	@Override
-	protected Component initContent() {
-		return fieldContentToReturn;
-	}
-	
-	protected GeneratedPropertyContainer createLeftContainer(VaadinFormFieldWrapper vffw, List<L> lc) {
-		AllowEmptySortListContainer<L> lcc = new AllowEmptySortListContainer<L>(leftClazz, lc);
-		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(lcc);
-
-		gpcontainer.addGeneratedProperty(LEFT_ICON_COL, new PropertyValueGenerator<String>() {
-			@Override
-			public String getValue(Item item, Object itemId, Object propertyId) {
-				return FontAwesome.MINUS_SQUARE_O.getHtml();
-			}
-
-			@Override
-			public Class<String> getType() {
-				return String.class;
-			}
-		});
-		return gpcontainer;
-	}
-	
-	protected GeneratedPropertyContainer createRightContainer(VaadinFormFieldWrapper vffw) {
-		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(new FreeContainer<>(domains, rightClazz, vffw.getExtraAnotation(TwinGridFieldDescription.class).rightPageLength()));
-
-		gpcontainer.addGeneratedProperty(RIGHT_ICON_COL, new PropertyValueGenerator<String>() {
-			@Override
-			public String getValue(Item item, Object itemId, Object propertyId) {
-				return FontAwesome.PLUS_SQUARE_O.getHtml();
-			}
-
-			@Override
-			public Class<String> getType() {
-				return String.class;
-			}
-		});
-		return gpcontainer;
-	}
-
-	protected void buildTwinGridContent(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+	protected BaseTwinGridField<LC,	L, R> afterInjection(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		setVffw(vffw);
 		HorizontalLayout hl = new HorizontalLayout();
 		setWidth(100.0f, Unit.PERCENTAGE);
@@ -136,8 +87,9 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 		
 		setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
 		
-		leftGrid = getOneGrid(leftClazz, LEFT_ICON_COL, createLeftContainer(vffw, Lists.newArrayList()), leftColumnNames, true);
-		rightGrid = getOneGrid(rightClazz, RIGHT_ICON_COL, createRightContainer(vffw), rightColumnNames, false);
+		leftGrid = createLeftGrid(vtw, vffw, Lists.newArrayList(), true);
+		rightGrid = createRightGrid(vtw, vffw);
+		
 		leftGrid.setWidth(100.0f, Unit.PERCENTAGE);
 		rightGrid.setWidth(100.0f, Unit.PERCENTAGE);
 
@@ -147,54 +99,133 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 		hl.setExpandRatio(leftGrid, 1);
 		hl.setExpandRatio(rightGrid, 1);
 		fieldContentToReturn = hl;
+		return this;
 	}
 
-	@SuppressWarnings("unchecked")
+	private boolean foundColumn(String[] columns, String column) {
+		for(String col : columns) {
+			if (col.equals(column)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 	@Override
-	public Class<LC> getType() {
-		return (Class<LC>) Collection.class;
+	protected Component initContent() {
+		return fieldContentToReturn;
 	}
+	
+	public abstract void addGeneratedPropertyForLeft(GeneratedPropertyContainer gpcontainer, String extraName);
+	public abstract void addGeneratedPropertyForRight(GeneratedPropertyContainer gpcontainer, String extraName);
+	
+	/**
+	 * customize column, convert, render etc.
+	 * @param col
+	 */
+	public abstract void setupLeftColumn(Column col, String name);
 
-	private Grid getOneGrid(Class<?> clazz, String extraColName, GeneratedPropertyContainer gpcontainer,String[] colnames, boolean isLeft) {
+	/**
+	 * customize column, convert, render etc.
+	 * @param col
+	 */
+	public abstract void setupRightColumn(Column col, String name);
+	
+	public abstract void whenLeftItemClicked(ItemClickEvent event);
+	public abstract void whenRightItemClicked(ItemClickEvent event);
+	
+	public Grid createLeftGrid(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw, List<L> lc, boolean createGrid) {
+		AllowEmptySortListContainer<L> lcc = new AllowEmptySortListContainer<L>(leftClazz, lc);
+		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(lcc);
 		
-		String[] allcolumns = new String[colnames.length + 1];
-		allcolumns[0] = extraColName;
-		for(int i =1;i < allcolumns.length ; i++) {
-			allcolumns[i] = colnames[i - 1];
+		TwinGridFieldDescription tgfd = vffw.getExtraAnotation(TwinGridFieldDescription.class);
+		
+		String[] columns = tgfd.leftColumns();
+		String[] sortableColumns = tgfd.leftSortableColumns();
+		
+		for(String name: columns) {
+			if (name.startsWith("!")) {
+				addGeneratedPropertyForLeft(gpcontainer, name);
+			}
+		}
+		
+		if (!createGrid) {
+			leftGrid.setContainerDataSource(gpcontainer);
+			return null;
 		}
 		
 		setWidth(100.0f, Unit.PERCENTAGE);
+		Grid grid = new Grid();
+		grid.setWidth(100.0f, Unit.PERCENTAGE);
+		grid.setColumns(columns);
+		grid.setSelectionMode(SelectionMode.NONE);
+		grid.setContainerDataSource(gpcontainer);
+		
+		for(String cn : columns){
+			Grid.Column col = grid.getColumn(cn);
+			col.setSortable(foundColumn(sortableColumns, cn));
+			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), (String)cn));
+			setupLeftColumn(col, cn);
+		}
+		
+		grid.addItemClickListener(event -> {
+			whenLeftItemClicked(event);
+		});
+
+		TextField filterField = new TextField();
+		filterField.setWidth(100.0f, Unit.PERCENTAGE);
+		filterField.setEnabled(false);
+		filterField.setReadOnly(true);
+
+		HeaderRow groupingHeader = grid.appendHeaderRow();
+
+		HeaderCell namesCell = groupingHeader.join(columns);
+		namesCell.setComponent(filterField);
+		return grid;
+	}
+	
+	public Grid createRightGrid(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		FreeContainer<R> lcc = new FreeContainer<>(domains, rightClazz, vffw.getExtraAnotation(TwinGridFieldDescription.class).rightPageLength());
+		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(lcc);
+		
+		TwinGridFieldDescription tgfd = vffw.getExtraAnotation(TwinGridFieldDescription.class);
+		
+		String[] columns = tgfd.rightColumns();
+		String[] sortableColumns = tgfd.rightSortableColumns();
+		
+		for(String name: columns) {
+			if (name.startsWith("!")) {
+				addGeneratedPropertyForRight(gpcontainer, name);
+			}
+		}
+		
+		setWidth(100.0f, Unit.PERCENTAGE);
+		Grid grid = new Grid();
+		grid.setWidth(100.0f, Unit.PERCENTAGE);
+		grid.setColumns(columns);
+		grid.setSelectionMode(SelectionMode.NONE);
+		grid.setContainerDataSource(gpcontainer);
+		
+		for(String cn : columns){
+			Grid.Column col = grid.getColumn(cn);
+			col.setSortable(foundColumn(sortableColumns, cn));
+			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), (String)cn));
+			setupRightColumn(col, cn);
+		}
+		
+		grid.addItemClickListener(event -> {
+			whenRightItemClicked(event);
+		});
 
 		TextField filterField = new TextField();
 		filterField.setWidth(100.0f, Unit.PERCENTAGE);
 
-		Grid grid = new Grid();
-		grid.setColumns(allcolumns);
-		grid.setSelectionMode(SelectionMode.NONE);
-		for (String cn : allcolumns) {
-			Grid.Column col = grid.getColumn(cn);
-			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource,
-					domains.getTables().get(clazz.getSimpleName()).getVt().messagePrefix(), cn));
-		}
-
 		HeaderRow groupingHeader = grid.appendHeaderRow();
 
-		for (String s : allcolumns) {
-			HeaderCell hc = groupingHeader.getCell(s);
-			LOGGER.info("" + hc);
-
-		}
-
-		HeaderCell namesCell = groupingHeader.join(allcolumns);
+		HeaderCell namesCell = groupingHeader.join(columns);
 		namesCell.setComponent(filterField);
-
-		grid.setContainerDataSource(gpcontainer);
-
-		Grid.Column addToLeftColumn = grid.getColumn(extraColName);
-
-		addToLeftColumn.setRenderer(new HtmlRenderer());
-		addToLeftColumn.setHeaderCaption("");
-
+		
 		filterField.addTextChangeListener(change -> {
 			// Can't modify filters so need to replace
 			gpcontainer.removeAllContainerFilters();
@@ -202,16 +233,16 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 			gpcontainer.addContainerFilter(new SimpleStringFilter("", change.getText(), true, false));
 
 		});
-		grid.addItemClickListener(event -> {
-			if (event.getPropertyId().equals(extraColName)) {
-				BaseTwinGridField.this.itemClicked(new TwinGridFieldItemClickEvent(event.getItemId(), isLeft));
-				BaseTwinGridField.this.refreshValue();
-			}
-		});
+		
 		return grid;
 	}
 	
-	public abstract void itemClicked(TwinGridFieldItemClickEvent twinGridFieldItemClickEvent);
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Class<LC> getType() {
+		return (Class<LC>) Collection.class;
+	}
 
 	public MessageSource getMessageSource() {
 		return messageSource;
@@ -228,17 +259,23 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 		this.vffw = vffw;
 	}
 
+	public VaadinTableWrapper getVtw() {
+		return vtw;
+	}
 
+	public void setVtw(VaadinTableWrapper vtw) {
+		this.vtw = vtw;
+	}
 
 	public Domains getDomains() {
 		return domains;
 	}
 	
 	@SuppressWarnings("serial")
-	public class MyValueChangeListener implements ValueChangeListener {
+	protected class MyValueChangeListener implements ValueChangeListener {
 		@Override
 		public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-			BaseTwinGridField.this.leftGrid.setContainerDataSource(createLeftContainer(vffw, (List<L>) event.getProperty().getValue()));
+			BaseTwinGridField.this.createLeftGrid(getVtw(), getVffw(), (List<L>) event.getProperty().getValue(), false);
 		}
 	}
 }

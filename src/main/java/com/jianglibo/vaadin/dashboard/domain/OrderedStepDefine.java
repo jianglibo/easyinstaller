@@ -5,7 +5,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;

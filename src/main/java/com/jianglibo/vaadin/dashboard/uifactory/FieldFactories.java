@@ -7,16 +7,14 @@ import org.springframework.stereotype.Component;
 public class FieldFactories {
 
 	private final ComboBoxFieldFactory comboBoxFieldFactory;
-	private final GridFieldFactory gridFieldFactory;
 	private final TwinColSelectFieldFactory twinColSelectFieldFactory;
 	private final TwinGridFieldFactory twinGridFieldFactory;
-	
+
 	@Autowired
-	public FieldFactories(ComboBoxFieldFactory comboBoxFieldFactory, GridFieldFactory gridFieldFactory,
+	public FieldFactories(ComboBoxFieldFactory comboBoxFieldFactory,
 			TwinColSelectFieldFactory twinColSelectFieldFactory, TwinGridFieldFactory twinGridFieldFactory) {
 		super();
 		this.comboBoxFieldFactory = comboBoxFieldFactory;
-		this.gridFieldFactory = gridFieldFactory;
 		this.twinColSelectFieldFactory = twinColSelectFieldFactory;
 		this.twinGridFieldFactory = twinGridFieldFactory;
 	}
@@ -25,16 +23,9 @@ public class FieldFactories {
 		return comboBoxFieldFactory;
 	}
 
-
-	public GridFieldFactory getGridFieldFactory() {
-		return gridFieldFactory;
-	}
-
-
 	public TwinColSelectFieldFactory getTwinColSelectFieldFactory() {
 		return twinColSelectFieldFactory;
 	}
-
 
 	public TwinGridFieldFactory getTwinGridFieldFactory() {
 		return twinGridFieldFactory;

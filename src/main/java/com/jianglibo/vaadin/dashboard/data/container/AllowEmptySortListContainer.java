@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.vaadin.maddon.ListContainer;
 
-public class AllowEmptySortListContainer<T> extends ListContainer<T> {
+public class AllowEmptySortListContainer<T>  extends ListContainer<T> {
 
 	/**
 	 * 
@@ -25,4 +25,5 @@ public class AllowEmptySortListContainer<T> extends ListContainer<T> {
 			super.sort(propertyId, ascending);
 		}
 	}
+
 }

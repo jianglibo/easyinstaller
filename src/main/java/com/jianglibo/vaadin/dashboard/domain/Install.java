@@ -2,7 +2,9 @@ package com.jianglibo.vaadin.dashboard.domain;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -36,13 +38,16 @@ public class Install extends BaseEntity {
 	@OneToOne
 	@VaadinTableColumn
 	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 10)
-	@ComboBoxBackByContainer(entityClass = StepRun.class, pageLength = 10)
+	@ComboBoxBackByContainer(entityClass = Software.class, pageLength = 10)
 	private Software software;
 
-	@OneToMany(mappedBy = "install")
+	/**
+	 * If use JPA CascadeType.PERSIST will not save relations. fix it by manually in form code.
+	 */
+	@OneToMany(mappedBy = "install", fetch=FetchType.EAGER, cascade={CascadeType.REMOVE})
 	@OrderBy("position ASC")
-	@VaadinFormField(fieldType = Ft.GRID, order = 20)
-	@GridFieldDescription(columns = { "stepDefine", "position" }, clazz = StepRun.class)
+	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 20)
+	@GridFieldDescription(columns = { "position", "name", "ostype", "!edit" }, clazz = StepRun.class)
 	private List<StepRun> stepRuns = Lists.newArrayList();
 
 	@ManyToOne

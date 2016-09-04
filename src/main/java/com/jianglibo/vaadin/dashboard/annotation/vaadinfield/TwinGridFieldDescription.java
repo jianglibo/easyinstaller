@@ -19,4 +19,6 @@ public @interface TwinGridFieldDescription {
 	boolean showEditIcon() default false;
 	boolean showLeftFilter() default false;
 	boolean showRightFilter() default false;
+	String[] leftSortableColumns() default {};
+	String[] rightSortableColumns() default {};
 }

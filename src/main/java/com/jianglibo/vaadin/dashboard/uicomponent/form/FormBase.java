@@ -14,7 +14,6 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.filecontentfield.FileContentField;
-import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.GridField;
 import com.jianglibo.vaadin.dashboard.uicomponent.twingrid.TwinGridField;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
@@ -189,12 +188,12 @@ public abstract class FormBase<T> extends FormLayout {
 				addStyleName(vffw, fcf);
 				fields.add(new PropertyIdAndField(vffw, fcf));
 				break;
-			case GRID:
-				GridField<?> gf = fieldFactories.getGridFieldFactory().create(vtw, vffw);
-				gf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
-				addStyleName(vffw, gf);
-				fields.add(new PropertyIdAndField(vffw, gf));
-				break;
+//			case GRID:
+//				GridField<?> gf = fieldFactories.getGridFieldFactory().create(vtw, vffw);
+//				gf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
+//				addStyleName(vffw, gf);
+//				fields.add(new PropertyIdAndField(vffw, gf));
+//				break;
 			case TWIN_GRID:
 				TwinGridField<?> tgf = fieldFactories.getTwinGridFieldFactory().create(vtw, vffw);
 				tgf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));

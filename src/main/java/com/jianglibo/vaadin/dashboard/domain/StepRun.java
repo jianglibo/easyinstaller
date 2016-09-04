@@ -44,10 +44,11 @@ public class StepRun extends BaseEntity {
 	public StepRun() {
 	}
 	
-	public StepRun(Install install, OrderedStepDefine orderedStepDefine) {
-		setInstall(install);
+	public StepRun(OrderedStepDefine orderedStepDefine) {
 		setStepDefine(orderedStepDefine.getStepDefine());
 		setPosition(orderedStepDefine.getPosition());
+		setName(orderedStepDefine.getStepDefine().getName());
+		setOstype(orderedStepDefine.getStepDefine().getOstype());
 	}
 	
 	@Lob

@@ -9,8 +9,7 @@ import org.springframework.context.MessageSource;
 import com.google.common.collect.Maps;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.GridFieldDescription;
-import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
+import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Grid;
@@ -18,7 +17,7 @@ import com.vaadin.ui.Grid.SelectionMode;
 
 public class VaadinGridUtil {
 
-	public static GridMeta setupGrid(ApplicationContext applicationContext, String[] allcolnames, MessageSource messageSource, VaadinTableWrapper vtw,Class<?> fildClazz, String...generatedFields) {
+	public static <T extends BaseEntity> GridMeta setupGrid(ApplicationContext applicationContext, String[] allcolnames, MessageSource messageSource, VaadinTableWrapper vtw,Class<T> fildClazz, String...generatedFields) {
 		Map<String, String> convertormap = Maps.newHashMap();
 		List<String> colnames = Lists.newArrayList(generatedFields);
 		
@@ -40,7 +39,7 @@ public class VaadinGridUtil {
 			if (convertormap.containsKey(cn)) {
 				Converter cv = (Converter) applicationContext.getBean(convertormap.get(cn));
 				if (cv instanceof EntityStringConverter) {
-					cv = ((EntityStringConverter) cv).afterInjection(fildClazz);
+					cv = new EntityStringConverter<>(fildClazz);
 				}
 				col.setConverter(cv);
 			}

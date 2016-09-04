@@ -1,5 +1,9 @@
 package com.jianglibo.vaadin.dashboard.view.install;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +13,22 @@ import org.springframework.context.MessageSource;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Install;
+import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
+import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.PropertyIdAndField;
+import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.StepRunGridField;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
+import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -24,15 +37,18 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 
 @SpringView(name = InstallEditView.VIEW_NAME)
-public class InstallEditView  extends VerticalLayout implements View {
+public class InstallEditView  extends VerticalLayout implements View, HandMakeFieldsListener {
 	/**
 	 * 
 	 */
@@ -58,10 +74,15 @@ public class InstallEditView  extends VerticalLayout implements View {
     
     private InstallForm form;
     
+    private ApplicationContext applicationContext;
+    
+    private StepRunGridField stepRunGridField;
+    
 	@Autowired
 	public InstallEditView(InstallRepository repository, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.messageSource = messageSource;
+		this.applicationContext = applicationContext;
 		this.repository= repository;
 		this.eventBus = new EventBus(this.getClass().getName());
 		eventBus.register(this);
@@ -73,7 +94,22 @@ public class InstallEditView  extends VerticalLayout implements View {
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(InstallForm.class).afterInjection(eventBus, true).done();
+		form = (InstallForm) applicationContext.getBean(InstallForm.class).afterInjection(eventBus, true).addHandMakeFieldsListener(this).done();
+		
+		Optional<PropertyIdAndField> cbop = form.getFields().stream().filter(f -> {
+			return f.getPropertyId().equals("software");
+		}).findAny();
+		
+		ComboBox cb = (ComboBox) cbop.get().getField();
+		
+		cb.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Notification.show(event.getProperty().getValue().toString());
+				List<StepRun> steps = ((Software)event.getProperty().getValue()).getOrderedStepDefines().stream().map(osd -> new StepRun(osd)).collect(Collectors.toList());
+				stepRunGridField.setValue(steps);
+			}
+		});
 		addComponent(form);
 		Component ft = buildFooter();
 		addComponent(ft);
@@ -131,5 +167,11 @@ public class InstallEditView  extends VerticalLayout implements View {
 			header.setLabelTxt(bean.getSoftware().getDisplayName());
 		}
         form.setItemDataSource(bean);
+	}
+
+	@Override
+	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		stepRunGridField = (StepRunGridField) applicationContext.getBean(StepRunGridField.class).afterInjection(vtw, vffw);
+		return stepRunGridField;
 	}
 }

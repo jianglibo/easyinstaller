@@ -53,8 +53,8 @@ public class Software extends BaseEntity {
 
 	@OneToMany(fetch = FetchType.EAGER)
 	@OrderBy("position ASC")
-	@TwinGridFieldDescription(leftClazz = OrderedStepDefine.class, rightClazz = StepDefine.class, leftPageLength = 100, rightColumns = {
-			"name", "ostype" }, leftColumns = { "position", "stepDefine" })
+	@TwinGridFieldDescription(leftClazz = OrderedStepDefine.class, rightClazz = StepDefine.class, leftPageLength = 100, rightColumns = {"!addtoleft",
+			"name", "ostype" }, leftColumns = { "position", "stepDefine", "!removefromleft" })
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 30)
 	private List<OrderedStepDefine> orderedStepDefines = Lists.newArrayList();
 
@@ -77,7 +77,7 @@ public class Software extends BaseEntity {
 
 	public Install createNewInstall() {
 		Install in = new Install(this);
-		in.setStepRuns(getOrderedStepDefines().stream().map(isd -> new StepRun(in, isd)).collect(Collectors.toList()));
+		in.setStepRuns(getOrderedStepDefines().stream().map(isd -> new StepRun(isd)).collect(Collectors.toList()));
 		return in;
 	}
 
