@@ -92,6 +92,7 @@ public abstract class BaseGridField<C extends Collection<B>, B extends BaseEntit
 
 		setWidth(100.0f, Unit.PERCENTAGE);
 		grid = new Grid();
+		
 		grid.setWidth(100.0f, Unit.PERCENTAGE);
 		grid.setColumns(columns);
 		grid.setSelectionMode(SelectionMode.NONE);
@@ -103,12 +104,18 @@ public abstract class BaseGridField<C extends Collection<B>, B extends BaseEntit
 			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), (String) cn));
 			setupColumn(col, cn);
 		}
-
-		grid.addItemClickListener(event -> {
-			whenItemClicked(event);
-		});
+		
+		setupGrid(grid);
+		
+		if (dfd.addItemClickListener()) {
+			grid.addItemClickListener(event -> {
+				whenItemClicked(event);
+			});
+		}
 		return grid;
 	}
+
+	protected abstract void setupGrid(Grid grid);
 
 	public abstract void whenItemClicked(ItemClickEvent event);
 

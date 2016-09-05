@@ -22,7 +22,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.vaadin.ui.themes.ValoTheme;
 
 /**
- * An installation combined with stepruns. Not shared between boxes.
+ * Install is in prototyped scope, belongs to box, So can sorted by position.
  * 
  * @author jianglibo@gmail.com
  *
@@ -33,7 +33,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @VaadinTable(multiSelect = true, footerVisible = true, messagePrefix = "domain.install.", styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
-public class Install extends BaseEntity {
+public class Install extends BaseEntity implements HasPositionField {
 
 	@OneToOne
 	@VaadinTableColumn
@@ -47,14 +47,15 @@ public class Install extends BaseEntity {
 	@OneToMany(mappedBy = "install", fetch=FetchType.EAGER, cascade={CascadeType.REMOVE})
 	@OrderBy("position ASC")
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 20)
-	@GridFieldDescription(columns = { "position", "name", "ostype", "!edit" }, clazz = StepRun.class)
+	@GridFieldDescription(columns = { "position", "name", "ostype", "!edit", "!up"}, clazz = StepRun.class)
 	private List<StepRun> stepRuns = Lists.newArrayList();
 
 	@ManyToOne
 	private Box box;
-
-	@OneToOne
-	private StepRun lastStep;
+	
+	@VaadinTableColumn
+	@VaadinFormField
+	private int position;
 
 	public Install() {
 	}
@@ -90,19 +91,19 @@ public class Install extends BaseEntity {
 		this.stepRuns = stepRuns;
 	}
 
-	public StepRun getLastStep() {
-		return lastStep;
-	}
-
-	public void setLastStep(StepRun lastStep) {
-		this.lastStep = lastStep;
-	}
-
 	public Software getSoftware() {
 		return software;
 	}
 
 	public void setSoftware(Software software) {
 		this.software = software;
+	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
 	}
 }

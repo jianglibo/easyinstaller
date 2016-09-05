@@ -169,9 +169,11 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 			setupLeftColumn(col, cn);
 		}
 		
-		grid.addItemClickListener(event -> {
-			whenLeftItemClicked(event);
-		});
+		if (tgfd.addItemClickListenerForLeft()) {
+			grid.addItemClickListener(event -> {
+				whenLeftItemClicked(event);
+			});
+		}
 
 		TextField filterField = new TextField();
 		filterField.setWidth(100.0f, Unit.PERCENTAGE);
@@ -182,9 +184,12 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 
 		HeaderCell namesCell = groupingHeader.join(columns);
 		namesCell.setComponent(filterField);
+		setupLeftGrid(grid);
 		return grid;
 	}
 	
+	public abstract void setupLeftGrid(Grid grid);
+
 	public Grid createRightGrid(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		FreeContainer<R> lcc = new FreeContainer<>(domains, rightClazz, vffw.getExtraAnotation(TwinGridFieldDescription.class).rightPageLength());
 		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(lcc);
@@ -214,9 +219,11 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 			setupRightColumn(col, cn);
 		}
 		
-		grid.addItemClickListener(event -> {
-			whenRightItemClicked(event);
-		});
+		if (tgfd.addItemClickListenerForRight()) {
+			grid.addItemClickListener(event -> {
+				whenRightItemClicked(event);
+			});			
+		}
 
 		TextField filterField = new TextField();
 		filterField.setWidth(100.0f, Unit.PERCENTAGE);
@@ -233,10 +240,12 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 			gpcontainer.addContainerFilter(new SimpleStringFilter("", change.getText(), true, false));
 
 		});
-		
+		setupRightGrid(grid);
 		return grid;
 	}
 	
+
+	public abstract void setupRightGrid(Grid grid);
 
 	@SuppressWarnings("unchecked")
 	@Override

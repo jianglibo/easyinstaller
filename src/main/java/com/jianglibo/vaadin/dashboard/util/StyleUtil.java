@@ -53,4 +53,12 @@ public class StyleUtil {
 	public static void setMarginRightTwenty(Component c) {
 		c.addStyleName("margin-right-twenty");
 	}
+	
+	public static void setBtnLinkStyleContainer(Component c) {
+		c.addStyleName("btn-link-container");
+	}
+	
+	public static void setDisableCellFocus(Component c) {
+		c.addStyleName("disable-cell-focus");
+	}
 }

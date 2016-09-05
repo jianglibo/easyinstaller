@@ -17,4 +17,5 @@ public @interface GridFieldDescription {
 	boolean showEditIcon() default false;
 	String convertor() default "";
 	String[] sortableColumns() default {};
+	boolean addItemClickListener() default false;
 }

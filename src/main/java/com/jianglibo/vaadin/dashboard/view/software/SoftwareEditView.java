@@ -14,7 +14,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
-import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.TwinGridOrderedStepDefine;
+import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.OrderedStepDefineTwinGrid;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
@@ -105,7 +105,7 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 	
 	@Override
 	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		return applicationContext.getBean(TwinGridOrderedStepDefine.class).afterInjection(vtw, vffw);
+		return applicationContext.getBean(OrderedStepDefineTwinGrid.class).afterInjection(vtw, vffw);
 	}
 
 	

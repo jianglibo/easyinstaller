@@ -15,7 +15,7 @@ import com.vaadin.ui.themes.ValoTheme;
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
 @Table(name = "orderedstepdefine")
-public class OrderedStepDefine extends BaseEntity {
+public class OrderedStepDefine extends BaseEntity implements HasPositionField {
 	
 	@OneToOne
 	@VaadinTableColumn(order = 20)

@@ -16,7 +16,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @Entity
 @VaadinTable(multiSelect=true, messagePrefix="domain.steprun.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
 @Table(name = "steprun")
-public class StepRun extends BaseEntity {
+public class StepRun extends BaseEntity implements HasPositionField {
 
 	/**
 	 * 

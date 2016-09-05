@@ -7,6 +7,7 @@ import org.springframework.context.NoSuchMessageException;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.config.ComboItem;
 import com.vaadin.ui.UI;
 
@@ -69,14 +70,25 @@ public class MsgUtil {
 		return msg == null ? key : msg;
 	}
 	
-	public static String getFieldMsg(MessageSource messageSource, String prefix, VaadinTableColumnWrapper tcw) {
-		String fieldName = tcw.getVtc().columnHeader();
+	
+	
+	
+	public static String getFieldMsg(MessageSource messageSource, VaadinTableWrapper vtw, VaadinTableColumnWrapper ttcw) {
+		return getFieldMsg(messageSource, vtw.getVt().messagePrefix(), ttcw);
+	}
+
+	
+	public static String getFieldMsg(MessageSource messageSource, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		return getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw);
+	}
+	
+	public static String getFieldMsg(MessageSource messageSource, String prefix, VaadinTableColumnWrapper ttcw) {
+		String fieldName = ttcw.getVtc().columnHeader();
 		if (fieldName.isEmpty()) {
-			fieldName = tcw.getName();
+			fieldName = ttcw.getName();
 		}
 		return getFieldMsg(messageSource, prefix, fieldName);
 	}
-
 	
 	public static String getFieldMsg(MessageSource messageSource, String prefix, VaadinFormFieldWrapper vffw) {
 		String fieldName = vffw.getVff().caption();
@@ -108,6 +120,16 @@ public class MsgUtil {
 		} else {
 			return msg;
 		}
+	}
+	
+	public static String getMsgFallbackToSelf(MessageSource messageSource, String prefix, String name) {
+		String key = prefix + name;
+		try {
+			return messageSource.getMessage(key, null, UI.getCurrent().getLocale());
+		} catch (NoSuchMessageException e) {
+			LOGGER.info("field {} has no localized message", key);
+		}
+		return name;
 	}
 
 }

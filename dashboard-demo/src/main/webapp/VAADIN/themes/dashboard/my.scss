@@ -80,4 +80,26 @@
 		overflow: auto;
 	}
 	
+	.btn-link-container button.v-nativebutton {
+		border: none;
+		-webkit-box-shadow: none;
+		box-shadow: none;
+		background: transparent;
+		color: inherit;
+		cursor: pointer;
+		color: #197de1;
+		/* text-decoration: underline; */
+		font-weight: inherit;
+		-webkit-transition: color 140ms;
+		-moz-transition: color 140ms;
+		transition: color 140ms;
+	}
+	
+	.disable-cell-focus .v-grid-cell-focused:before {
+		display: none;
+		border: 0;
+	}
+	.v-grid-cell .gwt-Image {
+		cursor: pointer;
+	}
 }

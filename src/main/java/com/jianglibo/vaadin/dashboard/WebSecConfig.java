@@ -76,6 +76,7 @@ public class WebSecConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/", //
                 		"/vaadinServlet/**", //
+                		"/icon-images/**", //
                 		"/view/**", //
                 		"/test/**", //
                         "/VAADIN/**")//

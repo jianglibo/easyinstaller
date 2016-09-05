@@ -12778,3 +12778,26 @@ div.v-layout.v-horizontal.v-widget {
 .dashboard .overflow-auto {
 	overflow: auto;
 }
+
+.dashboard .btn-link-container button.v-nativebutton {
+	border: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	color: #197de1;
+	font-weight: inherit;
+	-webkit-transition: color 140ms;
+	-moz-transition: color 140ms;
+	transition: color 140ms;
+}
+
+.dashboard .disable-cell-focus .v-grid-cell-focused:before {
+	display: none;
+	border: 0;
+}
+
+.dashboard .v-grid-cell .gwt-Image {
+	cursor: pointer;
+}
