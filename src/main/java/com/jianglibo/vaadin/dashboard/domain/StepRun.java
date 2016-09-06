@@ -1,10 +1,13 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
@@ -13,6 +16,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.ssh.StepConfig;
 import com.vaadin.ui.themes.ValoTheme;
+
 
 @Entity
 @VaadinTable(multiSelect=true, messagePrefix="domain.steprun.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
@@ -35,6 +39,8 @@ public class StepRun extends BaseEntity implements HasPositionField {
 	
 	@ManyToOne
 	private Install install;
+	
+	private String uniqueFileName;
 	
 	@OneToOne
 	private JschExecuteResult result;
@@ -69,10 +75,9 @@ public class StepRun extends BaseEntity implements HasPositionField {
 		return String.format("[%s,%s,%s]", getName(), getOstype(), getId());
 	}
 	
-	
-	public String getExecuteCode() {
-		StepConfig stepConfig = new StepConfig(getYmlContent());
-		return "";
+	@PrePersist
+	public void beforeSave() {
+		setUniqueFileName(UUID.randomUUID().toString());
 	}
 
 	public JschExecuteResult getResult() {
@@ -146,5 +151,13 @@ public class StepRun extends BaseEntity implements HasPositionField {
 
 	public void setIfSuccessSkipNext(boolean ifSuccessSkipNext) {
 		this.ifSuccessSkipNext = ifSuccessSkipNext;
+	}
+
+	public String getUniqueFileName() {
+		return uniqueFileName;
+	}
+
+	public void setUniqueFileName(String uniqueFileName) {
+		this.uniqueFileName = uniqueFileName;
 	}
 }

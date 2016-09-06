@@ -3,9 +3,16 @@ package com.jianglibo.vaadin.dashboard.domain;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.google.common.base.Objects;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.vaadin.ui.themes.ValoTheme;
 
+/**
+ * Command should return 0(success) or 1(failure).
+ * 
+ * @author jianglibo@gmail.com
+ *
+ */
 @Entity
 @VaadinTable(multiSelect=true, messagePrefix="domain.jshexecuteresult.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
 @Table(name = "jshexecuteresult")
@@ -18,52 +25,50 @@ public class JschExecuteResult extends BaseEntity {
 
 	private String out;
 	
-	private ResultType rt;
+	private String err;
 	
-	private int exitStatus;
+	private int exitValue;
 	
 	public JschExecuteResult(){}
 	
-	public JschExecuteResult(String out,int exitStatus) {
+	public JschExecuteResult(String out, String err, int exitValue) {
 		this.out = out;
-		this.exitStatus = exitStatus;
-		if (exitStatus == 0) {
-			this.rt = ResultType.ZERO;
-		} else {
-			this.rt = ResultType.NONE_ZERO;
-		}
+		this.err = err;
+		this.exitValue = exitValue;
 	}
 	
-	public JschExecuteResult(String out,int exitStatus, ResultType resultType) {
-		this.out = out;
-		this.exitStatus = exitStatus;
-		this.rt = resultType;
+	public String getErr() {
+		return err;
 	}
 
-	public String getCmdOut() {
+	public void setErr(String err) {
+		this.err = err;
+	}
+
+	public String getOut() {
 		return out;
 	}
 
-	public ResultType getState() {
-		return rt;
+	public void setOut(String out) {
+		this.out = out;
 	}
 
-	public int getExitStatus() {
-		return exitStatus;
+	public int getExitValue() {
+		return exitValue;
 	}
-	
-	public static enum ResultType {
-		ZERO, NONE_ZERO, EXP
+
+	public void setExitValue(int exitValue) {
+		this.exitValue = exitValue;
 	}
-	
+
 	@Override
 	public String toString() {
-		return String.format("[out: %s][state: %s][exitStatus: %s]", getCmdOut(), getState(), getExitStatus());
+		return Objects.toStringHelper(this).toString();
 	}
 
 	@Override
 	public String getDisplayName() {
-		return null;
+		return toString();
 	}
 
 }

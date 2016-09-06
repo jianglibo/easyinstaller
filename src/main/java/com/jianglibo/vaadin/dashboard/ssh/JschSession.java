@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jcraft.jsch.ChannelExec;
@@ -13,7 +12,6 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult;
-import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult.ResultType;
 
 public class JschSession {
 	
@@ -33,7 +31,6 @@ public class JschSession {
 	
 	public List<JschExecuteResult> execs(String...cmds) {
 		List<JschExecuteResult> results = Lists.newArrayList();
-		
 		for(String cmd: cmds) {
 			try {
 				ChannelExec chExec = (ChannelExec) getSession().openChannel("exec");
@@ -45,14 +42,10 @@ public class JschSession {
 				String out = new String(ByteStreams.toByteArray(chExec.getInputStream()));
 				String err = baos.toString();
 				int ext = chExec.getExitStatus();
-				if (ext == 0) {
-					results.add(new JschExecuteResult(Strings.isNullOrEmpty(out) ? err : out, 0));
-				} else {
-					results.add(new JschExecuteResult(Strings.isNullOrEmpty(err) ? out : err, ext));
-				}
+				results.add(new JschExecuteResult(out , err , ext));
 				chExec.disconnect();
 			} catch (JSchException | IOException e) {
-				results.add(new JschExecuteResult(e.getMessage(), Integer.MAX_VALUE, ResultType.EXP));
+				results.add(new JschExecuteResult(e.getMessage(), e.getClass().getName(), 1));
 			}
 		}
 		return results;

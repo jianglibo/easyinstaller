@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.jianglibo.vaadin.dashboard.domain.StepRun;
 
 /**
  * Only allow one level string and list of strings map. tags:
@@ -21,6 +22,10 @@ public class CodeSubstitudeUtil {
 	protected static final Pattern ARRAY_VAR_PTN = Pattern.compile("^([a-zA-Z]+)(\\[\\d+\\])+$");
 	protected static final Pattern ARRAY_ITEM_PTN = Pattern.compile("\\[(\\d+)\\]");
 
+	public static String process(StepRun stepRun) {
+		Map<String, Object> context = StepConfig.createStepConfig(stepRun).getMap();
+		return process(stepRun.getCodeContent(), context);
+	}
 	public static String process(String content, Map<String, Object> context) {
 		Matcher m = VAR_PTN.matcher(content);
 		StringBuffer sb = new StringBuffer();

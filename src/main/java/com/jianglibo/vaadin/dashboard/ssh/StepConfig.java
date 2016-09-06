@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
+import com.jianglibo.vaadin.dashboard.domain.StepRun;
+
 public class StepConfig {
 
 	private static final Yaml yaml = new Yaml();
@@ -13,6 +15,10 @@ public class StepConfig {
 	@SuppressWarnings("unchecked")
 	public StepConfig(String s) {
 		this.map = (Map<String, Object>) yaml.load(s);
+	}
+	
+	public static StepConfig createStepConfig(StepRun stepRun) {
+		return new StepConfig(stepRun.getYmlContent());
 	}
 
 	public String getStringValue(String... keys) {
@@ -25,6 +31,14 @@ public class StepConfig {
 			}
 		}
 		return (String) localMap.get(keys[idx]);
+	}
+
+	public Map<String, Object> getMap() {
+		return map;
+	}
+
+	public void setMap(Map<String, Object> map) {
+		this.map = map;
 	}
 
 	public String getRunner() {
