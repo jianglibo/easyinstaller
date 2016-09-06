@@ -4,17 +4,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.hamcrest.core.StringStartsWith;
 import org.junit.Test;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.Yaml;
 
 import com.jianglibo.vaadin.dashboard.Tutil;
@@ -51,7 +47,6 @@ public class TestYml {
 		Bean nb = new Bean();
 		NestBeanPopulater.populate(nb, m, "nb");
 		assertThat(nb.getNb().getI(), equalTo(66));
-
 	}
 	
 	

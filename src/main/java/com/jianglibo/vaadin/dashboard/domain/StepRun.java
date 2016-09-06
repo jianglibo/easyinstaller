@@ -11,6 +11,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
+import com.jianglibo.vaadin.dashboard.ssh.StepConfig;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
@@ -66,6 +67,12 @@ public class StepRun extends BaseEntity implements HasPositionField {
 	@Override
 	public String getDisplayName() {
 		return String.format("[%s,%s,%s]", getName(), getOstype(), getId());
+	}
+	
+	
+	public String getExecuteCode() {
+		StepConfig stepConfig = new StepConfig(getYmlContent());
+		return "";
 	}
 
 	public JschExecuteResult getResult() {

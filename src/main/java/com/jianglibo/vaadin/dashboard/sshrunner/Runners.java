@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.sshrunner;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -27,12 +28,12 @@ public class Runners {
 	
 	@PostConstruct
 	public void post() {
-		Map<String, Object> m = applicationContext.getBeansWithAnnotation(Runner.class);
+		Map<String, Object> runnerBeans = applicationContext.getBeansWithAnnotation(Runner.class);
 		Set<String> nkeys = Sets.newHashSet();
-		for(String n : m.keySet()) {
-			Runner runner = m.get(n).getClass().getAnnotation(Runner.class);
-			runners.put(runner.value(), (BaseRunner) m.get(n));
+		for(Entry<String, Object> en : runnerBeans.entrySet()) {
+			Runner runner = runnerBeans.get(en.getKey()).getClass().getAnnotation(Runner.class);
 			nkeys.add(runner.value());
+			runners.put(runner.value(), (BaseRunner) en.getValue());
 		}
 		globalComboOptions.getWholeStringMap().put(GlobalComboOptions.RUNNERS, nkeys);
 	}
