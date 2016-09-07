@@ -161,6 +161,9 @@ public class TaskRunner implements ApplicationContextAware {
 					br.run(jsession, stepRun);
 				}
 			}
+			if (jsession.getSession().isConnected()) {
+				jsession.getSession().disconnect();
+			}
 			return null;
 		}
 	}
