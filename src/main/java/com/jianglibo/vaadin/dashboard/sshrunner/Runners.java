@@ -37,4 +37,12 @@ public class Runners {
 		}
 		globalComboOptions.getWholeStringMap().put(GlobalComboOptions.RUNNERS, nkeys);
 	}
+
+	public Map<String, BaseRunner> getRunners() {
+		return runners;
+	}
+
+	public void setRunners(Map<String, BaseRunner> runners) {
+		this.runners = runners;
+	}
 }

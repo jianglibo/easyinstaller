@@ -1,16 +1,19 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import java.util.Set;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.google.gwt.thirdparty.guava.common.collect.Sets;
+import com.google.gwt.thirdparty.guava.common.base.Objects;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
@@ -42,8 +45,9 @@ public class Box extends BaseEntity {
 	/**
 	 * Owning side is which has no mappedBy property. So this IS NOT owning side.
 	 */
-	@OneToMany(mappedBy = "box")
-	private Set<Install> installations = Sets.newHashSet();
+	@OneToMany(mappedBy = "box", cascade=CascadeType.REMOVE)
+	@OrderBy("position ASC")
+	private List<Install> installations = Lists.newArrayList();
 	
 	@VaadinTableColumn(order=2)
 	@ComboBoxBackByStringOptions(key = GlobalComboOptions.OS_TYPES)
@@ -55,11 +59,6 @@ public class Box extends BaseEntity {
 	@VaadinFormField(order = 30, fieldType=Ft.TEXT_AREA)
 	private String description;
 	
-//	@VaadinFormField(order = 40, fieldType=Ft.FILE_CONTENT_STRING)
-//	@Lob
-//	@Column(length=2000)
-//	private String keyFileContent;
-	
 	@VaadinFormField(order = 50)
 	private String keyFilePath;
 
@@ -70,14 +69,6 @@ public class Box extends BaseEntity {
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
-
-//	public String getKeyFileContent() {
-//		return keyFileContent;
-//	}
-//
-//	public void setKeyFileContent(String keyFileContent) {
-//		this.keyFileContent = keyFileContent;
-//	}
 
 	public String getKeyFilePath() {
 		return keyFilePath;
@@ -112,20 +103,25 @@ public class Box extends BaseEntity {
 	}
 
 
-	public Set<Install> getInstallations() {
+	public List<Install> getInstallations() {
 		return installations;
 	}
 
-	public void setInstallations(Set<Install> installations) {
+	public void setInstallations(List<Install> installations) {
 		this.installations = installations;
 	}
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("name", getName()).add("ip", getIp()).toString();
+	}
 
 	@Override
 	public String getDisplayName() {
-		return null;
+		return toString();
 	}
 }

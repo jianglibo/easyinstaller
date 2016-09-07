@@ -14,7 +14,6 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
-import com.jianglibo.vaadin.dashboard.ssh.StepConfig;
 import com.vaadin.ui.themes.ValoTheme;
 
 
