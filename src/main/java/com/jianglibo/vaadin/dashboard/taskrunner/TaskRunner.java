@@ -51,9 +51,9 @@ public class TaskRunner implements ApplicationContextAware {
 	private ListeningExecutorService service;
 
 	private final Lock lock = new ReentrantLock();
-	
+
 	private ApplicationContext applicationContext;
-	
+
 	@Autowired
 	private Runners runners;
 
@@ -154,9 +154,11 @@ public class TaskRunner implements ApplicationContextAware {
 
 		@Override
 		public Void call() throws Exception {
-			JschSession jsession = new JschSessionBuilder().build();
+			Box box = installs.get(0).getBox();
+			JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(box.getKeyFilePath())
+					.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
 			for (Install ist : installs) {
-				for(StepRun stepRun: ist.getStepRuns()) {
+				for (StepRun stepRun : ist.getStepRuns()) {
 					BaseRunner br = runners.getRunners().get(stepRun.getStepDefine().getRunner());
 					br.run(jsession, stepRun);
 				}

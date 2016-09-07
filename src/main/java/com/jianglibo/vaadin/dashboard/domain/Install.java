@@ -1,15 +1,20 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -18,6 +23,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByContainer;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.GridFieldDescription;
+import com.jianglibo.vaadin.dashboard.vo.FourState;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -56,6 +62,14 @@ public class Install extends BaseEntity implements HasPositionField {
 	@VaadinTableColumn
 	@VaadinFormField
 	private int position;
+	
+	@Temporal(TemporalType.DATE)
+	@VaadinTableColumn(order=1000)
+    private Date executedAt;
+	
+	@Enumerated(EnumType.STRING)
+	@VaadinTableColumn(order=2000)
+	private FourState state = FourState.UNRUNED;
 
 	public Install() {
 	}
@@ -105,5 +119,21 @@ public class Install extends BaseEntity implements HasPositionField {
 
 	public void setPosition(int position) {
 		this.position = position;
+	}
+
+	public Date getExecutedAt() {
+		return executedAt;
+	}
+
+	public void setExecutedAt(Date executedAt) {
+		this.executedAt = executedAt;
+	}
+
+	public FourState getState() {
+		return state;
+	}
+
+	public void setState(FourState state) {
+		this.state = state;
 	}
 }

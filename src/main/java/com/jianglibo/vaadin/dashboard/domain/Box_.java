@@ -5,7 +5,7 @@ import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="Dali", date="2016-09-07T08:23:29.333+0800")
+@Generated(value="Dali", date="2016-09-07T19:37:31.628+0800")
 @StaticMetamodel(Box.class)
 public class Box_ extends BaseEntity_ {
 	public static volatile SingularAttribute<Box, String> ip;
@@ -14,4 +14,6 @@ public class Box_ extends BaseEntity_ {
 	public static volatile SingularAttribute<Box, String> osType;
 	public static volatile SingularAttribute<Box, String> description;
 	public static volatile SingularAttribute<Box, String> keyFilePath;
+	public static volatile SingularAttribute<Box, Integer> port;
+	public static volatile SingularAttribute<Box, String> sshUser;
 }

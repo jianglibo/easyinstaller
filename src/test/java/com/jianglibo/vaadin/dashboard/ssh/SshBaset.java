@@ -21,7 +21,7 @@ public class SshBaset extends Tbase {
 				.setHost(configForTt.getSshHost())//
 				.setKeyFile(configForTt.getSshKeyfile()) //
 				.setKnownHosts(configForTt.getSshKnownhostsFile())//
-				.setUser("root").build();
+				.setSshUser("root").build();
 	}
 	
 	public JschSession getJschSessionKeyFromDb() throws JSchException, IOException {
@@ -32,6 +32,6 @@ public class SshBaset extends Tbase {
 				.setHost(configForTt.getSshHost())//
 				.setKeyFile(configForTt.getSshKeyfile()) //
 				.setKnownHosts(configForTt.getSshKnownhostsFile())//
-				.setUser("root").build();
+				.setSshUser("root").build();
 	}
 }
