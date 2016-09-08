@@ -13,6 +13,7 @@ import com.jcraft.jsch.SftpException;
 import com.jianglibo.vaadin.dashboard.annotation.Runner;
 import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
+import com.jianglibo.vaadin.dashboard.repositories.JschExecuteResultRepository;
 import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
 import com.jianglibo.vaadin.dashboard.ssh.CodeSubstitudeUtil;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
@@ -34,6 +35,8 @@ public class SshExecRunner implements BaseRunner {
 	
 	@Autowired
 	private StepRunRepository stepRunRepository;
+	
+	private JschExecuteResultRepository jschExecuteResultRepository;
 
 	@Override
 	public JschExecuteResult run(JschSession jsession, StepRun stepRun) {
@@ -64,7 +67,11 @@ public class SshExecRunner implements BaseRunner {
 		}
 		String cmd = stepRun.getStepDefine().getRunner() + " " + cmdFile;
 		JschExecuteResult jer = jsession.exec(cmd);
+		JschExecuteResult oldJer = stepRun.getResult();
 		stepRun.setResult(jer);
+		if (oldJer != null) {
+			jschExecuteResultRepository.delete(oldJer);
+		}
 		stepRunRepository.save(stepRun);
 	}
 

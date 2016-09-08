@@ -56,11 +56,17 @@ public class Box extends BaseEntity {
 	@NotEmpty
 	private String osType;
 	
-	@VaadinFormField(order = 30, fieldType=Ft.TEXT_AREA)
+	@VaadinFormField(order = 3000, fieldType=Ft.TEXT_AREA)
 	private String description;
 	
 	@VaadinFormField(order = 50)
 	private String keyFilePath;
+	
+	@VaadinFormField(order = 60)
+	private int port = 22;
+	
+	@VaadinFormField(order = 70)
+	private String sshUser = "root";
 
 	public String getIp() {
 		return ip;
@@ -123,5 +129,21 @@ public class Box extends BaseEntity {
 	@Override
 	public String getDisplayName() {
 		return toString();
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getSshUser() {
+		return sshUser;
+	}
+
+	public void setSshUser(String sshUser) {
+		this.sshUser = sshUser;
 	}
 }

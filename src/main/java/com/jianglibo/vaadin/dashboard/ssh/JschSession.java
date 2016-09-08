@@ -60,7 +60,7 @@ public class JschSession {
 	}
 
 	public static class JschSessionBuilder {
-		private String user;
+		private String sshUser;
 		private String host;
 		private int port = 22;
 		
@@ -68,8 +68,8 @@ public class JschSession {
 		
 		private String knownHosts;
 		
-		public JschSessionBuilder setUser(String user) {
-			this.user = user;
+		public JschSessionBuilder setSshUser(String sshUser) {
+			this.sshUser = sshUser;
 			return this;
 		}
 
@@ -97,7 +97,7 @@ public class JschSession {
 			JSch jsch = new JSch();
 			jsch.addIdentity(keyFile);
 			jsch.setKnownHosts(knownHosts);
-			Session session = jsch.getSession(user, host, port);
+			Session session = jsch.getSession(sshUser, host, port);
 			session.setConfig("StrictHostKeyChecking", "no");
 			session.connect();
 			return new JschSession(session);
