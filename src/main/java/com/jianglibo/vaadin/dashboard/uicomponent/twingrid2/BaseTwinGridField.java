@@ -162,10 +162,12 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 		grid.setSelectionMode(SelectionMode.NONE);
 		grid.setContainerDataSource(gpcontainer);
 		
+		String messagePrefix = domains.getTables().get(leftClazz.getSimpleName()).getVt().messagePrefix();
+		
 		for(String cn : columns){
 			Grid.Column col = grid.getColumn(cn);
 			col.setSortable(foundColumn(sortableColumns, cn));
-			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), (String)cn));
+			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, messagePrefix, (String)cn));
 			setupLeftColumn(col, cn);
 		}
 		
@@ -212,10 +214,12 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 		grid.setSelectionMode(SelectionMode.NONE);
 		grid.setContainerDataSource(gpcontainer);
 		
+		String messagePrefix = domains.getTables().get(rightClazz.getSimpleName()).getVt().messagePrefix();
+		
 		for(String cn : columns){
 			Grid.Column col = grid.getColumn(cn);
 			col.setSortable(foundColumn(sortableColumns, cn));
-			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), (String)cn));
+			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, messagePrefix, (String)cn));
 			setupRightColumn(col, cn);
 		}
 		
