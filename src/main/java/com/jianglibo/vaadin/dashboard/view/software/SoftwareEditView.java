@@ -82,21 +82,9 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 		
 		addComponent(header);
 		
-		form = (SoftwareForm) applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus, true).addHandMakeFieldsListener(this).done();
+		form = (SoftwareForm) applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus, this);
 		
 		addComponent(form);
-		
-//		TwinGridField<List<StepDefine>> stepDefinesField;
-//		
-//		stepDefinesField = (TwinGridField<List<StepDefine>>) form.getFields().stream().filter(paf -> paf.getPropertyId().equals(Software.orderedStepDefinesFieldName)).findFirst().get().getField();
-//		
-//		stepDefinesField.addItemClickListener(new TwinGridFieldItemClickListener() {
-//			@Override
-//			public void itemClicked(TwinGridFieldItemClickEvent event) {
-//				Notification.show(event.isLeftClicked() + "");
-//			}
-//		});
-		
 		Component ft = buildFooter();
 		addComponent(ft);
 		setComponentAlignment(form, Alignment.TOP_LEFT);

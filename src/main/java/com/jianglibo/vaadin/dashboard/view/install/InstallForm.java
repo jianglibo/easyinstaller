@@ -8,7 +8,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Install;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
@@ -32,11 +31,6 @@ public class InstallForm extends FormBase<Install> {
 		this.repository = repository;
 		this.stepRunRepository = stepRunRepository;
 	}
-	
-	public InstallForm afterInjection(EventBus eventBus, boolean attachFields) {
-		defaultAfterInjection(eventBus, attachFields);
-		return this;
-	}
 
 	@Override
 	public boolean saveToRepo() {
@@ -48,11 +42,5 @@ public class InstallForm extends FormBase<Install> {
         	stepRunRepository.save(st);
         });
 		return true;
-	}
-
-	@Override
-	public InstallForm done() {
-		defaultDone();
-		return this;
 	}
 }

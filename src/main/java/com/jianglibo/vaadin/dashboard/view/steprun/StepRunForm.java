@@ -6,7 +6,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
@@ -25,21 +24,10 @@ public class StepRunForm extends FormBase<StepRun> {
 		super(StepRun.class, messageSource, domains, fieldFactories);
 		this.repository = repository;
 	}
-	
-	public StepRunForm afterInjection(EventBus eventBus, boolean attachFields) {
-		defaultAfterInjection(eventBus, attachFields);
-		return this;
-	}
 
 	@Override
 	public boolean saveToRepo() {
         repository.save(getWrappedBean());
 		return true;
-	}
-
-	@Override
-	public StepRunForm done() {
-		defaultDone();
-		return this;
 	}
 }

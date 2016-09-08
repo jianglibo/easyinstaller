@@ -8,10 +8,13 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
+import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -22,6 +25,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -29,7 +33,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 
 @SpringView(name = PkSourceEditView.VIEW_NAME)
-public class PkSourceEditView  extends VerticalLayout implements View {
+public class PkSourceEditView  extends VerticalLayout implements View, HandMakeFieldsListener {
 	/**
 	 * 
 	 */
@@ -70,7 +74,7 @@ public class PkSourceEditView  extends VerticalLayout implements View {
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(PkSourceForm.class).afterInjection(eventBus, true);
+		form = (PkSourceForm) applicationContext.getBean(PkSourceForm.class).afterInjection(eventBus, this);
 		addComponent(form);
 		addComponent(buildFooter());
 		setExpandRatio(form, 1);
@@ -123,5 +127,11 @@ public class PkSourceEditView  extends VerticalLayout implements View {
 			header.setLabelTxt(pkSource.getPkname());
 		}
         form.setItemDataSource(pkSource);
+	}
+
+	@Override
+	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

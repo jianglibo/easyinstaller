@@ -9,11 +9,14 @@ import org.springframework.context.MessageSource;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
+import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
@@ -27,6 +30,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -34,7 +38,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 
 @SpringView(name = BoxEditView.VIEW_NAME)
-public class BoxEditView  extends VerticalLayout implements View {
+public class BoxEditView  extends VerticalLayout implements View, HandMakeFieldsListener {
 	/**
 	 * 
 	 */
@@ -70,21 +74,13 @@ public class BoxEditView  extends VerticalLayout implements View {
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
-//		StyleUtil.setOverflowAuto(this, true);
+
 		setMargin(new MarginInfo(true, true, false, true));
 		
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, false, true, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(BoxForm.class).afterInjection(eventBus, true).done();
-		
-//		BeanFieldGroup<Box> bfg = form.getFieldGroup();
-//		
-//		TwinGridField<List<Box>> tl = applicationContext.getBean(TwinGridField.class).afterInjection(Box.class, 10);
-//		
-//		bfg.bind(tl, "");
-//		tl.setCaption("box");
-//		form.addComponent(tl);
+		form = (BoxForm) applicationContext.getBean(BoxForm.class).afterInjection(eventBus, this);
 		
 		StyleUtil.setOverflowAuto(form, true);
 		
@@ -94,12 +90,8 @@ public class BoxEditView  extends VerticalLayout implements View {
 		
 		Component ft = buildFooter();
 		
-//		addComponent(ft);
-//		ft.setHeight(30, Unit.PIXELS);
 		form.addComponent(ft);
-//		setComponentAlignment(form, Alignment.TOP_LEFT);
 		setExpandRatio(form, 1);
-//		setExpandRatio(ft, 1);
 	}
 	
     @SuppressWarnings("serial")
@@ -153,5 +145,11 @@ public class BoxEditView  extends VerticalLayout implements View {
 			header.setLabelTxt(bean.getName());
 		}
         form.setItemDataSource(bean);
+	}
+
+	@Override
+	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

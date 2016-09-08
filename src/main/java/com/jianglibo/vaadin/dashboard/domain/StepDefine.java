@@ -47,12 +47,12 @@ public class StepDefine extends BaseEntity {
 
 	@Lob
 	@Column(length = 64000)
-	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 40)
+	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 30)
 	private String ymlContent;
 
 	@Lob
 	@Column(length = 64000)
-	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 30)
+	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 40)
 	private String codeContent;
 
 	private boolean ifSuccessSkipNext;

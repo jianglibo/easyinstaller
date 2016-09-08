@@ -6,7 +6,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.StepDefine;
 import com.jianglibo.vaadin.dashboard.repositories.StepDefineRepository;
@@ -26,20 +25,9 @@ public class StepDefineForm extends FormBase<StepDefine> {
 		this.repository = repository;
 	}
 	
-	public StepDefineForm afterInjection(EventBus eventBus, boolean attachFields) {
-		defaultAfterInjection(eventBus, attachFields);
-		return this;
-	}
-
 	@Override
 	public boolean saveToRepo() {
         repository.save(getWrappedBean());
 		return true;
-	}
-
-	@Override
-	public StepDefineForm done() {
-		defaultDone();
-		return this;
 	}
 }

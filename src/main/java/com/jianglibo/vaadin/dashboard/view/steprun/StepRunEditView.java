@@ -10,10 +10,13 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.StepDefine;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
+import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
@@ -26,6 +29,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -33,7 +37,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 
 @SpringView(name = StepRunEditView.VIEW_NAME)
-public class StepRunEditView  extends VerticalLayout implements View {
+public class StepRunEditView  extends VerticalLayout implements View, HandMakeFieldsListener {
 	/**
 	 * 
 	 */
@@ -74,7 +78,7 @@ public class StepRunEditView  extends VerticalLayout implements View {
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
-		form = applicationContext.getBean(StepRunForm.class).afterInjection(eventBus, true);
+		form = (StepRunForm) applicationContext.getBean(StepRunForm.class).afterInjection(eventBus, this);
 		addComponent(form);
 		Component ft = buildFooter();
 		addComponent(ft);
@@ -132,5 +136,11 @@ public class StepRunEditView  extends VerticalLayout implements View {
 			header.setLabelTxt(bean.getStepDefine().toString());
 		}
         form.setItemDataSource(bean);
+	}
+
+	@Override
+	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -78,6 +78,7 @@ public class InstallEditView  extends VerticalLayout implements View, HandMakeFi
     
     private StepRunGridField stepRunGridField;
     
+	@SuppressWarnings("serial")
 	@Autowired
 	public InstallEditView(InstallRepository repository, MessageSource messageSource,
 			ApplicationContext applicationContext) {
@@ -94,7 +95,7 @@ public class InstallEditView  extends VerticalLayout implements View, HandMakeFi
 		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
-		form = (InstallForm) applicationContext.getBean(InstallForm.class).afterInjection(eventBus, true).addHandMakeFieldsListener(this).done();
+		form = (InstallForm) applicationContext.getBean(InstallForm.class).afterInjection(eventBus, this);
 		
 		Optional<PropertyIdAndField> cbop = form.getFields().stream().filter(f -> {
 			return f.getPropertyId().equals("software");

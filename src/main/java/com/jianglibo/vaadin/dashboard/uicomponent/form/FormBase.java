@@ -1,13 +1,11 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.form;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
@@ -19,21 +17,20 @@ import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
-import com.jianglibo.vaadin.dashboard.vo.HandMakeField;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.Page;
-import com.vaadin.shared.Position;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.server.Page;
+import com.vaadin.shared.Position;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.TwinColSelect;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -57,14 +54,9 @@ public abstract class FormBase<T> extends FormLayout {
 	
 	protected String domainName;
 	
-	private boolean attachFields;
-	
 	private List<PropertyIdAndField> fields;
 	
 	private HandMakeFieldsListener handMakeFieldsListener;
-	
-	@SuppressWarnings("rawtypes")
-	private Map<String, HandMakeField> handMakeFields = Maps.newHashMap();
 	
 	public FormBase(Class<T> clazz, MessageSource messageSource, Domains domains, FieldFactories fieldFactories) {
 		this.clazz = clazz;
@@ -74,42 +66,26 @@ public abstract class FormBase<T> extends FormLayout {
 		this.fieldFactories = fieldFactories;
 	}
 	
-	public void defaultAfterInjection(EventBus eventBus, boolean attachFields) {
+	public FormBase<T> afterInjection(EventBus eventBus, HandMakeFieldsListener handMakeFieldsListener) {
 		this.eventBus = eventBus;
-		this.attachFields = attachFields;
+		this.handMakeFieldsListener = handMakeFieldsListener;
 		eventBus.register(this);
 		fieldGroup = new BeanFieldGroup<T>(clazz);
 		addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         addEnterListener();
         addEscapeListener();
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public FormBase<T> addHandMakeFields(HandMakeField handMakeField) {
-		this.handMakeFields.put(handMakeField.getName(), handMakeField);
-		return this;
-	}
-	
-	public FormBase<T> addHandMakeFieldsListener(HandMakeFieldsListener handMakeFieldsListener) {
-		this.handMakeFieldsListener = handMakeFieldsListener;
-		return this;
-	}
-	
-	public abstract FormBase<T> done();
-	
-	public void defaultDone() {
+        
         VaadinTableWrapper vtw = domains.getTables().get(domainName);
         FormFields ffs = domains.getFormFields().get(domainName);
         
-        fields = buildFields(vtw, ffs, handMakeFields, handMakeFieldsListener);
+        fields = buildFields(vtw, ffs);
         
         for(PropertyIdAndField paf : fields) {
 			fieldGroup.bind(paf.getField(), paf.getPropertyId());
-			if (attachFields) {
-				addComponent(paf.getField());
-			}
+			addComponent(paf.getField());
         }
         StyleUtil.setMarginTopTwenty(this);
+        return this;
 	}
 	
 	public void notifySuccess() {
@@ -159,7 +135,7 @@ public abstract class FormBase<T> extends FormLayout {
 	}
 	
 	
-	public List<PropertyIdAndField> buildFields(VaadinTableWrapper vtw, FormFields ffs, Map<String, HandMakeField> handMakeFields, HandMakeFieldsListener handMakeFieldsListener) {
+	public List<PropertyIdAndField> buildFields(VaadinTableWrapper vtw, FormFields ffs) {
 		List<PropertyIdAndField> fields = Lists.newArrayList();
         for(VaadinFormFieldWrapper vffw : ffs.getFields()) {
         	switch (vffw.getVff().fieldType()) {
@@ -188,12 +164,6 @@ public abstract class FormBase<T> extends FormLayout {
 				addStyleName(vffw, fcf);
 				fields.add(new PropertyIdAndField(vffw, fcf));
 				break;
-//			case GRID:
-//				GridField<?> gf = fieldFactories.getGridFieldFactory().create(vtw, vffw);
-//				gf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
-//				addStyleName(vffw, gf);
-//				fields.add(new PropertyIdAndField(vffw, gf));
-//				break;
 			case TWIN_GRID:
 				TwinGridField<?> tgf = fieldFactories.getTwinGridFieldFactory().create(vtw, vffw);
 				tgf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
