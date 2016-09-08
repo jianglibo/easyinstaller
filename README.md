@@ -19,12 +19,17 @@ Thinking of software install progress, The essential step involved:
 3. run .\gradlew eclipse
 4. import into eclipse run the VaadinApplication class. Or in command line just type .\gradlew bootRun. Visit http://localhost
 
-### Screen snapshot
+### It's also a project help you learning vaadin
+
+The project name is first-vaadin, Yes, It's my first vaadin project. Because I had experiences of Gwt, Emberjs, Spring boot etc, So use some pattern from these projects.
+In this project, I also wrote some custom fields, like TwinGridField. And heavily use java annotation to minify reduplicative code.
+
+### Some screenshots
 
 The development is in progress.
 
-[[https://github.com/jianglibo/first-vaadin/blob/master/wiki/20160908075551.png|alt=img]]
+![screenshot](https://github.com/jianglibo/first-vaadin/blob/master/wiki/20160908075551.png)
 
-[[https://github.com/jianglibo/first-vaadin/blob/master/wiki/20160908075610.png|alt=img]]
+![screenshot](https://github.com/jianglibo/first-vaadin/blob/master/wiki/20160908075610.png)
 
-[[https://github.com/jianglibo/first-vaadin/blob/master/wiki/20160908075633.png|alt=img]] 
+![screenshot](https://github.com/jianglibo/first-vaadin/blob/master/wiki/20160908075633.png)
