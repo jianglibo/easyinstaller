@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.springframework.context.MessageSource;
 
+import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.domain.HasPositionComparator;
 import com.jianglibo.vaadin.dashboard.domain.HasPositionField;
 import com.vaadin.data.Item;
@@ -91,10 +92,11 @@ public class ColumnUtil {
 		});
 	}
 	
-	public static <T extends HasPositionField> void alterHasPositionList(List<T> list, T o) {
+	public static <T extends HasPositionField> List<T> alterHasPositionList(List<T> listOrigin, T o) {
+		List<T> list = Lists.newArrayList(listOrigin); // copy from origin, let origin untouched.
 		int len = list.size();
 		if (len < 2) {
-			return;
+			return listOrigin;
 		}
 		
 		for (int i = 0; i < len; i++) {
@@ -111,5 +113,6 @@ public class ColumnUtil {
 			}
 		}
 		Collections.sort(list, new HasPositionComparator());
+		return list;
 	}
 }

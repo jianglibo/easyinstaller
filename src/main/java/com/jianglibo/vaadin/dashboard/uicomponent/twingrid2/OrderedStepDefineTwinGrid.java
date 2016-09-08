@@ -98,9 +98,7 @@ public class OrderedStepDefineTwinGrid
 				@Override
 				public void click(RendererClickEvent event) {
 					OrderedStepDefine osd = (OrderedStepDefine) event.getItemId();
-					List<OrderedStepDefine> osds = getValue();
-					ColumnUtil.alterHasPositionList(osds, osd);
-					setValue(Lists.newArrayList(osds));
+					setValue(ColumnUtil.alterHasPositionList(getValue(), osd));
 				}
 			});
 			break;

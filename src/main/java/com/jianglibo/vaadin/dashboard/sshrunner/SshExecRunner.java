@@ -11,6 +11,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.jianglibo.vaadin.dashboard.annotation.Runner;
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
 import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.repositories.JschExecuteResultRepository;
@@ -36,18 +37,20 @@ public class SshExecRunner implements BaseRunner {
 	@Autowired
 	private StepRunRepository stepRunRepository;
 	
+	@Autowired
+	private ApplicationConfigWrapper applicationConfigWrapper;
+	
 	private JschExecuteResultRepository jschExecuteResultRepository;
 
 	@Override
 	public JschExecuteResult run(JschSession jsession, StepRun stepRun) {
-		copyCodeToServer(jsession, stepRun);
-		return null;
+		return copyCodeToServerAndRun(jsession, stepRun);
 	}
 	
-	private void copyCodeToServer(JschSession jsession, StepRun stepRun) {
+	private JschExecuteResult copyCodeToServerAndRun(JschSession jsession, StepRun stepRun) {
 		String code = CodeSubstitudeUtil.process(stepRun);
 		ChannelSftp sftp = null;
-		String cmdFile = "/opt/web-easyinstall/" + stepRun.getUniqueFileName();
+		String cmdFile = applicationConfigWrapper.unwrap().getRemoteFolder() + "code/"   + stepRun.getUniqueFileName();
 		try {
 			sftp = jsession.getSftpCh();
 			try {
@@ -73,11 +76,11 @@ public class SshExecRunner implements BaseRunner {
 			jschExecuteResultRepository.delete(oldJer);
 		}
 		stepRunRepository.save(stepRun);
+		return jer;
 	}
 
 	@Override
 	public String uniqueName() {
 		return UNIQUE_NAME;
 	}
-
 }

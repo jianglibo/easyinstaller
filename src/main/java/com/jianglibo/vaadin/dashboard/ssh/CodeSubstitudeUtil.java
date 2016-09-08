@@ -41,7 +41,6 @@ public class CodeSubstitudeUtil {
 	}
 
 	private static String getValue(Map<String, Object> context, String key) {
-
 		String[] keys = key.split("\\.");
 		Map<String, Object> tmpMap = context;
 		int maxIdx = keys.length;

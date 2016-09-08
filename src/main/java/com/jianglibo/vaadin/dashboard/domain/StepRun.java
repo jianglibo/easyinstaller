@@ -50,6 +50,12 @@ public class StepRun extends BaseEntity implements HasPositionField {
 	public StepRun() {
 	}
 	
+	public StepRun(String name, String ostype, int position) {
+		setName(name);
+		setOstype(ostype);
+		setPosition(position);
+	}
+	
 	public StepRun(OrderedStepDefine orderedStepDefine) {
 		setStepDefine(orderedStepDefine.getStepDefine());
 		setPosition(orderedStepDefine.getPosition());

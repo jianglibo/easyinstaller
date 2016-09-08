@@ -62,6 +62,8 @@ vaadin:
     sessionExpiredNotificationEnabled: true
 application:
   upload-dst: ~/easyinstaller-files
+  local-folder: c:/software-package-folder
+  remote-folder: /opt/easy-installer
   step-folder:
   combo-datas:
     ostype:
@@ -92,6 +94,8 @@ softwares:
       nameOstypes:
         - name: Tcl
           ostype: Centos
+        - name: Upload
+          ostype: Common
   
 tests:
   ssh-host: che.intranet.fh.gov.cn

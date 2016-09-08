@@ -8,7 +8,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
@@ -54,10 +53,8 @@ public class StepRunGridField extends BaseGridField<Collection<StepRun>, StepRun
 			ColumnUtil.setExternalImageRender(col,  ColumnUtil.ARROW_UP_URL, new RendererClickListener() {
 				@Override
 				public void click(RendererClickEvent event) {
-					StepRun stepRuns = (StepRun) event.getItemId();
-					List<StepRun> osds = (List<StepRun>) getValue();
-					ColumnUtil.alterHasPositionList(osds, stepRuns);
-					setValue(Lists.newArrayList(osds));
+					StepRun stepRun = (StepRun) event.getItemId();
+					setValue(ColumnUtil.alterHasPositionList((List<StepRun>) getValue(), stepRun));
 				}
 			});
 			break;

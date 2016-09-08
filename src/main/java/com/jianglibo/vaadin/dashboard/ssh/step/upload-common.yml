@@ -1,0 +1,7 @@
+# available runners: SshExecRunner 
+name: Upload
+ostype: Common
+runner: SshUploadRunner
+executable: bash
+from: demoupload.txt
+to: 
