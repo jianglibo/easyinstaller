@@ -57,7 +57,7 @@ public class SoftwareView extends VerticalLayout implements View, SubscriberExce
 
 	public static final String VIEW_NAME = "software";
 
-	public static final FontAwesome ICON_VALUE = FontAwesome.APPLE;
+	public static final FontAwesome ICON_VALUE = FontAwesome.CUBES;
 
 	private final Table table;
 	

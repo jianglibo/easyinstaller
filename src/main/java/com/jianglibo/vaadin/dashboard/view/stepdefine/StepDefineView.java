@@ -57,7 +57,7 @@ public class StepDefineView extends VerticalLayout implements View, SubscriberEx
 
 	public static final String VIEW_NAME = "stepdefine";
 
-	public static final FontAwesome ICON_VALUE = FontAwesome.APPLE;
+	public static final FontAwesome ICON_VALUE = FontAwesome.CUBE;
 
 	private final Table table;
 	
