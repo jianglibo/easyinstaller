@@ -28,12 +28,15 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent;
+import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.util.TableUtil;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.jianglibo.vaadin.dashboard.view.install.InstallView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -46,7 +49,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = BoxView.VIEW_NAME)
-public class BoxView extends VerticalLayout implements View, SubscriberExceptionHandler {
+public class BoxView extends VerticalLayout implements View, SubscriberExceptionHandler, ListView {
 
 	/**
 	 * 
@@ -75,10 +78,13 @@ public class BoxView extends VerticalLayout implements View, SubscriberException
 	
 	private final BoxRepository repository;
 	
+	private MessageSource messageSource;
+	
 	@Autowired
 	public BoxView(BoxRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.eventBus = new EventBus(this);
+		this.messageSource = messageSource;
 		this.repository = repository;
 		this.domains = domains;
 		eventBus.register(this);
@@ -91,14 +97,10 @@ public class BoxView extends VerticalLayout implements View, SubscriberException
 		Layout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false, MsgUtil.getListViewTitle(messageSource, Box.class.getSimpleName()));
 		addComponent(header);
 		
-		ButtonGroup[] bgs = new ButtonGroup[]{ //
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS)), //
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
-				new ButtonGroup(new ButtonDescription("installedSoftware", null, ButtonEnableType.ONE))};
+
 		
-		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
+//		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
+		tableController = new TableController(messageSource, this);
 
 		addComponent(tableController);
 		table = applicationContext.getBean(BoxTable.class).afterInjection(eventBus);
@@ -120,11 +122,11 @@ public class BoxView extends VerticalLayout implements View, SubscriberException
 		table.setColumnFooter("createdAt", String.valueOf(tpe.getTotalRecord()));	
 	}
 	
-	@Subscribe
-	public void whenCurrentPageChange(CurrentPageEvent cpe) {
-		String nvs = lvfb.setCurrentPage(cpe.getCurrentPage()).toNavigateString();
-		UI.getCurrent().getNavigator().navigateTo(nvs);
-	}
+//	@Subscribe
+//	public void whenCurrentPageChange(CurrentPageEvent cpe) {
+//		String nvs = lvfb.setCurrentPage(cpe.getCurrentPage()).toNavigateString();
+//		UI.getCurrent().getNavigator().navigateTo(nvs);
+//	}
 	
 	@Subscribe
 	public void whenFilterStrChange(FilterStrEvent fse) {
@@ -138,17 +140,90 @@ public class BoxView extends VerticalLayout implements View, SubscriberException
 		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
 	}
 	
-	@Subscribe
-	public void whenTrashedCheckboxChange(TrashedCheckBoxEvent tce) {
-		String nvs = lvfb.setFilterStr("").setCurrentPage(1).setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
-		UI.getCurrent().getNavigator().navigateTo(nvs);
-	}
+//	@Subscribe
+//	public void whenTrashedCheckboxChange(TrashedCheckBoxEvent tce) {
+//		String nvs = lvfb.setFilterStr("").setCurrentPage(1).setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
+//		UI.getCurrent().getNavigator().navigateTo(nvs);
+//	}
 	
-	@SuppressWarnings("unchecked")
-	@Subscribe
-	public void dynMenuClicked(DynMenuClickEvent dce) {
+//	@SuppressWarnings("unchecked")
+//	@Subscribe
+//	public void dynMenuClicked(DynMenuClickEvent dce) {
+//		Collection<Box> selected;
+//		switch (dce.getBtnId()) {
+//		case CommonMenuItemIds.DELETE:
+//			selected = (Collection<Box>) table.getValue();
+//			selected.forEach(b -> {
+//				if (b.isArchived()) {
+//					repository.delete(b);
+//				} else {
+//					b.setArchived(true);
+//					repository.save(b);
+//				}
+//			});
+//			((BoxContainer)table.getContainerDataSource()).refresh();
+//			break;
+//		case CommonMenuItemIds.REFRESH:
+//			((BoxContainer)table.getContainerDataSource()).refresh();
+//			break;
+//		case CommonMenuItemIds.EDIT:
+//			selected = (Collection<Box>) table.getValue();
+//			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
+//			break;
+//		case CommonMenuItemIds.ADD:
+//			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
+//			break;
+//		case "installedSoftware":
+//			selected = (Collection<Box>) table.getValue();
+//			UI.getCurrent().getNavigator().navigateTo(InstallView.VIEW_NAME + "/?boxid=" + selected.iterator().next().getId() + "&pv=" + lvfb.toNavigateString());
+//			break;
+//		default:
+//			LOGGER.error("unKnown menuName {}", dce.getBtnId());
+//		}
+//	}
+	
+	public class UiEventListener {
+		
+		@Subscribe
+		public void browserResized(final BrowserResizeEvent event) {
+			// Some columns are collapsed when browser window width gets small
+			// enough to make the table fit better.
+			if (TableUtil.autoCollapseColumnsNeedChangeState(table, tableColumns)) {
+				for (String propertyId : tableColumns.getAutoCollapseColumns()) {
+					table.setColumnCollapsed(propertyId, Page.getCurrent().getBrowserWindowWidth() < 800);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void enter(final ViewChangeEvent event) {
+		DashboardEventBus.register(uel);
+		lvfb = new ListViewFragmentBuilder(event);
+		eventBus.post(lvfb);
+		LOGGER.info("parameter is: {}", event.getParameters());
+	}
+
+	@Override
+	public void handleException(Throwable exception, SubscriberExceptionContext context) {
+		exception.printStackTrace();
+	}
+
+	@Override
+	public DynButtonComponent getDynButtonComponent() {
+		ButtonGroup[] bgs = new ButtonGroup[]{ //
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS)), //
+				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
+				new ButtonGroup(new ButtonDescription("installedSoftware", null, ButtonEnableType.ONE))};
+		return new DynButtonComponent(messageSource, bgs);
+	}
+
+	@Override
+	public void onDynButtonClicked(ButtonDescription btnDesc) {
 		Collection<Box> selected;
-		switch (dce.getBtnId()) {
+		switch (btnDesc.getItemId()) {
 		case CommonMenuItemIds.DELETE:
 			selected = (Collection<Box>) table.getValue();
 			selected.forEach(b -> {
@@ -176,34 +251,25 @@ public class BoxView extends VerticalLayout implements View, SubscriberException
 			UI.getCurrent().getNavigator().navigateTo(InstallView.VIEW_NAME + "/?boxid=" + selected.iterator().next().getId() + "&pv=" + lvfb.toNavigateString());
 			break;
 		default:
-			LOGGER.error("unKnown menuName {}", dce.getBtnId());
+			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
 		}
-	}
-	
-	public class UiEventListener {
 		
-		@Subscribe
-		public void browserResized(final BrowserResizeEvent event) {
-			// Some columns are collapsed when browser window width gets small
-			// enough to make the table fit better.
-			if (TableUtil.autoCollapseColumnsNeedChangeState(table, tableColumns)) {
-				for (String propertyId : tableColumns.getAutoCollapseColumns()) {
-					table.setColumnCollapsed(propertyId, Page.getCurrent().getBrowserWindowWidth() < 800);
-				}
-			}
-		}
 	}
 
 	@Override
-	public void enter(final ViewChangeEvent event) {
-		DashboardEventBus.register(uel);
-		lvfb = new ListViewFragmentBuilder(event);
-		eventBus.post(lvfb);
-		LOGGER.info("parameter is: {}", event.getParameters());
+	public Pager getPager() {
+		return new Pager(messageSource, this);
 	}
 
 	@Override
-	public void handleException(Throwable exception, SubscriberExceptionContext context) {
-		exception.printStackTrace();
+	public void trashBtnClicked(boolean b) {
+		String nvs = lvfb.setFilterStr("").setCurrentPage(1).setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, b).toNavigateString();
+		UI.getCurrent().getNavigator().navigateTo(nvs);
+	}
+
+	@Override
+	public void gotoPage(int p) {
+		String nvs = lvfb.setCurrentPage(p).toNavigateString();
+		UI.getCurrent().getNavigator().navigateTo(nvs);
 	}
 }

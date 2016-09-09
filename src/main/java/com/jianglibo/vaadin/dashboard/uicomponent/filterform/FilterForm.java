@@ -9,6 +9,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.view.FilterListener;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
@@ -21,24 +22,22 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 @SuppressWarnings("serial")
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class FilterForm extends HorizontalLayout {
 
 	private TextField filterField;
 	
-	@Autowired
 	private MessageSource messageSource;
 	
-	public FilterForm afterInjection(EventBus eventBus, String filterStr) {
+	public FilterForm(MessageSource messageSource, FilterListener fl) {
+		this.messageSource = messageSource;
 		this.filterField = new TextField();
+		
 		filterField.setInputPrompt(messageSource.getMessage("filterform.inputprompt", null, UI.getCurrent().getLocale()));
-		eventBus.register(this);
         filterField.addShortcutListener(new ShortcutListener("Clear",
                 KeyCode.ESCAPE, null) {
             @Override
             public void handleAction(final Object sender, final Object target) {
-            	eventBus.post(new FilterStrEvent(""));
+            	fl.notifyFilterStringChange("");
             }
         });
 
@@ -55,8 +54,8 @@ public class FilterForm extends HorizontalLayout {
         });
         search.setClickShortcut(KeyCode.ENTER, null);
         addComponent(search);
-		return this;
 	}
+	
 	
 	@Subscribe
 	public void whenUriFragmentChange(ListViewFragmentBuilder vfb) {

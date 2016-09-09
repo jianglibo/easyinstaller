@@ -13,6 +13,7 @@ import com.jianglibo.vaadin.dashboard.config.InterestInUriFragemnt;
 import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -24,13 +25,10 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class Pager extends HorizontalLayout implements Button.ClickListener, InterestInUriFragemnt {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(Pager.class);
 	
-	@Autowired
 	private MessageSource messageSource;
 	
 	private Label label;
@@ -42,12 +40,12 @@ public class Pager extends HorizontalLayout implements Button.ClickListener, Int
 	private Button right;
 	
 	private Button left;
-
-	private EventBus eventBus;
 	
-	public Pager afterInjection(EventBus eventBus) {
-		this.eventBus = eventBus;
-		eventBus.register(this);
+	private ListView listview;
+
+	public Pager(MessageSource messageSource, ListView listview) {
+		this.messageSource = messageSource;
+		this.listview = listview;
 		MarginInfo mf = new MarginInfo(true, true, true, false);
 		setMargin(mf);
 		addStyleName("pager");
@@ -64,8 +62,29 @@ public class Pager extends HorizontalLayout implements Button.ClickListener, Int
 		left.addClickListener(this);
 		label = new Label();
 		addComponents(left, label, right);
-		return this;
 	}
+	
+//	public Pager afterInjection(EventBus eventBus) {
+//		this.eventBus = eventBus;
+//		eventBus.register(this);
+//		MarginInfo mf = new MarginInfo(true, true, true, false);
+//		setMargin(mf);
+//		addStyleName("pager");
+//		left = new Button("");
+//		left.addStyleName(ValoTheme.BUTTON_LINK);
+//
+//		left.setIcon(FontAwesome.ARROW_LEFT);
+//		right = new Button("");
+//		
+//		right.setIcon(FontAwesome.ARROW_RIGHT);
+//		right.addStyleName(ValoTheme.BUTTON_LINK);
+//		
+//		right.addClickListener(this);
+//		left.addClickListener(this);
+//		label = new Label();
+//		addComponents(left, label, right);
+//		return this;
+//	}
 	
 	@Subscribe
 	public void whenTotalPageChange(PageMetaEvent tre) {
@@ -84,12 +103,12 @@ public class Pager extends HorizontalLayout implements Button.ClickListener, Int
 		if (event.getButton() == left) {
 			if (currentPage > 0) {
 				currentPage--;
-				eventBus.post(new CurrentPageEvent(currentPage));
+				listview.gotoPage(currentPage);
 			}
 		} else {
 			if (currentPage < totalPage) {
 				currentPage++;
-				eventBus.post(new CurrentPageEvent(currentPage));
+				listview.gotoPage(currentPage);
 			}
 		}
 	}

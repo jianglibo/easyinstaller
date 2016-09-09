@@ -12,9 +12,10 @@ import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.config.InterestInUriFragemnt;
 import com.jianglibo.vaadin.dashboard.event.view.TrashedCheckBoxEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButton;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent;
 import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -27,31 +28,27 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class TableController extends HorizontalLayout implements /*ValueChangeListener,*/ InterestInUriFragemnt {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(TableController.class);
 	
-	@Autowired
-	private DynButton menu;
 	
-	@Autowired
+	private DynButtonComponent menu;
+	
 	private Pager pager;
 	
-	@Autowired
 	private MessageSource messageSource;
 	
 	private Button trashBt;
 
-	private EventBus eventBus;
-	
-	public TableController afterInjection(EventBus eventBus, ButtonGroup...btnGroups) {
-		this.eventBus = eventBus;
-		this.eventBus.register(this);
+	public TableController(MessageSource messageSource, ListView listview) {
+		this.messageSource = messageSource;
+		this.menu = listview.getDynButtonComponent();
+		this.pager = listview.getPager();
+		
 		addStyleName("table-controller");
 		setWidth("100%");
-		addComponent(menu.afterInjection(eventBus, btnGroups));
+		addComponent(menu);
 		
 		setComponentAlignment(menu, Alignment.MIDDLE_LEFT);
 		trashBt = new Button(messageSource.getMessage("tablecontroller.trashswitcher", null, UI.getCurrent().getLocale()), FontAwesome.TRASH);
@@ -61,21 +58,82 @@ public class TableController extends HorizontalLayout implements /*ValueChangeLi
 			public void buttonClick(ClickEvent event) {
 				String styles = event.getButton().getStyleName();
 				if (StyleUtil.hasStyleName(styles, ValoTheme.BUTTON_PRIMARY)) {
-					eventBus.post(new TrashedCheckBoxEvent(false));
+					listview.trashBtnClicked(false);
 				} else {
-					eventBus.post(new TrashedCheckBoxEvent(true));
+					listview.trashBtnClicked(true);
 				}
 			}
 		});
 		HorizontalLayout hl = new HorizontalLayout();
 		hl.setSpacing(true);
 		hl.addComponent(trashBt);
-		hl.addComponent(pager.afterInjection(eventBus));
+		hl.addComponent(pager);
 		addComponent(hl);
 		hl.setComponentAlignment(trashBt, Alignment.MIDDLE_RIGHT);
 		setComponentAlignment(hl, Alignment.MIDDLE_RIGHT);
-		return this;
+		
 	}
+	
+//	public TableController afterInjection(MessageSource messageSource, ListView listview) {
+//		this.eventBus.register(this);
+//		addStyleName("table-controller");
+//		setWidth("100%");
+//		addComponent(menu.afterInjection(listview));
+//		
+//		setComponentAlignment(menu, Alignment.MIDDLE_LEFT);
+//		trashBt = new Button(messageSource.getMessage("tablecontroller.trashswitcher", null, UI.getCurrent().getLocale()), FontAwesome.TRASH);
+//		
+//		trashBt.addClickListener(new ClickListener() {
+//			@Override
+//			public void buttonClick(ClickEvent event) {
+//				String styles = event.getButton().getStyleName();
+//				if (StyleUtil.hasStyleName(styles, ValoTheme.BUTTON_PRIMARY)) {
+//					eventBus.post(new TrashedCheckBoxEvent(false));
+//				} else {
+//					eventBus.post(new TrashedCheckBoxEvent(true));
+//				}
+//			}
+//		});
+//		HorizontalLayout hl = new HorizontalLayout();
+//		hl.setSpacing(true);
+//		hl.addComponent(trashBt);
+//		hl.addComponent(pager.afterInjection(eventBus));
+//		addComponent(hl);
+//		hl.setComponentAlignment(trashBt, Alignment.MIDDLE_RIGHT);
+//		setComponentAlignment(hl, Alignment.MIDDLE_RIGHT);
+//		return this;
+//	}
+	
+//	public TableController afterInjection(EventBus eventBus, ButtonGroup...btnGroups) {
+//		this.eventBus = eventBus;
+//		this.eventBus.register(this);
+//		addStyleName("table-controller");
+//		setWidth("100%");
+//		addComponent(menu.afterInjection(eventBus, btnGroups));
+//		
+//		setComponentAlignment(menu, Alignment.MIDDLE_LEFT);
+//		trashBt = new Button(messageSource.getMessage("tablecontroller.trashswitcher", null, UI.getCurrent().getLocale()), FontAwesome.TRASH);
+//		
+//		trashBt.addClickListener(new ClickListener() {
+//			@Override
+//			public void buttonClick(ClickEvent event) {
+//				String styles = event.getButton().getStyleName();
+//				if (StyleUtil.hasStyleName(styles, ValoTheme.BUTTON_PRIMARY)) {
+//					eventBus.post(new TrashedCheckBoxEvent(false));
+//				} else {
+//					eventBus.post(new TrashedCheckBoxEvent(true));
+//				}
+//			}
+//		});
+//		HorizontalLayout hl = new HorizontalLayout();
+//		hl.setSpacing(true);
+//		hl.addComponent(trashBt);
+//		hl.addComponent(pager.afterInjection(eventBus));
+//		addComponent(hl);
+//		hl.setComponentAlignment(trashBt, Alignment.MIDDLE_RIGHT);
+//		setComponentAlignment(hl, Alignment.MIDDLE_RIGHT);
+//		return this;
+//	}
 
 
 	@Override
