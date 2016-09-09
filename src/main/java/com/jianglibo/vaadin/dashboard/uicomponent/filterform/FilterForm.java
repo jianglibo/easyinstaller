@@ -1,25 +1,19 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.filterform;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
-import com.jianglibo.vaadin.dashboard.view.FilterListener;
-import com.vaadin.event.ShortcutListener;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 @SuppressWarnings("serial")
 public class FilterForm extends HorizontalLayout {
@@ -28,8 +22,11 @@ public class FilterForm extends HorizontalLayout {
 	
 	private MessageSource messageSource;
 	
-	public FilterForm(MessageSource messageSource, FilterListener fl) {
+	private ListView listview;
+	
+	public FilterForm(MessageSource messageSource, ListView listview) {
 		this.messageSource = messageSource;
+		this.listview = listview;
 		this.filterField = new TextField();
 		
 		filterField.setInputPrompt(messageSource.getMessage("filterform.inputprompt", null, UI.getCurrent().getLocale()));
@@ -37,11 +34,9 @@ public class FilterForm extends HorizontalLayout {
                 KeyCode.ESCAPE, null) {
             @Override
             public void handleAction(final Object sender, final Object target) {
-            	fl.notifyFilterStringChange("");
+            	listview.notifyFilterStringChange("");
             }
         });
-
-		filterField.setValue(filterStr);
 		
 		addComponent(filterField);
 		
@@ -49,11 +44,15 @@ public class FilterForm extends HorizontalLayout {
         search.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-            	eventBus.post(new FilterStrEvent(filterField.getValue()));
+            	listview.notifyFilterStringChange(filterField.getValue());
             }
         });
         search.setClickShortcut(KeyCode.ENTER, null);
         addComponent(search);
+	}
+	
+	public void setValue(String filterStr) {
+		filterField.setValue(filterStr);
 	}
 	
 	

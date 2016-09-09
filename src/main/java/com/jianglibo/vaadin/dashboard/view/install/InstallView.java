@@ -29,13 +29,18 @@ import com.jianglibo.vaadin.dashboard.event.view.TrashedCheckBoxEvent;
 import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
+import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
+import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.util.TableUtil;
+import com.jianglibo.vaadin.dashboard.view.BaseListView;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.jianglibo.vaadin.dashboard.view.box.BoxView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -48,7 +53,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = InstallView.VIEW_NAME)
-public class InstallView extends VerticalLayout implements View, SubscriberExceptionHandler {
+public class InstallView extends BaseListView {
 
 	/**
 	 * 
@@ -78,13 +83,13 @@ public class InstallView extends VerticalLayout implements View, SubscriberExcep
 	
 	private final Domains domains;
 	
+	
 	@Autowired
 	public InstallView(InstallRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		this.eventBus = new EventBus(this);
+		super(messageSource);
 		this.repository = repository;
 		this.domains = domains;
-		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
 		
@@ -213,6 +218,36 @@ public class InstallView extends VerticalLayout implements View, SubscriberExcep
 	@Override
 	public void handleException(Throwable exception, SubscriberExceptionContext context) {
 		exception.printStackTrace();
+		
+	}
+
+	@Override
+	public void notifyFilterStringChange(String str) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void trashBtnClicked(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void gotoPage(int p) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDynButtonClicked(ButtonDescription btnDesc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void backward() {
+		// TODO Auto-generated method stub
 		
 	}
 }

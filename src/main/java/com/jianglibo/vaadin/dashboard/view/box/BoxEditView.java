@@ -77,7 +77,7 @@ public class BoxEditView  extends VerticalLayout implements View, HandMakeFields
 
 		setMargin(new MarginInfo(true, true, false, true));
 		
-		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, false, true, "");
+//		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, false, true, "");
 		
 		addComponent(header);
 		form = (BoxForm) applicationContext.getBean(BoxForm.class).afterInjection(eventBus, this);

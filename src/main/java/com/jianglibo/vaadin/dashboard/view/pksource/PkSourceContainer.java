@@ -13,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
@@ -23,6 +22,7 @@ import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.UnsupportedFilterException;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -37,17 +37,19 @@ public class PkSourceContainer extends JpaContainer<PkSource> implements Contain
 	
 	private final PkSourceRepository repository;
 	
-	@Autowired
-	public PkSourceContainer(PkSourceRepository repository, Domains domains) {
-		super(PkSource.class, domains);
-		this.repository = repository;
-	}
+	private final ListView listview;
+
 	
-	public PkSourceContainer afterInjection(EventBus eventBus, Table table) {
+	@Autowired
+	public PkSourceContainer(PkSourceRepository repository, Domains domains, ListView listview, Table table) {
+		super(PkSource.class, domains, listview);
+		this.repository = repository;
+		this.listview = listview;
 		VaadinTableWrapper vtw = getDomains().getTables().get(PkSource.class.getSimpleName());
-		setupProperties(table, eventBus, SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
-		return this;
+		setupProperties(table, SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
+
 	}
+
 
 	@Subscribe
 	public void whenUriFragmentChange(ListViewFragmentBuilder vfb) {
@@ -74,7 +76,7 @@ public class PkSourceContainer extends JpaContainer<PkSource> implements Contain
 			total = repository.countByPknameContainingIgnoreCaseAndArchivedEquals(filterStr, isTrashed());
 		}
 		setCollection(entities.getContent());
-		getEventBus().post(new PageMetaEvent(total, getPerPage()));
+		listview.onPageMetaEvent(new PageMetaEvent(total, getPerPage()));
 	}
 
 	public void refresh() {

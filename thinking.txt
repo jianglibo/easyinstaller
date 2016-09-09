@@ -5,3 +5,9 @@
 3. upload generated content
 4. change configuration file
 5. 
+
+About nested Component composite.
+Because there is no bubble concept in vaadin server side component,
+It's better to pass in child component as a construct parameter.
+All components need to interact with a child component also pass into child component.
+the intermediate component just used as like a layout. 

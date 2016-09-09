@@ -9,12 +9,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort.Order;
 
 import com.google.common.eventbus.EventBus;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.util.ReflectUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -40,7 +38,7 @@ public abstract class TableBase<T> extends Table {
 		this.domainName = clazz.getSimpleName();
 	}
 	
-	protected void defaultAfterInjection(EventBus eventBus, Container container) {
+	protected void afterInjection(Container container) {
 		setContainerDataSource(container);
 		
 		VaadinTableColumns tableColumns = domains.getTableColumns().get(domainName);

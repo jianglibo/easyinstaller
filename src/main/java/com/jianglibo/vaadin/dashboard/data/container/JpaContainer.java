@@ -4,10 +4,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.vaadin.maddon.ListContainer;
 
-import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.view.ContainerSortListener;
 import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
@@ -16,8 +15,6 @@ public class JpaContainer<T> extends ListContainer<T> {
 	private int perPage;
 	
 	private boolean trashed;
-	
-	private EventBus eventBus;
 	
 	private String filterStr;
 	
@@ -31,18 +28,19 @@ public class JpaContainer<T> extends ListContainer<T> {
 	
 	private Table table;
 	
+	private ContainerSortListener sortListener;
 	
-	public JpaContainer(Class<T> clazz, Domains domains){
+	
+	public JpaContainer(Class<T> clazz, Domains domains, ContainerSortListener sortListener){
 		super(clazz);
 		this.domains = domains;
+		this.sortListener = sortListener;
 	}
 	
-	public void setupProperties(Table table, EventBus eventBus, Sort defaultSort, int perPage) {
+	public void setupProperties(Table table, Sort defaultSort, int perPage) {
 		setTable(table);
-		setEventBus(eventBus);
 		setSort(defaultSort);
 		setPerPage(perPage);
-		getEventBus().register(this);
 	}
 	
 	public void persistState(ListViewFragmentBuilder vfb) {
@@ -69,7 +67,7 @@ public class JpaContainer<T> extends ListContainer<T> {
 			if (propertyId.length > 0) {
 				String fname = (String) propertyId[0];
 				Direction ndirection = ascending[0] ? Direction.ASC : Direction.DESC;
-				eventBus.post(new TableSortEvent(new Sort(ndirection, fname)));
+				sortListener.notifySort(sort);
 			}
 		}
 	}
@@ -81,16 +79,6 @@ public class JpaContainer<T> extends ListContainer<T> {
 
 	public void setPerPage(int perPage) {
 		this.perPage = perPage;
-	}
-
-
-	public EventBus getEventBus() {
-		return eventBus;
-	}
-
-
-	public void setEventBus(EventBus eventBus) {
-		this.eventBus = eventBus;
 	}
 
 	public Sort getSort() {

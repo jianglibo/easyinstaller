@@ -10,18 +10,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
-import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Install;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Table;
 
@@ -34,16 +32,15 @@ public class InstallContainer extends JpaContainer<Install>{
 	
 	private final InstallRepository repository;
 	
-	@Autowired
-	public InstallContainer(InstallRepository repository, Domains domains) {
-		super(Install.class, domains);
-		this.repository = repository;
-	}
+	private final ListView listview;
 	
-	public InstallContainer afterInjection(EventBus eventBus, Table table) {
-		VaadinTableWrapper vtw = getDomains().getTables().get(Box.class.getSimpleName());
-		setupProperties(table, eventBus, SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
-		return this;
+	@Autowired
+	public InstallContainer(InstallRepository repository, Domains domains, ListView listview, Table table) {
+		super(Install.class, domains, listview);
+		this.repository = repository;
+		this.listview = listview;
+		VaadinTableWrapper vtw = getDomains().getTables().get(Install.class.getSimpleName());
+		setupProperties(table, SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
 	}
 
 	@Subscribe
@@ -71,7 +68,7 @@ public class InstallContainer extends JpaContainer<Install>{
 //			total = repository.countByNameContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, isTrashed());
 //		}
 		setCollection(entities.getContent());
-		getEventBus().post(new PageMetaEvent(total, getPerPage()));
+		listview.onPageMetaEvent(new PageMetaEvent(total, getPerPage()));
 	}
 
 	public void refresh() {

@@ -1,24 +1,18 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.viewheader;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 
-import com.google.common.eventbus.EventBus;
-import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
@@ -29,10 +23,15 @@ public class HeaderLayout extends HorizontalLayout {
 	private final MessageSource messageSource;
 
 	private HorizontalLayout tools;
+	
+	private FilterForm filterForm;
+	
+	private ListView listview;
 
-	public HeaderLayout(MessageSource messageSource, boolean showFilterForm, boolean showBackBtn,
-			String labelTxt) {
+	public HeaderLayout(MessageSource messageSource, FilterForm filterForm, boolean showBackBtn,
+			String labelTxt, ListView listview) {
 		this.messageSource = messageSource;
+		this.listview = listview;
 		addStyleName("viewheader");
 		setSpacing(true);
 		Responsive.makeResponsive(this);
@@ -42,7 +41,7 @@ public class HeaderLayout extends HorizontalLayout {
 		title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
 		addComponent(title);
 		createToolbar();
-		makeToolbar(showFilterForm, showBackBtn);
+		makeToolbar(showBackBtn);
 	}
 
 
@@ -68,12 +67,10 @@ public class HeaderLayout extends HorizontalLayout {
 		tools.addComponent(c, position);
 	}
 
-	private void makeToolbar(boolean showFilterForm, boolean showBackBtn) {
-		if (showFilterForm) {
-			FilterForm filterForm = applicationContext.getBean(FilterForm.class).afterInjection(eventBus, "");
+	private void makeToolbar(boolean showBackBtn) {
+		if (filterForm != null) {
 			addToToolbar(filterForm);
 		}
-
 		if (showBackBtn) {
 			Button backBtn = new Button(FontAwesome.MAIL_REPLY);
 			backBtn.setDescription(messageSource.getMessage("shared.btn.return", null, UI.getCurrent().getLocale()));
@@ -81,7 +78,7 @@ public class HeaderLayout extends HorizontalLayout {
 
 				@Override
 				public void buttonClick(ClickEvent event) {
-					eventBus.post(new HistoryBackEvent());
+					listview.backward();
 				}
 			});
 			addToToolbar(backBtn);
