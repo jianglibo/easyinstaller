@@ -49,7 +49,7 @@ public class StepRunEditView  extends VerticalLayout implements View, HandMakeFi
 	
 	private final StepRunRepository repository;
 
-	public static final String VIEW_NAME = StepRunView.VIEW_NAME + "/edit";
+	public static final String VIEW_NAME = StepRunListView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 
@@ -75,7 +75,7 @@ public class StepRunEditView  extends VerticalLayout implements View, HandMakeFi
 		StyleUtil.setOverflowAuto(this, true);
 		setMargin(true);
 		
-		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
+//		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
 		form = (StepRunForm) applicationContext.getBean(StepRunForm.class).afterInjection(eventBus, this);
@@ -118,7 +118,7 @@ public class StepRunEditView  extends VerticalLayout implements View, HandMakeFi
 	public void onBackBtnClicked(HistoryBackEvent hbe) {
 		String bu = ifb.getPreviousView();
 		if (Strings.isNullOrEmpty(bu)) {
-			bu = StepRunView.VIEW_NAME;
+			bu = StepRunListView.VIEW_NAME;
 		}
 		UI.getCurrent().getNavigator().navigateTo(bu);
 	}

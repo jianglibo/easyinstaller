@@ -50,7 +50,7 @@ public class BoxEditView  extends VerticalLayout implements View, HandMakeFields
 	
 	private final BoxRepository repository;
 
-	public static final String VIEW_NAME = BoxView.VIEW_NAME + "/edit";
+	public static final String VIEW_NAME = BoxListView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 
@@ -127,7 +127,7 @@ public class BoxEditView  extends VerticalLayout implements View, HandMakeFields
 	public void onBackBtnClicked(HistoryBackEvent hbe) {
 		String bu = ifb.getPreviousView();
 		if (Strings.isNullOrEmpty(bu)) {
-			bu = BoxView.VIEW_NAME;
+			bu = BoxListView.VIEW_NAME;
 		}
 		UI.getCurrent().getNavigator().navigateTo(bu);
 	}

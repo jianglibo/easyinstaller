@@ -19,7 +19,7 @@ public class SoftwareViewMenuItem implements MenuItemWrapper {
 	@Autowired
 	public SoftwareViewMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.menuItem = new ValoMenuItemButton(SoftwareView.VIEW_NAME, SoftwareView.ICON_VALUE, messageSource);
+		this.menuItem = new ValoMenuItemButton(SoftwareListView.VIEW_NAME, SoftwareListView.ICON_VALUE, messageSource);
 	}
 	
 	public Component getMenuItem() {

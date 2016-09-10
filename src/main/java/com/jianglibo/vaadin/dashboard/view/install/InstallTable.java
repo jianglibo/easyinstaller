@@ -1,38 +1,24 @@
 package com.jianglibo.vaadin.dashboard.view.install;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 
-import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Install;
+import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.data.Property;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class InstallTable extends TableBase<Install> {
 	
-	@Autowired
 	private InstallContainer container;
 
-	@Autowired
-	public InstallTable(Domains domains, MessageSource messageSource) {
+	public InstallTable(MessageSource messageSource, Domains domains,InstallRepository repository, ListView listview) {
 		super(Install.class, domains, messageSource);
-	}
-	
-	public Table afterInjection(EventBus eventBus) {
-		defaultAfterInjection(eventBus, container.afterInjection(eventBus, this));
-		//Because we use sql sort, not the component sort. 
+		container = new InstallContainer(repository, domains, listview, this);
 		container.setEnableSort(true);
-		return this;
 	}
-	
 
 	@Override
 	public void setFooter() {
@@ -47,5 +33,11 @@ public class InstallTable extends TableBase<Install> {
 			result = formatDate(DATEFORMAT, property);
 		}
 		return result;
+	}
+
+	@Override
+	public void refresh() {
+		// TODO Auto-generated method stub
+		
 	}
 }

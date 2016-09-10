@@ -1,39 +1,25 @@
 package com.jianglibo.vaadin.dashboard.view.stepdefine;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 
-import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.StepDefine;
+import com.jianglibo.vaadin.dashboard.repositories.StepDefineRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.data.Property;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class StepDefineTable extends TableBase<StepDefine> {
 	
-	@Autowired
 	private StepDefineContainer container;
 
-	@Autowired
-	public StepDefineTable(Domains domains, MessageSource messageSource) {
+	public StepDefineTable(MessageSource messageSource, Domains domains,StepDefineRepository repository, ListView listview) {
 		super(StepDefine.class, domains, messageSource);
-	}
-	
-	public Table afterInjection(EventBus eventBus) {
-		defaultAfterInjection(eventBus, container.afterInjection(eventBus, this));
-		//Because we use sql sort, not the component sort. 
+		container = new StepDefineContainer(repository, domains, listview, this);
 		container.setEnableSort(true);
-		return this;
 	}
 	
-
 	@Override
 	public void setFooter() {
 		setColumnFooter("createdAt", "");
@@ -47,5 +33,11 @@ public class StepDefineTable extends TableBase<StepDefine> {
 			result = formatDate(DATEFORMAT, property);
 		}
 		return result;
+	}
+
+	@Override
+	public void refresh() {
+		// TODO Auto-generated method stub
+		
 	}
 }

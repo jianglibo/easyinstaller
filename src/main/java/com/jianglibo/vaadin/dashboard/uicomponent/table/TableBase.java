@@ -14,12 +14,13 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
-public abstract class TableBase<T> extends Table {
+public abstract class TableBase<E> extends Table {
 	
 	protected static final DateFormat DATEFORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
 
@@ -27,11 +28,11 @@ public abstract class TableBase<T> extends Table {
 	
 	protected final MessageSource messageSource;
 	
-	protected final Class<T> clazz;
+	protected final Class<E> clazz;
 
 	protected String domainName;
 	
-	public TableBase(Class<T> clazz, Domains domains, MessageSource messageSource) {
+	public TableBase(Class<E> clazz, Domains domains, MessageSource messageSource) {
 		this.domains = domains;
 		this.clazz = clazz;
 		this.messageSource = messageSource;
@@ -56,7 +57,7 @@ public abstract class TableBase<T> extends Table {
 			public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
 				if (getValue() instanceof Set) {
 					Set<Object> val = (Set<Object>) getValue();
-					eventBus.post(val);
+//					eventBus.post(val);
 				}
 			}
 		});
@@ -102,5 +103,7 @@ public abstract class TableBase<T> extends Table {
 	}
 
 	public abstract void setFooter();
+	
+	public abstract void refresh();
 	
 }

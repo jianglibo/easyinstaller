@@ -60,7 +60,7 @@ public class InstallEditView  extends VerticalLayout implements View, HandMakeFi
 	
 	private final InstallRepository repository;
 
-	public static final String VIEW_NAME = InstallView.VIEW_NAME + "/edit";
+	public static final String VIEW_NAME = InstallListView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 
@@ -92,7 +92,7 @@ public class InstallEditView  extends VerticalLayout implements View, HandMakeFi
 		StyleUtil.setOverflowAuto(this, true);
 		setMargin(true);
 		
-		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
+//		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
 		form = (InstallForm) applicationContext.getBean(InstallForm.class).afterInjection(eventBus, this);
@@ -150,7 +150,7 @@ public class InstallEditView  extends VerticalLayout implements View, HandMakeFi
 	public void onBackBtnClicked(HistoryBackEvent hbe) {
 		String bu = ifb.getPreviousView();
 		if (Strings.isNullOrEmpty(bu)) {
-			bu = InstallView.VIEW_NAME;
+			bu = InstallListView.VIEW_NAME;
 		}
 		UI.getCurrent().getNavigator().navigateTo(bu);
 	}

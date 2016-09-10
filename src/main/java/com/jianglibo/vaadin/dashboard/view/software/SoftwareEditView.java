@@ -49,7 +49,7 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 	
 	private final SoftwareRepository repository;
 
-	public static final String VIEW_NAME = SoftwareView.VIEW_NAME + "/edit";
+	public static final String VIEW_NAME = SoftwareListView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 
@@ -78,7 +78,7 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 		StyleUtil.setOverflowAuto(this, true);
 		setMargin(true);
 		
-		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
+//		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
 		
@@ -129,7 +129,7 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 	public void onBackBtnClicked(HistoryBackEvent hbe) {
 		String bu = ifb.getPreviousView();
 		if (Strings.isNullOrEmpty(bu)) {
-			bu = SoftwareView.VIEW_NAME;
+			bu = SoftwareListView.VIEW_NAME;
 		}
 		UI.getCurrent().getNavigator().navigateTo(bu);
 	}

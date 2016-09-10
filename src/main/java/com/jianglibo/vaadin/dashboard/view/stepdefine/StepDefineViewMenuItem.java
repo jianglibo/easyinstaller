@@ -19,7 +19,7 @@ public class StepDefineViewMenuItem implements MenuItemWrapper {
 	@Autowired
 	public StepDefineViewMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.menuItem = new ValoMenuItemButton(StepDefineView.VIEW_NAME, StepDefineView.ICON_VALUE, messageSource);
+		this.menuItem = new ValoMenuItemButton(StepDefineListView.VIEW_NAME, StepDefineListView.ICON_VALUE, messageSource);
 	}
 	
 	public Component getMenuItem() {

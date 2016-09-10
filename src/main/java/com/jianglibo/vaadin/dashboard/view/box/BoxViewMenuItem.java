@@ -19,7 +19,7 @@ public class BoxViewMenuItem implements MenuItemWrapper {
 	@Autowired
 	public BoxViewMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.menuItem = new ValoMenuItemButton(BoxView.VIEW_NAME, BoxView.ICON_VALUE, messageSource);
+		this.menuItem = new ValoMenuItemButton(BoxListView.VIEW_NAME, BoxListView.ICON_VALUE, messageSource);
 	}
 	
 	public Component getMenuItem() {

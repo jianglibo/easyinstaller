@@ -48,7 +48,7 @@ public class StepDefineEditView  extends VerticalLayout implements View, HandMak
 	
 	private final StepDefineRepository repository;
 
-	public static final String VIEW_NAME = StepDefineView.VIEW_NAME + "/edit";
+	public static final String VIEW_NAME = StepDefineListView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 
@@ -74,7 +74,7 @@ public class StepDefineEditView  extends VerticalLayout implements View, HandMak
 		StyleUtil.setOverflowAuto(this, true);
 		setMargin(true);
 		
-		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
+//		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
 		form = (StepDefineForm) applicationContext.getBean(StepDefineForm.class).afterInjection(eventBus, this);
@@ -117,7 +117,7 @@ public class StepDefineEditView  extends VerticalLayout implements View, HandMak
 	public void onBackBtnClicked(HistoryBackEvent hbe) {
 		String bu = ifb.getPreviousView();
 		if (Strings.isNullOrEmpty(bu)) {
-			bu = StepDefineView.VIEW_NAME;
+			bu = StepDefineListView.VIEW_NAME;
 		}
 		UI.getCurrent().getNavigator().navigateTo(bu);
 	}

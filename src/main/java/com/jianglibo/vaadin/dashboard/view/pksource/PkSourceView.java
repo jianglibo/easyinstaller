@@ -83,29 +83,30 @@ public class PkSourceView extends VerticalLayout
 		eventBus.register(this);
 		setSizeFull();
 		addStyleName("transactions");
+		this.table = null;
 
-		HeaderLayout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false,
-				MsgUtil.getListViewTitle(messageSource, PkSource.class.getSimpleName()));
+//		HeaderLayout header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, true, false,
+//				MsgUtil.getListViewTitle(messageSource, PkSource.class.getSimpleName()));
 
-		PkSourceUploadReceiver receiver = applicationContext.getBean(PkSourceUploadReceiver.class).afterInjection(this);
-		Component uploader = new ImmediateUploader(messageSource, receiver);
-		StyleUtil.setMarginRightTen(uploader);
+//		PkSourceUploadReceiver receiver = applicationContext.getBean(PkSourceUploadReceiver.class).afterInjection(this);
+//		Component uploader = new ImmediateUploader(messageSource, receiver);
+//		StyleUtil.setMarginRightTen(uploader);
 
-		header.addToToolbar(uploader, 0);
-		addComponent(header);
-
+//		header.addToToolbar(uploader, 0);
+//		addComponent(header);
+//
 		ButtonGroup[] bgs = new ButtonGroup[] {
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE),
 						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH,
 						ButtonEnableType.ALWAYS)) };
 
-		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
+//		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
 
 		addComponent(tableController);
-		table = applicationContext.getBean(PkSourceTable.class).afterInjection(eventBus);
-		addComponent(table);
-		setExpandRatio(table, 1);
+//		table = applicationContext.getBean(PkSourceTable.class).afterInjection(eventBus);
+//		addComponent(table);
+//		setExpandRatio(table, 1);
 	}
 
 	@Override

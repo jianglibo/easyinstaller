@@ -71,7 +71,7 @@ public class PkSourceEditView  extends VerticalLayout implements View, HandMakeF
 		// DashboardEventBus.register(this);
 		setMargin(true);
 		
-		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
+//		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 		
 		addComponent(header);
 		form = (PkSourceForm) applicationContext.getBean(PkSourceForm.class).afterInjection(eventBus, this);
