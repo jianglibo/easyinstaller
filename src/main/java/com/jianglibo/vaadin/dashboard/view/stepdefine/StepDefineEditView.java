@@ -14,7 +14,6 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.StepDefine;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.StepDefineRepository;
-import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
@@ -56,8 +55,6 @@ public class StepDefineEditView  extends VerticalLayout implements View, HandMak
 	
 	private StepDefine bean;
     
-    private HeaderLayout header;
-    
     private ItemViewFragmentBuilder ifb;
     
     private StepDefineForm form;
@@ -69,20 +66,20 @@ public class StepDefineEditView  extends VerticalLayout implements View, HandMak
 		this.repository= repository;
 		this.eventBus = new EventBus(this.getClass().getName());
 		eventBus.register(this);
-		setSizeFull();
-		addStyleName("transactions");
-		StyleUtil.setOverflowAuto(this, true);
-		setMargin(true);
-		
-//		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
-		
-		addComponent(header);
-		form = (StepDefineForm) applicationContext.getBean(StepDefineForm.class).afterInjection(eventBus, this);
-		addComponent(form);
-		Component ft = buildFooter();
-		addComponent(ft);
-		setComponentAlignment(form, Alignment.TOP_LEFT);
-		setExpandRatio(form, 1);
+//		setSizeFull();
+//		addStyleName("transactions");
+//		StyleUtil.setOverflowAuto(this, true);
+//		setMargin(true);
+//		
+////		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
+//		
+//		addComponent(header);
+////		form = (StepDefineForm) applicationContext.getBean(StepDefineForm.class).afterInjection(eventBus, this);
+//		addComponent(form);
+//		Component ft = buildFooter();
+//		addComponent(ft);
+//		setComponentAlignment(form, Alignment.TOP_LEFT);
+//		setExpandRatio(form, 1);
 	}
 	
     @SuppressWarnings("serial")
@@ -113,28 +110,28 @@ public class StepDefineEditView  extends VerticalLayout implements View, HandMak
 		// DashboardEventBus.unregister(this);
 	}
 	
-	@Subscribe
-	public void onBackBtnClicked(HistoryBackEvent hbe) {
-		String bu = ifb.getPreviousView();
-		if (Strings.isNullOrEmpty(bu)) {
-			bu = StepDefineListView.VIEW_NAME;
-		}
-		UI.getCurrent().getNavigator().navigateTo(bu);
-	}
+//	@Subscribe
+//	public void onBackBtnClicked(HistoryBackEvent hbe) {
+//		String bu = ifb.getPreviousView();
+//		if (Strings.isNullOrEmpty(bu)) {
+//			bu = StepDefineListView.VIEW_NAME;
+//		}
+//		UI.getCurrent().getNavigator().navigateTo(bu);
+//	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		LOGGER.info("parameter string is: {}", event.getParameters());
-		ifb = new ItemViewFragmentBuilder(event);
-		long bid = ifb.getBeanId();
-		if (bid == 0) {
-			bean = new StepDefine();
-			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, StepDefine.class.getSimpleName() + ".newtitle"));
-		} else {
-			bean = repository.findOne(bid);
-			header.setLabelTxt(bean.getName());
-		}
-        form.setItemDataSource(bean);
+//		LOGGER.info("parameter string is: {}", event.getParameters());
+//		ifb = new ItemViewFragmentBuilder(event);
+//		long bid = ifb.getBeanId();
+//		if (bid == 0) {
+//			bean = new StepDefine();
+//			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, StepDefine.class.getSimpleName() + ".newtitle"));
+//		} else {
+//			bean = repository.findOne(bid);
+//			header.setLabelTxt(bean.getName());
+//		}
+//        form.setItemDataSource(bean);
 	}
 
 	@Override

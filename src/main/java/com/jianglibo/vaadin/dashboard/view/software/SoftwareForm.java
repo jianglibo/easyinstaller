@@ -21,7 +21,7 @@ public class SoftwareForm extends FormBase<Software> {
 	
 	@Autowired
 	public SoftwareForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories, SoftwareRepository repository) {
-		super(Software.class, messageSource, domains, fieldFactories);
+		super(Software.class, messageSource, domains, fieldFactories, null);
 		this.repository = repository;
 	}
 	

@@ -30,7 +30,6 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
-import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
@@ -47,7 +46,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = StepRunListView.VIEW_NAME)
-public class StepRunListView extends BaseListView<StepRun, StepRunTable>{
+public class StepRunListView extends BaseListView<StepRun, StepRunTable, StepRunRepository>{
 
 	/**
 	 * 
@@ -61,14 +60,11 @@ public class StepRunListView extends BaseListView<StepRun, StepRunTable>{
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.APPLE;
 	
-	private final StepRunRepository repository;
-	
 	
 	@Autowired
 	public StepRunListView(StepRunRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		super(applicationContext, messageSource, domains, StepRun.class, StepRunTable.class);
-		this.repository = repository;
+		super(applicationContext, messageSource, domains,repository, StepRun.class, StepRunTable.class);
 //		this.domains = domains;
 //		eventBus.register(this);
 //		setSizeFull();

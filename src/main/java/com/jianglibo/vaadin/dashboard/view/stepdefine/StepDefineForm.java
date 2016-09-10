@@ -21,7 +21,7 @@ public class StepDefineForm extends FormBase<StepDefine> {
 	
 	@Autowired
 	public StepDefineForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,StepDefineRepository repository) {
-		super(StepDefine.class, messageSource, domains, fieldFactories);
+		super(StepDefine.class, messageSource, domains, fieldFactories, null);
 		this.repository = repository;
 	}
 	

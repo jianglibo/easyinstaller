@@ -58,18 +58,13 @@ public abstract class FormBase<T> extends FormLayout {
 	
 	private HandMakeFieldsListener handMakeFieldsListener;
 	
-	public FormBase(Class<T> clazz, MessageSource messageSource, Domains domains, FieldFactories fieldFactories) {
+	public FormBase(Class<T> clazz, MessageSource messageSource, Domains domains, FieldFactories fieldFactories, HandMakeFieldsListener handMakeFieldsListener) {
 		this.clazz = clazz;
 		this.domainName = clazz.getSimpleName();
 		this.domains = domains;
 		this.messageSource = messageSource;
 		this.fieldFactories = fieldFactories;
-	}
-	
-	public FormBase<T> afterInjection(EventBus eventBus, HandMakeFieldsListener handMakeFieldsListener) {
-		this.eventBus = eventBus;
 		this.handMakeFieldsListener = handMakeFieldsListener;
-		eventBus.register(this);
 		fieldGroup = new BeanFieldGroup<T>(clazz);
 		addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         addEnterListener();
@@ -85,8 +80,8 @@ public abstract class FormBase<T> extends FormLayout {
 			addComponent(paf.getField());
         }
         StyleUtil.setMarginTopTwenty(this);
-        return this;
 	}
+	
 	
 	public void notifySuccess() {
         Notification success = new Notification(messageSource.getMessage("shared.msg.savesuccess", null, UI.getCurrent().getLocale()));

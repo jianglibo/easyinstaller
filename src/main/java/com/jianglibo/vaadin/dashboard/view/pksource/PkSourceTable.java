@@ -1,6 +1,5 @@
 package com.jianglibo.vaadin.dashboard.view.pksource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -14,13 +13,8 @@ import com.vaadin.data.Property;
 @SuppressWarnings("serial")
 public class PkSourceTable extends TableBase<PkSource> {
 	
-	@Autowired
-	private PkSourceContainer container;
-	
-	@Autowired
-	public PkSourceTable(MessageSource messageSource, Domains domains,PkSourceRepository repository, ListView listview) {
-		super(PkSource.class, domains, messageSource);
-		container = new PkSourceContainer(repository, domains, listview, this);
+	public PkSourceTable(MessageSource messageSource, Domains domains,PkSourceContainer container, PkSourceRepository repository, ListView listview) {
+		super(PkSource.class, domains,container, messageSource);
 		container.setEnableSort(true);
 	}
 
@@ -47,5 +41,7 @@ public class PkSourceTable extends TableBase<PkSource> {
 		// TODO Auto-generated method stub
 		
 	}
+	
+
 	
 }

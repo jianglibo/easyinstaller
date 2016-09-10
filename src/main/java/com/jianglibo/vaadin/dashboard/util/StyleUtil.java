@@ -17,6 +17,14 @@ public class StyleUtil {
 		}
 	}
 	
+	public static void hide(Component c) {
+		c.addStyleName("display-none");
+	}
+	
+	public static void show(Component c) {
+		c.removeStyleName("display-none");
+	}
+	
 	public static void setMarginTen(Component c) {
 		c.addStyleName("margin-ten");
 	}

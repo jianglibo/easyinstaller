@@ -5,40 +5,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
-import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
-import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
-import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
-import com.jianglibo.vaadin.dashboard.util.MsgUtil;
-import com.jianglibo.vaadin.dashboard.util.StyleUtil;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
+import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
+import com.jianglibo.vaadin.dashboard.view.BaseEditView;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 
 @SpringView(name = BoxEditView.VIEW_NAME)
-public class BoxEditView  extends VerticalLayout implements View, HandMakeFieldsListener {
+public class BoxEditView  extends BaseEditView<Box, FormBase<Box>, BoxRepository>{
 	/**
 	 * 
 	 */
@@ -46,110 +29,34 @@ public class BoxEditView  extends VerticalLayout implements View, HandMakeFields
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BoxEditView.class);
 	
-	private final MessageSource messageSource;
-	
-	private final BoxRepository repository;
-
 	public static final String VIEW_NAME = BoxListView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
-
-	private EventBus eventBus;
-	
-	private Box bean;
-    
-    private HeaderLayout header;
-    
-    private ItemViewFragmentBuilder ifb;
-    
-    private BoxForm form;
-    
     
 	@Autowired
-	public BoxEditView(BoxRepository repository, MessageSource messageSource,Domains domains,
+	public BoxEditView(BoxRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
-		this.messageSource = messageSource;
-		this.repository= repository;
-		this.eventBus = new EventBus(this.getClass().getName());
-		eventBus.register(this);
-		setSizeFull();
-		addStyleName("transactions");
-
-		setMargin(new MarginInfo(true, true, false, true));
-		
-//		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus, false, true, "");
-		
-		addComponent(header);
-		form = (BoxForm) applicationContext.getBean(BoxForm.class).afterInjection(eventBus, this);
-		
-		StyleUtil.setOverflowAuto(form, true);
-		
-		addComponent(form);
-		
-		form.setSizeFull();
-		
-		Component ft = buildFooter();
-		
-		form.addComponent(ft);
-		setExpandRatio(form, 1);
-	}
-	
-    @SuppressWarnings("serial")
-	private Component buildFooter() {
-        HorizontalLayout footer = new HorizontalLayout();
-        footer.setMargin(true);
-        footer.setWidth(100.0f, Unit.PERCENTAGE);
-
-        Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));
-        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        ok.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-            	form.save();
-            }
-        });
-        ok.focus();
-        footer.addComponent(ok);
-        footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
-        return footer;
-    }
-    
-
-	@Override
-	public void detach() {
-		super.detach();
-		// A new instance of TransactionsView is created every time it's
-		// navigated to so we'll need to clean up references to it on detach.
-		// DashboardEventBus.unregister(this);
-	}
-	
-	@Subscribe
-	public void onBackBtnClicked(HistoryBackEvent hbe) {
-		String bu = ifb.getPreviousView();
-		if (Strings.isNullOrEmpty(bu)) {
-			bu = BoxListView.VIEW_NAME;
-		}
-		UI.getCurrent().getNavigator().navigateTo(bu);
-	}
-
-	@Override
-	public void enter(ViewChangeEvent event) {
-		LOGGER.info("parameter string is: {}", event.getParameters());
-		ifb = new ItemViewFragmentBuilder(event);
-		long bid = ifb.getBeanId();
-		if (bid == 0) {
-			bean = new Box();
-			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, Box.class.getSimpleName() + ".newtitle"));
-		} else {
-			bean = repository.findOne(bid);
-			header.setLabelTxt(bean.getName());
-		}
-        form.setItemDataSource(bean);
+		super(messageSource, domains, fieldFactories, repository);
 	}
 
 	@Override
 	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	protected BoxForm createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
+			JpaRepository<Box, Long> repository) {
+		return new BoxForm(messageSource, domains, fieldFactories, (BoxRepository) repository, this);
+	}
+
+	@Override
+	protected Box createNewBean() {
+		return new Box();
+	}
+
+	@Override
+	protected String getListViewName() {
+		return BoxListView.VIEW_NAME;
 	}
 }

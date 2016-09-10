@@ -1,10 +1,11 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.filterform;
 
+import java.util.Optional;
+
 import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
-import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.FontAwesome;
@@ -20,45 +21,47 @@ public class FilterForm extends HorizontalLayout {
 
 	private TextField filterField;
 	
-	private MessageSource messageSource;
+	private Button search;
 	
-	private ListView listview;
-	
-	public FilterForm(MessageSource messageSource, ListView listview) {
-		this.messageSource = messageSource;
-		this.listview = listview;
+	public FilterForm(MessageSource messageSource) {
 		this.filterField = new TextField();
 		
 		filterField.setInputPrompt(messageSource.getMessage("filterform.inputprompt", null, UI.getCurrent().getLocale()));
+		
+		addComponent(filterField);
+		
+		search = new Button(FontAwesome.SEARCH);
+
+        search.setClickShortcut(KeyCode.ENTER, null);
+        addComponent(search);
+	}
+	
+	public void addValueChangeListener(FilterValueChangeListener fvcl) {
         filterField.addShortcutListener(new ShortcutListener("Clear",
                 KeyCode.ESCAPE, null) {
             @Override
             public void handleAction(final Object sender, final Object target) {
-            	listview.notifyFilterStringChange("");
+            	fvcl.valueChanged("");
             }
         });
-		
-		addComponent(filterField);
-		
-		Button search = new Button(FontAwesome.SEARCH);
         search.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-            	listview.notifyFilterStringChange(filterField.getValue());
+            	fvcl.valueChanged(filterField.getValue());
             }
         });
-        search.setClickShortcut(KeyCode.ENTER, null);
-        addComponent(search);
+	}
+	
+	public static interface FilterValueChangeListener {
+		void valueChanged(String str);
 	}
 	
 	public void setValue(String filterStr) {
 		filterField.setValue(filterStr);
 	}
 	
-	
-	@Subscribe
-	public void whenUriFragmentChange(ListViewFragmentBuilder vfb) {
-		String v = vfb.getFilterStr();
-		filterField.setValue(v);
+	public void whenUriFragmentChange(ListViewFragmentBuilder lvfb) {
+		Optional<String> v = lvfb.getFilterStr();
+		filterField.setValue(v.orElse(""));
 	}
 }

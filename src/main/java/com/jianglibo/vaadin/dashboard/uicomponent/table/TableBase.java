@@ -8,14 +8,13 @@ import java.util.Set;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort.Order;
 
-import com.google.common.eventbus.EventBus;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
+import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
-import com.jianglibo.vaadin.dashboard.view.ListView;
-import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 
@@ -32,37 +31,23 @@ public abstract class TableBase<E> extends Table {
 
 	protected String domainName;
 	
-	public TableBase(Class<E> clazz, Domains domains, MessageSource messageSource) {
+	private final JpaContainer<E> container;
+	
+	public TableBase(Class<E> clazz, Domains domains,JpaContainer<E> container, MessageSource messageSource) {
 		this.domains = domains;
+		this.container = container;
 		this.clazz = clazz;
 		this.messageSource = messageSource;
 		this.domainName = clazz.getSimpleName();
-	}
-	
-	protected void afterInjection(Container container) {
 		setContainerDataSource(container);
 		
 		VaadinTableColumns tableColumns = domains.getTableColumns().get(domainName);
 		VaadinTableWrapper vtw = domains.getTables().get(domainName);
-		
 		decorateTable(vtw, tableColumns);
-		
 		setFooter();
-
 		// Allow dragging items to the reports menu
 		setDragMode(TableDragMode.MULTIROW);
-
-		addValueChangeListener(new ValueChangeListener() {
-			@Override
-			public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-				if (getValue() instanceof Set) {
-					Set<Object> val = (Set<Object>) getValue();
-//					eventBus.post(val);
-				}
-			}
-		});
 	}
-
 	
 	private void decorateTable(VaadinTableWrapper vtw, VaadinTableColumns tableColumns) {
 		if (vtw.getVt().fullSize()) {
@@ -96,6 +81,10 @@ public abstract class TableBase<E> extends Table {
 		setVisibleColumns(tableColumns.getVisibleColumns());
 		setColumnHeaders(tableColumns.getColumnHeaders(vtw, messageSource));
 		
+	}
+
+	public JpaContainer<E> getContainer() {
+		return container;
 	}
 
 	public String formatDate(DateFormat dfm, Property<?> property) {

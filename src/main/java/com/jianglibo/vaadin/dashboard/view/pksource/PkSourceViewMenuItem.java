@@ -19,7 +19,7 @@ public class PkSourceViewMenuItem implements MenuItemWrapper {
 	@Autowired
 	public PkSourceViewMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.menuItem = new ValoMenuItemButton(PkSourceView.VIEW_NAME, PkSourceView.ICON_VALUE, messageSource);
+		this.menuItem = new ValoMenuItemButton(PkSourceListView.VIEW_NAME, PkSourceListView.ICON_VALUE, messageSource);
 	}
 	
 	public Component getMenuItem() {

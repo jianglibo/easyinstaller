@@ -4,8 +4,6 @@ package com.jianglibo.vaadin.dashboard.view.install;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,12 +18,8 @@ import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.view.ListView;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class InstallContainer extends JpaContainer<Install>{
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(InstallContainer.class);
@@ -35,12 +29,12 @@ public class InstallContainer extends JpaContainer<Install>{
 	private final ListView listview;
 	
 	@Autowired
-	public InstallContainer(InstallRepository repository, Domains domains, ListView listview, Table table) {
+	public InstallContainer(InstallRepository repository, Domains domains, ListView listview) {
 		super(Install.class, domains, listview);
 		this.repository = repository;
 		this.listview = listview;
 		VaadinTableWrapper vtw = getDomains().getTables().get(Install.class.getSimpleName());
-		setupProperties(table, SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
+		setupProperties( SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
 	}
 
 	@Subscribe

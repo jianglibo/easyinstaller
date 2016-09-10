@@ -24,7 +24,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 
 @SpringView(name = BoxListView.VIEW_NAME)
-public class BoxListView extends BaseListView<Box, BoxTable> {
+public class BoxListView extends BaseListView<Box, BoxTable, BoxRepository> {
 
 	/**
 	 * 
@@ -37,14 +37,11 @@ public class BoxListView extends BaseListView<Box, BoxTable> {
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.DESKTOP;
 
-
-	private final BoxRepository repository;
 	
 	@Autowired
 	public BoxListView(BoxRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		super(applicationContext, messageSource, domains, Box.class, BoxTable.class);
-		this.repository = repository;
+		super(applicationContext, messageSource, domains,repository, Box.class, BoxTable.class);
 	}
 
 	
@@ -60,10 +57,10 @@ public class BoxListView extends BaseListView<Box, BoxTable> {
 			selected = (Collection<Box>) getTable().getValue();
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-					repository.delete(b);
+					getRepository().delete(b);
 				} else {
 					b.setArchived(true);
-					repository.save(b);
+					getRepository().save(b);
 				}
 			});
 			((BoxContainer)getTable().getContainerDataSource()).refresh();
@@ -104,7 +101,8 @@ public class BoxListView extends BaseListView<Box, BoxTable> {
 
 	@Override
 	public BoxTable createTable() {
-		return new BoxTable(getMessageSource(), getDomains(),repository, this);
+		BoxContainer bc = new BoxContainer(getRepository(), getDomains(), this);
+		return new BoxTable(getMessageSource(), getDomains(),bc, getRepository(), this);
 	}
 
 	@Override

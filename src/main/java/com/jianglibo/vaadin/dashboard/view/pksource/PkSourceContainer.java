@@ -41,12 +41,12 @@ public class PkSourceContainer extends JpaContainer<PkSource> implements Contain
 
 	
 	@Autowired
-	public PkSourceContainer(PkSourceRepository repository, Domains domains, ListView listview, Table table) {
+	public PkSourceContainer(PkSourceRepository repository, Domains domains, ListView listview) {
 		super(PkSource.class, domains, listview);
 		this.repository = repository;
 		this.listview = listview;
 		VaadinTableWrapper vtw = getDomains().getTables().get(PkSource.class.getSimpleName());
-		setupProperties(table, SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
+		setupProperties( SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
 
 	}
 

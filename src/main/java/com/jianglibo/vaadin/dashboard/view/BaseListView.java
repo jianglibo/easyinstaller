@@ -1,11 +1,13 @@
 package com.jianglibo.vaadin.dashboard.view;
 
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
@@ -13,8 +15,8 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -23,20 +25,38 @@ import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
 import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
-import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
+import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.jianglibo.vaadin.dashboard.util.TableUtil;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
-import com.vaadin.ui.Table;
+import com.vaadin.server.Responsive;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+/**
+ * If a component need to interact with this object, It's better to hold that component's reference here.
+ * It makes logic more simple.
+ * 
+ * @author jianglibo@gmail.com
+ *
+ * @param <E>
+ * @param <T>
+ * @param <J>
+ */
 @SuppressWarnings("serial")
-public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>> extends VerticalLayout implements View, SubscriberExceptionHandler, ListView {
+public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>, J extends JpaRepository<E, Long>> extends VerticalLayout implements View, SubscriberExceptionHandler, ListView {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(BaseListView.class);
 	
@@ -58,7 +78,7 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>>
 	
 	private TableController tableHeader;
 	
-	private HeaderLayout headerLayout;
+	private HorizontalLayout headerLayout;
 	
 	private DynButtonComponent dynMenu;
 	
@@ -68,10 +88,17 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>>
 	
 	private FilterForm filterForm;
 	
+	private Label title;
+	
+	private Button backBtn;
+	
 	private UiEventListener uel = new UiEventListener();
 	
-	public BaseListView(ApplicationContext applicationContext, MessageSource messageSource, Domains domains, Class<E> clazz, Class<T> tableClazz) {
+	private final J repository;
+	
+	public BaseListView(ApplicationContext applicationContext, MessageSource messageSource, Domains domains, J repository, Class<E> clazz, Class<T> tableClazz) {
 		this.messageSource = messageSource;
+		this.repository = repository;
 		this.domains = domains;
 		this.applicationContext = applicationContext;
 		this.clazz = clazz;
@@ -81,9 +108,7 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>>
 		
 		tableColumns = domains.getTableColumns().get(clazz.getSimpleName());
 		
-		filterForm = getFilterForm();
-		
-		headerLayout = new HeaderLayout(messageSource, getFilterForm(), false, MsgUtil.getListViewTitle(messageSource, clazz.getSimpleName()), this);
+		headerLayout = createHeaderLayout();
 		addComponent(headerLayout);
 		
 		dynMenu = getDynButtonComponent();
@@ -93,40 +118,83 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>>
 
 		addComponent(tableController);
 		table = createTable();
+		
+		table.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+				if (table.getValue() instanceof Set) {
+					Set<Object> val = (Set<Object>) table.getValue();
+					dynMenu.onSelectionChange(val.size());
+				}
+			}
+		});
 
 		addComponent(table);
 		setExpandRatio(table, 1);
 	}
 	
-	public abstract T createTable();
+	public HorizontalLayout createHeaderLayout() {
+		title = new Label("");
+		title.setSizeUndefined();
+		title.addStyleName(ValoTheme.LABEL_H1);
+		title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+		HorizontalLayout hl = new HorizontalLayout();
+		hl.addComponent(title);
+		hl.addStyleName("viewheader");
+		hl.setSpacing(true);
+		Responsive.makeResponsive(hl);
+		HorizontalLayout tools = new HorizontalLayout();
+		tools.addStyleName("toolbar");
+		filterForm = new FilterForm(messageSource);
+		filterForm.addValueChangeListener(str -> {
+			this.notifyFilterStringChange(str);
+		});
+		tools.addComponent(filterForm);
+		
+		hl.addComponent(tools);
+		
+
+		backBtn = new Button(FontAwesome.MAIL_REPLY);
+		StyleUtil.hide(backBtn);
+		
+		backBtn.setDescription(messageSource.getMessage("shared.btn.return", null, UI.getCurrent().getLocale()));
+		backBtn.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				BaseListView.this.backward();
+			}
+		});
+		tools.addComponent(backBtn);
+
+		return hl;
+	}
 	
-//	public T createTable() {
-//		return (T) getApplicationContext().getBean(tableClazz).afterInjection(this);
-//	}
+	public abstract T createTable();
 	
 	public abstract ButtonGroup[] getButtonGroups();
 	
 	public abstract String getListViewName();
 	
 	public DynButtonComponent getDynButtonComponent() {
-		return new DynButtonComponent(messageSource, getButtonGroups());
+		return new DynButtonComponent(messageSource, this, getButtonGroups());
 	}
 	
 	public Pager getPager() {
 		return new Pager(messageSource, this);
 	}
 	
-	private FilterForm getFilterForm() {
-		return new FilterForm(messageSource, this);
-	}
-	
 	@Override
 	public void enter(final ViewChangeEvent event) {
 		DashboardEventBus.register(uel);
 		lvfb = new ListViewFragmentBuilder(event);
-		LOGGER.info("parameter is: {}", event.getParameters());
+		getTable().getContainer().whenUriFragmentChange(lvfb);
+		filterForm.whenUriFragmentChange(lvfb);
+		if (lvfb.getPreviousView().isPresent()) {
+			StyleUtil.show(backBtn);
+		}
+		title.setCaption(MsgUtil.getListViewTitle(messageSource, clazz.getSimpleName()));
 	}
-	
+
 	
 	@Override
 	public void detach() {
@@ -156,12 +224,7 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>>
 	
 	@Override
 	public void backward() {
-		String bu = getLvfb().getPreviousView();
-		if (Strings.isNullOrEmpty(bu)) {
-			bu = getListViewName();
-		}
-		UI.getCurrent().getNavigator().navigateTo(bu);
-
+		UI.getCurrent().getNavigator().navigateTo(getLvfb().getPreviousView().orElse(getListViewName()));
 	}
 	
 	public void whenSortChanged(TableSortEvent tse) {
@@ -218,8 +281,11 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>>
 		return messageSource;
 	}
 
+	public J getRepository() {
+		return repository;
+	}
+
 	public class UiEventListener {
-		
 		@Subscribe
 		public void browserResized(final BrowserResizeEvent event) {
 			// Some columns are collapsed when browser window width gets small

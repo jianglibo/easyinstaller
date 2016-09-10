@@ -1,6 +1,5 @@
 package com.jianglibo.vaadin.dashboard.view.software;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -13,13 +12,8 @@ import com.vaadin.data.Property;
 @SuppressWarnings("serial")
 public class SoftwareTable extends TableBase<Software> {
 	
-	@Autowired
-	private SoftwareContainer container;
-
-	@Autowired
-	public SoftwareTable(MessageSource messageSource, Domains domains,SoftwareRepository repository, ListView listview) {
-		super(Software.class, domains, messageSource);
-		container = new SoftwareContainer(repository, domains, listview, this);
+	public SoftwareTable(MessageSource messageSource, Domains domains,SoftwareContainer container, SoftwareRepository repository, ListView listview) {
+		super(Software.class, domains,container, messageSource);
 		container.setEnableSort(true);
 	}
 	
@@ -37,10 +31,10 @@ public class SoftwareTable extends TableBase<Software> {
 		}
 		return result;
 	}
+	
+
 
 	@Override
 	public void refresh() {
-		// TODO Auto-generated method stub
-		
 	}
 }

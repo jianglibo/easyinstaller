@@ -31,7 +31,6 @@ import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.PkSourceUploadFinishResult;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.PkSourceUploadReceiver;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.UploadSuccessEventLinstener;
-import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
@@ -46,8 +45,8 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@SpringView(name = PkSourceView.VIEW_NAME)
-public class PkSourceView extends VerticalLayout
+@SpringView(name = PkSourceListView.VIEW_NAME)
+public class PkSourceListView extends VerticalLayout
 		implements View, SubscriberExceptionHandler, UploadSuccessEventLinstener<PkSourceUploadFinishResult> {
 
 	/**
@@ -55,7 +54,7 @@ public class PkSourceView extends VerticalLayout
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PkSourceView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PkSourceListView.class);
 
 	public static final String VIEW_NAME = "pksource";
 
@@ -75,7 +74,7 @@ public class PkSourceView extends VerticalLayout
 	private final Domains domains;
 
 	@Autowired
-	public PkSourceView(PkSourceRepository repository, Domains domains, MessageSource messageSource,
+	public PkSourceListView(PkSourceRepository repository, Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		this.eventBus = new EventBus(this);
 		this.repository = repository;

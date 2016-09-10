@@ -12,11 +12,8 @@ import com.vaadin.data.Property;
 @SuppressWarnings("serial")
 public class InstallTable extends TableBase<Install> {
 	
-	private InstallContainer container;
-
-	public InstallTable(MessageSource messageSource, Domains domains,InstallRepository repository, ListView listview) {
-		super(Install.class, domains, messageSource);
-		container = new InstallContainer(repository, domains, listview, this);
+	public InstallTable(MessageSource messageSource, Domains domains,InstallContainer container, InstallRepository repository, ListView listview) {
+		super(Install.class, domains,container, messageSource);
 		container.setEnableSort(true);
 	}
 
@@ -40,4 +37,5 @@ public class InstallTable extends TableBase<Install> {
 		// TODO Auto-generated method stub
 		
 	}
+
 }

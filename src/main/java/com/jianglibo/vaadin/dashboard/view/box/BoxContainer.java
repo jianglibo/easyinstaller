@@ -28,17 +28,12 @@ public class BoxContainer extends JpaContainer<Box>{
 	
 	private final ListView listview;
 	
-	public BoxContainer(BoxRepository repository, Domains domains, ListView listview, Table table) {
+	public BoxContainer(BoxRepository repository, Domains domains, ListView listview) {
 		super(Box.class, domains, listview);
 		this.repository = repository;
 		this.listview = listview;
 		VaadinTableWrapper vtw = getDomains().getTables().get(Box.class.getSimpleName());
-		setupProperties(table, SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
-	}
-
-	public void setUriFragmentChange(ListViewFragmentBuilder vfb) {
-		persistState(vfb);
-		setList();
+		setupProperties(SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
 	}
 	
 	public void setList() {
@@ -64,6 +59,12 @@ public class BoxContainer extends JpaContainer<Box>{
 	}
 
 	public void refresh() {
+		setList();
+	}
+
+	@Override
+	public void whenUriFragmentChange(ListViewFragmentBuilder vfb) {
+		persistState(vfb);
 		setList();
 	}
 

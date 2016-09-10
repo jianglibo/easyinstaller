@@ -36,12 +36,12 @@ public class StepDefineContainer extends JpaContainer<StepDefine>{
 	private final ListView listview;
 	
 	@Autowired
-	public StepDefineContainer(StepDefineRepository repository, Domains domains, ListView listview, Table table) {
+	public StepDefineContainer(StepDefineRepository repository, Domains domains, ListView listview) {
 		super(StepDefine.class, domains, listview);
 		this.repository = repository;
 		this.listview = listview;
 		VaadinTableWrapper vtw = getDomains().getTables().get(StepDefine.class.getSimpleName());
-		setupProperties(table, SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
+		setupProperties(SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
 	}
 
 

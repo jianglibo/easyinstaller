@@ -10,7 +10,7 @@ import com.jianglibo.vaadin.dashboard.view.ContainerSortListener;
 import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
-public class JpaContainer<T> extends ListContainer<T> {
+public abstract class JpaContainer<T> extends ListContainer<T> {
 	
 	private int perPage;
 	
@@ -37,8 +37,7 @@ public class JpaContainer<T> extends ListContainer<T> {
 		this.sortListener = sortListener;
 	}
 	
-	public void setupProperties(Table table, Sort defaultSort, int perPage) {
-		setTable(table);
+	public void setupProperties(Sort defaultSort, int perPage) {
 		setSort(defaultSort);
 		setPerPage(perPage);
 	}
@@ -46,10 +45,10 @@ public class JpaContainer<T> extends ListContainer<T> {
 	public void persistState(ListViewFragmentBuilder vfb) {
 		setTrashed(vfb.getBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME));
 		// only if vfb.getSort() exists.
-		if (vfb.getSort() != null) {
-			setSort(vfb.getSort());
+		if (vfb.getSort().isPresent()) {
+			setSort(vfb.getSort().get());
 		}
-		setFilterStr(vfb.getFilterStr());
+		setFilterStr(vfb.getFilterStr().orElse(""));
 		setCurrentPage(vfb.getCurrentPage());
 		// will cause circular sort event.
 		
@@ -59,6 +58,8 @@ public class JpaContainer<T> extends ListContainer<T> {
 //			table.setSortAscending(od.isAscending());
 //		}
 	}
+	
+	public abstract void whenUriFragmentChange(ListViewFragmentBuilder vfb);
 	
 	
 	@Override

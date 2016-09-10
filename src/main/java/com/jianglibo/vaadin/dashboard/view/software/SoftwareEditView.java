@@ -15,7 +15,6 @@ import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.OrderedStepDefineTwinGrid;
-import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
@@ -57,8 +56,6 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 	
 	private Software bean;
     
-    private HeaderLayout header;
-    
     private ItemViewFragmentBuilder ifb;
     
     private SoftwareForm form;
@@ -70,25 +67,25 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 			ApplicationContext applicationContext) {
 		this.messageSource = messageSource;
 		this.repository= repository;
-		this.eventBus = new EventBus(this.getClass().getName());
-		this.applicationContext = applicationContext;
-		eventBus.register(this);
-		setSizeFull();
-		addStyleName("transactions");
-		StyleUtil.setOverflowAuto(this, true);
-		setMargin(true);
-		
-//		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
-		
-		addComponent(header);
-		
-		form = (SoftwareForm) applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus, this);
-		
-		addComponent(form);
-		Component ft = buildFooter();
-		addComponent(ft);
-		setComponentAlignment(form, Alignment.TOP_LEFT);
-		setExpandRatio(form, 1);
+//		this.eventBus = new EventBus(this.getClass().getName());
+//		this.applicationContext = applicationContext;
+//		eventBus.register(this);
+//		setSizeFull();
+//		addStyleName("transactions");
+//		StyleUtil.setOverflowAuto(this, true);
+//		setMargin(true);
+//		
+////		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
+//		
+//		addComponent(header);
+//		
+////		form = (SoftwareForm) applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus, this);
+//		
+//		addComponent(form);
+//		Component ft = buildFooter();
+//		addComponent(ft);
+//		setComponentAlignment(form, Alignment.TOP_LEFT);
+//		setExpandRatio(form, 1);
 	}
 	
 	@Override
@@ -125,28 +122,28 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 		// DashboardEventBus.unregister(this);
 	}
 	
-	@Subscribe
-	public void onBackBtnClicked(HistoryBackEvent hbe) {
-		String bu = ifb.getPreviousView();
-		if (Strings.isNullOrEmpty(bu)) {
-			bu = SoftwareListView.VIEW_NAME;
-		}
-		UI.getCurrent().getNavigator().navigateTo(bu);
-	}
+//	@Subscribe
+//	public void onBackBtnClicked(HistoryBackEvent hbe) {
+//		String bu = ifb.getPreviousView();
+//		if (Strings.isNullOrEmpty(bu)) {
+//			bu = SoftwareListView.VIEW_NAME;
+//		}
+//		UI.getCurrent().getNavigator().navigateTo(bu);
+//	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		LOGGER.info("parameter string is: {}", event.getParameters());
-		ifb = new ItemViewFragmentBuilder(event);
-		long bid = ifb.getBeanId();
-		if (bid == 0) {
-			bean = new Software();
-			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, Software.class.getSimpleName() + ".newtitle"));
-		} else {
-			bean = repository.findOne(bid);
-			header.setLabelTxt(bean.getName());
-		}
-        form.setItemDataSource(bean);
+//		LOGGER.info("parameter string is: {}", event.getParameters());
+//		ifb = new ItemViewFragmentBuilder(event);
+//		long bid = ifb.getBeanId();
+//		if (bid == 0) {
+//			bean = new Software();
+//			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, Software.class.getSimpleName() + ".newtitle"));
+//		} else {
+//			bean = repository.findOne(bid);
+//			header.setLabelTxt(bean.getName());
+//		}
+//        form.setItemDataSource(bean);
 	}
 
 }

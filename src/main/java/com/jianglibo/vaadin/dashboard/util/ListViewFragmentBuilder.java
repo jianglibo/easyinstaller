@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.util;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -32,7 +34,7 @@ public class ListViewFragmentBuilder extends ViewFragmentBuilder {
 		super(pstr, viewName);
 	}
 	
-	public String getCurrentSortField() {
+	public Optional<String> getCurrentSortField() {
 		return getParameterValue(SORT_PARAM_NAME);
 	}
 	
@@ -55,16 +57,20 @@ public class ListViewFragmentBuilder extends ViewFragmentBuilder {
 		return this;
 	}
 	
-	public Sort getSort() {
-		String s = getParameterValue(SORT_PARAM_NAME);
-		if (Strings.isNullOrEmpty(s)) {
-			return null;
+	public Optional<Sort> getSort() {
+		
+		Optional<String> sOp = getParameterValue(SORT_PARAM_NAME);
+		Sort sort = null;
+		
+		if (sOp.isPresent()) {
+			String s = sOp.get();
+			if (s.startsWith("-")) {
+				sort = new Sort(Direction.DESC, s.substring(1));
+			} else {
+				sort =  new Sort(Direction.ASC, s); 
+			}
 		}
-		if (s.startsWith("-")) {
-			return new Sort(Direction.DESC, s.substring(1));
-		} else {
-			return new Sort(Direction.ASC, s); 
-		}
+		return Optional.ofNullable(sort);
 	}
 	
 	
@@ -89,7 +95,7 @@ public class ListViewFragmentBuilder extends ViewFragmentBuilder {
 		return this;
 	}
 	
-	public String getFilterStr() {
+	public Optional<String> getFilterStr() {
 		return getParameterValue(FILTER_STR_PARAM_NAME);
 	}
 	

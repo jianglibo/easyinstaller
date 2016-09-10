@@ -27,7 +27,7 @@ public class InstallForm extends FormBase<Install> {
 	
 	@Autowired
 	public InstallForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories, InstallRepository repository, StepRunRepository stepRunRepository) {
-		super(Install.class, messageSource, domains, fieldFactories);
+		super(Install.class, messageSource, domains, fieldFactories, null);
 		this.repository = repository;
 		this.stepRunRepository = stepRunRepository;
 	}

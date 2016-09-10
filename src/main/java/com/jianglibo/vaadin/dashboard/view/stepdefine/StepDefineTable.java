@@ -6,17 +6,15 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.StepDefine;
 import com.jianglibo.vaadin.dashboard.repositories.StepDefineRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
+import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.data.Property;
 
 @SuppressWarnings("serial")
 public class StepDefineTable extends TableBase<StepDefine> {
 	
-	private StepDefineContainer container;
-
-	public StepDefineTable(MessageSource messageSource, Domains domains,StepDefineRepository repository, ListView listview) {
-		super(StepDefine.class, domains, messageSource);
-		container = new StepDefineContainer(repository, domains, listview, this);
+	public StepDefineTable(MessageSource messageSource, Domains domains,StepDefineContainer container, StepDefineRepository repository, ListView listview) {
+		super(StepDefine.class, domains,container, messageSource);
 		container.setEnableSort(true);
 	}
 	
@@ -34,6 +32,7 @@ public class StepDefineTable extends TableBase<StepDefine> {
 		}
 		return result;
 	}
+
 
 	@Override
 	public void refresh() {

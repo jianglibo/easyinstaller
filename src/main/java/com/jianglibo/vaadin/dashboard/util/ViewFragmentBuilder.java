@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.util;
 
+import java.util.Optional;
+
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -24,7 +26,7 @@ public class ViewFragmentBuilder {
 		setUriComs(uriCb.build());
 	}
 	
-	public String getPreviousView() {
+	public Optional<String> getPreviousView() {
 		return getParameterValue(PREVIOUS_VIEW_PARAMETER_NAME);
 	}
 	
@@ -47,15 +49,16 @@ public class ViewFragmentBuilder {
 	}
 
 	public boolean getBoolean(String pname) {
-		String bs = getParameterValue(pname);
-		if (Strings.isNullOrEmpty(bs)) {
-			return false;
-		} else {
+		Optional<String> bsOp = getParameterValue(pname);
+		if (bsOp.isPresent()) {
+			String bs = bsOp.get();
 			if ("true".equalsIgnoreCase(bs) || "yes".equalsIgnoreCase(bs) || "1".equalsIgnoreCase(bs)) {
 				return true;
 			} else {
 				return false;
 			}
+		} else {
+			return false;
 		}
 	}
 	
@@ -63,9 +66,13 @@ public class ViewFragmentBuilder {
 		return str2l(getParameterValue(pname));
 	}
 	
-	protected Integer str2i(String stri) {
+	protected Integer str2i(Optional<String> stri) {
 		try {
-			return Integer.valueOf(stri);
+			if (stri.isPresent()) {
+				return Integer.valueOf(stri.get());	
+			} else {
+				return 0;
+			}
 		} catch (NumberFormatException e) {
 			return 0;
 		}
@@ -73,9 +80,14 @@ public class ViewFragmentBuilder {
 
 
 	
-	protected Long str2l(String stri) {
+	protected Long str2l(Optional<String> stri) {
 		try {
-			return Long.valueOf(stri);
+			if (stri.isPresent()) {
+				return Long.valueOf(stri.get());
+			} else {
+				return 0L;
+			}
+			
 		} catch (NumberFormatException e) {
 			return 0L;
 		}
@@ -85,12 +97,12 @@ public class ViewFragmentBuilder {
 		return getViewName() + "/" + build().toUriString();
 	}
 	
-	protected String getParameterValue(String pname) {
+	protected Optional<String> getParameterValue(String pname) {
+		String v = null;
 		if (getUriComs().getQueryParams().containsKey(pname)) {
-			return getUriComs().getQueryParams().getFirst(pname);
-		} else {
-			return "";
+			v =  getUriComs().getQueryParams().getFirst(pname);
 		}
+		return Optional.ofNullable(v);
 	}
 	
 	public UriComponents build() {

@@ -1,18 +1,15 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.dynmenu;
 
-import java.util.Collection;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
-import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
+import com.jianglibo.vaadin.dashboard.util.StyleUtil;
+import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -28,9 +25,10 @@ public class DynButtonComponent extends HorizontalLayout implements ClickListene
 	
 	private Map<String, Button> itemMap = Maps.newHashMap();
 	
-	private EventBus eventBus;
+	private ListView listview;
 	
-	public DynButtonComponent(MessageSource messageSource, ButtonGroup...groups) {
+	public DynButtonComponent(MessageSource messageSource,ListView listview, ButtonGroup...groups) {
+		this.listview = listview;
 		MarginInfo mf = new MarginInfo(false, false, false, true);
 		setMargin(mf);
 		addStyleName("dyn-menu");
@@ -126,9 +124,9 @@ public class DynButtonComponent extends HorizontalLayout implements ClickListene
 		itemMap.forEach((k, v) -> {
 			boolean enabled = btnDescriptionMap.get(k).isEnabled(num);
 			if (enabled) {
-				v.removeStyleName("display-none");
+				StyleUtil.show(v);
 			} else {
-				v.addStyleName("display-none");
+				StyleUtil.hide(v);
 			}
 		});
 	}
@@ -136,6 +134,6 @@ public class DynButtonComponent extends HorizontalLayout implements ClickListene
 	@Override
 	public void buttonClick(ClickEvent event) {
 		ButtonDescription btDesc = (ButtonDescription) event.getButton().getData();
-		eventBus.post(new DynMenuClickEvent(btDesc.getItemId()));
+		listview.onDynButtonClicked(btDesc);
 	}
 }

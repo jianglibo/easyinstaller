@@ -30,7 +30,6 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
-import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
@@ -47,7 +46,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = StepDefineListView.VIEW_NAME)
-public class StepDefineListView extends BaseListView<StepDefine, StepDefineTable>{
+public class StepDefineListView extends BaseListView<StepDefine, StepDefineTable, StepDefineRepository>{
 
 	/**
 	 * 
@@ -64,14 +63,10 @@ public class StepDefineListView extends BaseListView<StepDefine, StepDefineTable
 	private VaadinTableColumns tableColumns;
 	
 	
-	private final StepDefineRepository repository;
-	
-	
 	@Autowired
 	public StepDefineListView(StepDefineRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		super(applicationContext, messageSource, domains, StepDefine.class, StepDefineTable.class);
-		this.repository = repository;
+		super(applicationContext, messageSource, domains, repository, StepDefine.class, StepDefineTable.class);
 		
 //		this.domains = domains;
 //		eventBus.register(this);

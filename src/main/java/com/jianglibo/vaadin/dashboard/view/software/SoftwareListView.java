@@ -9,44 +9,22 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
-import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
-import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
-import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
-import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
-import com.jianglibo.vaadin.dashboard.event.view.TrashedCheckBoxEvent;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
-import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
-import com.jianglibo.vaadin.dashboard.uicomponent.viewheader.HeaderLayout;
-import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
-import com.jianglibo.vaadin.dashboard.util.MsgUtil;
-import com.jianglibo.vaadin.dashboard.util.SortUtil;
-import com.jianglibo.vaadin.dashboard.util.TableUtil;
 import com.jianglibo.vaadin.dashboard.view.BaseListView;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = SoftwareListView.VIEW_NAME)
-public class SoftwareListView extends BaseListView<Software, SoftwareTable>{
+public class SoftwareListView extends BaseListView<Software, SoftwareTable, SoftwareRepository>{
 
 	/**
 	 * 
@@ -64,14 +42,10 @@ public class SoftwareListView extends BaseListView<Software, SoftwareTable>{
 	private VaadinTableColumns tableColumns;
 	
 	
-	private final SoftwareRepository repository;
-	
-	
 	@Autowired
 	public SoftwareListView(SoftwareRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		super(applicationContext, messageSource, domains, Software.class, SoftwareTable.class);
-		this.repository = repository;
+		super(applicationContext, messageSource, domains,repository, Software.class, SoftwareTable.class);
 		
 //		this.domains = domains;
 //		eventBus.register(this);
@@ -186,31 +160,55 @@ public class SoftwareListView extends BaseListView<Software, SoftwareTable>{
 
 	@Override
 	public void onDynButtonClicked(ButtonDescription btnDesc) {
-		// TODO Auto-generated method stub
-		
+		Collection<Software> selected;
+		switch (btnDesc.getItemId()) {
+		case CommonMenuItemIds.DELETE:
+			selected = (Collection<Software>) getTable().getValue();
+			selected.forEach(b -> {
+				if (b.isArchived()) {
+					getRepository().delete(b);
+				} else {
+					b.setArchived(true);
+					getRepository().save(b);
+				}
+			});
+			((SoftwareContainer)getTable().getContainerDataSource()).refresh();
+			break;
+		case CommonMenuItemIds.REFRESH:
+			((SoftwareContainer)getTable().getContainerDataSource()).refresh();
+			break;
+		case CommonMenuItemIds.EDIT:
+			selected = (Collection<Software>) getTable().getValue();
+			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
+			break;
+		case CommonMenuItemIds.ADD:
+			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
+			break;
+		default:
+			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
+		}
 	}
 
 	@Override
 	public void notifySort(Sort sort) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public SoftwareTable createTable() {
-		// TODO Auto-generated method stub
-		return null;
+		SoftwareContainer sfc = new SoftwareContainer(getRepository(), getDomains(), this);
+		return new SoftwareTable(getMessageSource(), getDomains(),sfc, getRepository(), this);
 	}
 
 	@Override
 	public ButtonGroup[] getButtonGroups() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ButtonGroup[]{ //
+		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
+		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
 	}
 
 	@Override
 	public String getListViewName() {
-		// TODO Auto-generated method stub
-		return null;
+		return VIEW_NAME;
 	}
 }

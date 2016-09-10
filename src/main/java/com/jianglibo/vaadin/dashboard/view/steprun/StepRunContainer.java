@@ -20,7 +20,6 @@ import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
 @SpringComponent
@@ -34,15 +33,14 @@ public class StepRunContainer extends JpaContainer<StepRun> {
 	private final ListView listview;
 
 	@Autowired
-	public StepRunContainer(StepRunRepository repository, Domains domains, ListView listview, Table table) {
+	public StepRunContainer(StepRunRepository repository, Domains domains, ListView listview) {
 		super(StepRun.class, domains, listview);
 		this.repository = repository;
 		this.listview = listview;
 		VaadinTableWrapper vtw = getDomains().getTables().get(StepRun.class.getSimpleName());
-		setupProperties(table, SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
+		setupProperties(SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
 	}
 
-	@Subscribe
 	public void whenUriFragmentChange(ListViewFragmentBuilder vfb) {
 		persistState(vfb);
 		setList();

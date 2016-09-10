@@ -24,7 +24,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 
 @SpringView(name = InstallListView.VIEW_NAME)
-public class InstallListView extends BaseListView<Install, InstallTable> {
+public class InstallListView extends BaseListView<Install, InstallTable, InstallRepository> {
 
 	/**
 	 * 
@@ -40,14 +40,12 @@ public class InstallListView extends BaseListView<Install, InstallTable> {
 
 //	private VaadinTableColumns tableColumns;
 	
-	private final InstallRepository repository;
 	
 	
 	@Autowired
 	public InstallListView(InstallRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		super(applicationContext,messageSource,domains, Install.class, InstallTable.class);
-		this.repository = repository;
+		super(applicationContext,messageSource,domains,repository, Install.class, InstallTable.class);
 		
 //		this.domains = domains;
 //		setSizeFull();
@@ -130,10 +128,10 @@ public class InstallListView extends BaseListView<Install, InstallTable> {
 			selected = (Collection<Install>) getTable().getValue();
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-					repository.delete(b);
+					getRepository().delete(b);
 				} else {
 					b.setArchived(true);
-					repository.save(b);
+					getRepository().save(b);
 				}
 			});
 			getTable().refresh();
