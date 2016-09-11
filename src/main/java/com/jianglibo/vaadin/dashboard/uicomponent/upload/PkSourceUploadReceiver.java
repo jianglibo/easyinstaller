@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Scope;
 
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
-import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.vaadin.server.Page;
@@ -35,7 +35,7 @@ public class PkSourceUploadReceiver implements UploadReceiver<PkSourceUploadFini
 	private MessageSource messageSource;
 
 	@Autowired
-	private ApplicationConfigWrapper applicationConfigWrapper;
+	private ApplicationConfig applicationConfig;
 	
 	@Autowired
 	private PkSourceRepository pkSourceRepository;
@@ -62,7 +62,7 @@ public class PkSourceUploadReceiver implements UploadReceiver<PkSourceUploadFini
 		try {
 			// Open the file for writing.
 			String uuid = UUID.randomUUID().toString();
-			file = applicationConfigWrapper.unwrap().getUploadDstPath().resolve(uuid).toFile();
+			file = applicationConfig.getUploadDstPath().resolve(uuid).toFile();
 			fos = new FileOutputStream(file);
 		} catch (final java.io.FileNotFoundException e) {
 			new Notification(messageSource.getMessage("component.upload.cantopenfile", new String[]{file.toString()}, UI.getCurrent().getLocale()), "", Notification.Type.ERROR_MESSAGE)

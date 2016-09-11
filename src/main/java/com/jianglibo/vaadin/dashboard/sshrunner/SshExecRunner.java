@@ -11,7 +11,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.jianglibo.vaadin.dashboard.annotation.Runner;
-import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.repositories.JschExecuteResultRepository;
@@ -38,7 +38,7 @@ public class SshExecRunner implements BaseRunner {
 	private StepRunRepository stepRunRepository;
 	
 	@Autowired
-	private ApplicationConfigWrapper applicationConfigWrapper;
+	private ApplicationConfig applicationConfig;
 	
 	private JschExecuteResultRepository jschExecuteResultRepository;
 
@@ -50,7 +50,7 @@ public class SshExecRunner implements BaseRunner {
 	private JschExecuteResult copyCodeToServerAndRun(JschSession jsession, StepRun stepRun) {
 		String code = CodeSubstitudeUtil.process(stepRun);
 		ChannelSftp sftp = null;
-		String cmdFile = applicationConfigWrapper.unwrap().getRemoteFolder() + "code/"   + stepRun.getUniqueFileName();
+		String cmdFile = applicationConfig.getRemoteFolder() + "code/"   + stepRun.getUniqueFileName();
 		try {
 			sftp = jsession.getSftpCh();
 			try {

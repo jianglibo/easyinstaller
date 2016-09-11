@@ -22,7 +22,6 @@ import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByJpql;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByStringOptions;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
-import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
 import com.jianglibo.vaadin.dashboard.config.ComboItem;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
@@ -52,9 +51,9 @@ public class ComboBoxFieldFactory {
 	
 	
 	@Autowired
-	public ComboBoxFieldFactory(MessageSource messageSource, ApplicationConfigWrapper appConfigWrapper) {
+	public ComboBoxFieldFactory(MessageSource messageSource, ApplicationConfig appConfig) {
 		this.messageSource = messageSource;
-		this.appConfig = appConfigWrapper.unwrap();
+		this.appConfig = appConfig;
 	}
 	
 	public ComboBox create(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {

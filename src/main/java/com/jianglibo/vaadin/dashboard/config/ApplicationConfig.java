@@ -58,35 +58,35 @@ public class ApplicationConfig {
 	}
 
 	
-	// properties different from origin config copy here.
-	public void after(ApplicationConfigCustom acc) {
-		// will change when new custom config item added.
-		if (!Strings.isNullOrEmpty(acc.getUploadDst())) {
-			setUploadDst(acc.getUploadDst());
-		}
-		
-		if (uploadDst.startsWith("~")) {
-			uploadDstPath = Paths.get(System.getProperty("user.home"));
-			Set<Character> cs = Sets.newHashSet('~', '/', '\\');
-			
-			int i = 0;
-			while(cs.contains(uploadDst.charAt(i))) {
-				i++;
-			}
-			uploadDstPath = uploadDstPath.resolve(uploadDst.substring(i));
-			
-			if (!Files.exists(uploadDstPath)) {
-				uploadDstPath.toFile().mkdirs();
-			}
-		}
-		
-		String rf = getRemoteFolder();
-		rf = rf.replaceAll("\\\\", "/");
-		if (!rf.endsWith("/")) {
-			rf = rf + "/";
-		}
-		setRemoteFolder(rf);
-	}
+//	// properties different from origin config copy here.
+//	public void after(ApplicationConfigCustom acc) {
+//		// will change when new custom config item added.
+//		if (!Strings.isNullOrEmpty(acc.getUploadDst())) {
+//			setUploadDst(acc.getUploadDst());
+//		}
+//		
+//		if (uploadDst.startsWith("~")) {
+//			uploadDstPath = Paths.get(System.getProperty("user.home"));
+//			Set<Character> cs = Sets.newHashSet('~', '/', '\\');
+//			
+//			int i = 0;
+//			while(cs.contains(uploadDst.charAt(i))) {
+//				i++;
+//			}
+//			uploadDstPath = uploadDstPath.resolve(uploadDst.substring(i));
+//			
+//			if (!Files.exists(uploadDstPath)) {
+//				uploadDstPath.toFile().mkdirs();
+//			}
+//		}
+//		
+//		String rf = getRemoteFolder();
+//		rf = rf.replaceAll("\\\\", "/");
+//		if (!rf.endsWith("/")) {
+//			rf = rf + "/";
+//		}
+//		setRemoteFolder(rf);
+//	}
 
 	public String getStepFolder() {
 		return stepFolder;

@@ -13,9 +13,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
-import com.jianglibo.vaadin.dashboard.Tutil;
-import com.jianglibo.vaadin.dashboard.config.ApplicationConfigCustom;
-
 public class TestYml {
 	
 	@Test
@@ -26,18 +23,18 @@ public class TestYml {
 		
 	}
 	
-	@Test
-	public void tApplicationCofigCustom() throws IllegalAccessException, InvocationTargetException {
-		ApplicationConfigCustom acc = new ApplicationConfigCustom();
-		acc.setUploadDst(null);
-		Yaml yaml = new Yaml();
-		String dumped = yaml.dumpAsMap(acc);
-		
-		acc = yaml.loadAs(dumped, ApplicationConfigCustom.class);
-		Object o = yaml.load(dumped);
-		BeanUtils.populate(acc, (Map<String, ? extends Object>) o);
-		Tutil.printme(o);
-	}
+//	@Test
+//	public void tApplicationCofigCustom() throws IllegalAccessException, InvocationTargetException {
+//		ApplicationConfigCustom acc = new ApplicationConfigCustom();
+//		acc.setUploadDst(null);
+//		Yaml yaml = new Yaml();
+//		String dumped = yaml.dumpAsMap(acc);
+//		
+//		acc = yaml.loadAs(dumped, ApplicationConfigCustom.class);
+//		Object o = yaml.load(dumped);
+//		BeanUtils.populate(acc, (Map<String, ? extends Object>) o);
+//		Tutil.printme(o);
+//	}
 	
 	@Test
 	public void tNestBeanPopulater() {

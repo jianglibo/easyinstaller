@@ -12,7 +12,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.jianglibo.vaadin.dashboard.annotation.Runner;
-import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.repositories.JschExecuteResultRepository;
@@ -38,7 +38,7 @@ public class SshUploadRunner implements BaseRunner {
 	private StepRunRepository stepRunRepository;
 	
 	@Autowired
-	private ApplicationConfigWrapper applicationConfigWrapper;
+	private ApplicationConfig applicationConfig;
 	
 	private JschExecuteResultRepository jschExecuteResultRepository;
 
@@ -59,12 +59,12 @@ public class SshUploadRunner implements BaseRunner {
 					to = fromFile.getName();
 				} else {
 					to = from.replaceAll("\\\\", "/");
-					fromFile = new File(applicationConfigWrapper.unwrap().getRemoteFolder(), from);
+					fromFile = new File(applicationConfig.getRemoteFolder(), from);
 				}
 			}
 			
 			if (!fromFile.exists() || fromFile.isDirectory()) {
-				to = applicationConfigWrapper.unwrap().getRemoteFolder() + "pkg/" + to;
+				to = applicationConfig.getRemoteFolder() + "pkg/" + to;
 				
 				ChannelSftp sftp = null;
 				try {

@@ -12,7 +12,6 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
-import com.jianglibo.vaadin.dashboard.config.ApplicationConfigWrapper;
 import com.jianglibo.vaadin.dashboard.config.ComboItem;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.ui.TwinColSelect;
@@ -26,9 +25,9 @@ public class TwinColSelectFieldFactory {
 	private final ApplicationConfig appConfig;
 	
 	@Autowired
-	public TwinColSelectFieldFactory(MessageSource messageSource, ApplicationConfigWrapper appConfigWrapper) {
+	public TwinColSelectFieldFactory(MessageSource messageSource, ApplicationConfig appConfig) {
 		this.messageSource = messageSource;
-		this.appConfig = appConfigWrapper.unwrap();
+		this.appConfig = appConfig;
 	}
 	
 	/**
