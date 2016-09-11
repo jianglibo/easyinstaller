@@ -38,20 +38,16 @@ public abstract class BaseGridField<C extends Collection<B>, B extends BaseEntit
 
 	private MyValueChangeListener vc;
 
-	public BaseGridField(Domains domains, Class<B> clazz, MessageSource messageSource) {
+	public BaseGridField(Domains domains, Class<B> clazz, MessageSource messageSource, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		this.domains = domains;
 		this.messageSource = messageSource;
 		this.clazz = clazz;
 		vc = new MyValueChangeListener();
-		addValueChangeListener(vc);
-	}
-
-	public BaseGridField<C, B> afterInjection(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		this.vtw = vtw;
 		this.vffw = vffw;
 		grid = createGrid(vtw, vffw, Lists.newArrayList(), true);
 		setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
-		return this;
+		addValueChangeListener(vc);
 	}
 
 	@Override

@@ -94,15 +94,14 @@ public class BoxListView extends BaseListView<Box, BoxTable, BoxRepository> {
 				new ButtonGroup(new ButtonDescription("installedSoftware", null, ButtonEnableType.ONE))};
 	}
 
-	@Override
 	public void notifySort(Sort sort) {
 		
 	}
 
 	@Override
 	public BoxTable createTable() {
-		BoxContainer bc = new BoxContainer(getRepository(), getDomains(), this);
-		return new BoxTable(getMessageSource(), getDomains(),bc, getRepository(), this);
+		BoxContainer bc = new BoxContainer(getRepository(), getDomains());
+		return new BoxTable(getMessageSource(), getDomains(),bc, getRepository());
 	}
 
 	@Override

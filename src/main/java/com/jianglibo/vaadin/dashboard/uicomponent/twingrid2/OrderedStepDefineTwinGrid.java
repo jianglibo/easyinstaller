@@ -2,10 +2,7 @@ package com.jianglibo.vaadin.dashboard.uicomponent.twingrid2;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
@@ -19,15 +16,12 @@ import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickListener;
 
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class OrderedStepDefineTwinGrid
 		extends BaseTwinGridField<List<OrderedStepDefine>, OrderedStepDefine, StepDefine> {
 
@@ -38,23 +32,14 @@ public class OrderedStepDefineTwinGrid
 
 	private OrderedStepDefineRepository orderedStepDefineRepository;
 
-	@Autowired
 	public OrderedStepDefineTwinGrid(Domains domains, MessageSource messageSource,
-			OrderedStepDefineRepository orderedStepDefineRepository) {
-		super(OrderedStepDefine.class, StepDefine.class, domains, messageSource);
+			OrderedStepDefineRepository orderedStepDefineRepository,VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		super(OrderedStepDefine.class, StepDefine.class, domains, messageSource, vtw,  vffw);
 		this.orderedStepDefineRepository = orderedStepDefineRepository;
 		StyleUtil.setBtnLinkStyleContainer(this);
 		StyleUtil.setDisableCellFocus(this);
 	}
 
-	@Override
-	public OrderedStepDefineTwinGrid afterInjection(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		return (OrderedStepDefineTwinGrid) super.afterInjection(vtw, vffw);
-	}
-
-	public OrderedStepDefineTwinGrid done() {
-		return this;
-	}
 
 	@Override
 	public void addGeneratedPropertyForLeft(GeneratedPropertyContainer gpcontainer, String extraName) {

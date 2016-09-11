@@ -3,7 +3,6 @@ package com.jianglibo.vaadin.dashboard.uicomponent.table;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Set;
 
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort.Order;
@@ -13,7 +12,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
@@ -44,7 +43,7 @@ public abstract class TableBase<E> extends Table {
 		VaadinTableColumns tableColumns = domains.getTableColumns().get(domainName);
 		VaadinTableWrapper vtw = domains.getTables().get(domainName);
 		decorateTable(vtw, tableColumns);
-		setFooter();
+		setFooter(null);
 		// Allow dragging items to the reports menu
 		setDragMode(TableDragMode.MULTIROW);
 	}
@@ -91,7 +90,7 @@ public abstract class TableBase<E> extends Table {
 		return dfm.format(((Date) property.getValue()));
 	}
 
-	public abstract void setFooter();
+	public abstract void setFooter(PageMetaEvent pme);
 	
 	public abstract void refresh();
 	

@@ -3,26 +3,22 @@ package com.jianglibo.vaadin.dashboard.uicomponent.gridfield;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickListener;
 
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class StepRunGridField extends BaseGridField<Collection<StepRun>, StepRun> {
 
 	/**
@@ -30,9 +26,8 @@ public class StepRunGridField extends BaseGridField<Collection<StepRun>, StepRun
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Autowired
-	public StepRunGridField(Domains domains, MessageSource messageSource) {
-		super(domains, StepRun.class, messageSource);
+	public StepRunGridField(Domains domains, MessageSource messageSource, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		super(domains, StepRun.class, messageSource, vtw, vffw);
 		StyleUtil.setBtnLinkStyleContainer(this);
 		StyleUtil.setDisableCellFocus(this);
 	}

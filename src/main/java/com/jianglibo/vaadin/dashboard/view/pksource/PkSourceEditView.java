@@ -5,16 +5,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
+import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
+import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
-import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
+import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
+import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
+import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.view.BaseEditView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -32,7 +38,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 
 @SpringView(name = PkSourceEditView.VIEW_NAME)
-public class PkSourceEditView  extends VerticalLayout implements View, HandMakeFieldsListener {
+public class PkSourceEditView  extends BaseEditView<PkSource, FormBase<PkSource>, JpaRepository<PkSource,Long>>{
 	/**
 	 * 
 	 */
@@ -40,29 +46,20 @@ public class PkSourceEditView  extends VerticalLayout implements View, HandMakeF
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PkSourceEditView.class);
 	
-	private final MessageSource messageSource;
 	
-	private final PkSourceRepository pkSourceRepository;
 
 	public static final String VIEW_NAME = PkSourceListView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
-
-	private EventBus eventBus;
 	
-	private	PkSource pkSource;
     
-    
-    private ItemViewFragmentBuilder ifb;
-    
-    private PkSourceForm form;
-	
 	@Autowired
-	public PkSourceEditView(PkSourceRepository pkSourceRepository, MessageSource messageSource,
+	public PkSourceEditView(PkSourceRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
-		this.messageSource = messageSource;
-		this.pkSourceRepository = pkSourceRepository;
-		this.eventBus = new EventBus(this.getClass().getName());
+		super(messageSource, domains, fieldFactories, repository);
+//		this.messageSource = messageSource;
+//		this.pkSourceRepository = pkSourceRepository;
+//		this.eventBus = new EventBus(this.getClass().getName());
 //		eventBus.register(this);
 //		setSizeFull();
 //		addStyleName("transactions");
@@ -78,25 +75,25 @@ public class PkSourceEditView  extends VerticalLayout implements View, HandMakeF
 //		setExpandRatio(form, 1);
 	}
 	
-    @SuppressWarnings("serial")
-	private Component buildFooter() {
-        HorizontalLayout footer = new HorizontalLayout();
-        footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-        footer.setWidth(100.0f, Unit.PERCENTAGE);
-
-        Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));
-        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        ok.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-            	form.save();
-            }
-        });
-        ok.focus();
-        footer.addComponent(ok);
-        footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
-        return footer;
-    }
+//    @SuppressWarnings("serial")
+//	private Component buildFooter() {
+//        HorizontalLayout footer = new HorizontalLayout();
+//        footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+//        footer.setWidth(100.0f, Unit.PERCENTAGE);
+//
+//        Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));
+//        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
+//        ok.addClickListener(new ClickListener() {
+//            @Override
+//            public void buttonClick(ClickEvent event) {
+//            	form.save();
+//            }
+//        });
+//        ok.focus();
+//        footer.addComponent(ok);
+//        footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
+//        return footer;
+//    }
     
 
 	@Override
@@ -131,5 +128,21 @@ public class PkSourceEditView  extends VerticalLayout implements View, HandMakeF
 	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	protected FormBase<PkSource> createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
+			JpaRepository<PkSource, Long> repository, HandMakeFieldsListener handMakeFieldsListener) {
+		return new PkSourceForm(getMessageSource(), getDomains(), getFieldFactories(), (PkSourceRepository) repository, handMakeFieldsListener);
+	}
+
+	@Override
+	protected PkSource createNewBean() {
+		return null;
+	}
+
+	@Override
+	protected String getListViewName() {
+		return VIEW_NAME;
 	}
 }

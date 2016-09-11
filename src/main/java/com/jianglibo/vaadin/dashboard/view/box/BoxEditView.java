@@ -13,6 +13,7 @@ import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
+import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.view.BaseEditView;
 import com.vaadin.server.FontAwesome;
@@ -39,15 +40,14 @@ public class BoxEditView  extends BaseEditView<Box, FormBase<Box>, BoxRepository
 		super(messageSource, domains, fieldFactories, repository);
 	}
 
-	@Override
 	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		return null;
 	}
 
 	@Override
 	protected BoxForm createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
-			JpaRepository<Box, Long> repository) {
-		return new BoxForm(messageSource, domains, fieldFactories, (BoxRepository) repository, this);
+			JpaRepository<Box, Long> repository, HandMakeFieldsListener handMakeFieldsListener) {
+		return new BoxForm(messageSource, domains, fieldFactories, (BoxRepository) repository, handMakeFieldsListener);
 	}
 
 	@Override

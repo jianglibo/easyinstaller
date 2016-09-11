@@ -1,31 +1,30 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.pager;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.config.InterestInUriFragemnt;
-import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
-import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.ValoTheme;
-
+/**
+ * This object's state is from outside, not from self event. perpage and currentPage is from url, totalPage is from datasource.
+ * 
+ * @author jianglibo@gmail.com
+ *
+ */
 @SuppressWarnings("serial")
-public class Pager extends HorizontalLayout implements Button.ClickListener, InterestInUriFragemnt {
+public class Pager extends HorizontalLayout implements Button.ClickListener {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(Pager.class);
 	
@@ -41,11 +40,10 @@ public class Pager extends HorizontalLayout implements Button.ClickListener, Int
 	
 	private Button left;
 	
-	private ListView listview;
-
-	public Pager(MessageSource messageSource, ListView listview) {
+	private List<PageChangeListener> pageChangeListeners = Lists.newArrayList();
+	
+	public Pager(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.listview = listview;
 		MarginInfo mf = new MarginInfo(true, true, true, false);
 		setMargin(mf);
 		addStyleName("pager");
@@ -64,53 +62,39 @@ public class Pager extends HorizontalLayout implements Button.ClickListener, Int
 		addComponents(left, label, right);
 	}
 	
-//	public Pager afterInjection(EventBus eventBus) {
-//		this.eventBus = eventBus;
-//		eventBus.register(this);
-//		MarginInfo mf = new MarginInfo(true, true, true, false);
-//		setMargin(mf);
-//		addStyleName("pager");
-//		left = new Button("");
-//		left.addStyleName(ValoTheme.BUTTON_LINK);
-//
-//		left.setIcon(FontAwesome.ARROW_LEFT);
-//		right = new Button("");
-//		
-//		right.setIcon(FontAwesome.ARROW_RIGHT);
-//		right.addStyleName(ValoTheme.BUTTON_LINK);
-//		
-//		right.addClickListener(this);
-//		left.addClickListener(this);
-//		label = new Label();
-//		addComponents(left, label, right);
-//		return this;
-//	}
+	public void addPageChangeListener(PageChangeListener pcl) {
+		this.pageChangeListeners.add(pcl);
+	}
 	
-	@Subscribe
-	public void whenTotalPageChange(PageMetaEvent tre) {
-		setTotalPage(tre.getTotalPage());
+	private void updateDisplay() {
 		label.setValue(messageSource.getMessage("pager.pagenumber", new Object[]{getTotalPage(), getCurrentPage()}, UI.getCurrent().getLocale()));
 	}
+	
+	public void setTotalPage(PageMetaEvent tre) {
+		setTotalPage(tre.getTotalPage());
+		updateDisplay();
+	}
 
-	@Subscribe
-	public void whenUriFragementChange(ListViewFragmentBuilder vfb) {
+	public void setCurrentPageAndPerPage(ListViewFragmentBuilder vfb) {
 		setCurrentPage(vfb.getCurrentPage());
-		label.setValue(messageSource.getMessage("pager.pagenumber", new Object[]{getTotalPage(), getCurrentPage()}, UI.getCurrent().getLocale()));
+		updateDisplay();
 	}
 
 	@Override
 	public void buttonClick(ClickEvent event) {
 		if (event.getButton() == left) {
-			if (currentPage > 0) {
-				currentPage--;
-				listview.gotoPage(currentPage);
+			if (currentPage > 1) {
+				pageChangeListeners.forEach(pcl -> pcl.pageChanged(currentPage - 1));
 			}
 		} else {
 			if (currentPage < totalPage) {
-				currentPage++;
-				listview.gotoPage(currentPage);
+				pageChangeListeners.forEach(pcl -> pcl.pageChanged(currentPage + 1));
 			}
 		}
+	}
+	
+	public static interface PageChangeListener {
+		void pageChanged(int page);
 	}
 
 	public int getCurrentPage() {

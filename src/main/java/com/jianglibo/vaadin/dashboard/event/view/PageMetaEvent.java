@@ -16,6 +16,10 @@ public class PageMetaEvent {
 		this.setTotalRecord(new Long(totalRecord).intValue());
 	}
 	
+	public String getTotalRecordString() {
+		return String.valueOf(totalRecord);
+	}
+	
 	public int getTotalRecord() {
 		return totalRecord;
 	}

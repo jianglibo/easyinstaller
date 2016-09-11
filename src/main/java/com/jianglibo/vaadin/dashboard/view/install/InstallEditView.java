@@ -9,23 +9,30 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
+import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Install;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
+import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
+import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
+import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
+import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.PropertyIdAndField;
 import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.StepRunGridField;
-import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
+import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
+import com.jianglibo.vaadin.dashboard.view.BaseEditView;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
@@ -47,7 +54,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 
 @SpringView(name = InstallEditView.VIEW_NAME)
-public class InstallEditView  extends VerticalLayout implements View, HandMakeFieldsListener {
+public class InstallEditView  extends BaseEditView<Install, FormBase<Install>, JpaRepository<Install,Long>>{
 	/**
 	 * 
 	 */
@@ -55,33 +62,26 @@ public class InstallEditView  extends VerticalLayout implements View, HandMakeFi
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InstallEditView.class);
 	
-	private final MessageSource messageSource;
 	
-	private final InstallRepository repository;
 
 	public static final String VIEW_NAME = InstallListView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
-
-	private EventBus eventBus;
-	
-	private Install bean;
     
-    private ItemViewFragmentBuilder ifb;
-    
-    private InstallForm form;
-    
-    private ApplicationContext applicationContext;
     
     private StepRunGridField stepRunGridField;
     
+    private final StepRunRepository stepRunRepository;
+    
 	@SuppressWarnings("serial")
 	@Autowired
-	public InstallEditView(InstallRepository repository, MessageSource messageSource,
+	public InstallEditView(InstallRepository repository,StepRunRepository stepRunRepository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
-		this.messageSource = messageSource;
-		this.applicationContext = applicationContext;
-		this.repository= repository;
+		super(messageSource, domains, fieldFactories, repository);
+		this.stepRunRepository = stepRunRepository;
+//		this.messageSource = messageSource;
+//		this.applicationContext = applicationContext;
+//		this.repository= repository;
 //		this.eventBus = new EventBus(this.getClass().getName());
 //		eventBus.register(this);
 //		setSizeFull();
@@ -115,24 +115,24 @@ public class InstallEditView  extends VerticalLayout implements View, HandMakeFi
 //		setExpandRatio(form, 1);
 	}
 	
-    @SuppressWarnings("serial")
-	private Component buildFooter() {
-        HorizontalLayout footer = new HorizontalLayout();
-        footer.setWidth(100.0f, Unit.PERCENTAGE);
-
-        Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));
-        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        ok.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-            	form.save();
-            }
-        });
-        ok.focus();
-        footer.addComponent(ok);
-        footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
-        return footer;
-    }
+//    @SuppressWarnings("serial")
+//	private Component buildFooter() {
+//        HorizontalLayout footer = new HorizontalLayout();
+//        footer.setWidth(100.0f, Unit.PERCENTAGE);
+//
+//        Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));
+//        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
+//        ok.addClickListener(new ClickListener() {
+//            @Override
+//            public void buttonClick(ClickEvent event) {
+//            	form.save();
+//            }
+//        });
+//        ok.focus();
+//        footer.addComponent(ok);
+//        footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
+//        return footer;
+//    }
     
 
 	@Override
@@ -169,7 +169,23 @@ public class InstallEditView  extends VerticalLayout implements View, HandMakeFi
 
 	@Override
 	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		stepRunGridField = (StepRunGridField) applicationContext.getBean(StepRunGridField.class).afterInjection(vtw, vffw);
+		stepRunGridField =  new StepRunGridField(getDomains(), getMessageSource(),vtw, vffw);
 		return stepRunGridField;
+	}
+
+	@Override
+	protected FormBase<Install> createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
+			JpaRepository<Install, Long> repository,HandMakeFieldsListener handMakeFieldsListener) {
+		return new InstallForm(getMessageSource(), getDomains(), fieldFactories, (InstallRepository) repository, stepRunRepository, handMakeFieldsListener);
+	}
+
+	@Override
+	protected Install createNewBean() {
+		return new Install();
+	}
+
+	@Override
+	protected String getListViewName() {
+		return VIEW_NAME;
 	}
 }

@@ -26,7 +26,6 @@ import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
-import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.PkSourceUploadFinishResult;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.PkSourceUploadReceiver;
@@ -62,7 +61,6 @@ public class PkSourceListView extends VerticalLayout
 
 	private final Table table;
 
-	private TableController tableController;
 
 	private ListViewFragmentBuilder lvfb;
 
@@ -102,7 +100,7 @@ public class PkSourceListView extends VerticalLayout
 
 //		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);
 
-		addComponent(tableController);
+//		addComponent(tableController);
 //		table = applicationContext.getBean(PkSourceTable.class).afterInjection(eventBus);
 //		addComponent(table);
 //		setExpandRatio(table, 1);

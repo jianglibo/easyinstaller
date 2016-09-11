@@ -1,16 +1,26 @@
 package com.jianglibo.vaadin.dashboard.data.container;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.vaadin.maddon.ListContainer;
 
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.view.ContainerSortListener;
 import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
 public abstract class JpaContainer<T> extends ListContainer<T> {
+	
+	protected final Logger Logger;
 	
 	private int perPage;
 	
@@ -30,11 +40,30 @@ public abstract class JpaContainer<T> extends ListContainer<T> {
 	
 	private ContainerSortListener sortListener;
 	
+	private List<PageMetaChangeListener> pageMetaChangeListeners = Lists.newArrayList();
 	
-	public JpaContainer(Class<T> clazz, Domains domains, ContainerSortListener sortListener){
+	
+	public static interface PageMetaChangeListener {
+		void pageMetaChanged(PageMetaEvent pme);
+	}
+	
+	public void addPageMetaChangeListener(PageMetaChangeListener pmcl) {
+		pageMetaChangeListeners.add(pmcl);
+	}
+	
+	public void notifyPageMetaChangeListeners(PageMetaEvent pme) {
+		pageMetaChangeListeners.forEach(pmcl -> {
+			pmcl.pageMetaChanged(pme);
+		});
+	}
+	
+	
+	public JpaContainer(Class<T> clazz, Domains domains ){
 		super(clazz);
+		this.Logger = LoggerFactory.getLogger(clazz);
 		this.domains = domains;
-		this.sortListener = sortListener;
+		VaadinTableWrapper vtw = getDomains().getTables().get(clazz.getSimpleName());
+		setupProperties(SortUtil.fromString(vtw.getVt().defaultSort()), vtw.getVt().defaultPerPage());
 	}
 	
 	public void setupProperties(Sort defaultSort, int perPage) {

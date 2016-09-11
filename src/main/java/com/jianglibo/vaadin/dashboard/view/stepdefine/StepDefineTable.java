@@ -4,24 +4,28 @@ import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.StepDefine;
+import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.repositories.StepDefineRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
-import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
-import com.jianglibo.vaadin.dashboard.view.ListView;
 import com.vaadin.data.Property;
 
 @SuppressWarnings("serial")
 public class StepDefineTable extends TableBase<StepDefine> {
 	
-	public StepDefineTable(MessageSource messageSource, Domains domains,StepDefineContainer container, StepDefineRepository repository, ListView listview) {
+	public StepDefineTable(MessageSource messageSource, Domains domains,StepDefineContainer container, StepDefineRepository repository) {
 		super(StepDefine.class, domains,container, messageSource);
 		container.setEnableSort(true);
 	}
 	
 	@Override
-	public void setFooter() {
-		setColumnFooter("createdAt", "");
-		setColumnFooter("ip", "Total");
+	public void setFooter(PageMetaEvent pme) {
+		if (pme == null) {
+			setColumnFooter("createdAt", "");
+			setColumnFooter("ip", "Total");
+		} else {
+			setColumnFooter("createdAt", pme.getTotalRecordString());
+			setColumnFooter("ip", "Total");
+		}
 	}
 	
 	@Override

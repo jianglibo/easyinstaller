@@ -29,7 +29,6 @@ import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
-import com.jianglibo.vaadin.dashboard.uicomponent.table.TableController;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
@@ -183,7 +182,6 @@ public class StepRunListView extends BaseListView<StepRun, StepRunTable, StepRun
 		
 	}
 
-	@Override
 	public void notifySort(Sort sort) {
 		// TODO Auto-generated method stub
 		

@@ -6,8 +6,8 @@ import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
+import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
-import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
 
 public class BoxForm extends FormBase<Box> {
 	

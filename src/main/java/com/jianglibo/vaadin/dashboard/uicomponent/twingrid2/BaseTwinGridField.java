@@ -70,16 +70,13 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 	
 	private MyValueChangeListener vc;
 	
-	public BaseTwinGridField(Class<L> leftClazz, Class<R> rightClazz, Domains domains, MessageSource messageSource) {
+	public BaseTwinGridField(Class<L> leftClazz, Class<R> rightClazz, Domains domains, MessageSource messageSource,VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		this.leftClazz = leftClazz;
 		this.rightClazz = rightClazz;
 		this.domains = domains;
 		this.messageSource = messageSource;
 		vc = new MyValueChangeListener();
 		addValueChangeListener(vc);
-	}
-	
-	protected BaseTwinGridField<LC,	L, R> afterInjection(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		setVffw(vffw);
 		HorizontalLayout hl = new HorizontalLayout();
 		setWidth(100.0f, Unit.PERCENTAGE);
@@ -99,7 +96,6 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 		hl.setExpandRatio(leftGrid, 1);
 		hl.setExpandRatio(rightGrid, 1);
 		fieldContentToReturn = hl;
-		return this;
 	}
 
 	private boolean foundColumn(String[] columns, String column) {

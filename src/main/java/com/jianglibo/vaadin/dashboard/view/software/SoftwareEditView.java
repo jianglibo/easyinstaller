@@ -5,38 +5,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
+import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
-import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
+import com.jianglibo.vaadin.dashboard.repositories.OrderedStepDefineRepository;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
+import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
+import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.OrderedStepDefineTwinGrid;
-import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
-import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
-import com.jianglibo.vaadin.dashboard.util.MsgUtil;
-import com.jianglibo.vaadin.dashboard.util.StyleUtil;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
+import com.jianglibo.vaadin.dashboard.view.BaseEditView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 
 @SpringView(name = SoftwareEditView.VIEW_NAME)
-public class SoftwareEditView  extends VerticalLayout implements View, HandMakeFieldsListener {
+public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>, JpaRepository<Software,Long>>{
 	/**
 	 * 
 	 */
@@ -44,29 +32,21 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoftwareEditView.class);
 	
-	private final MessageSource messageSource;
 	
-	private final SoftwareRepository repository;
 
 	public static final String VIEW_NAME = SoftwareListView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
-
-	private EventBus eventBus;
 	
-	private Software bean;
-    
-    private ItemViewFragmentBuilder ifb;
-    
-    private SoftwareForm form;
-    
-    private ApplicationContext applicationContext;
-    
+	private final OrderedStepDefineRepository orderedStepDefineRepository;
+
 	@Autowired
-	public SoftwareEditView(SoftwareRepository repository, MessageSource messageSource,
+	public SoftwareEditView(SoftwareRepository repository,OrderedStepDefineRepository orderedStepDefineRepository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
-		this.messageSource = messageSource;
-		this.repository= repository;
+		super(messageSource, domains, fieldFactories, repository);
+		this.orderedStepDefineRepository = orderedStepDefineRepository;
+//		this.messageSource = messageSource;
+//		this.repository= repository;
 //		this.eventBus = new EventBus(this.getClass().getName());
 //		this.applicationContext = applicationContext;
 //		eventBus.register(this);
@@ -88,30 +68,30 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 //		setExpandRatio(form, 1);
 	}
 	
-	@Override
-	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		return applicationContext.getBean(OrderedStepDefineTwinGrid.class).afterInjection(vtw, vffw);
-	}
-
-	
-    @SuppressWarnings("serial")
-	private Component buildFooter() {
-        HorizontalLayout footer = new HorizontalLayout();
-        footer.setWidth(100.0f, Unit.PERCENTAGE);
-
-        Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));
-        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        ok.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-            	form.save();
-            }
-        });
-        ok.focus();
-        footer.addComponent(ok);
-        footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
-        return footer;
-    }
+//	@Override
+//	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+//		return applicationContext.getBean(OrderedStepDefineTwinGrid.class).afterInjection(vtw, vffw);
+//	}
+//
+//	
+//    @SuppressWarnings("serial")
+//	private Component buildFooter() {
+//        HorizontalLayout footer = new HorizontalLayout();
+//        footer.setWidth(100.0f, Unit.PERCENTAGE);
+//
+//        Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));
+//        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
+//        ok.addClickListener(new ClickListener() {
+//            @Override
+//            public void buttonClick(ClickEvent event) {
+//            	form.save();
+//            }
+//        });
+//        ok.focus();
+//        footer.addComponent(ok);
+//        footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
+//        return footer;
+//    }
     
 
 	@Override
@@ -131,8 +111,8 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 //		UI.getCurrent().getNavigator().navigateTo(bu);
 //	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
+//	@Override
+//	public void enter(ViewChangeEvent event) {
 //		LOGGER.info("parameter string is: {}", event.getParameters());
 //		ifb = new ItemViewFragmentBuilder(event);
 //		long bid = ifb.getBeanId();
@@ -144,6 +124,27 @@ public class SoftwareEditView  extends VerticalLayout implements View, HandMakeF
 //			header.setLabelTxt(bean.getName());
 //		}
 //        form.setItemDataSource(bean);
+//	}
+
+	@Override
+	protected Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		return new OrderedStepDefineTwinGrid(getDomains(),getMessageSource(),orderedStepDefineRepository, vtw, vffw);
+	}
+
+	@Override
+	protected FormBase<Software> createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
+			JpaRepository<Software, Long> repository, HandMakeFieldsListener handMakeFieldsListener) {
+		return new SoftwareForm(getMessageSource(), getDomains(), fieldFactories, (SoftwareRepository) repository,handMakeFieldsListener);
+	}
+
+	@Override
+	protected Software createNewBean() {
+		return new Software();
+	}
+
+	@Override
+	protected String getListViewName() {
+		return VIEW_NAME;
 	}
 
 }

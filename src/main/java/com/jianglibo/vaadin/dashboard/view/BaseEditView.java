@@ -5,17 +5,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
+import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
-import com.jianglibo.vaadin.dashboard.uifactory.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
-import com.jianglibo.vaadin.dashboard.view.box.BoxListView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -26,6 +26,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -33,10 +34,10 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
-public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, J extends JpaRepository<E, Long>> extends VerticalLayout implements View, HandMakeFieldsListener {
+public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, J extends JpaRepository<E, Long>> extends VerticalLayout implements View {
 	
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(BaseEditView.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(BaseEditView.class);;
 	
 	private final MessageSource messageSource;
 	
@@ -54,18 +55,21 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 	
 	private Label headTitle;
 	
-	public BaseEditView(MessageSource messageSource,Domains domains,FieldFactories fieldFactories, J repository) {
+	public BaseEditView(MessageSource messageSource,Domains domains, FieldFactories fieldFactories, J repository) {
 		this.messageSource = messageSource;
 		this.repository= repository;
 		this.domains = domains;
 		this.fieldFactories = fieldFactories;
+		
 		setSizeFull();
 		addStyleName("transactions");
 
 		setMargin(new MarginInfo(true, true, false, true));
 		
 		addComponent(createHeaderLayout());
-		form = createForm(messageSource, domains, fieldFactories, repository);
+		form = createForm(messageSource, domains, fieldFactories, repository, (vtw, vffw) -> {
+			return createField(vtw, vffw);
+		});
 		
 		StyleUtil.setOverflowAuto(form, true);
 		
@@ -79,6 +83,8 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 		setExpandRatio(form, 1);
 	}
 
+	protected abstract Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw);
+
 	@Override
 	public void detach() {
 		super.detach();
@@ -88,7 +94,7 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 	}
 
 	protected abstract F createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
-			JpaRepository<E, Long> repository);
+			JpaRepository<E, Long> repository,HandMakeFieldsListener handMakeFieldsListener);
 
 	protected HorizontalLayout createHeaderLayout() {
 		HorizontalLayout hl = new HorizontalLayout();
@@ -115,10 +121,6 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 		});
 		tools.addComponent(backBtn);
 		return hl;
-	}
-	
-	public void onBackBtnClicked(HistoryBackEvent hbe) {
-		UI.getCurrent().getNavigator().navigateTo(ifb.getPreviousView().orElse(BoxListView.VIEW_NAME));
 	}
 	
 	private Component buildFooter() {

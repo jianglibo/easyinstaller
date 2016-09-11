@@ -13,6 +13,8 @@ public class ListViewFragmentBuilder extends ViewFragmentBuilder {
 	
 	public static final String PAGE_PARAM_NAME = "p";
 	
+	public static final String PER_PAGE_PARAM_NAME = "pp";
+	
 	public static final String SORT_PARAM_NAME = "sort";
 	
 	public static final String FILTER_STR_PARAM_NAME = "q";
@@ -38,6 +40,9 @@ public class ListViewFragmentBuilder extends ViewFragmentBuilder {
 		return getParameterValue(SORT_PARAM_NAME);
 	}
 	
+	public boolean isTrashed() {
+		return getBoolean(TRASHED_PARAM_NAME);
+	}
 	
 	public ListViewFragmentBuilder setSort(String fname, boolean ascending, Sort defaultSort) {
 		String s;
@@ -73,7 +78,6 @@ public class ListViewFragmentBuilder extends ViewFragmentBuilder {
 		return Optional.ofNullable(sort);
 	}
 	
-	
 	public ListViewFragmentBuilder setCurrentPage(int page) {
 		if (page < 2) {
 			getUriCb().replaceQueryParam(PAGE_PARAM_NAME);
@@ -82,8 +86,6 @@ public class ListViewFragmentBuilder extends ViewFragmentBuilder {
 		}
 		return this;
 	}
-	
-	
 	
 	public ListViewFragmentBuilder setFilterStr(String filterStr) {
 		if (Strings.isNullOrEmpty(filterStr)) {
@@ -107,6 +109,12 @@ public class ListViewFragmentBuilder extends ViewFragmentBuilder {
 			return i;
 		}
 	}
+	
+	public int getPerPage() {
+		return str2i(getParameterValue(PER_PAGE_PARAM_NAME));
+	}
+
+	
 	public boolean isFromNav() {
 		return fromNav;
 	}
