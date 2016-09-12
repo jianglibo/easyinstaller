@@ -15,11 +15,5 @@ public interface KkvRepository extends JpaRepository<Kkv, Long>,KkvRepositoryCus
 	Page<Kkv> findByArchivedEquals(boolean trashed, Pageable pageable);
 
 	long countByArchivedEquals(boolean trashed);
-
-	Page<Kkv> findByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(String filterStr,
-			String filterStr2, boolean trashed, Pageable pageable);
-
-	long countByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(String filterStr, String filterStr2,
-			boolean trashed);
     
 }

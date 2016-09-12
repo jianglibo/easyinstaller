@@ -80,13 +80,7 @@ public class StepDefineEditView  extends BaseEditView<StepDefine, FormBase<StepD
 //    }
     
 
-	@Override
-	public void detach() {
-		super.detach();
-		// A new instance of TransactionsView is created every time it's
-		// navigated to so we'll need to clean up references to it on detach.
-		// DashboardEventBus.unregister(this);
-	}
+
 	
 //	@Subscribe
 //	public void onBackBtnClicked(HistoryBackEvent hbe) {
@@ -97,8 +91,8 @@ public class StepDefineEditView  extends BaseEditView<StepDefine, FormBase<StepD
 //		UI.getCurrent().getNavigator().navigateTo(bu);
 //	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
+//	@Override
+//	public void enter(ViewChangeEvent event) {
 //		LOGGER.info("parameter string is: {}", event.getParameters());
 //		ifb = new ItemViewFragmentBuilder(event);
 //		long bid = ifb.getBeanId();
@@ -110,7 +104,7 @@ public class StepDefineEditView  extends BaseEditView<StepDefine, FormBase<StepD
 //			header.setLabelTxt(bean.getName());
 //		}
 //        form.setItemDataSource(bean);
-	}
+//	}
 
 	@Override
 	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
@@ -121,21 +115,16 @@ public class StepDefineEditView  extends BaseEditView<StepDefine, FormBase<StepD
 	@Override
 	protected FormBase<StepDefine> createForm(MessageSource messageSource, Domains domains,
 			FieldFactories fieldFactories, JpaRepository<StepDefine, Long> repository, HandMakeFieldsListener handMakeFieldsListener) {
-		// TODO Auto-generated method stub
-		return null;
+		return new StepDefineForm(getMessageSource(), getDomains(), fieldFactories, (StepDefineRepository) repository,handMakeFieldsListener);
 	}
 
 	@Override
 	protected StepDefine createNewBean() {
-		// TODO Auto-generated method stub
-		return null;
+		return new StepDefine();
 	}
 
 	@Override
 	protected String getListViewName() {
-		// TODO Auto-generated method stub
-		return null;
+		return VIEW_NAME;
 	}
-
-
 }

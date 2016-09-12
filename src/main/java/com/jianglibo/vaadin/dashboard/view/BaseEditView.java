@@ -149,13 +149,15 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 		long bid = ifb.getBeanId();
 		if (bid == 0) {
 			bean = createNewBean();
-			headTitle.setCaption(MsgUtil.getViewMsg(messageSource, Box.class.getSimpleName() + ".newtitle"));
+			headTitle.setValue(MsgUtil.getViewMsg(messageSource, Box.class.getSimpleName() + ".newtitle"));
 		} else {
 			bean = repository.findOne(bid);
-			headTitle.setCaption(getBeanDisplayName());
+			headTitle.setValue(getBeanDisplayName());
 		}
         form.setItemDataSource(bean);
 	}
+	
+
 	
 	protected abstract E createNewBean();
 	

@@ -12,6 +12,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
+import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -19,20 +20,19 @@ import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent.DynaMenuItemClickListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
 import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm.FilterValueChangeListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager;
-import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager.PageChangeListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.jianglibo.vaadin.dashboard.util.TableUtil;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -42,11 +42,11 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * If a component need to interact with this object, It's better to hold that
@@ -119,11 +119,11 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 
 	private Component createTopBlock() {
 		TopBlock tb = new TopBlock();
-		tb.addValueChangeListener(str -> {
+		tb.getFilterForm().addValueChangeListener(str -> {
 			this.notifyFilterStringChange(str);
 		});
 
-		tb.addClickListener(event -> {
+		tb.getBackBtn().addClickListener(event -> {
 			this.backward();
 		});
 		return tb;
@@ -166,7 +166,7 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 			((MiddleBlock)middleBlock).getPager().setTotalPage(pme);
 		});
 
-		bottomBlock.addTableValueChangeListener(event -> {
+		bottomBlock.getTable().addValueChangeListener(event -> {
 			if (table.getValue() instanceof Set) {
 				Set<Object> val = (Set<Object>) table.getValue();
 				((MiddleBlock)middleBlock).alterState(val.size());
@@ -181,8 +181,13 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 
 
 	public abstract T createTable();
-
-	public abstract ButtonGroup[] getButtonGroups();
+	
+	public ButtonGroup[] getButtonGroups() {
+		return new ButtonGroup[]{ //
+		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
+		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
+	}
 
 	public abstract String getListViewName();
 
@@ -293,6 +298,8 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 			title.addStyleName(ValoTheme.LABEL_H1);
 			title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
 			addComponent(title);
+			
+			
 			HorizontalLayout tools = new HorizontalLayout();
 			tools.addStyleName("toolbar");
 			filterForm = new FilterForm(messageSource);
@@ -309,20 +316,28 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 		}
 
 		public void alterState(ListViewFragmentBuilder lvfb, String title) {
-			this.title.setCaption(title);
+			this.title.setValue(title);
 			filterForm.whenUriFragmentChange(lvfb);
 			if (lvfb.getPreviousView().isPresent()) {
 				StyleUtil.show(backBtn);
 			}
 		}
-
-		public void addValueChangeListener(FilterValueChangeListener fvcl) {
-			this.filterForm.addValueChangeListener(fvcl);
+		
+		public FilterForm getFilterForm() {
+			return filterForm;
+		}
+		
+		public Button getBackBtn() {
+			return backBtn;
 		}
 
-		public void addClickListener(ClickListener cl) {
-			this.backBtn.addClickListener(cl);
-		}
+//		public void addValueChangeListener(FilterValueChangeListener fvcl) {
+//			this.filterForm.addValueChangeListener(fvcl);
+//		}
+
+//		public void addClickListener(ClickListener cl) {
+//			this.backBtn.addClickListener(cl);
+//		}
 	}
 
 	protected class MiddleBlock extends HorizontalLayout {
@@ -366,10 +381,6 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 		public void addDynaMenuItemClickListener(DynaMenuItemClickListener dynaMenuItemClickListener) {
 			menu.AddDynaMenuItemClickListener(dynaMenuItemClickListener);
 		}
-		
-		public void addPageChangeListener(PageChangeListener pcl) {
-			pager.addPageChangeListener(pcl);
-		}
 
 		public void addTrashBtnClickListener(ClickListener cl) {
 			trashBt.addClickListener(cl);
@@ -406,9 +417,9 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 			table.getContainer().whenUriFragmentChange(lvfb);
 		}
 
-		public void addTableValueChangeListener(ValueChangeListener vcl) {
-			this.table.addValueChangeListener(vcl);
-		}
+//		public void addTableValueChangeListener(ValueChangeListener vcl) {
+//			this.table.addValueChangeListener(vcl);
+//		}
 
 		public T getTable() {
 			return table;

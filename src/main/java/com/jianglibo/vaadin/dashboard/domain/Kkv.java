@@ -5,6 +5,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
@@ -17,10 +18,13 @@ public class Kkv extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	@VaadinTableColumn(order = 10)
 	private String group;
 	
+	@VaadinTableColumn(order = 20)
 	private String key;
 	
+	@VaadinTableColumn(order = 30)
 	private String value;
 
 	@Override

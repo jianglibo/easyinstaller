@@ -14,7 +14,6 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.filecontentfield.FileContentField;
-import com.jianglibo.vaadin.dashboard.uicomponent.twingrid.TwinGridField;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
@@ -170,12 +169,12 @@ public abstract class FormBase<T> extends FormLayout {
 				addStyleName(vffw, fcf);
 				fields.add(new PropertyIdAndField(vffw, fcf));
 				break;
-			case TWIN_GRID:
-				TwinGridField<?> tgf = fieldFactories.getTwinGridFieldFactory().create(vtw, vffw);
-				tgf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
-				addStyleName(vffw, tgf);
-				fields.add(new PropertyIdAndField(vffw, tgf));
-				break;
+//			case TWIN_GRID:
+//				TwinGridField<?> tgf = fieldFactories.getTwinGridFieldFactory().create(vtw, vffw);
+//				tgf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
+//				addStyleName(vffw, tgf);
+//				fields.add(new PropertyIdAndField(vffw, tgf));
+//				break;
 			default:
 				String caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw);
 				TextField tf = new TextField(caption);

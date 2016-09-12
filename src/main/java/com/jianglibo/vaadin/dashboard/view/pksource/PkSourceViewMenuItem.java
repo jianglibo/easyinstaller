@@ -8,7 +8,6 @@ import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
-@MainMenu(menuOrder = 10)
 public class PkSourceViewMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;

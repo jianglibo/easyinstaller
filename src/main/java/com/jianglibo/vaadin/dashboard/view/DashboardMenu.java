@@ -1,25 +1,17 @@
 package com.jianglibo.vaadin.dashboard.view;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Named;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.DashboardNavigator;
 import com.jianglibo.vaadin.dashboard.component.ProfilePreferencesWindow;
 import com.jianglibo.vaadin.dashboard.domain.User;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.PostViewChangeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.ProfileUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
-import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardViewMenuItem;
-import com.jianglibo.vaadin.dashboard.view.reports.ReportsViewMenuItem;
-import com.jianglibo.vaadin.dashboard.view.schedule.ScheduleViewMenuItem;
-import com.jianglibo.vaadin.dashboard.view.transactions.TransactionsViewMenuItem;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
@@ -30,7 +22,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;

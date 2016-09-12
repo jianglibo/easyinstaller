@@ -3,7 +3,6 @@ package com.jianglibo.vaadin.dashboard.event.ui;
 import java.util.Collection;
 
 import com.jianglibo.vaadin.dashboard.domain.Transaction;
-import com.jianglibo.vaadin.dashboard.view.DashboardViewType;
 
 /*
  * Event bus events used in Dashboard are listed here as inner classes.

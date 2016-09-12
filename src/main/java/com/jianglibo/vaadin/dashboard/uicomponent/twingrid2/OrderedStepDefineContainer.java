@@ -44,12 +44,4 @@ public class OrderedStepDefineContainer extends FreeContainer<OrderedStepDefine>
 		this.software = software;
 	}
 	
-	/**
-	 * no need, form.setItemDataSource will trigger container event.
-	 * @param software
-	 */
-//	public void setSoftware(Software software) {
-//		this.software = software;
-//		refresh();
-//	}
 }
