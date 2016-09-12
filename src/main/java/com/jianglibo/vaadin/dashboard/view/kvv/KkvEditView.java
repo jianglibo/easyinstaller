@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.box;
+package com.jianglibo.vaadin.dashboard.view.kvv;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,54 +9,53 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
-import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
+import com.jianglibo.vaadin.dashboard.domain.Kkv;
+import com.jianglibo.vaadin.dashboard.repositories.KkvRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.view.BaseEditView;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Field;
 
 
-@SpringView(name = BoxEditView.VIEW_NAME)
-public class BoxEditView  extends BaseEditView<Box, FormBase<Box>, BoxRepository>{
+@SpringView(name = KkvEditView.VIEW_NAME)
+public class KkvEditView  extends BaseEditView<Kkv, FormBase<Kkv>, JpaRepository<Kkv,Long>>{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(BoxEditView.class);
-	
-	public static final String VIEW_NAME = BoxListView.VIEW_NAME + "/edit";
+	private static final Logger LOGGER = LoggerFactory.getLogger(KkvEditView.class);
 
-	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
-    
+	public static final String VIEW_NAME = KkvListView.VIEW_NAME + "/edit";
+
 	@Autowired
-	public BoxEditView(BoxRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
+	public KkvEditView(KkvRepository repository,MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
-		super(messageSource,Box.class, domains, fieldFactories, repository);
+		super(messageSource,Kkv.class, domains, fieldFactories, repository);
 	}
 
+
+	@Override
 	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		return null;
 	}
 
 	@Override
-	protected BoxForm createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
-			JpaRepository<Box, Long> repository, HandMakeFieldsListener handMakeFieldsListener) {
-		return new BoxForm(messageSource, domains, fieldFactories, (BoxRepository) repository, handMakeFieldsListener);
+	protected FormBase<Kkv> createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
+			JpaRepository<Kkv, Long> repository,HandMakeFieldsListener handMakeFieldsListener) {
+		return new KkvForm(getMessageSource(), getDomains(), fieldFactories, (KkvRepository) repository, handMakeFieldsListener);
 	}
 
 	@Override
-	protected Box createNewBean() {
-		return new Box();
+	protected Kkv createNewBean() {
+		return new Kkv();
 	}
 
 	@Override
 	protected String getListViewName() {
-		return BoxListView.VIEW_NAME;
+		return VIEW_NAME;
 	}
 }

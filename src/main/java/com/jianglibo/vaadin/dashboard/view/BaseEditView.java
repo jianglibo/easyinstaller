@@ -47,6 +47,8 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 	
 	private E bean;
 	
+	private final Class<E> clazz;
+	
 	private final Domains domains;
 	
     private ItemViewFragmentBuilder ifb;
@@ -55,10 +57,11 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 	
 	private Label headTitle;
 	
-	public BaseEditView(MessageSource messageSource,Domains domains, FieldFactories fieldFactories, J repository) {
+	public BaseEditView(MessageSource messageSource,Class<E> clazz, Domains domains, FieldFactories fieldFactories, J repository) {
 		this.messageSource = messageSource;
 		this.repository= repository;
 		this.domains = domains;
+		this.clazz = clazz;
 		this.fieldFactories = fieldFactories;
 		
 		setSizeFull();
@@ -149,7 +152,7 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 		long bid = ifb.getBeanId();
 		if (bid == 0) {
 			bean = createNewBean();
-			headTitle.setValue(MsgUtil.getViewMsg(messageSource, Box.class.getSimpleName() + ".newtitle"));
+			headTitle.setValue(MsgUtil.getViewMsg(messageSource, clazz.getSimpleName() + ".newtitle"));
 		} else {
 			bean = repository.findOne(bid);
 			headTitle.setValue(getBeanDisplayName());

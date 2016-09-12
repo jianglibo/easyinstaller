@@ -1,6 +1,5 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
@@ -14,65 +13,69 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
-
 
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private long id;
-    
-    @Version
-    private int version;
-    
+	@Id
+	@GeneratedValue(strategy = GenerationType.TABLE)
+	private long id;
+
+	@Version
+	private int version;
+
 	@Temporal(TemporalType.TIMESTAMP)
-	@VaadinTableColumn(order=10000, sortable=true)
-    private Date createdAt;
-    
-    private boolean archived = false;
-    
-    public abstract String getDisplayName();
-    
-    @PrePersist
-    public void createCreatedAt() {
-    	setCreatedAt(Date.from(Instant.now()));
-    }
+	@VaadinTableColumn(order = 10000, sortable = true)
+	@VaadinGridColumn(order = 10000, sortable = true)
+	private Date createdAt;
 
-    public long getId() {
-        return id;
-    }
+	@VaadinTableColumn(order = 99990, sortable = true)
+	@VaadinGridColumn(order = 10000, sortable = true, initHidden = true)
+	private boolean archived = false;
 
-    public void setId(long id) {
-        this.id = id;
-    }
+	public abstract String getDisplayName();
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
+	@PrePersist
+	public void createCreatedAt() {
+		setCreatedAt(Date.from(Instant.now()));
+	}
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public boolean isArchived() {
-        return archived;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    public void setArchived(boolean archived) {
-        this.archived = archived;
-    }
+	public Date getCreatedAt() {
+		return createdAt;
+	}
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
-    public int getVersion() {
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public boolean isArchived() {
+		return archived;
+	}
+
+	public void setArchived(boolean archived) {
+		this.archived = archived;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+	public int getVersion() {
 		return version;
 	}
 }

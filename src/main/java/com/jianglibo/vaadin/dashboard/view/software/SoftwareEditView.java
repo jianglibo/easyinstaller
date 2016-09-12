@@ -43,7 +43,7 @@ public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>
 	@Autowired
 	public SoftwareEditView(SoftwareRepository repository,OrderedStepDefineRepository orderedStepDefineRepository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
-		super(messageSource, domains, fieldFactories, repository);
+		super(messageSource, Software.class, domains, fieldFactories, repository);
 		this.orderedStepDefineRepository = orderedStepDefineRepository;
 //		this.messageSource = messageSource;
 //		this.repository= repository;

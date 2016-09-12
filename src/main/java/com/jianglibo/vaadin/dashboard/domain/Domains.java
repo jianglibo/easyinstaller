@@ -17,24 +17,27 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.FormFields;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonMethod;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.util.ClassScanner;
 
 @Component
 public class Domains implements ApplicationContextAware{
 	
-	Map<String, VaadinTableColumns> tableColumns = Maps.newHashMap();
+	Map<String, VaadinGridWrapper> grids = Maps.newHashMap();
 	
-	Map<String, FormFields> formFields = Maps.newHashMap();
+//	Map<String, FormFields> formFields = Maps.newHashMap();
 
 	Map<String, VaadinTableWrapper> tables = Maps.newHashMap();
 	
@@ -63,17 +66,59 @@ public class Domains implements ApplicationContextAware{
 	@PostConstruct
 	void after() throws ClassNotFoundException, IOException {
 		
-		List<Class<?>> clazzes = ClassScanner.findAnnotatedBy("com.jianglibo.vaadin.dashboard.domain", VaadinTable.class);
+		List<Class<?>> clazzesWithVt = ClassScanner.findAnnotatedBy("com.jianglibo.vaadin.dashboard.domain", VaadinTable.class);
 		
-		for(Class<?> clazz : clazzes) {
+		List<Class<?>> clazzesWithVg = ClassScanner.findAnnotatedBy("com.jianglibo.vaadin.dashboard.domain", VaadinGrid.class);
+		
+		Map<Class<?>, List<VaadinFormFieldWrapper>> ffmap = Maps.newHashMap();
+		
+		for(Class<?> clazz : clazzesWithVt) {
 			VaadinTable vt = clazz.getAnnotation(VaadinTable.class);
 			VaadinTableWrapper vtw = new VaadinTableWrapper(vt, clazz);
-			tableColumns.put(vtw.getName(), new VaadinTableColumns(processOneTableColumn(clazz)));
-			formFields.put(vtw.getName(), new FormFields(processOneTableForm(clazz)));
+			vtw.setColumns(processOneTableColumn(clazz));
+			List<VaadinFormFieldWrapper> ff = Lists.newArrayList(processOneTableForm(clazz)); 
+			vtw.setFormFields(ff);
+			ffmap.put(clazz, ff);
 			tables.put(vtw.getName(), vtw);
+		}
+		
+		
+		for(Class<?> clazz : clazzesWithVg) {
+			VaadinGrid vg = clazz.getAnnotation(VaadinGrid.class);
+			VaadinGridWrapper vgw = new VaadinGridWrapper(vg, clazz);
+			vgw.setColumns(processOneGridColumn(clazz));
+			vgw.setFormFields(ffmap.get(clazz));
+			grids.put(vgw.getName(), vgw);
 		}
 	}
 	
+	private List<VaadinGridColumnWrapper> processOneGridColumn(Class<?> clazz) {
+		SortedMap<Integer, VaadinGridColumnWrapper> sm = Maps.newTreeMap();
+		
+		for(Field field  : clazz.getDeclaredFields()){
+		    if (field.isAnnotationPresent(VaadinGridColumn.class)) {
+		    	VaadinGridColumn vgc =  field.getAnnotation(VaadinGridColumn.class);
+	        	int i = vgc.order();
+	        	while(sm.containsKey(i)) {
+	        		i++;
+	        	}
+	        	sm.put(i, new VaadinGridColumnWrapper(vgc, field));
+	        }
+		}
+		
+		for(Field field  : clazz.getSuperclass().getDeclaredFields()){
+		    if (field.isAnnotationPresent(VaadinGridColumn.class)) {
+		    	VaadinGridColumn vgc =  field.getAnnotation(VaadinGridColumn.class);
+	        	int i = vgc.order();
+	        	while(sm.containsKey(i)) {
+	        		i++;
+	        	}
+	        	sm.put(i, new VaadinGridColumnWrapper(vgc, field));
+	        }
+		}
+		return Lists.newArrayList(sm.values());
+	}
+
 	private Collection<VaadinFormFieldWrapper> processOneTableForm(Class<?> clazz) {
 		SortedMap<Integer, VaadinFormFieldWrapper> vfs = Maps.newTreeMap();
 		
@@ -101,7 +146,7 @@ public class Domains implements ApplicationContextAware{
 		return vfs.values();
 	}
 
-	private Collection<VaadinTableColumnWrapper> processOneTableColumn(Class<?> clazz) {
+	private List<VaadinTableColumnWrapper> processOneTableColumn(Class<?> clazz) {
 		SortedMap<Integer, VaadinTableColumnWrapper> sm = Maps.newTreeMap();
 		
 		for(Field field  : clazz.getDeclaredFields()){
@@ -125,19 +170,15 @@ public class Domains implements ApplicationContextAware{
 	        	sm.put(i, new VaadinTableColumnWrapper(tc, field));
 	        }
 		}
-		return sm.values();
+		return Lists.newArrayList(sm.values());
 	}
 	
-	public Map<String, VaadinTableColumns> getTableColumns() {
-		return tableColumns;
-	}
-
 	public Map<String, VaadinTableWrapper> getTables() {
 		return tables;
 	}
 
-	public Map<String, FormFields> getFormFields() {
-		return formFields;
+	public Map<String, VaadinGridWrapper> getGrids() {
+		return grids;
 	}
 
 	@Override

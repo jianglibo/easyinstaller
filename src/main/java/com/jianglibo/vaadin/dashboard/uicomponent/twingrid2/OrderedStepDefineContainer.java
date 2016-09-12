@@ -15,7 +15,7 @@ public class OrderedStepDefineContainer extends FreeContainer<OrderedStepDefine>
 	private Software software;
 	
 	public OrderedStepDefineContainer(Domains domains, int perPage) {
-		super(domains, OrderedStepDefine.class, perPage);
+		super(domains, OrderedStepDefine.class, perPage, domains.getTables().get(OrderedStepDefine.class.getSimpleName()).getSortableContainerPropertyIds());
 	}
 	
 	@Override

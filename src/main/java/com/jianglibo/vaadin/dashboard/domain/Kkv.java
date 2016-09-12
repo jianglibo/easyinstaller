@@ -4,40 +4,50 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
-@VaadinTable(multiSelect=true, messagePrefix="domain.kkv.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
-@Table(name = "kkv", uniqueConstraints = { @UniqueConstraint(columnNames = {"group", "key", "value"}) })
+@VaadinGrid(multiSelect = true, messagePrefix = "domain.kkv.", footerVisible = true, styleNames = {
+		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+@VaadinTable(multiSelect = true, messagePrefix = "domain.kkv.", footerVisible = true, styleNames = {
+		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+@Table(name = "kkv", uniqueConstraints = { @UniqueConstraint(columnNames = { "kgroup", "key", "value" }) })
 public class Kkv extends BaseEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	@VaadinTableColumn(order = 10)
-	private String group;
-	
-	@VaadinTableColumn(order = 20)
+
+	@VaadinGridColumn(order = 10, sortable = true, filterable = true)
+	@VaadinFormField(order = 10)
+	private String kgroup;
+
+	@VaadinGridColumn(order = 20)
+	@VaadinFormField(order = 20)
 	private String key;
-	
-	@VaadinTableColumn(order = 30)
+
+	@VaadinGridColumn(order = 30)
+	@VaadinFormField(order = 30)
 	private String value;
 
 	@Override
 	public String getDisplayName() {
-		return null;
+		return String.format("%s[%s:%s]", getKgroup(), getKey(), getValue());
 	}
 
-	public String getGroup() {
-		return group;
+	public String getKgroup() {
+		return kgroup;
 	}
 
-	public void setGroup(String group) {
-		this.group = group;
+	public void setKgroup(String kgroup) {
+		this.kgroup = kgroup;
 	}
 
 	public String getKey() {

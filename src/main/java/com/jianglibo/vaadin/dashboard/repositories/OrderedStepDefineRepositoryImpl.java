@@ -3,17 +3,20 @@ package com.jianglibo.vaadin.dashboard.repositories;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import com.jianglibo.vaadin.dashboard.domain.OrderedStepDefine;
+import com.jianglibo.vaadin.dashboard.util.JpqlUtil;
 
 
 public class OrderedStepDefineRepositoryImpl implements StepRunRepositoryCustom<OrderedStepDefine> {
 	
 	private final EntityManager em;
+
+	@Autowired
+	private JpqlUtil jpqjUtil;
 	
 	@Autowired
 	public OrderedStepDefineRepositoryImpl(EntityManager em) {
@@ -22,25 +25,14 @@ public class OrderedStepDefineRepositoryImpl implements StepRunRepositoryCustom<
 
 
 	@Override
-	public List<OrderedStepDefine> getFilteredPage(Pageable page, String filterString, boolean trashed) {
-		String jpql = "SELECT DISTINCT(s) FROM " + OrderedStepDefine.class.getSimpleName() +  "  AS s";
-		 
-		TypedQuery<OrderedStepDefine> q =  em.createQuery(jpql, OrderedStepDefine.class);
-		q.setFirstResult(page.getOffset());
-		q.setMaxResults(page.getPageSize());
-		
-		List<OrderedStepDefine> results = q.getResultList();
-		
-		return results;
+	public List<OrderedStepDefine> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed) {
+		return jpqjUtil.getFilteredPage(OrderedStepDefine.class, page, filterString, trashed, "name");
 	}
 
 
 	@Override
-	public long getFilteredNumber(String filterString, boolean trashed) {
-		String jpql = "SELECT COUNT(DISTINCT s) FROM " + OrderedStepDefine.class.getSimpleName() +  " AS s";
-		TypedQuery<Long> q =  em.createQuery(jpql, Long.class);
-		Long result = q.getSingleResult();
-		return result;
+	public long getFilteredNumberWithOnePhrase(String filterString, boolean trashed) {
+		return jpqjUtil.getFilteredNumber(OrderedStepDefine.class, filterString, trashed, "name");
 	}
 
 }

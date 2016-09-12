@@ -189,7 +189,7 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 	public abstract void setupLeftGrid(Grid grid);
 
 	public Grid createRightGrid(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		FreeContainer<R> lcc = new FreeContainer<>(domains, rightClazz, vffw.getExtraAnotation(TwinGridFieldDescription.class).rightPageLength());
+		FreeContainer<R> lcc = new FreeContainer<>(domains, rightClazz, vffw.getExtraAnotation(TwinGridFieldDescription.class).rightPageLength(), vtw.getSortableContainerPropertyIds());
 		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(lcc);
 		
 		TwinGridFieldDescription tgfd = vffw.getExtraAnotation(TwinGridFieldDescription.class);

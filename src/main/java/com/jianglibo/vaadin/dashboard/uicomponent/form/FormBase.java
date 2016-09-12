@@ -8,7 +8,6 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.EventBus;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
-import com.jianglibo.vaadin.dashboard.annotation.FormFields;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -78,7 +77,7 @@ public abstract class FormBase<T> extends FormLayout {
 		addEscapeListener();
 
 		VaadinTableWrapper vtw = domains.getTables().get(domainName);
-		FormFields ffs = domains.getFormFields().get(domainName);
+		List<VaadinFormFieldWrapper> ffs = domains.getTables().get(domainName).getFormFields();
 
 		fields = buildFields(vtw, ffs);
 
@@ -136,9 +135,9 @@ public abstract class FormBase<T> extends FormLayout {
 		}
 	}
 
-	public List<PropertyIdAndField> buildFields(VaadinTableWrapper vtw, FormFields ffs) {
+	public List<PropertyIdAndField> buildFields(VaadinTableWrapper vtw, List<VaadinFormFieldWrapper> vffws) {
 		List<PropertyIdAndField> fields = Lists.newArrayList();
-		for (VaadinFormFieldWrapper vffw : ffs.getFields()) {
+		for (VaadinFormFieldWrapper vffw : vffws) {
 			switch (vffw.getVff().fieldType()) {
 			case COMBO_BOX:
 				ComboBox cb = fieldFactories.getComboBoxFieldFactory().create(vtw, vffw);

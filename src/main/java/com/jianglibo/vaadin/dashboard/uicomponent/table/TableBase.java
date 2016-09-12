@@ -3,12 +3,12 @@ package com.jianglibo.vaadin.dashboard.uicomponent.table;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort.Order;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -32,23 +32,23 @@ public abstract class TableBase<E> extends Table {
 	
 	private final JpaContainer<E> container;
 	
+	private final VaadinTableWrapper vtw;
+	
 	public TableBase(Class<E> clazz, Domains domains,JpaContainer<E> container, MessageSource messageSource) {
 		this.domains = domains;
 		this.container = container;
 		this.clazz = clazz;
 		this.messageSource = messageSource;
 		this.domainName = clazz.getSimpleName();
+		this.vtw = domains.getTables().get(domainName);
 		setContainerDataSource(container);
-		
-		VaadinTableColumns tableColumns = domains.getTableColumns().get(domainName);
-		VaadinTableWrapper vtw = domains.getTables().get(domainName);
-		decorateTable(vtw, tableColumns);
+		decorateTable();
 		setFooter(null);
 		// Allow dragging items to the reports menu
 		setDragMode(TableDragMode.MULTIROW);
 	}
 	
-	private void decorateTable(VaadinTableWrapper vtw, VaadinTableColumns tableColumns) {
+	private void decorateTable() {
 		if (vtw.getVt().fullSize()) {
 			setSizeFull();
 		}
@@ -72,13 +72,13 @@ public abstract class TableBase<E> extends Table {
 		setSortContainerPropertyId(order.getProperty());
 		setSortAscending(order.isAscending());
 		
-		for(VaadinTableColumnWrapper tcw: tableColumns.getColumns()) {
+		for(VaadinTableColumnWrapper tcw: vtw.getColumns()) {
 			setColumnCollapsible(tcw.getName(), tcw.getVtc().collapsible());
 			setColumnAlignment(tcw.getName(), tcw.getVtc().alignment());
 		}
 		
-		setVisibleColumns(tableColumns.getVisibleColumns());
-		setColumnHeaders(tableColumns.getColumnHeaders(vtw, messageSource));
+		setVisibleColumns(vtw.getVisibleColumns());
+		setColumnHeaders(vtw.getColumnHeaders(vtw, messageSource));
 		
 	}
 

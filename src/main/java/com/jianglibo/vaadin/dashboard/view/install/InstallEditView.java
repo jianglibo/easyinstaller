@@ -77,7 +77,7 @@ public class InstallEditView  extends BaseEditView<Install, FormBase<Install>, J
 	@Autowired
 	public InstallEditView(InstallRepository repository,StepRunRepository stepRunRepository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
-		super(messageSource, domains, fieldFactories, repository);
+		super(messageSource,Install.class, domains, fieldFactories, repository);
 		this.stepRunRepository = stepRunRepository;
 //		this.messageSource = messageSource;
 //		this.applicationContext = applicationContext;

@@ -10,55 +10,31 @@ import org.springframework.data.domain.Pageable;
 
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.util.JpqlUtil;
 
 public class SoftwareRepositoryImpl implements SoftwareRepositoryCustom<Software> {
 	
 	private final EntityManager em;
 	
 	@Autowired
-	public SoftwareRepositoryImpl(EntityManager em) {
+	private JpqlUtil jpqjUtil;
+	
+	@Autowired
+	public SoftwareRepositoryImpl(EntityManager em, JpqlUtil jpqjUtil) {
 		this.em = em;
+		this.jpqjUtil = jpqjUtil;
 	}
 
 
 	@Override
-	public List<Software> getFilteredPage(Pageable page, String filterString, boolean trashed) {
-		String jpql;
-		if (Strings.isNullOrEmpty(filterString)) {
-			jpql = "SELECT s FROM Software as s";
-		} else {
-			jpql = "SELECT s FROM Software as s WHERE s.name LIKE :name";
-		}
-		 
-		TypedQuery<Software> q =  em.createQuery(jpql, Software.class);
-		q.setFirstResult(page.getOffset());
-		q.setMaxResults(page.getPageSize());
-		
-		if (!Strings.isNullOrEmpty(filterString)) {
-			q.setParameter("name", RepositoryUtil.roundLike(filterString));
-		} 
-		List<Software> results = q.getResultList();
-		
-		return results;
+	public List<Software> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed) {
+		return jpqjUtil.getFilteredPage(Software.class, page, filterString, trashed, "name");
 	}
 
 
 	@Override
-	public long getFilteredNumber(String filterString, boolean trashed) {
-		String jpql;
-		if (Strings.isNullOrEmpty(filterString)) {
-			jpql = "SELECT COUNT(DISTINCT s) FROM Software as s";
-		} else {
-			jpql = "SELECT COUNT(DISTINCT s) FROM Software as s WHERE s.name LIKE :name";
-		}
-		 
-		TypedQuery<Long> q =  em.createQuery(jpql, Long.class);
-		
-		if (!Strings.isNullOrEmpty(filterString)) {
-			q.setParameter("name", RepositoryUtil.roundLike(filterString));
-		} 
-		Long result = q.getSingleResult();
-		return result;
+	public long getFilteredNumberWithOnePhrase(String filterString, boolean trashed) {
+		return jpqjUtil.getFilteredNumber(Software.class, filterString, trashed, "name");
 	}
 
 }

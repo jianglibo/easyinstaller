@@ -56,7 +56,7 @@ public class PkSourceEditView  extends BaseEditView<PkSource, FormBase<PkSource>
 	@Autowired
 	public PkSourceEditView(PkSourceRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
-		super(messageSource, domains, fieldFactories, repository);
+		super(messageSource,PkSource.class, domains, fieldFactories, repository);
 //		this.messageSource = messageSource;
 //		this.pkSourceRepository = pkSourceRepository;
 //		this.eventBus = new EventBus(this.getClass().getName());

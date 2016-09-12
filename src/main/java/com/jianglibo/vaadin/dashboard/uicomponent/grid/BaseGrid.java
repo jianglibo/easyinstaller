@@ -1,12 +1,13 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.grid;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.context.MessageSource;
 
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -24,83 +25,63 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public abstract class BaseGrid<T extends BaseEntity> extends Grid {
 	
-	private final VaadinTableWrapper vtw;
-
+	private final VaadinGridWrapper vgw;
+	
 	public BaseGrid(MessageSource messageSource, Domains domains, Class<T> clazz) {
-		this.vtw = domains.getTables().get(clazz.getSimpleName()); 
-		FreeContainer<T> lcc = new FreeContainer<>(domains, clazz, vtw.getVt().defaultPerPage());
+		this.vgw = domains.getGrids().get(clazz.getSimpleName()); 
+		FreeContainer<T> lcc = new FreeContainer<>(domains, clazz, vgw.getVg().defaultPerPage(), vgw.getSortableColumnNames());
 		
 		StyleUtil.setDisableCellFocus(this);
 		
 		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(lcc);
 		
-		Collection<VaadinTableColumnWrapper> columnWrappers = domains.getTableColumns().get(clazz.getSimpleName()).getColumns();
-		String[] columns = columnWrappers.stream().map(cw -> cw.getName()).collect(Collectors.toList()).toArray(new String[]{});
+		List<VaadinGridColumnWrapper> columnWrappers = vgw.getColumns();
 		
-		String[] sortableColumns = columnWrappers.stream().filter(cw -> cw.getVtc().sortable()).map(cw -> cw.getName()).collect(Collectors.toList()).toArray(new String[]{});
+		String[] columns = columnWrappers.stream().map(cw -> cw.getName()).collect(Collectors.toList()).toArray(new String[]{});
 		
 		for(String name: columns) {
 			if (name.startsWith("!")) {
 				addGeneratedProperty(gpcontainer, name);
 			}
 		}
-		
-		setWidth(100.0f, Unit.PERCENTAGE);
-		setWidth(100.0f, Unit.PERCENTAGE);
+		setSizeFull();
 		
 		setColumns(columns);
 		setSelectionMode(SelectionMode.NONE);
 		setContainerDataSource(gpcontainer);
 		
-		String messagePrefix = domains.getTables().get(clazz.getSimpleName()).getVt().messagePrefix();
+		String messagePrefix = domains.getGrids().get(clazz.getSimpleName()).getVg().messagePrefix();
 		
-		for(String cn : columns){
-			Grid.Column col = getColumn(cn);
-			col.setSortable(foundColumn(sortableColumns, cn));
-			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, messagePrefix, (String)cn));
-			setupColumn(col, cn);
-		}
-
-		TextField filterField = new TextField();
-		filterField.setWidth(100.0f, Unit.PERCENTAGE);
-
-		HeaderRow groupingHeader = appendHeaderRow();
+		columnWrappers.stream().forEach(vgcw -> {
+			Grid.Column col = getColumn(vgcw.getName());
+			col.setSortable(vgcw.getVgc().sortable());
+			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, messagePrefix, vgcw.getName()));
+			col.setHidable(vgcw.getVgc().hidable());
+			col.setHidden(vgcw.getVgc().initHidden());
+			setupColumn(col, vgcw);
+		});
 		
+		setColumnFiltering(columnWrappers);
+
         // Add a summary footer row to the Grid
         FooterRow footer = addFooterRowAt(0);
+        
         setSummaryFooterCells(footer);
  
         // Allow column reordering
         setColumnReorderingAllowed(true);
- 
-        // Allow column hiding
-        for (Column c : getColumns()) {
-        	c.setHidable(true);
-        }
-
-		HeaderCell namesCell = groupingHeader.join(columns);
-		namesCell.setComponent(filterField);
-		
-		filterField.addTextChangeListener(change -> {
-			// Can't modify filters so need to replace
-			gpcontainer.removeAllContainerFilters();
-			// (Re)create the filter if necessary
-			gpcontainer.addContainerFilter(new SimpleStringFilter("", change.getText(), true, false));
-
-		});
 	}
 	
-    private void setColumnFiltering(boolean filtered) {
-        if (filtered) {
+    protected abstract void setSummaryFooterCells(FooterRow footer);
+
+	private void setColumnFiltering(Collection<VaadinGridColumnWrapper> columns) {
         	HeaderRow hr  = appendHeaderRow();
-        	
-            TextField filter = getColumnFilter(columnId);
-            filteringHeader.getCell(columnId).setComponent(filter);
-            filteringHeader.getCell(columnId).setStyleName("filter-header");
-        } else if (!filtered && filteringHeader != null) {
-            sample.removeHeaderRow(filteringHeader);
-            filteringHeader = null;
-        }
+        	columns.stream().filter(vgcw -> vgcw.getVgc().filterable()).forEach(vgcw -> {
+                TextField filter = getColumnFilter(vgcw.getName());
+                HeaderCell hc = hr.getCell(vgcw.getName());
+                hc.setComponent(filter);
+                hc.setStyleName("filter-header");
+        	});
     }
     
     private TextField getColumnFilter(final Object columnId) {
@@ -156,16 +137,8 @@ public abstract class BaseGrid<T extends BaseEntity> extends Grid {
 //    }
  
 	
-	protected abstract void setupColumn(Column col, String cn);
+	protected abstract void setupColumn(Column col, VaadinGridColumnWrapper vgcw);
 
-	private boolean foundColumn(String[] columns, String column) {
-		for(String col : columns) {
-			if (col.equals(column)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	protected abstract void addGeneratedProperty(GeneratedPropertyContainer gpcontainer, String name);
 }

@@ -40,7 +40,7 @@ public class StepRunEditView  extends BaseEditView<StepRun, FormBase<StepRun>, J
 	@Autowired
 	public StepRunEditView(StepRunRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
-		super(messageSource, domains, fieldFactories, repository);
+		super(messageSource, StepRun.class, domains, fieldFactories, repository);
 //		this.messageSource = messageSource;
 //		this.repository= repository;
 //		this.eventBus = new EventBus(this.getClass().getName());

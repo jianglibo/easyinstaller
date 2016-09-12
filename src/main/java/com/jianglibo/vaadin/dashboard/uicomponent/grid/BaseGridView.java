@@ -3,16 +3,20 @@ package com.jianglibo.vaadin.dashboard.uicomponent.grid;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
+import com.google.common.eventbus.Subscribe;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent.DynaMenuItemClickListener;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
@@ -42,9 +46,13 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 	
 	private final Class<G> gridClazz;
 	
-	private VaadinTableColumns tableColumns;
+	private VaadinGridWrapper vgw;
 	
 	private ListViewFragmentBuilder lvfb;
+	
+	private G grid;
+	
+	private UiEventListener uel = new UiEventListener();
 	
 	private Component topBlock;
 	private Component middleBlock;
@@ -61,7 +69,7 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 		setSizeFull();
 		addStyleName("transactions");
 		
-		tableColumns = domains.getTableColumns().get(clazz.getSimpleName());
+		this.vgw = domains.getGrids().get(clazz.getSimpleName());
 
 		topBlock = createTopBlock();
 		addComponent(topBlock);
@@ -77,8 +85,23 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		DashboardEventBus.register(uel);
+		lvfb = new ListViewFragmentBuilder(event);
+
+		// start alter state.
+		((TopBlock) topBlock).alterState(lvfb, MsgUtil.getListViewTitle(messageSource, clazz.getSimpleName()));
+		((MiddleBlock)middleBlock).alterState(lvfb);
+		((BottomBlock) bottomBlock).alterState(lvfb);
 	}
 	
+	@Override
+	public void detach() {
+		super.detach();
+		// A new instance of TransactionsView is created every time it's
+		// navigated to so we'll need to clean up references to it on detach.
+		DashboardEventBus.unregister(uel);
+	}
+
 	
 	private Component createTopBlock() {
 		TopBlock tb = new TopBlock();
@@ -94,14 +117,6 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 		DynButtonComponent dynMenu = new DynButtonComponent(messageSource,getButtonGroups());
 		MiddleBlock mb = new MiddleBlock(dynMenu);
 
-		mb.addTrashBtnClickListener(event -> {
-			String styles = event.getButton().getStyleName();
-			if (StyleUtil.hasStyleName(styles, ValoTheme.BUTTON_PRIMARY)) {
-				trashBtnClicked(false);
-			} else {
-				trashBtnClicked(true);
-			}
-		});
 		mb.addDynaMenuItemClickListener(btnDsc -> {
 			onDynButtonClicked(btnDsc);
 		});
@@ -109,8 +124,8 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 	}
 	
 	private Component createBottomBlock() {
-		G grid = createGrid(messageSource, domains, clazz);
-		BottomBlock bottomBlock = new BottomBlock(grid);
+		grid = createGrid(messageSource, domains, clazz);
+		BottomBlock bottomBlock = new BottomBlock();
 		
 //		/**
 //		 * add listener to final event source object.
@@ -135,17 +150,15 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 
 	protected abstract void onDynButtonClicked(ButtonDescription btnDsc);
 	
-	public void trashBtnClicked(boolean b) {
-		String nvs = getLvfb().setFilterStr("").setCurrentPage(1)
-				.setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, b).toNavigateString();
-		UI.getCurrent().getNavigator().navigateTo(nvs);
-	}
 	
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[]{ //
-		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+		new ButtonGroup( //
+				new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
 				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
-		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
+		new ButtonGroup( //
+				new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS), //
+				new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
 	}
 	
 	public void backward() {
@@ -221,8 +234,6 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 
 	protected class MiddleBlock extends HorizontalLayout {
 
-		private Button trashBt;
-		
 		private DynButtonComponent menu;
 
 		public MiddleBlock(DynButtonComponent menu) {
@@ -232,42 +243,24 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 			addComponent(menu);
 
 			setComponentAlignment(menu, Alignment.MIDDLE_LEFT);
-			trashBt = new Button(
-					messageSource.getMessage("tablecontroller.trashswitcher", null, UI.getCurrent().getLocale()),
-					FontAwesome.TRASH);
 
 			HorizontalLayout hl = new HorizontalLayout();
 			hl.setSpacing(true);
-			hl.addComponent(trashBt);
 			addComponent(hl);
-			hl.setComponentAlignment(trashBt, Alignment.MIDDLE_RIGHT);
 			setComponentAlignment(hl, Alignment.MIDDLE_RIGHT);
 		}
 
 		public void alterState(ListViewFragmentBuilder lvfb) {
-			if (lvfb.isTrashed()) {
-				trashBt.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			} else {
-				trashBt.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-			}
 		}
 
 		public void addDynaMenuItemClickListener(DynaMenuItemClickListener dynaMenuItemClickListener) {
 			menu.AddDynaMenuItemClickListener(dynaMenuItemClickListener);
 		}
 		
-		public void addTrashBtnClickListener(ClickListener cl) {
-			trashBt.addClickListener(cl);
-		}
 
 		public void alterState(int selectNumber) {
 			this.menu.onSelectionChange(selectNumber);
 		}
-
-		public Button getTrashBt() {
-			return trashBt;
-		}
-
 		public DynButtonComponent getMenu() {
 			return menu;
 		}
@@ -275,12 +268,9 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 	}
 
 	protected class BottomBlock extends HorizontalLayout {
-		private G grid;
 
-		public BottomBlock(G grid) {
-			this.grid = grid;
-			setWidth("100%");
-			setHeight("100%");
+		public BottomBlock() {
+			setSizeFull();
 			addComponent(grid);
 		}
 		
@@ -296,4 +286,20 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 			return grid;
 		}
 	}
+	
+	
+	
+	public G getGrid() {
+		return grid;
+	}
+
+	protected class UiEventListener {
+		@Subscribe
+		public void browserResized(final BrowserResizeEvent event) {
+			// Some columns are collapsed when browser window width gets small
+			// enough to make the table fit better.
+			BottomBlock bb = (BaseGridView<E, G>.BottomBlock) bottomBlock;
+		}
+	}
+
 }

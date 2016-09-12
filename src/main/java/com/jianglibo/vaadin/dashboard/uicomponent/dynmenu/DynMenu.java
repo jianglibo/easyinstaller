@@ -22,7 +22,7 @@ public class DynMenu extends HorizontalLayout {
 	private Map<String, MenuItem> itemMap = Maps.newHashMap();
 	
 	public DynMenu(MessageSource messageSource,  MenuItemDescription...menuItemDescriptions) {
-		MarginInfo mf = new MarginInfo(false, false, false, true);
+		MarginInfo mf = new MarginInfo(true, true, true, true);
 		setMargin(mf);
 		addStyleName("dyn-menu");
         MenuBar mb = new MenuBar();

@@ -39,7 +39,7 @@ public class StepDefineEditView  extends BaseEditView<StepDefine, FormBase<StepD
 	@Autowired
 	public StepDefineEditView(StepDefineRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
-		super(messageSource, domains, fieldFactories, repository);
+		super(messageSource,StepDefine.class, domains, fieldFactories, repository);
 //		this.messageSource = messageSource;
 //		this.repository= repository;
 //		this.eventBus = new EventBus(this.getClass().getName());

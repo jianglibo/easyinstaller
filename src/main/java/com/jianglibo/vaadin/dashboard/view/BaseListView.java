@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumns;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Box;
@@ -25,14 +25,12 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent.DynaMenuItemClickListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm;
-import com.jianglibo.vaadin.dashboard.uicomponent.filterform.FilterForm.FilterValueChangeListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.pager.Pager;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
-import com.jianglibo.vaadin.dashboard.util.TableUtil;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -44,6 +42,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -78,7 +77,7 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 
 	private final Class<T> tableClazz;
 
-	private VaadinTableColumns tableColumns;
+	private VaadinTableWrapper vtw;
 
 	private ListViewFragmentBuilder lvfb;
 
@@ -101,8 +100,6 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 
 		setSizeFull();
 		addStyleName("transactions");
-
-		tableColumns = domains.getTableColumns().get(clazz.getSimpleName());
 
 		topBlock = createTopBlock();
 		addComponent(topBlock);
@@ -249,10 +246,6 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 		return applicationContext;
 	}
 
-	public VaadinTableColumns getTableColumns() {
-		return tableColumns;
-	}
-
 	public Domains getDomains() {
 		return domains;
 	}
@@ -268,15 +261,25 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 	public J getRepository() {
 		return repository;
 	}
+	
+	public boolean autoCollapseColumnsNeedChangeState(Table table) {
+		boolean result = true;
+		for (String propertyId : vtw.getAutoCollapseColumns()) {
+			if (table.isColumnCollapsed(propertyId) == Page.getCurrent().getBrowserWindowWidth() < 800) {
+				result = false;
+			}
+		}
+		return result;
+	}
 
-	public class UiEventListener {
+	protected class UiEventListener {
 		@Subscribe
 		public void browserResized(final BrowserResizeEvent event) {
 			// Some columns are collapsed when browser window width gets small
 			// enough to make the table fit better.
 			BottomBlock bb = (BaseListView<E, T, J>.BottomBlock) bottomBlock;
-			if (TableUtil.autoCollapseColumnsNeedChangeState(bb.getTable(), getTableColumns())) {
-				for (String propertyId : getTableColumns().getAutoCollapseColumns()) {
+			if (autoCollapseColumnsNeedChangeState(bb.getTable())) {
+				for (String propertyId : vtw.getAutoCollapseColumns()) {
 					bb.getTable().setColumnCollapsed(propertyId, Page.getCurrent().getBrowserWindowWidth() < 800);
 				}
 			}

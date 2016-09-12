@@ -23,7 +23,7 @@ public class DynButtonComponent extends HorizontalLayout implements ClickListene
 	private DynaMenuItemClickListener dynaMenuItemClickListener;
 	
 	public DynButtonComponent(MessageSource messageSource, ButtonGroup...groups) {
-		MarginInfo mf = new MarginInfo(false, false, false, true);
+		MarginInfo mf = new MarginInfo(true, true, true, true);
 		setMargin(mf);
 		addStyleName("dyn-menu");
         HorizontalLayout btgHl = new HorizontalLayout();

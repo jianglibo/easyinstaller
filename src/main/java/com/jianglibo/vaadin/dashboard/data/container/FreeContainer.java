@@ -77,9 +77,12 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	private Filter filter;
 
 	private Domains domains;
+	
+	private final List<?> sortableContainerPropertyIds;
 
-	public FreeContainer(Domains domains, Class<T> clazz, int perPage) {
+	public FreeContainer(Domains domains, Class<T> clazz, int perPage, List<?> sortableContainerPropertyIds) {
 		this.domains = domains;
+		this.sortableContainerPropertyIds = sortableContainerPropertyIds;
 		this.clazz = clazz;
 		this.simpleClassName = clazz.getSimpleName();
 		this.defaultSort = SortUtil.fromString(domains.getTables().get(clazz.getSimpleName()).getVt().defaultSort());
@@ -299,7 +302,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public int size() {
-		int i = new Long(domains.getRepositoryCommonCustom(simpleClassName).getFilteredNumber(filterString, trashed))
+		int i = new Long(domains.getRepositoryCommonCustom(simpleClassName).getFilteredNumberWithOnePhrase(filterString, trashed))
 				.intValue();
 		LOGGER.info("{} called with filterString {}, and return {}", "size", filterString, i);
 		return i;
@@ -353,6 +356,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		}
 		this.currentPage = 0;
 		fetchPage();
+		notifyItemSetChanged();
 	}
 
 	@Override
@@ -451,7 +455,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public Collection<?> getSortableContainerPropertyIds() {
-		return domains.getTableColumns().get(clazz.getSimpleName()).getSortableContainerPropertyIds();
+		return sortableContainerPropertyIds;
 	}
 
 	@Override
@@ -494,7 +498,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	@SuppressWarnings("unchecked")
 	public void fetchPage() {
 		ManualPagable pageable = new ManualPagable(currentPage, perPage, sort);
-		currentWindow = (List<T>) domains.getRepositoryCommonCustom(simpleClassName).getFilteredPage(pageable,
+		currentWindow = (List<T>) domains.getRepositoryCommonCustom(simpleClassName).getFilteredPageWithOnePhrase(pageable,
 				filterString, trashed);
 	}
 

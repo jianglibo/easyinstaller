@@ -126,7 +126,7 @@ public class ComboBoxFieldFactory {
 	}
 	
 	private ComboBox buildContainerCombox(ComboBoxBackByContainer cbbbc, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw, ComboBox cb) {
-		FreeContainer<? extends BaseEntity> fc = new FreeContainer<>(domains, cbbbc.entityClass(),cbbbc.pageLength());
+		FreeContainer<? extends BaseEntity> fc = new FreeContainer<>(domains, cbbbc.entityClass(),cbbbc.pageLength(), vtw.getSortableContainerPropertyIds());
 		cb.setItemCaptionMode(ItemCaptionMode.PROPERTY);
 		cb.setItemCaptionPropertyId(cbbbc.itemCaptionPropertyId());
 		cb.setContainerDataSource(fc);
