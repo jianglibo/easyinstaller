@@ -3,7 +3,6 @@ package com.jianglibo.vaadin.dashboard.uicomponent.table;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort.Order;
@@ -91,7 +90,5 @@ public abstract class TableBase<E> extends Table {
 	}
 
 	public abstract void setFooter(PageMetaEvent pme);
-	
-	public abstract void refresh();
 	
 }

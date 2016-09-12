@@ -36,11 +36,4 @@ public class InstallTable extends TableBase<Install> {
 		}
 		return result;
 	}
-
-	@Override
-	public void refresh() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

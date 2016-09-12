@@ -80,16 +80,9 @@ public abstract class JpaContainer<T> extends ListContainer<T> {
 		setFilterStr(vfb.getFilterStr().orElse(""));
 		setCurrentPage(vfb.getCurrentPage());
 		// will cause circular sort event.
-		
-//		if (getSort() != null) {
-//			Order od = getSort().iterator().next();
-//			table.setSortContainerPropertyId(od.getProperty());
-//			table.setSortAscending(od.isAscending());
-//		}
 	}
 	
 	public abstract void whenUriFragmentChange(ListViewFragmentBuilder vfb);
-	
 	
 	@Override
 	public void sort(Object[] propertyId, boolean[] ascending) {
@@ -160,5 +153,6 @@ public abstract class JpaContainer<T> extends ListContainer<T> {
 		this.table = table;
 	}
 	
+	public abstract void refresh();	
 	
 }

@@ -10,8 +10,6 @@ import com.jianglibo.vaadin.dashboard.domain.DashboardNotification;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.NotificationsCountUpdatedEvent;
-import com.jianglibo.vaadin.dashboard.view.DboardViewUtil;
-import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -319,7 +317,7 @@ public final class DashboardView extends Panel implements View,
             notificationsWindow.setClosable(false);
             notificationsWindow.setResizable(false);
             notificationsWindow.setDraggable(false);
-            notificationsWindow.setCloseShortcut(KeyCode.ESCAPE, null);
+            notificationsWindow.addCloseShortcut(KeyCode.ESCAPE, null);
             notificationsWindow.setContent(notificationsLayout);
         }
 

@@ -4,14 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
+import org.springframework.web.servlet.LocaleResolver;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.component.ProfilePreferencesWindow;
 import com.jianglibo.vaadin.dashboard.domain.User;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.PostViewChangeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.ProfileUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
+import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelectorWindow;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
@@ -49,6 +51,9 @@ public final class DashboardMenu extends CustomComponent {
 	
 	@Autowired
 	private MainMenuItems mmis;
+	
+	@Autowired
+	private LocaleResolver localeResolver;
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -107,20 +112,27 @@ public final class DashboardMenu extends CustomComponent {
 		final User user = getCurrentUser();
 		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
 		updateUserName(null);
-		settingsItem.addItem(messageSource.getMessage("dmenu.dropdown.editprofile", null, UI.getCurrent().getLocale()), new Command() {
-			@Override
-			public void menuSelected(final MenuItem selectedItem) {
-				ProfilePreferencesWindow.open(user, false);
-			}
-		});
-		settingsItem.addItem(messageSource.getMessage("dmenu.dropdown.preferences", null, UI.getCurrent().getLocale()), new Command() {
-			@Override
-			public void menuSelected(final MenuItem selectedItem) {
-				ProfilePreferencesWindow.open(user, true);
-			}
-		});
+//		settingsItem.addItem(messageSource.getMessage("dmenu.dropdown.editprofile", null, UI.getCurrent().getLocale()), new Command() {
+//			@Override
+//			public void menuSelected(final MenuItem selectedItem) {
+//				ProfilePreferencesWindow.open(user, false);
+//			}
+//		});
+//		settingsItem.addItem(messageSource.getMessage("dmenu.dropdown.preferences", null, UI.getCurrent().getLocale()), new Command() {
+//			@Override
+//			public void menuSelected(final MenuItem selectedItem) {
+//				ProfilePreferencesWindow.open(user, true);
+//			}
+//		});
+		settingsItem.addItem(MsgUtil.getDropDownMenuMsg(messageSource, "swithLang"),
+				new Command() {
+					@Override
+					public void menuSelected(final MenuItem selectedItem) {
+						UI.getCurrent().addWindow(new LocaleSelectorWindow(messageSource, localeResolver));
+					}
+				});
 		settingsItem.addSeparator();
-		settingsItem.addItem(messageSource.getMessage("dmenu.dropdown.signout", null, UI.getCurrent().getLocale()), new Command() {
+		settingsItem.addItem(MsgUtil.getDropDownMenuMsg(messageSource, "signout"), new Command() {
 			@Override
 			public void menuSelected(final MenuItem selectedItem) {
 				DashboardEventBus.post(new UserLoggedOutEvent());

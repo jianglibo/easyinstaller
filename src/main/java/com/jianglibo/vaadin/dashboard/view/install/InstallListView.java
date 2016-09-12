@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
+import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Install;
 import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
@@ -134,7 +135,7 @@ public class InstallListView extends BaseListView<Install, InstallTable, Install
 					getRepository().save(b);
 				}
 			});
-			getTable().refresh();
+			((JpaContainer)getTable().getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.REFRESH:
 			((InstallContainer)getTable().getContainerDataSource()).refresh();

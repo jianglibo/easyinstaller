@@ -36,11 +36,4 @@ public class StepDefineTable extends TableBase<StepDefine> {
 		}
 		return result;
 	}
-
-
-	@Override
-	public void refresh() {
-		// TODO Auto-generated method stub
-		
-	}
 }

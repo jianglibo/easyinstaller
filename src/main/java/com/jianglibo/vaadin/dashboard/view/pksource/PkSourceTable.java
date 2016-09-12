@@ -39,14 +39,4 @@ public class PkSourceTable extends TableBase<PkSource> {
 		}
 		return result;
 	}
-
-
-	@Override
-	public void refresh() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-
-	
 }

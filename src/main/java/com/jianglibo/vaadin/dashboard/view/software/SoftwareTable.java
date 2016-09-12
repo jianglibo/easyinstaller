@@ -36,8 +36,4 @@ public class SoftwareTable extends TableBase<Software> {
 		}
 		return result;
 	}
-
-	@Override
-	public void refresh() {
-	}
 }

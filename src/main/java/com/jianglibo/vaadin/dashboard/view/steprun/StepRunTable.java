@@ -37,11 +37,4 @@ public class StepRunTable extends TableBase<StepRun> {
 		}
 		return result;
 	}
-
-	
-	@Override
-	public void refresh() {
-		// TODO Auto-generated method stub
-		
-	}
 }

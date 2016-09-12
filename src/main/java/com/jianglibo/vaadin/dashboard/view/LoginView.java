@@ -1,21 +1,19 @@
 package com.jianglibo.vaadin.dashboard.view;
 
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoginRequestedEvent;
-import com.jianglibo.vaadin.dashboard.vaadinerrors.LoginError;
-import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelector;
-
 import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
-import org.springframework.web.servlet.support.RequestContextUtils;
+import org.springframework.web.servlet.LocaleResolver;
 
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoginRequestedEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.vaadinerrors.LoginError;
+import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelectorWindow;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
@@ -36,6 +34,7 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
@@ -49,26 +48,16 @@ public class LoginView extends VerticalLayout {
 
 	private int noticeHasShown = 0;
 	
-	private final LocaleSelector localSelector;
-	
 	private final MessageSource messageSource;
 	
 	@Autowired
-	private LoginView(LocaleSelector localSelector, MessageSource messageResource) {
-		this.localSelector = localSelector;
+	private LocaleResolver localeResolver;
+	
+	@Autowired
+	private LoginView(MessageSource messageResource) {
 		this.messageSource = messageResource;
 
 	}
-
-//    public LoginView() {
-//    	this.setup();
-//    }
-
-//    public LoginView(boolean loginFailed, int noticeHasShown) {
-//    	this.loginFailed = loginFailed;
-//    	this.noticeHasShown = noticeHasShown;
-//    	this.setup();
-//	}
 	
 	@Override
 	public Locale getLocale() {
@@ -113,7 +102,16 @@ public class LoginView extends VerticalLayout {
         LOGGER.info("current msg is: {}", msg);
         loginPanel.addComponent(new CheckBox(msg, true));
 //        llabel.addStyleName(ValoTheme.LABEL_H4);
-        loginPanel.addComponent(localSelector.unwrap());
+        
+        Button btn = new Button(messageSource.getMessage("lanselector.btn", null, UI.getCurrent().getLocale()));
+		btn.setStyleName(Reindeer.BUTTON_LINK);
+		btn.setIcon(FontAwesome.LANGUAGE);
+		
+		btn.addClickListener(ce -> {
+			UI.getCurrent().addWindow(new LocaleSelectorWindow(messageSource, localeResolver));
+		});
+		
+        loginPanel.addComponent(btn);
         return loginPanel;
     }
 

@@ -36,11 +36,4 @@ public class BoxTable extends TableBase<Box> {
 		}
 		return result;
 	}
-
-	@Override
-	public void refresh() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
