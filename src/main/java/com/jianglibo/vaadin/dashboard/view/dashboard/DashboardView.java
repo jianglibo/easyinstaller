@@ -3,13 +3,15 @@ package com.jianglibo.vaadin.dashboard.view.dashboard;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
-import com.jianglibo.vaadin.dashboard.component.TopTenMoviesTable;
 import com.jianglibo.vaadin.dashboard.domain.DashboardNotification;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.NotificationsCountUpdatedEvent;
+import com.jianglibo.vaadin.dashboard.util.HttpPageGetter;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -54,8 +56,13 @@ public final class DashboardView extends Panel implements View,
     private CssLayout dashboardPanels;
     private final VerticalLayout root;
     private Window notificationsWindow;
+    
 
-    public DashboardView() {
+    private final HttpPageGetter httpPageGetter;
+    
+    @Autowired
+    public DashboardView(HttpPageGetter httpPageGetter) {
+    	this.httpPageGetter = httpPageGetter;
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
         DashboardEventBus.register(this);
@@ -169,6 +176,7 @@ public final class DashboardView extends Panel implements View,
 //        dashboardPanels.addComponent(buildTopGrossingMovies());
         dashboardPanels.addComponent(buildNotes());
         dashboardPanels.addComponent(buildTop10TitlesByRevenue());
+        dashboardPanels.addComponent(buildDevelopeNews());
 //        dashboardPanels.addComponent(buildPopularMovies());
 
         return dashboardPanels;
@@ -189,6 +197,13 @@ public final class DashboardView extends Panel implements View,
         panel.addStyleName("notes");
         return panel;
     }
+    
+    private Component buildDevelopeNews() {
+        Component contentWrapper = createContentWrapper(new DevelopeNewsTable(httpPageGetter.getNews()));
+        contentWrapper.addStyleName("top10-revenue");
+        return contentWrapper;
+    }
+
 
     private Component buildTop10TitlesByRevenue() {
         Component contentWrapper = createContentWrapper(new TopTenMoviesTable());

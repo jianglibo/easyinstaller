@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.component;
+package com.jianglibo.vaadin.dashboard.view.dashboard;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
