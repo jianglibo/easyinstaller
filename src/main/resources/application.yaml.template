@@ -1,19 +1,24 @@
 spring:
     datasource:
-        url: jdbc:hsqldb:file:~/db/easyinstallerdb
+#        url: jdbc:hsqldb:file:~/db/easyinstallerdb
+        url: jdbc:h2:~/db/easyinstallerdb
         username: SA
         password:
-        driver-class-name: org.hsqldb.jdbc.JDBCDriver
-        validation-query: SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS
+#        driver-class-name: org.hsqldb.jdbc.JDBCDriver
+        driver-class-name: org.h2.Driver
+#        validation-query: SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS
+        validation-query: select 1
         test-on-borrow: true
     jpa:
-        database: HSQL
+#        database: HSQL
+        database: H2
         show-sql: true
         hibernate:
-            generate-ddl: true
-            ddl-auto: update
+            generate-ddl: false
+            ddl-auto: none
             naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
-            dialect: org.hibernate.dialect.HSQLDialect
+#            dialect: org.hibernate.dialect.HSQLDialect
+            dialect: org.hibernate.dialect.H2Dialect
     data:
         rest:
             base-path: /api/v1
@@ -48,6 +53,7 @@ multipart:
 logging:
     level:
       org.hibernate.SQL: debug
+      org.flywaydb: debug
 #        org.springframework.security.web.access: DEBUG
 #        org.hibernate.type: TRACE
 vaadin:
@@ -87,6 +93,9 @@ application:
       - value: failure
     boxrole:
       - value: Java
+flyway:
+  enabled: true
+  baseline-on-migrate: true
 softwares:
   predefined:
     - name: Java

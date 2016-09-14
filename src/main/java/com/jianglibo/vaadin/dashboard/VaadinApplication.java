@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
@@ -31,6 +32,7 @@ import com.vaadin.ui.CssLayout;
 @SpringBootApplication(scanBasePackages={"com.jianglibo.vaadin","com.jianglibo.vaadin.dashboard.domain"})
 @EnableJpaRepositories("com.jianglibo.vaadin.dashboard.repositories")
 @EnableScheduling
+@EnableAsync
 public class VaadinApplication {
 	
 	@Autowired

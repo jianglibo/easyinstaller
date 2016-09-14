@@ -15,6 +15,9 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
@@ -24,6 +27,8 @@ import com.google.common.io.CharStreams;
 @Component
 public class HttpPageGetter {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(HttpPageGetter.class);
+	
 	private CloseableHttpClient httpclient;
 
 	@PostConstruct
@@ -62,17 +67,25 @@ public class HttpPageGetter {
 		return "";
 	}
 
-	public List<NewNew> getNews() {
-		String s = getPage("https://github.com/jianglibo/first-vaadin/tree/master/wiki/news/newslist.txt");
+	/**
+	 * Because this is a special web application, most of times only one user is active, and it shutdown often.
+	 * 
+	 * Make a version marker at github site, and save every user's last access version in database. So when new version arrive, can alert user.
+	 *  
+	 * @return
+	 */
+	@Async
+	public void fetchNews() {
+		String s = getPage("https://raw.githubusercontent.com/jianglibo/first-vaadin/master/wiki/news/newslist.txt");
 		try {
-			return CharStreams.readLines(new StringReader(s)).stream().map(line -> line.split("\\s+", 3))
+			List<NewNew> nn =  CharStreams.readLines(new StringReader(s)).stream().map(line -> line.split("\\s+", 3))
 					.map(ft -> new NewNew(ft[2], ft[1],
 							"https://github.com/jianglibo/first-vaadin/tree/master/wiki/news/" + ft[0]))
 					.collect(Collectors.toList());
+			nn.stream().forEach(n -> LOGGER.info(n.toString()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return Lists.newArrayList();
 //		Document doc = Jsoup.parse(s, "https://github.com");
 //		List<String[]> tus = doc.select("div.file-wrap tr.js-navigation-item td.content a") //
 //				.stream() //

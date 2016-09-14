@@ -176,7 +176,7 @@ public final class DashboardView extends Panel implements View,
 //        dashboardPanels.addComponent(buildTopGrossingMovies());
         dashboardPanels.addComponent(buildNotes());
         dashboardPanels.addComponent(buildTop10TitlesByRevenue());
-        dashboardPanels.addComponent(buildDevelopeNews());
+//        dashboardPanels.addComponent(buildDevelopeNews());
 //        dashboardPanels.addComponent(buildPopularMovies());
 
         return dashboardPanels;
@@ -198,11 +198,11 @@ public final class DashboardView extends Panel implements View,
         return panel;
     }
     
-    private Component buildDevelopeNews() {
-        Component contentWrapper = createContentWrapper(new DevelopeNewsTable(httpPageGetter.getNews()));
-        contentWrapper.addStyleName("top10-revenue");
-        return contentWrapper;
-    }
+//    private Component buildDevelopeNews() {
+//        Component contentWrapper = createContentWrapper(new DevelopeNewsTable(httpPageGetter.getNews()));
+//        contentWrapper.addStyleName("top10-revenue");
+//        return contentWrapper;
+//    }
 
 
     private Component buildTop10TitlesByRevenue() {
