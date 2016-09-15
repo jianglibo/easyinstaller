@@ -10,22 +10,22 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import com.jianglibo.vaadin.dashboard.domain.AppRole;
+import com.jianglibo.vaadin.dashboard.domain.Role;
 import com.jianglibo.vaadin.dashboard.vo.RoleNames;
 
 
 @RepositoryRestResource(collectionResourceRel = "roles", path = "roles")
-public interface AppRoleRepository extends JpaRepository<AppRole, Long>, AppRoleRepositoryCustom, JpaSpecificationExecutor<AppRole> {
+public interface RoleRepository extends JpaRepository<Role, Long>, RoleRepositoryCustom, JpaSpecificationExecutor<Role> {
 
     @RestResource(exported = false)
-    AppRole findByName(String name);
+    Role findByName(String name);
     
     @Override
     @Secured(RoleNames.USER_MANAGER)
-    Page<AppRole> findAll(Pageable pageable);
+    Page<Role> findAll(Pageable pageable);
     
     @Override
-    <S extends AppRole> S save(S shRole);
+    <S extends Role> S save(S shRole);
 
     @Override
     @PreAuthorize("hasRole('NOT_EXIST_ROLE')")

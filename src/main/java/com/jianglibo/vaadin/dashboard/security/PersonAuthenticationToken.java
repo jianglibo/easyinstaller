@@ -1,8 +1,7 @@
-package com.jianglibo.vaadin.dashboard.config;
+package com.jianglibo.vaadin.dashboard.security;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
-import com.jianglibo.vaadin.dashboard.vo.ShellExecUserVo;
 
 public class PersonAuthenticationToken extends AbstractAuthenticationToken {
     /**
@@ -10,11 +9,11 @@ public class PersonAuthenticationToken extends AbstractAuthenticationToken {
      */
     private static final long serialVersionUID = 1L;
     
-	private ShellExecUserVo shellExecUser;
+	private PersonVo personVo;
 
-	public PersonAuthenticationToken(ShellExecUserVo shellExecUser) {
-		super(shellExecUser.getAuthorities());
-		this.shellExecUser = shellExecUser;
+	public PersonAuthenticationToken(PersonVo personVo) {
+		super(personVo.getAuthorities());
+		this.personVo = personVo;
 		this.setAuthenticated(true);
 	}
 
@@ -24,8 +23,8 @@ public class PersonAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	@Override
-	public ShellExecUserVo getPrincipal() {
-		return shellExecUser;
+	public PersonVo getPrincipal() {
+		return personVo;
 	}
 }
 

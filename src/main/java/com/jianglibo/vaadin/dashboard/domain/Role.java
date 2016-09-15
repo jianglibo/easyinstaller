@@ -12,8 +12,8 @@ import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "approle", uniqueConstraints = { @UniqueConstraint(columnNames = "name") })
-public class AppRole extends BaseEntity implements GrantedAuthority {
+@Table(name = "role", uniqueConstraints = { @UniqueConstraint(columnNames = "name") })
+public class Role extends BaseEntity implements GrantedAuthority {
     /**
      * 
      */
@@ -23,10 +23,10 @@ public class AppRole extends BaseEntity implements GrantedAuthority {
     @Column(nullable = false)
     private String name;
 
-    public AppRole() {
+    public Role() {
     };
 
-    public AppRole(String authority) {
+    public Role(String authority) {
         setName(authority);
     }
     

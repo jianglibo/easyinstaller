@@ -15,5 +15,5 @@ public class Person_ extends BaseEntity_ {
 	public static volatile SingularAttribute<Person, String> gender;
 	public static volatile SingularAttribute<Person, Boolean> emailVerified;
 	public static volatile SingularAttribute<Person, Boolean> mobileVerified;
-	public static volatile SetAttribute<Person, AppRole> roles;
+	public static volatile SetAttribute<Person, Role> roles;
 }

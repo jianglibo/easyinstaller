@@ -15,10 +15,13 @@ import com.jianglibo.vaadin.dashboard.domain.Person;
 
 
 @RepositoryRestResource(collectionResourceRel = "shusers", path = "shusers")
-public interface PersonRepository extends JpaRepository<Person, Long>, PersonRepositoryCustom, JpaSpecificationExecutor<Person> {
+public interface PersonRepository extends JpaRepository<Person, Long>, PersonRepositoryCustom<Person>, JpaSpecificationExecutor<Person> {
 
     @RestResource(exported = false)
     Person findByEmail(String email);
+
+    @RestResource(exported = false)
+    Person findByMobile(String email);
 
     @Override
     Person findOne(Long id);
@@ -39,4 +42,6 @@ public interface PersonRepository extends JpaRepository<Person, Long>, PersonRep
     @Override
     @PreAuthorize("hasRole('NOT_EXIST_ROLE')")
     void deleteAll();
+
+	Person findByName(String emailOrMobile);
 }

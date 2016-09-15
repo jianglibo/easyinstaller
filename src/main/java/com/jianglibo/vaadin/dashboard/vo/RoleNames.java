@@ -10,11 +10,8 @@ import com.google.common.collect.Lists;
 public class RoleNames {
     
     public static final String USER = "ROLE_USER";
-    public static final String WORKER = "ROLE_WORKER";
-    public static final String SCANAPI_CLIENT = "ROLE_SCANAPI_CLIENT";
-    public static final String APP_DATA_CHANGE_FIX_RATE = "ROLE_APP_DATA_CHANGE_FIX_RATE";
+    public static final String SUPERMAN = "ROLE_SUPERMAN";
     public static final String NOT_EXIST = "ROLE_NOT_EXIST";
-    public static final String REPORTER = "ROLE_REPORTER";
     public static final String USER_MANAGER = "ROLE_USER_MANAGER";
     
     public static List<String> allFields() {

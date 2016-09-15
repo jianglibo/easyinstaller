@@ -13,10 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import com.google.common.collect.Lists;
-import com.jianglibo.vaadin.dashboard.domain.AppRole;
+import com.jianglibo.vaadin.dashboard.domain.Role;
 
 
-public class AppRoleRepositoryImpl  extends SimpleJpaRepository<AppRole, Long> implements AppRoleRepositoryCustom, ApplicationContextAware {
+public class RoleRepositoryImpl  extends SimpleJpaRepository<Role, Long> implements RoleRepositoryCustom, ApplicationContextAware {
     @SuppressWarnings("unused")
     private EntityManager entityManager;
 
@@ -29,8 +29,8 @@ public class AppRoleRepositoryImpl  extends SimpleJpaRepository<AppRole, Long> i
      * @param em
      */
     @Autowired
-    public AppRoleRepositoryImpl(EntityManager entityManager) {
-        super(AppRole.class, entityManager);
+    public RoleRepositoryImpl(EntityManager entityManager) {
+        super(Role.class, entityManager);
         this.entityManager = entityManager;
     }
     
@@ -39,7 +39,7 @@ public class AppRoleRepositoryImpl  extends SimpleJpaRepository<AppRole, Long> i
         this.context = applicationContext;
     }
     
-    public Page<AppRole> differentUser(Long uid, Pageable pageable) {
+    public Page<Role> differentUser(Long uid, Pageable pageable) {
         if (uid == -1) {
             return super.findAll(pageable);
         } else {

@@ -50,7 +50,6 @@ public class ClusterInstallation extends BaseEntity {
 
 	@Override
 	public String getDisplayName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

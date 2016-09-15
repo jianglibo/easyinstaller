@@ -10,7 +10,7 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.jianglibo.vaadin.dashboard.domain.AppRole;
+import com.jianglibo.vaadin.dashboard.domain.Role;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.domain.Person_;
 
@@ -30,7 +30,7 @@ public class PersonSpecs {
         };
     }
     
-    public static Specification<Person> hasRole(AppRole role) {
+    public static Specification<Person> hasRole(Role role) {
         return new Specification<Person>() {
             public Predicate toPredicate(Root<Person> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
                 return builder.isMember(role, root.get(Person_.roles));

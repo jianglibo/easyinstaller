@@ -4,19 +4,15 @@ import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.web.servlet.LocaleResolver;
 
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoginRequestedEvent;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.uicomponent.button.NotificationBuilder;
 import com.jianglibo.vaadin.dashboard.vaadinerrors.LoginError;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelectorWindow;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
-import com.vaadin.shared.Position;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -26,7 +22,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -46,43 +41,25 @@ public class LoginView extends VerticalLayout {
 	private final MessageSource messageSource;
 	
 	private final LocaleResolver localeResolver;
+    
+    private final LoginAttemptListener loginAttemptListener;
 	
 	
-	public LoginView(MessageSource messageResource, LocaleResolver localeResolver) {
+    @Autowired
+	public LoginView(MessageSource messageResource, LocaleResolver localeResolver, LoginAttemptListener loginAttemptListener) {
 		this.messageSource = messageResource;
 		this.localeResolver = localeResolver;
-
+		this.loginAttemptListener = loginAttemptListener;
+        setSizeFull();
+        Component loginForm = buildLoginForm(loginFailed);
+        addComponent(loginForm);
+        setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
 	}
 	
 	@Override
 	public Locale getLocale() {
 		return UI.getCurrent().getLocale();
 	}
-    
-    public void setup(boolean loginFailed, int noticeHasShown) {
-    	setLoginFailed(loginFailed);
-    	setNoticeHasShown(noticeHasShown);
-        setSizeFull();
-
-        Component loginForm = buildLoginForm(loginFailed);
-        addComponent(loginForm);
-        setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
-        
-//        new NotificationBuilder(messageSource, "userid").setDelayMsec(4000).buildAndShow();
-        
-//        if (noticeHasShown == 0) {
-//            Notification notification = new Notification(
-//                    "Welcome to Dashboard Demo");
-//            notification
-//                    .setDescription("<span>This application is not real, it only demonstrates an application built with the <a href=\"https://vaadin.com\">Vaadin framework</a>.</span> <span>No username or password is required, just click the <b>Sign In</b> button to continue.</span>");
-//            notification.setHtmlContentAllowed(true);
-//            notification.setStyleName("tray dark small closable login-help");
-//            notification.setPosition(Position.BOTTOM_CENTER);
-//            notification.setDelayMsec(20000);
-//            notification.show(Page.getCurrent());
-//        }
-
-    }
 
 	private Component buildLoginForm(boolean loginFailed) {
         final VerticalLayout loginPanel = new VerticalLayout();
@@ -143,8 +120,7 @@ public class LoginView extends VerticalLayout {
         signin.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                DashboardEventBus.post(new UserLoginRequestedEvent(username
-                        .getValue(), password.getValue()));
+            	loginAttemptListener.tryLogin(username.getValue(), password.getValue());
             }
         });
         return fields;
@@ -194,6 +170,10 @@ public class LoginView extends VerticalLayout {
 
 	public void setNoticeHasShown(int noticeHasShown) {
 		this.noticeHasShown = noticeHasShown;
+	}
+	
+	public static interface LoginAttemptListener {
+		public void tryLogin(String username, String password);
 	}
 
 }

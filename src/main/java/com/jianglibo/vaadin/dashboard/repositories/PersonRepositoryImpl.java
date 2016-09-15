@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.jianglibo.vaadin.dashboard.domain.AppRole;
+import com.jianglibo.vaadin.dashboard.domain.Role;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.domain.Person_;
 import com.jianglibo.vaadin.dashboard.util.JpqlUtil;
@@ -51,8 +51,8 @@ public class PersonRepositoryImpl extends SimpleJpaRepository<Person, Long> impl
 //    }
 
 
-    protected void changeRoles(JsonNode payload, AppRoleRepository roleRepo, Person user) {
-        Set<AppRole> updatedRoles = Sets.newHashSet();
+    protected void changeRoles(JsonNode payload, RoleRepository roleRepo, Person user) {
+        Set<Role> updatedRoles = Sets.newHashSet();
 
         JsonNode roleNamesNode = payload.path("roleNames");
 
@@ -69,7 +69,7 @@ public class PersonRepositoryImpl extends SimpleJpaRepository<Person, Long> impl
                     }
                 }
                 updatedRoles = rids.stream()//
-                        .map(lid -> entityManager.find(AppRole.class, lid))//
+                        .map(lid -> entityManager.find(Role.class, lid))//
                         .collect(Collectors.toSet());
             }
         } else {

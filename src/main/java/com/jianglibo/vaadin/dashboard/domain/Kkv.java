@@ -1,10 +1,14 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.util.Map;
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
@@ -39,7 +43,30 @@ public class Kkv extends BaseEntity {
 	private String value;
 	
 	@ManyToOne
-	private Person creator;
+	private Person owner;
+	
+	public Kkv() {
+	}
+	
+	public Kkv(String kgroup, String key, String value) {
+		this.kgroup = kgroup;
+		this.key = key;
+		this.value = value;
+	}
+	
+	public static Map<String, Map<String, String>> toMap(Set<Kkv> kkvs) {
+		Map<String, Map<String, String>> mg = Maps.newHashMap();
+		
+		kkvs.forEach(kkv -> {
+			if (!mg.containsKey((kkv.getKgroup()))) {
+				mg.put(kkv.getKgroup(), Maps.newHashMap());
+			}
+			mg.get(kkv.getKgroup()).put(kkv.getKey(), kkv.getValue());
+		});
+		return mg;
+	}
+
+
 
 	@Override
 	public String getDisplayName() {
@@ -69,12 +96,13 @@ public class Kkv extends BaseEntity {
 	public void setValue(String value) {
 		this.value = value;
 	}
-
-	public Person getCreator() {
-		return creator;
+	
+	public Person getOwner() {
+		return owner;
 	}
 
-	public void setCreator(Person creator) {
-		this.creator = creator;
+	public void setOwner(Person owner) {
+		this.owner = owner;
 	}
+
 }

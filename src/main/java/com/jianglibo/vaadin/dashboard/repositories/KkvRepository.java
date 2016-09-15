@@ -15,5 +15,7 @@ public interface KkvRepository extends JpaRepository<Kkv, Long>,KkvRepositoryCus
 	Page<Kkv> findByArchivedEquals(boolean trashed, Pageable pageable);
 
 	long countByArchivedEquals(boolean trashed);
+	
+	
     
 }

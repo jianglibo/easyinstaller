@@ -7,6 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
@@ -14,13 +20,12 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.data.DataProvider;
 import com.jianglibo.vaadin.dashboard.data.dummy.DummyDataProvider;
-import com.jianglibo.vaadin.dashboard.domain.User;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoginRequestedEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
+import com.jianglibo.vaadin.dashboard.view.LoginView;
 import com.jianglibo.vaadin.dashboard.view.MainMenuItems;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelector;
@@ -31,12 +36,12 @@ import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.BrowserWindowResizeEvent;
 import com.vaadin.server.Page.BrowserWindowResizeListener;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -51,8 +56,6 @@ import com.vaadin.ui.themes.ValoTheme;
 @SpringUI(path = "/")
 public final class DashboardUI extends UI implements ApplicationContextAware {
 	
-	private int noticeHasShown = 0;
-	
 	private ApplicationContext applicationContext;
 	
 	@Autowired
@@ -64,8 +67,8 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	@Autowired
 	private LocaleResolver localeResolver;
 	
-	@Autowired
-	private LocalizedSystemMessageProvider lsmp;
+    @Autowired
+    private AuthenticationManager am;
 
 	/*
 	 * This field stores an access to the dummy backend layer. In real
@@ -82,12 +85,10 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 		Locale lo = LocaleSelector.getLocaleSupported(RequestContextUtils.getLocale(vsr.getHttpServletRequest()));
 		
 		setLocale(lo);
-//		lsmp.changeLocale(lo);
 		DashboardEventBus.register(this);
 		Responsive.makeResponsive(this);
 		addStyleName(ValoTheme.UI_WITH_MENU);
-
-
+		
 		// Some views need to be aware of browser resize events so a
 		// BrowserResizeEvent gets fired to the event bus on every occasion.
 		Page.getCurrent().addBrowserWindowResizeListener(new BrowserWindowResizeListener() {
@@ -96,23 +97,43 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 				DashboardEventBus.post(new BrowserResizeEvent());
 			}
 		});
-		updateContent(false);
-	}
-
-	/**
-	 * 
-	 * do nothing here.
-	 * 
-	 */
-	private void updateContent(boolean loginFailed) {
-//		User user = (User) VaadinSession.getCurrent().setAttribute(User.class.getName(), new User());
-		VaadinSession.getCurrent().setAttribute(User.class.getName(), new User());
-//		if (user != null && "admin".equals(user.getRole())) {
+		
+		
+		if (SecurityContextHolder.getContext().getAuthentication() != null) {
+			LoginView lv = new LoginView(messageSource, localeResolver, (username, password) -> {
+                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+                WebAuthenticationDetails wd = new WebAuthenticationDetailsSource().buildDetails(vsr.getHttpServletRequest());
+                authRequest.setDetails(wd);
+                Authentication an = am.authenticate(authRequest);
+                SecurityContextHolder.getContext().setAuthentication(an);
+    			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME : getNavigator().getState();
+    			getNavigator().navigateTo(v);
+			});
+			setContent(lv);
+			addStyleName("loginview");
+		} else {
 			MainView mv = new MainView(viewProvider);
 			setContent(mv);
 			removeStyleName("loginview");
 			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME : getNavigator().getState();
 			getNavigator().navigateTo(v);
+		}
+	}
+
+//	/**
+//	 * 
+//	 * do nothing here.
+//	 * 
+//	 */
+//	private void updateContent(boolean loginFailed, VaadinRequest request) {
+//		User user = (User) VaadinSession.getCurrent().setAttribute(User.class.getName(), new User());
+//
+//		if (user != null && "admin".equals(user.getRole())) {
+//			MainView mv = new MainView(viewProvider);
+//			setContent(mv);
+//			removeStyleName("loginview");
+//			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME : getNavigator().getState();
+//			getNavigator().navigateTo(v);
 //		} else {
 //			LoginView lv = new LoginView(messageSource, localeResolver);
 //			lv.setup(loginFailed, noticeHasShown);
@@ -120,14 +141,14 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 //			noticeHasShown++;
 //			addStyleName("loginview");
 //		}
-	}
+//	}
 
-	@Subscribe
-	public void userLoginRequested(final UserLoginRequestedEvent event) {
-		User user = getDataProvider().authenticate(event.getUserName(), event.getPassword());
-		VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
-		updateContent(true);
-	}
+//	@Subscribe
+//	public void userLoginRequested(final UserLoginRequestedEvent event) {
+//		User user = getDataProvider().authenticate(event.getUserName(), event.getPassword());
+//		VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
+//		updateContent(true);
+//	}
 
 	@Subscribe
 	public void userLoggedOut(final UserLoggedOutEvent event) {
