@@ -4,14 +4,12 @@ import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.web.servlet.LocaleResolver;
 
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoginRequestedEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.uicomponent.button.NotificationBuilder;
 import com.jianglibo.vaadin.dashboard.vaadinerrors.LoginError;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelectorWindow;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -19,7 +17,6 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.Position;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -38,8 +35,6 @@ import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class LoginView extends VerticalLayout {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(LoginView.class);
@@ -50,12 +45,12 @@ public class LoginView extends VerticalLayout {
 	
 	private final MessageSource messageSource;
 	
-	@Autowired
-	private LocaleResolver localeResolver;
+	private final LocaleResolver localeResolver;
 	
-	@Autowired
-	private LoginView(MessageSource messageResource) {
+	
+	public LoginView(MessageSource messageResource, LocaleResolver localeResolver) {
 		this.messageSource = messageResource;
+		this.localeResolver = localeResolver;
 
 	}
 	
@@ -73,17 +68,19 @@ public class LoginView extends VerticalLayout {
         addComponent(loginForm);
         setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
         
-        if (noticeHasShown == 0) {
-            Notification notification = new Notification(
-                    "Welcome to Dashboard Demo");
-            notification
-                    .setDescription("<span>This application is not real, it only demonstrates an application built with the <a href=\"https://vaadin.com\">Vaadin framework</a>.</span> <span>No username or password is required, just click the <b>Sign In</b> button to continue.</span>");
-            notification.setHtmlContentAllowed(true);
-            notification.setStyleName("tray dark small closable login-help");
-            notification.setPosition(Position.BOTTOM_CENTER);
-            notification.setDelayMsec(20000);
-            notification.show(Page.getCurrent());
-        }
+//        new NotificationBuilder(messageSource, "userid").setDelayMsec(4000).buildAndShow();
+        
+//        if (noticeHasShown == 0) {
+//            Notification notification = new Notification(
+//                    "Welcome to Dashboard Demo");
+//            notification
+//                    .setDescription("<span>This application is not real, it only demonstrates an application built with the <a href=\"https://vaadin.com\">Vaadin framework</a>.</span> <span>No username or password is required, just click the <b>Sign In</b> button to continue.</span>");
+//            notification.setHtmlContentAllowed(true);
+//            notification.setStyleName("tray dark small closable login-help");
+//            notification.setPosition(Position.BOTTOM_CENTER);
+//            notification.setDelayMsec(20000);
+//            notification.show(Page.getCurrent());
+//        }
 
     }
 

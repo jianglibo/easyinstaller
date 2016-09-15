@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.kvv;
+package com.jianglibo.vaadin.dashboard.view.person;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,32 +12,35 @@ import org.springframework.context.MessageSource;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Kkv;
-import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
+import com.jianglibo.vaadin.dashboard.domain.Person;
+import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
+import com.jianglibo.vaadin.dashboard.uicomponent.button.NotificationBuilder;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 
-@SpringView(name = KkvListView.VIEW_NAME)
-public class KkvListView extends BaseGridView<Kkv, KkvGrid> {
+@SpringView(name = PersonListView.VIEW_NAME)
+public class PersonListView extends BaseGridView<Person, PersonGrid> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(KkvListView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PersonListView.class);
 
-	public static final String VIEW_NAME = "kkv";
+	public static final String VIEW_NAME = "person";
 
-	public static final FontAwesome ICON_VALUE = FontAwesome.BOOK;
+	public static final FontAwesome ICON_VALUE = FontAwesome.USERS;
 
 	
 	@Autowired
-	public KkvListView(BoxRepository repository,Domains domains, MessageSource messageSource,
+	public PersonListView(PersonRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		super(applicationContext, messageSource, domains, Kkv.class, KkvGrid.class);
+		super(applicationContext, messageSource, domains, Person.class, PersonGrid.class);
+		new NotificationBuilder(messageSource, "personlist").setDelayMsec(20000).buildAndShow();
 	}
 
 	
@@ -76,7 +79,7 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid> {
 	}
 
 	@Override
-	protected KkvGrid createGrid(MessageSource messageSource, Domains domains, Class<Kkv> clazz) {
-		return new KkvGrid(messageSource, domains, clazz);
+	protected PersonGrid createGrid(MessageSource messageSource, Domains domains, Class<Person> clazz) {
+		return new PersonGrid(messageSource, domains, clazz);
 	}
 }

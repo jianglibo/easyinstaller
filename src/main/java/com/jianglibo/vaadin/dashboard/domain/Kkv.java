@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -36,6 +37,9 @@ public class Kkv extends BaseEntity {
 	@VaadinGridColumn(order = 30)
 	@VaadinFormField(order = 30)
 	private String value;
+	
+	@ManyToOne
+	private Person creator;
 
 	@Override
 	public String getDisplayName() {
@@ -64,5 +68,13 @@ public class Kkv extends BaseEntity {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public Person getCreator() {
+		return creator;
+	}
+
+	public void setCreator(Person creator) {
+		this.creator = creator;
 	}
 }

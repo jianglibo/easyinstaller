@@ -12,10 +12,21 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.google.common.collect.Sets;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
-@Table(name = "seuser", uniqueConstraints = { @UniqueConstraint(columnNames = "email") })
-public class ShellExecUser extends BaseEntity {
+@VaadinTable(multiSelect = true, messagePrefix = "domain.person.", footerVisible = true, styleNames = {
+		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+@VaadinGrid(multiSelect = true, messagePrefix = "domain.person.", footerVisible = true, styleNames = {
+		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+@Table(name = "person", uniqueConstraints = { @UniqueConstraint(columnNames = "email") })
+public class Person extends BaseEntity {
 
 	/**
 	 * 
@@ -23,27 +34,34 @@ public class ShellExecUser extends BaseEntity {
 	private static final long serialVersionUID = 1L;
 
 	private int level = 1;
-
+	
+	@VaadinFormField
 	private String avatar;
 
+	@VaadinFormField
+	@VaadinGridColumn
 	private String displayName;
 
+	@VaadinFormField
+	@VaadinGridColumn
 	@Column(nullable = false)
 	private String email;
 
+	@VaadinFormField
+	@VaadinGridColumn
 	private String gender;
-
+	
 	private boolean emailVerified;
 
 	private boolean mobileVerified;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	private Set<ShellExecRole> roles = Sets.newHashSet();
+	private Set<AppRole> roles = Sets.newHashSet();
 
-	public ShellExecUser() {
+	public Person() {
 	}
 
-	public ShellExecUser(String email, ShellExecRole... roles) {
+	public Person(String email, AppRole... roles) {
 		this.email = email;
 		this.roles = Sets.newHashSet(roles);
 	}
@@ -54,11 +72,11 @@ public class ShellExecUser extends BaseEntity {
 		return rns;
 	}
 
-	public Set<ShellExecRole> getRoles() {
+	public Set<AppRole> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(Set<ShellExecRole> roles) {
+	public void setRoles(Set<AppRole> roles) {
 		this.roles = roles;
 	}
 

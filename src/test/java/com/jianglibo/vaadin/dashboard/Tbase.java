@@ -19,11 +19,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.jianglibo.vaadin.dashboard.VaadinApplication;
-import com.jianglibo.vaadin.dashboard.domain.ShellExecRole;
-import com.jianglibo.vaadin.dashboard.domain.ShellExecUser;
+import com.jianglibo.vaadin.dashboard.domain.AppRole;
+import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.init.CreateUserAndRoles;
-import com.jianglibo.vaadin.dashboard.repositories.ShellExecRoleRepository;
-import com.jianglibo.vaadin.dashboard.repositories.ShellExecUserRepository;
+import com.jianglibo.vaadin.dashboard.repositories.AppRoleRepository;
+import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.vo.RoleNames;
 
 
@@ -63,10 +63,10 @@ public abstract class Tbase {
     protected WebApplicationContext context;
 
     @Autowired
-    protected ShellExecUserRepository userRepo;
+    protected PersonRepository userRepo;
 
     @Autowired
-    protected ShellExecRoleRepository roleRepo;
+    protected AppRoleRepository roleRepo;
 
 //    @Autowired
 //    protected KeypairRepository kpRepo;
@@ -150,7 +150,7 @@ public abstract class Tbase {
 //        logout();
 //    }
 //
-    public ShellExecUser createAuser() {
+    public Person createAuser() {
         return createOneUserWithEmail(CreateUserAndRoles.firstEmail, RoleNames.USER, RoleNames.WORKER);
     }
     
@@ -220,7 +220,7 @@ public abstract class Tbase {
 //        return createApageable(10);
 //    }
 //
-    public ShellExecRole findRole(String rn) {
+    public AppRole findRole(String rn) {
         return roleRepo.findByName(rn);
     }
 //
@@ -236,10 +236,10 @@ public abstract class Tbase {
 //        return createOneUserWithOpenId(uuid, roles.toArray(new String[] {}));
 //    }
 //
-    public ShellExecUser createOneUserWithEmail(String email, String... roleNames) {
+    public Person createOneUserWithEmail(String email, String... roleNames) {
     	
     	
-        ShellExecUser shUser = new ShellExecUser(email);
+        Person shUser = new Person(email);
         shUser.setRoles(new HashSet<>(Stream.of(roleNames).map(rn -> roleRepo.findByName(rn)).collect(Collectors.toList())));
         if (roleNames.length == 0) {
             roleNames = defaultRns;

@@ -25,7 +25,7 @@ public class KkvRepositoryImpl implements KkvRepositoryCustom<Kkv> {
 
 	@Override
 	public long getFilteredNumberWithOnePhrase(String filterString, boolean trashed) {
-		return jpqjUtil.getFilteredNumber(Box.class, filterString, trashed, "kgroup", "key", "value");
+		return jpqjUtil.getFilteredNumber(Kkv.class, filterString, trashed, "kgroup", "key", "value");
 	}
 
 }

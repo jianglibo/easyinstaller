@@ -4,7 +4,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 import com.jianglibo.vaadin.dashboard.vo.ShellExecUserVo;
 
-public class ShellExecLoginAuthenticationToken extends AbstractAuthenticationToken {
+public class PersonAuthenticationToken extends AbstractAuthenticationToken {
     /**
      * 
      */
@@ -12,7 +12,7 @@ public class ShellExecLoginAuthenticationToken extends AbstractAuthenticationTok
     
 	private ShellExecUserVo shellExecUser;
 
-	public ShellExecLoginAuthenticationToken(ShellExecUserVo shellExecUser) {
+	public PersonAuthenticationToken(ShellExecUserVo shellExecUser) {
 		super(shellExecUser.getAuthorities());
 		this.shellExecUser = shellExecUser;
 		this.setAuthenticated(true);

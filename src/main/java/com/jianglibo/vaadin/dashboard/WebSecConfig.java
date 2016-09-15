@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.session.ChangeSessionIdAu
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.jianglibo.vaadin.dashboard.config.ShellExecExceptionTranslationFilter;
+import com.jianglibo.vaadin.dashboard.config.AppExecExceptionTranslationFilter;
 
 
 @Configuration
@@ -32,9 +32,9 @@ public class WebSecConfig extends WebSecurityConfigurerAdapter {
 
     
     @Bean
-    public ShellExecExceptionTranslationFilter shellExecExceptionTranslationFilter() {
+    public AppExecExceptionTranslationFilter shellExecExceptionTranslationFilter() {
         AuthenticationEntryPoint authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint("/");
-        return new ShellExecExceptionTranslationFilter(authenticationEntryPoint);
+        return new AppExecExceptionTranslationFilter(authenticationEntryPoint);
     }
 
     @Autowired

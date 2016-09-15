@@ -35,7 +35,7 @@ public class SoftwareListView extends BaseListView<Software, SoftwareTable, Soft
 
 	public static final String VIEW_NAME = "software";
 
-	public static final FontAwesome ICON_VALUE = FontAwesome.CUBES;
+	public static final FontAwesome ICON_VALUE = FontAwesome.COGS;
 	
 	
 	@Autowired

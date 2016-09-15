@@ -8,10 +8,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.jianglibo.vaadin.dashboard.domain.ShellExecRole;
-import com.jianglibo.vaadin.dashboard.domain.ShellExecUser;
-import com.jianglibo.vaadin.dashboard.repositories.ShellExecRoleRepository;
-import com.jianglibo.vaadin.dashboard.repositories.ShellExecUserRepository;
+import com.jianglibo.vaadin.dashboard.domain.AppRole;
+import com.jianglibo.vaadin.dashboard.domain.Person;
+import com.jianglibo.vaadin.dashboard.repositories.AppRoleRepository;
+import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
 import com.jianglibo.vaadin.dashboard.vo.RoleNames;
 
@@ -22,16 +22,16 @@ public class CreateUserAndRoles implements InitializingBean {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final ShellExecUserRepository userRepo;
+    private final PersonRepository userRepo;
 
-    private final ShellExecRoleRepository roleRepo;
+    private final AppRoleRepository roleRepo;
     
     public static final String firstEmail = "demo@demo.com";
 
 
     @Autowired
-    public CreateUserAndRoles(ShellExecUserRepository userRepo, //
-            ShellExecRoleRepository roleRepo) {
+    public CreateUserAndRoles(PersonRepository userRepo, //
+            AppRoleRepository roleRepo) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
     }
@@ -51,10 +51,10 @@ public class CreateUserAndRoles implements InitializingBean {
     @Transactional
     private void initDemoUser() {
         try {
-            ShellExecUser shUser = userRepo.findByEmail(firstEmail);
+            Person shUser = userRepo.findByEmail(firstEmail);
             if (shUser == null) {
-                ShellExecRole r = roleRepo.findByName(RoleNames.USER);
-                shUser = new ShellExecUser(firstEmail, r);
+                AppRole r = roleRepo.findByName(RoleNames.USER);
+                shUser = new Person(firstEmail, r);
                 userRepo.save(shUser);
             }
         } catch (Exception e) {
@@ -66,7 +66,7 @@ public class CreateUserAndRoles implements InitializingBean {
     private void initRoles() {
         // @formatter:off
         RoleNames.allFields().stream()
-            .map(r -> new ShellExecRole(r))
+            .map(r -> new AppRole(r))
             .forEach(r -> {
                 try {
                     roleRepo.save(r);

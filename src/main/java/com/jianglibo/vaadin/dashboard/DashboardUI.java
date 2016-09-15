@@ -6,6 +6,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.MessageSource;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.google.common.base.Strings;
@@ -18,10 +20,10 @@ import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoginRequestedEvent;
-import com.jianglibo.vaadin.dashboard.view.LoginView;
+import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
+import com.jianglibo.vaadin.dashboard.view.MainMenuItems;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelector;
-import com.jianglibo.vaadin.dashboard.wrapper.DashboardMenuWrapper;
 import com.jianglibo.vaadin.dashboard.wrapper.DashboardNavigatorWrapper;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -55,6 +57,12 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	
 	@Autowired
     private SpringViewProvider viewProvider;
+	
+	@Autowired
+	private MessageSource messageSource;
+	
+	@Autowired
+	private LocaleResolver localeResolver;
 	
 	@Autowired
 	private LocalizedSystemMessageProvider lsmp;
@@ -92,27 +100,26 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	}
 
 	/**
-	 * Updates the correct content for this UI based on the current user status.
-	 * If the user is logged in with appropriate privileges, main view is shown.
-	 * Otherwise login view is shown.
+	 * 
+	 * do nothing here.
+	 * 
 	 */
 	private void updateContent(boolean loginFailed) {
-		User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
-		if (user != null && "admin".equals(user.getRole())) {
-			// Authenticated user
-//			setContent(new MainView());
+//		User user = (User) VaadinSession.getCurrent().setAttribute(User.class.getName(), new User());
+		VaadinSession.getCurrent().setAttribute(User.class.getName(), new User());
+//		if (user != null && "admin".equals(user.getRole())) {
 			MainView mv = new MainView(viewProvider);
 			setContent(mv);
 			removeStyleName("loginview");
 			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME : getNavigator().getState();
 			getNavigator().navigateTo(v);
-		} else {
-			LoginView lv = applicationContext.getBean(LoginView.class);
-			lv.setup(loginFailed, noticeHasShown);
-			setContent(lv);
-			noticeHasShown++;
-			addStyleName("loginview");
-		}
+//		} else {
+//			LoginView lv = new LoginView(messageSource, localeResolver);
+//			lv.setup(loginFailed, noticeHasShown);
+//			setContent(lv);
+//			noticeHasShown++;
+//			addStyleName("loginview");
+//		}
 	}
 
 	@Subscribe
@@ -158,7 +165,8 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	    public MainView(SpringViewProvider viewProvider) {
 	        setSizeFull();
 	        addStyleName("mainview");
-	        addComponent(applicationContext.getBean(DashboardMenuWrapper.class).unwrap());
+	        // MainMenuItems must inject this way.
+	        addComponent(new DashboardMenu(messageSource, localeResolver, applicationContext.getBean(MainMenuItems.class)));
 	        ComponentContainer content = new CssLayout();
 	        content.addStyleName("view-content");
 	        content.setSizeFull();

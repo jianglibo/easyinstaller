@@ -33,8 +33,7 @@ public class BlobObjectInDb extends BaseEntity {
 
 	@Override
 	public String getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "blob:" + getName();
 	}
 	
 	

@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.kvv;
+package com.jianglibo.vaadin.dashboard.view.person;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -8,8 +8,8 @@ import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
-@MainMenu(menuOrder = 900)
-public class KvvViewMenuItem implements MenuItemWrapper {
+@MainMenu(menuOrder = 1000)
+public class PersonMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;
 
@@ -17,9 +17,9 @@ public class KvvViewMenuItem implements MenuItemWrapper {
 	
 	
 	@Autowired
-	public KvvViewMenuItem(MessageSource messageSource) {
+	public PersonMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.menuItem = new ValoMenuItemButton(KkvListView.VIEW_NAME, KkvListView.ICON_VALUE, messageSource);
+		this.menuItem = new ValoMenuItemButton(PersonListView.VIEW_NAME, PersonListView.ICON_VALUE, messageSource);
 	}
 	
 	public Component getMenuItem() {

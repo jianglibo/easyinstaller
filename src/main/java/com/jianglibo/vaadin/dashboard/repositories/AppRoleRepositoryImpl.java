@@ -13,10 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import com.google.common.collect.Lists;
-import com.jianglibo.vaadin.dashboard.domain.ShellExecRole;
+import com.jianglibo.vaadin.dashboard.domain.AppRole;
 
 
-public class ShellExecRoleRepositoryImpl  extends SimpleJpaRepository<ShellExecRole, Long> implements ShellExecRoleRepositoryCustom, ApplicationContextAware {
+public class AppRoleRepositoryImpl  extends SimpleJpaRepository<AppRole, Long> implements AppRoleRepositoryCustom, ApplicationContextAware {
     @SuppressWarnings("unused")
     private EntityManager entityManager;
 
@@ -29,8 +29,8 @@ public class ShellExecRoleRepositoryImpl  extends SimpleJpaRepository<ShellExecR
      * @param em
      */
     @Autowired
-    public ShellExecRoleRepositoryImpl(EntityManager entityManager) {
-        super(ShellExecRole.class, entityManager);
+    public AppRoleRepositoryImpl(EntityManager entityManager) {
+        super(AppRole.class, entityManager);
         this.entityManager = entityManager;
     }
     
@@ -39,7 +39,7 @@ public class ShellExecRoleRepositoryImpl  extends SimpleJpaRepository<ShellExecR
         this.context = applicationContext;
     }
     
-    public Page<ShellExecRole> differentUser(Long uid, Pageable pageable) {
+    public Page<AppRole> differentUser(Long uid, Pageable pageable) {
         if (uid == -1) {
             return super.findAll(pageable);
         } else {

@@ -33,7 +33,7 @@ public class StepDefineListView extends BaseListView<StepDefine, StepDefineTable
 
 	public static final String VIEW_NAME = "stepdefine";
 
-	public static final FontAwesome ICON_VALUE = FontAwesome.CUBE;
+	public static final FontAwesome ICON_VALUE = FontAwesome.COG;
 	
 	
 	@Autowired

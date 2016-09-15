@@ -38,7 +38,7 @@ public abstract class TileBase extends CssLayout {
 		
 		Component content = getWrapedContent();
 
-		Label caption = new Label(content.getCaption());
+		Label caption = new Label(getTileTitle());
 		caption.addStyleName(ValoTheme.LABEL_H4);
 		caption.addStyleName(ValoTheme.LABEL_COLORED);
 		caption.addStyleName(ValoTheme.LABEL_NO_MARGIN);
@@ -84,6 +84,8 @@ public abstract class TileBase extends CssLayout {
 		addComponent(card);
 	}
 	
+	protected abstract String getTileTitle();
+
 	public abstract void setTileStyles();
 	
 	public void AddTileMenuClickListener(TileMenuClickListener tmcl) {

@@ -5,13 +5,13 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
-public class ShellExecExceptionTranslationFilter  extends ExceptionTranslationFilter {
+public class AppExecExceptionTranslationFilter  extends ExceptionTranslationFilter {
 
-	public ShellExecExceptionTranslationFilter () {
+	public AppExecExceptionTranslationFilter () {
 		super(new LoginUrlAuthenticationEntryPoint("/"));
 	}
 
-	public ShellExecExceptionTranslationFilter(AuthenticationEntryPoint authenticationEntryPoint) {
+	public AppExecExceptionTranslationFilter(AuthenticationEntryPoint authenticationEntryPoint) {
 		super(authenticationEntryPoint);
 	}
 

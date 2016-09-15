@@ -1,37 +1,42 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.button;
 
-import java.util.Collection;
-
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
-import com.jianglibo.vaadin.dashboard.domain.DashboardNotification;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.NotificationsCountUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.Alignment;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 
+/**
+ * If need a number icon at up right corner, button must has "notifications" and "unread" two styles.
+ * 
+ * @author jianglibo@gmail.com
+ *
+ */
 @SuppressWarnings("serial")
-public class ButtonWillPopupWindow extends Button {
+public abstract class ButtonWillPopupWindow extends Button {
+	
         private static final String STYLE_UNREAD = "unread";
+        
         public static final String ID = "dashboard-notifications";
         
-        private Window notificationsWindow;
+        private Window popupWindow;
+        
+        private boolean showNumberIcon;
 
-        public ButtonWillPopupWindow() {
-            setIcon(FontAwesome.BELL);
+        public ButtonWillPopupWindow(boolean showNumberIcon, Resource icon) {
+        	this.showNumberIcon = showNumberIcon;
+            setIcon(icon);
             setId(ID);
-            addStyleName("notifications");
+            
+            if (showNumberIcon) {
+            	addStyleName("notifications");
+            }
+            
             addStyleName(ValoTheme.BUTTON_ICON_ONLY);
             
             addClickListener(new ClickListener() {
@@ -64,74 +69,31 @@ public class ButtonWillPopupWindow extends Button {
         }
         
         private void openNotificationsPopup(final ClickEvent event) {
-            VerticalLayout notificationsLayout = new VerticalLayout();
-            notificationsLayout.setMargin(true);
-            notificationsLayout.setSpacing(true);
-
-            Label title = new Label("Notifications");
-            title.addStyleName(ValoTheme.LABEL_H3);
-            title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-            notificationsLayout.addComponent(title);
-
-            Collection<DashboardNotification> notifications = DashboardUI
-                    .getDataProvider().getNotifications();
-            DashboardEventBus.post(new NotificationsCountUpdatedEvent());
-
-            for (DashboardNotification notification : notifications) {
-                VerticalLayout notificationLayout = new VerticalLayout();
-                notificationLayout.addStyleName("notification-item");
-
-                Label titleLabel = new Label(notification.getFirstName() + " "
-                        + notification.getLastName() + " "
-                        + notification.getAction());
-                titleLabel.addStyleName("notification-title");
-
-                Label timeLabel = new Label(notification.getPrettyTime());
-                timeLabel.addStyleName("notification-time");
-
-                Label contentLabel = new Label(notification.getContent());
-                contentLabel.addStyleName("notification-content");
-
-                notificationLayout.addComponents(titleLabel, timeLabel,
-                        contentLabel);
-                notificationsLayout.addComponent(notificationLayout);
+            if (popupWindow == null) {
+                popupWindow = new Window();
+                popupWindow.setWidth(300.0f, Unit.PIXELS);
+                popupWindow.addStyleName("notifications");
+                popupWindow.setClosable(false);
+                popupWindow.setResizable(false);
+                popupWindow.setDraggable(false);
+                popupWindow.addCloseShortcut(KeyCode.ESCAPE, null);
+                customizeWindow(popupWindow);
+                popupWindow.setContent(getWindowContent());
             }
 
-            HorizontalLayout footer = new HorizontalLayout();
-            footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-            footer.setWidth("100%");
-            Button showAll = new Button("View All Notifications",
-                    new ClickListener() {
-                        @Override
-                        public void buttonClick(final ClickEvent event) {
-                            Notification.show("Not implemented in this demo");
-                        }
-                    });
-            showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-            showAll.addStyleName(ValoTheme.BUTTON_SMALL);
-            footer.addComponent(showAll);
-            footer.setComponentAlignment(showAll, Alignment.TOP_CENTER);
-            notificationsLayout.addComponent(footer);
-
-            if (notificationsWindow == null) {
-                notificationsWindow = new Window();
-                notificationsWindow.setWidth(300.0f, Unit.PIXELS);
-                notificationsWindow.addStyleName("notifications");
-                notificationsWindow.setClosable(false);
-                notificationsWindow.setResizable(false);
-                notificationsWindow.setDraggable(false);
-                notificationsWindow.addCloseShortcut(KeyCode.ESCAPE, null);
-                notificationsWindow.setContent(notificationsLayout);
-            }
-
-            if (!notificationsWindow.isAttached()) {
-                notificationsWindow.setPositionY(event.getClientY()
+            if (!popupWindow.isAttached()) {
+                popupWindow.setPositionY(event.getClientY()
                         - event.getRelativeY() + 40);
-                getUI().addWindow(notificationsWindow);
-                notificationsWindow.focus();
+                getUI().addWindow(popupWindow);
+                popupWindow.focus();
             } else {
-                notificationsWindow.close();
+                popupWindow.close();
             }
         }
+        
+        protected abstract void customizeWindow(Window popupWindow);
+
+        protected abstract VerticalLayout getWindowContent();
+
     }
 

@@ -126,22 +126,6 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 	private Component createBottomBlock() {
 		grid = createGrid(messageSource, domains, clazz);
 		BottomBlock bottomBlock = new BottomBlock();
-		
-//		/**
-//		 * add listener to final event source object.
-//		 */
-//		bottomBlock.getTable().getContainer().addPageMetaChangeListener(pme -> {
-//			bottomBlock.getTable().setFooter(pme);
-//			((MiddleBlock)middleBlock).getPager().setTotalPage(pme);
-//		});
-//
-//		bottomBlock.getTable().addValueChangeListener(event -> {
-//			if (table.getValue() instanceof Set) {
-//				Set<Object> val = (Set<Object>) table.getValue();
-//				((MiddleBlock)middleBlock).alterState(val.size());
-//			}
-//		});
-		
 		return bottomBlock;
 	}
 

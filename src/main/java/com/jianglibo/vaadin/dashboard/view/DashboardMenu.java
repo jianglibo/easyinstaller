@@ -1,9 +1,6 @@
 package com.jianglibo.vaadin.dashboard.view;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.web.servlet.LocaleResolver;
 
 import com.google.common.eventbus.Subscribe;
@@ -18,7 +15,6 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -39,8 +35,6 @@ import com.vaadin.ui.themes.ValoTheme;
  * primary navigation between the views.
  */
 @SuppressWarnings({ "serial" })
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public final class DashboardMenu extends CustomComponent {
 
 
@@ -49,23 +43,18 @@ public final class DashboardMenu extends CustomComponent {
 	public static final String NOTIFICATIONS_BADGE_ID = "dashboard-menu-notifications-badge";
 	private static final String STYLE_VISIBLE = "valo-menu-visible";
 	
-	@Autowired
-	private MainMenuItems mmis;
+	private final MainMenuItems mmis;
 	
-	@Autowired
-	private LocaleResolver localeResolver;
+	private final LocaleResolver localeResolver;
 	
-	@Autowired
-	private MessageSource messageSource;
+	private final MessageSource messageSource;
 
 	private MenuItem settingsItem;
 	
-//	private DashboardViewMenuItem dashboardViewMenuItem;
-//	private ReportsViewMenuItem reportsViewMenuItem;
-//	private ScheduleViewMenuItem scheduleViewMenuItem;
-//	private TransactionsViewMenuItem transactionsViewMenuItem;
-	
-	public void setup(){
+	public DashboardMenu(MessageSource messageSource, LocaleResolver localeResolver, MainMenuItems mmis) {
+		this.messageSource = messageSource;
+		this.localeResolver = localeResolver;
+		this.mmis = mmis;
 		setPrimaryStyleName("valo-menu");
 		setId(ID);
 		setSizeUndefined();
@@ -112,18 +101,6 @@ public final class DashboardMenu extends CustomComponent {
 		final User user = getCurrentUser();
 		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
 		updateUserName(null);
-//		settingsItem.addItem(messageSource.getMessage("dmenu.dropdown.editprofile", null, UI.getCurrent().getLocale()), new Command() {
-//			@Override
-//			public void menuSelected(final MenuItem selectedItem) {
-//				ProfilePreferencesWindow.open(user, false);
-//			}
-//		});
-//		settingsItem.addItem(messageSource.getMessage("dmenu.dropdown.preferences", null, UI.getCurrent().getLocale()), new Command() {
-//			@Override
-//			public void menuSelected(final MenuItem selectedItem) {
-//				ProfilePreferencesWindow.open(user, true);
-//			}
-//		});
 		settingsItem.addItem(MsgUtil.getDropDownMenuMsg(messageSource, "swithLang"),
 				new Command() {
 					@Override
@@ -166,67 +143,7 @@ public final class DashboardMenu extends CustomComponent {
 		mmis.getItems().values().forEach(mw -> {
 			menuItemsLayout.addComponent(mw.getMenuItem());
 		});
-//		dashboardViewMenuItem = new DashboardViewMenuItem();
-//		menuItemsLayout.addComponent(dashboardViewMenuItem.getMenuItem());
-//		
-//		reportsViewMenuItem = new ReportsViewMenuItem();
-//		menuItemsLayout.addComponent(reportsViewMenuItem.getMenuItem());
-//		
-//		scheduleViewMenuItem = new ScheduleViewMenuItem();
-//		menuItemsLayout.addComponent(scheduleViewMenuItem.getMenuItem());
-//		
-//		transactionsViewMenuItem = new TransactionsViewMenuItem(); 
-//		menuItemsLayout.addComponent(transactionsViewMenuItem.getMenuItem());
-
-		// for (final DashboardViewType view : DashboardViewType.values()) {
-		// Component menuItemComponent = new ValoMenuItemButton(view);
-		//
-		// if (view == DashboardViewType.REPORTS) {
-		// // Add drop target to reports button
-		// DragAndDropWrapper reports = new DragAndDropWrapper(
-		// menuItemComponent);
-		// reports.setSizeUndefined();
-		// reports.setDragStartMode(DragStartMode.NONE);
-		// reports.setDropHandler(new DropHandler() {
-		//
-		// @Override
-		// public void drop(final DragAndDropEvent event) {
-		// UI.getCurrent()
-		// .getNavigator()
-		// .navigateTo(
-		// DashboardViewType.REPORTS.getViewName());
-		// Table table = (Table) event.getTransferable()
-		// .getSourceComponent();
-		// DashboardEventBus.post(new TransactionReportEvent(
-		// (Collection<Transaction>) table.getValue()));
-		// }
-		//
-		// @Override
-		// public AcceptCriterion getAcceptCriterion() {
-		// return AcceptItem.ALL;
-		// }
-		//
-		// });
-		// menuItemComponent = reports;
-		// }
-		//
-		// if (view == DashboardViewType.DASHBOARD) {
-		// notificationsBadge = new Label();
-		// notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
-		// menuItemComponent = buildBadgeWrapper(menuItemComponent,
-		// notificationsBadge);
-		// }
-		// if (view == DashboardViewType.REPORTS) {
-		// reportsBadge = new Label();
-		// reportsBadge.setId(REPORTS_BADGE_ID);
-		// menuItemComponent = buildBadgeWrapper(menuItemComponent,
-		// reportsBadge);
-		// }
-		//
-		// menuItemsLayout.addComponent(menuItemComponent);
-		// }
 		return menuItemsLayout;
-
 	}
 
 	@Override
@@ -250,37 +167,4 @@ public final class DashboardMenu extends CustomComponent {
 		User user = getCurrentUser();
 		settingsItem.setText(user.getFirstName() + " " + user.getLastName());
 	}
-
-	// public final class ValoMenuItemButton extends Button {
-	//
-	// private static final String STYLE_SELECTED = "selected";
-	//
-	// private final DashboardViewType view;
-	//
-	// public ValoMenuItemButton(final DashboardViewType view) {
-	// this.view = view;
-	// setPrimaryStyleName("valo-menu-item");
-	// setIcon(view.getIcon());
-	// setCaption(view.getViewName().substring(0, 1).toUpperCase()
-	// + view.getViewName().substring(1));
-	// DashboardEventBus.register(this);
-	// addClickListener(new ClickListener() {
-	// @Override
-	// public void buttonClick(final ClickEvent event) {
-	// UI.getCurrent().getNavigator()
-	// .navigateTo(view.getViewName());
-	// }
-	// });
-	//
-	// }
-	//
-	// @Subscribe
-	// public void postViewChange(final PostViewChangeEvent event) {
-	// removeStyleName(STYLE_SELECTED);
-	// if (event.getView() == view) {
-	// addStyleName(STYLE_SELECTED);
-	// }
-	// }
-	// }
-	
 }

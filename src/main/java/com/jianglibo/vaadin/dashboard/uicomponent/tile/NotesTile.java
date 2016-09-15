@@ -21,4 +21,9 @@ public class NotesTile extends TileBase {
 		addStyleName("notes");
 	}
 
+	@Override
+	protected String getTileTitle() {
+		return "Notes";
+	}
+
 }

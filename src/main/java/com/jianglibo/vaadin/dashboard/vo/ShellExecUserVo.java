@@ -7,8 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.jianglibo.vaadin.dashboard.domain.ShellExecRole;
-import com.jianglibo.vaadin.dashboard.domain.ShellExecUser;
+import com.jianglibo.vaadin.dashboard.domain.AppRole;
+import com.jianglibo.vaadin.dashboard.domain.Person;
 
 
 public class ShellExecUserVo implements UserDetails {
@@ -38,7 +38,7 @@ public class ShellExecUserVo implements UserDetails {
     
     public ShellExecUserVo() {}
     
-    public ShellExecUserVo(ShellExecUser seUser) {
+    public ShellExecUserVo(Person seUser) {
         this.id = seUser.getId();
         this.email = seUser.getEmail();
         this.level = seUser.getLevel();
@@ -50,7 +50,7 @@ public class ShellExecUserVo implements UserDetails {
         this.setAuthorities(extractAuthorities(seUser.getRoles()));
     }
     
-    private Set<GrantedAuthority> extractAuthorities(Set<ShellExecRole> roles) {
+    private Set<GrantedAuthority> extractAuthorities(Set<AppRole> roles) {
         return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toSet());
     }
 
