@@ -1,9 +1,10 @@
 package com.jianglibo.vaadin.dashboard.component;
 
-import com.jianglibo.vaadin.dashboard.domain.User;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.ProfileUpdatedEvent;
+import com.jianglibo.vaadin.dashboard.security.PersonVo;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.fieldgroup.PropertyId;
@@ -41,7 +42,7 @@ public class ProfilePreferencesWindow extends Window {
 
     public static final String ID = "profilepreferenceswindow";
 
-    private final BeanFieldGroup<User> fieldGroup;
+    private final BeanFieldGroup<Person> fieldGroup;
     /*
      * Fields for editing the User object are defined here as class members.
      * They are later bound to a FieldGroup by calling
@@ -70,7 +71,7 @@ public class ProfilePreferencesWindow extends Window {
     @PropertyId("bio")
     private TextArea bioField;
 
-    private ProfilePreferencesWindow(final User user,
+    private ProfilePreferencesWindow(final Person person,
             final boolean preferencesTabOpen) {
         addStyleName("profile-window");
         setId(ID);
@@ -104,9 +105,9 @@ public class ProfilePreferencesWindow extends Window {
 
         content.addComponent(buildFooter());
 
-        fieldGroup = new BeanFieldGroup<User>(User.class);
+        fieldGroup = new BeanFieldGroup<Person>(Person.class);
         fieldGroup.bindMemberFields(this);
-        fieldGroup.setItemDataSource(user);
+        fieldGroup.setItemDataSource(person);
     }
 
     private Component buildPreferencesTab() {
@@ -266,9 +267,9 @@ public class ProfilePreferencesWindow extends Window {
         return footer;
     }
 
-    public static void open(final User user, final boolean preferencesTabActive) {
+    public static void open(final Person person, final boolean preferencesTabActive) {
         DashboardEventBus.post(new CloseOpenWindowsEvent());
-        Window w = new ProfilePreferencesWindow(user, preferencesTabActive);
+        Window w = new ProfilePreferencesWindow(person, preferencesTabActive);
         UI.getCurrent().addWindow(w);
         w.focus();
     }

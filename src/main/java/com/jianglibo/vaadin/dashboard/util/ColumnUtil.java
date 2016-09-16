@@ -27,6 +27,11 @@ public class ColumnUtil {
 	public static final String ARROW_LEFT_URL = "font-awesome_4-6-3_arrow-circle-o-left_16_0_007dff_none.png";
 	public static final String ARROW_RIGHT_URL = "font-awesome_4-6-3_arrow-circle-o-right_16_0_007dff_none.png";
 	public static final String REMOVE_URL = "ionicons_2-0-1_android-remove-circle_16_0_007dff_none.png";
+	
+	
+	public static final String getFullIconPath(String iconFn) {
+		return "/icon-images/" + iconFn;
+	}
 
 	@SuppressWarnings("serial")
 	public static void addGeneratedProperty(MessageSource messageSource, GeneratedPropertyContainer gpcontainer,

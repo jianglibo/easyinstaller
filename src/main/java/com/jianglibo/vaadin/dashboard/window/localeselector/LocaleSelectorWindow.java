@@ -187,8 +187,6 @@ public class LocaleSelectorWindow extends Window {
 		table.setDragMode(TableDragMode.MULTIROW);
 		table.setMultiSelect(false);
 
-		table.addActionHandler(new TransactionsActionHandler());
-
 		table.setImmediate(true);
 
 		table.addValueChangeListener(new ValueChangeListener() {
@@ -223,33 +221,6 @@ public class LocaleSelectorWindow extends Window {
 	private class LansContainer extends FilterableListContainer<Lan> {
 		public LansContainer(final Collection<Lan> collection) {
 			super(collection);
-		}
-	}
-
-	private class TransactionsActionHandler implements Handler {
-		private final Action report = new Action("Create Report");
-
-		private final Action discard = new Action("Discard");
-
-		private final Action details = new Action("Movie details");
-
-		@Override
-		public void handleAction(final Action action, final Object sender, final Object target) {
-			if (action == report) {
-			} else if (action == discard) {
-				Notification.show("Not implemented in this demo");
-			} else if (action == details) {
-				Item item = ((Table) sender).getItem(target);
-				if (item != null) {
-					Long movieId = (Long) item.getItemProperty("movieId").getValue();
-					MovieDetailsWindow.open(DashboardUI.getDataProvider().getMovie(movieId), null, null);
-				}
-			}
-		}
-
-		@Override
-		public Action[] getActions(final Object target, final Object sender) {
-			return new Action[] { details, report, discard };
 		}
 	}
 

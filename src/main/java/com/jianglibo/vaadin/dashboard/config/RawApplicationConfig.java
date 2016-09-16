@@ -1,18 +1,13 @@
 package com.jianglibo.vaadin.dashboard.config;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Sets;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
 
 @Component
@@ -42,6 +37,8 @@ public class RawApplicationConfig {
 	 * the folder in server box to store tmp files.
 	 */
 	private String remoteFolder;
+	
+	private boolean autoLogin;
 	
 	private Map<String, List<ComboItem>> comboDatas = Maps.newHashMap();
 	
@@ -96,4 +93,14 @@ public class RawApplicationConfig {
 	public void setSshKeyFolder(String sshKeyFolder) {
 		this.sshKeyFolder = sshKeyFolder;
 	}
+
+	public boolean isAutoLogin() {
+		return autoLogin;
+	}
+
+	public void setAutoLogin(boolean autoLogin) {
+		this.autoLogin = autoLogin;
+	}
+	
+	
 }

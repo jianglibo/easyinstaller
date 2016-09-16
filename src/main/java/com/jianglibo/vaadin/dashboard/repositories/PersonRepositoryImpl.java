@@ -92,13 +92,13 @@ public class PersonRepositoryImpl extends SimpleJpaRepository<Person, Long> impl
 
 	@Override
 	public List<Person> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed) {
-		return jpqjUtil.getFilteredPage(Person.class,  page, filterString, trashed, Person_.displayName.getName(), Person_.email.getName());
+		return jpqjUtil.getFilteredPage(Person.class,  page, filterString, trashed, Person_.name.getName(), Person_.email.getName(), Person_.mobile.getName());
 	}
 
 
 	@Override
 	public long getFilteredNumberWithOnePhrase(String filterString, boolean trashed) {
-		return jpqjUtil.getFilteredNumber(Person.class, filterString, trashed, Person_.displayName.getName(), Person_.email.getName());
+		return jpqjUtil.getFilteredNumber(Person.class, filterString, trashed, Person_.name.getName(), Person_.email.getName(), Person_.mobile.getName());
 	}
 
 }

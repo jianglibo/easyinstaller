@@ -4,13 +4,16 @@ import org.springframework.context.MessageSource;
 import org.springframework.web.servlet.LocaleResolver;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.domain.User;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.PostViewChangeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.ProfileUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
+import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
+import com.jianglibo.vaadin.dashboard.security.PersonVo;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelectorWindow;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
@@ -91,15 +94,16 @@ public final class DashboardMenu extends CustomComponent {
 		return logoWrapper;
 	}
 
-	private User getCurrentUser() {
-		return (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
-	}
+//	private User getCurrentUser() {
+//		return (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
+//	}
 			
 	private Component buildUserMenu() {
 		final MenuBar settings = new MenuBar();
 		settings.addStyleName("user-menu");
-		final User user = getCurrentUser();
-		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
+		PersonVo pvo = M3958SecurityUtil.getLoginPersonVo().get();
+//		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
+		settingsItem = settings.addItem("", new ExternalResource(pvo.getAvatar()), null);
 		updateUserName(null);
 		settingsItem.addItem(MsgUtil.getDropDownMenuMsg(messageSource, "swithLang"),
 				new Command() {
@@ -164,7 +168,7 @@ public final class DashboardMenu extends CustomComponent {
 
 	@Subscribe
 	public void updateUserName(final ProfileUpdatedEvent event) {
-		User user = getCurrentUser();
-		settingsItem.setText(user.getFirstName() + " " + user.getLastName());
+		PersonVo pvo = M3958SecurityUtil.getLoginPersonVo().get();
+		settingsItem.setText(pvo.getName());
 	}
 }

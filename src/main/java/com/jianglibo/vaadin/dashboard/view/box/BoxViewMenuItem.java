@@ -6,9 +6,10 @@ import org.springframework.context.MessageSource;
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Component;
 
-@MainMenu(menuOrder = 10)
+@MainMenu(menuOrder = 200)
 public class BoxViewMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;
@@ -19,7 +20,7 @@ public class BoxViewMenuItem implements MenuItemWrapper {
 	@Autowired
 	public BoxViewMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.menuItem = new ValoMenuItemButton(BoxListView.VIEW_NAME, BoxListView.ICON_VALUE, messageSource);
+		this.menuItem = new ValoMenuItemButton(BoxListView.VIEW_NAME, FontAwesome.CUBE, messageSource);
 	}
 	
 	public Component getMenuItem() {

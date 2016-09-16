@@ -1,17 +1,15 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.twingrid2;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.context.MessageSource;
 
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
-import com.jianglibo.vaadin.dashboard.data.vaadinconverter.EntityStringConverter;
+import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.OrderedStepDefine;
-import com.jianglibo.vaadin.dashboard.domain.StepDefine;
-import com.jianglibo.vaadin.dashboard.repositories.OrderedStepDefineRepository;
+import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
@@ -22,24 +20,19 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickListener;
 
-public class OrderedStepDefineTwinGrid
-		extends BaseTwinGridField<List<OrderedStepDefine>, OrderedStepDefine, StepDefine> {
+public class BoxTwinGrid extends BaseTwinGridField<Set<Box>, Box, Box> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private OrderedStepDefineRepository orderedStepDefineRepository;
-
-	public OrderedStepDefineTwinGrid(Domains domains, MessageSource messageSource,
-			OrderedStepDefineRepository orderedStepDefineRepository,VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		super(OrderedStepDefine.class, StepDefine.class, domains, messageSource, vtw,  vffw);
-		this.orderedStepDefineRepository = orderedStepDefineRepository;
+	public BoxTwinGrid(Domains domains, MessageSource messageSource, BoxRepository repository, VaadinTableWrapper vtw,
+			VaadinFormFieldWrapper vffw) {
+		super(Box.class, Box.class, domains, messageSource, vtw, vffw);
 		StyleUtil.setBtnLinkStyleContainer(this);
 		StyleUtil.setDisableCellFocus(this);
 	}
-
 
 	@Override
 	public void addGeneratedPropertyForLeft(GeneratedPropertyContainer gpcontainer, String extraName) {
@@ -67,28 +60,14 @@ public class OrderedStepDefineTwinGrid
 			ColumnUtil.setExternalImageRender(col, ColumnUtil.REMOVE_URL, new RendererClickListener() {
 				@Override
 				public void click(RendererClickEvent event) {
-					List<OrderedStepDefine> osds = (List<OrderedStepDefine>) getValue();
-					List<OrderedStepDefine> newOsds = Lists.newArrayList(osds);
-					OrderedStepDefine osd = (OrderedStepDefine) event.getItemId();
-					if (newOsds.remove(osd)) {
-						orderedStepDefineRepository.delete(osd);
-					}
-					setValue(newOsds);
-					Notification.show(osd.getDisplayName() + " removed.");
+					Set<Box> currentValue = (Set<Box>) getValue();
+					Set<Box> newValue = Sets.newHashSet(currentValue);
+					Box item = (Box) event.getItemId();
+					newValue.remove(item);
+					setValue(newValue);
+					Notification.show(item.getDisplayName() + " removed.");
 				}
 			});
-			break;
-		case "!up":
-			ColumnUtil.setExternalImageRender(col, ColumnUtil.ARROW_UP_URL, new RendererClickListener() {
-				@Override
-				public void click(RendererClickEvent event) {
-					OrderedStepDefine osd = (OrderedStepDefine) event.getItemId();
-					setValue(ColumnUtil.alterHasPositionList(getValue(), osd));
-				}
-			});
-			break;
-		case "stepDefine":
-			col.setConverter(new EntityStringConverter<>(StepDefine.class));
 			break;
 		default:
 			break;
@@ -103,15 +82,10 @@ public class OrderedStepDefineTwinGrid
 			ColumnUtil.setExternalImageRender(col, ColumnUtil.ARROW_LEFT_URL, new RendererClickListener() {
 				@Override
 				public void click(RendererClickEvent event) {
-					List<OrderedStepDefine> currentValue = (List<OrderedStepDefine>) getValue();
-					List<OrderedStepDefine> newValue = Lists.newArrayList(currentValue);
-					StepDefine item = (StepDefine) event.getItemId();
-					int position = 0;
-					if (!currentValue.isEmpty()) {
-						position = currentValue.get(currentValue.size() - 1).getPosition() + 50;
-					}
-					OrderedStepDefine osd = orderedStepDefineRepository.save(new OrderedStepDefine(item, position));
-					newValue.add(osd);
+					Set<Box> currentValue = (Set<Box>) getValue();
+					Set<Box> newValue = Sets.newHashSet(currentValue);
+					Box sd = (Box) event.getItemId();
+					newValue.add(sd);
 					setValue(newValue);
 				}
 			});
@@ -131,7 +105,7 @@ public class OrderedStepDefineTwinGrid
 
 	@Override
 	public void setupLeftGrid(Grid grid) {
-		
+
 	}
 
 	@Override

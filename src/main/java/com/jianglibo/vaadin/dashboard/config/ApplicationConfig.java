@@ -13,8 +13,9 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.domain.Kkv;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
@@ -29,6 +30,8 @@ public class ApplicationConfig {
 	private final PersonRepository personRepository;
 
 	private final KkvRepository kkvRepository;
+	
+	private final static String APPLICATION_KGROUP = "application";
 
 	private Path uploadDstPath;
 
@@ -39,10 +42,12 @@ public class ApplicationConfig {
 	private Path sshKeyFolderPath;
 	
 	private String remoteFolder;
+	
+	private boolean autoLogin;
 
 	@Autowired
 	public ApplicationConfig(RawApplicationConfig racfig, PersonRepository personRepository,
-			KkvRepository kkvRepository) {
+			KkvRepository kkvRepository, AppInitializer appInitializer) {
 		this.racfig = racfig;
 		this.personRepository = personRepository;
 		this.kkvRepository = kkvRepository;
@@ -50,51 +55,45 @@ public class ApplicationConfig {
 
 	@PostConstruct
 	public void after() {
-		String kgroup = "appliction";
+		
 		Person root = personRepository.findByEmail(AppInitializer.firstEmail);
 		Set<Kkv> kkvs = root.getKkvs();
 		Map<String, Map<String, String>> mmap = Kkv
-				.toMap(kkvs.stream().filter(kkv -> kgroup.equals(kkv.getKgroup())).collect(Collectors.toSet()));
+				.toMap(kkvs.stream().filter(kkv -> APPLICATION_KGROUP.equals(kkv.getKgroup())).collect(Collectors.toSet()));
+		
+		Map<String, String> applicationMap = mmap.get(APPLICATION_KGROUP) == null ? Maps.newHashMap() : mmap.get(APPLICATION_KGROUP);
 
-		String uploadDst = racfig.getUploadDst();
-		String stepFolder = racfig.getStepFolder();
-		String localFolder = racfig.getLocalFolder();
-		String sshKeyFolder = racfig.getSshKeyFolder();
-		String remoteFolder = racfig.getRemoteFolder();
-
-		Map<String, String> applicationMap = mmap.get(kgroup);
-
-		if (applicationMap != null) {
-			uploadDst = applicationMap.get("uploadDst");
-			stepFolder = applicationMap.get("stepFolder");
-			localFolder = applicationMap.get("localFolder");
-			sshKeyFolder = applicationMap.get("sshKeyFolder");
-			remoteFolder = applicationMap.get("remoteFolder");
-		} else {
-			List<Kkv> nkkvs = Lists.newArrayList();
-			kkvs.add(new Kkv(kgroup, "uploadDst", uploadDst));
-			kkvs.add(new Kkv(kgroup, "stepFolder", stepFolder));
-			kkvs.add(new Kkv(kgroup, "localFolder", localFolder));
-			kkvs.add(new Kkv(kgroup, "sshKeyFolder", sshKeyFolder));
-			kkvs.add(new Kkv(kgroup, "remoteFolder", remoteFolder));
-
-			nkkvs.forEach(kkv -> {
-				kkv.setOwner(root);
-				kkvRepository.save(kkv);
-			});
-		}
+		String uploadDst = processOneItem(applicationMap, root, "uploadDst", racfig.getUploadDst());
+		String stepFolder = processOneItem(applicationMap, root, "stepFolder", racfig.getStepFolder());
+		String localFolder = processOneItem(applicationMap, root, "localFolder", racfig.getLocalFolder());
+		String sshKeyFolder = processOneItem(applicationMap, root, "sshKeyFolder", racfig.getSshKeyFolder());
+		String remoteFolder = processOneItem(applicationMap, root, "remoteFolder", racfig.getRemoteFolder());
+		String autoLoginStr =  processOneItem(applicationMap, root, "autoLogin", racfig.isAutoLogin() ? "true" : "false");
+		boolean autoLogin = "true".equals(autoLoginStr);
 
 		setUploadDstPath(convertToPath(uploadDst));
 		setStepFolderPath(convertToPath(stepFolder));
 		setLocalFolderPath(convertToPath(localFolder));
 		setSshKeyFolderPath(convertToPath(sshKeyFolder));
+		setAutoLogin(autoLogin);
 
 		remoteFolder = remoteFolder.replaceAll("\\\\", "/");
 		if (!remoteFolder.endsWith("/")) {
 			remoteFolder = remoteFolder + "/";
 		}
-		
-		this.remoteFolder = remoteFolder;
+		setRemoteFolder(remoteFolder);
+	}
+	
+	private String processOneItem(Map<String, String> applicationMap,Person root, String fname, String fvalue) {
+		String v = applicationMap.get(fname);
+		if (Strings.isNullOrEmpty(v)) {
+			Kkv kkv = new Kkv(APPLICATION_KGROUP, fname, fvalue);
+			kkv.setOwner(root);
+			kkvRepository.save(kkv);
+			return fvalue;
+		} else {
+			return v;
+		}
 	}
 
 	private Path convertToPath(String folder) {
@@ -158,6 +157,14 @@ public class ApplicationConfig {
 
 	public void setRemoteFolder(String remoteFolder) {
 		this.remoteFolder = remoteFolder;
+	}
+
+	public boolean isAutoLogin() {
+		return autoLogin;
+	}
+
+	public void setAutoLogin(boolean autoLogin) {
+		this.autoLogin = autoLogin;
 	}
 	
 

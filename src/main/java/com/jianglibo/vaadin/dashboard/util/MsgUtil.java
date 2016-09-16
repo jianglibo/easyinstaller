@@ -103,6 +103,26 @@ public class MsgUtil {
 		return getFieldMsg(messageSource, prefix, fieldName);
 	}
 	
+	public static String getFieldDescription(MessageSource messageSource, String prefix, VaadinFormFieldWrapper vffw) {
+		String fieldName = vffw.getVff().caption();
+		if (fieldName.isEmpty()) {
+			fieldName = vffw.getName();
+		}
+		return getFieldDescription(messageSource, prefix, fieldName);
+	}
+	
+	public static String getFieldDescription(MessageSource messageSource, String prefix, String fieldName) {
+		String msg = null;
+		String key = "";
+		try {
+			key = prefix + "field.desc." + fieldName;
+			msg = messageSource.getMessage(key, null, UI.getCurrent().getLocale());
+			return msg;
+		} catch (NoSuchMessageException e) {
+			return "";
+		}
+	}
+
 	public static String getFieldMsg(MessageSource messageSource, String prefix, String fieldName) {
 		String msg = null;
 		String key = "";

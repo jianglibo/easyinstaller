@@ -13,12 +13,14 @@ public class RoleNames {
     public static final String SUPERMAN = "ROLE_SUPERMAN";
     public static final String NOT_EXIST = "ROLE_NOT_EXIST";
     public static final String USER_MANAGER = "ROLE_USER_MANAGER";
+    public static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
+    
     
     public static List<String> allFields() {
         Field[] fields = RoleNames.class.getDeclaredFields();
         List<String> fs = Lists.newArrayList();
         
-        Stream.of(fields).forEach(f -> {
+        Stream.of(fields).filter(f -> !f.equals(ROLE_ANONYMOUS)).forEach(f -> {
             try {
                 fs.add(f.get(null).toString());
             } catch (Exception e) {

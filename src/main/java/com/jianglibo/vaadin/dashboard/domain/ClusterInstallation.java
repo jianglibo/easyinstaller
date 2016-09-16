@@ -12,7 +12,7 @@ import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "clusterInstallation")
+@Table(name = "cluster_installtion")
 public class ClusterInstallation extends BaseEntity {
 	
 	private String name;

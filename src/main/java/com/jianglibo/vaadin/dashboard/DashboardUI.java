@@ -18,12 +18,14 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.data.DataProvider;
-import com.jianglibo.vaadin.dashboard.data.dummy.DummyDataProvider;
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
+import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.init.AppInitializer;
+import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
 import com.jianglibo.vaadin.dashboard.view.LoginView;
 import com.jianglibo.vaadin.dashboard.view.MainMenuItems;
@@ -69,6 +71,12 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	
     @Autowired
     private AuthenticationManager am;
+    
+    @Autowired
+    private ApplicationConfig applicationConfig;
+    
+    @Autowired
+    private PersonRepository personRepository;
 
 	/*
 	 * This field stores an access to the dummy backend layer. In real
@@ -76,7 +84,7 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	 * injection; and not in the UI but somewhere closer to where they're
 	 * actually accessed.
 	 */
-	private final DataProvider dataProvider = new DummyDataProvider();
+//	private final DataProvider dataProvider = new DummyDataProvider();
 	private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
 	@Override
@@ -98,20 +106,29 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 			}
 		});
 		
+		boolean showMainView = false;
 		
-		if (SecurityContextHolder.getContext().getAuthentication() != null) {
-			LoginView lv = new LoginView(messageSource, localeResolver, (username, password) -> {
-                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-                WebAuthenticationDetails wd = new WebAuthenticationDetailsSource().buildDetails(vsr.getHttpServletRequest());
-                authRequest.setDetails(wd);
-                Authentication an = am.authenticate(authRequest);
-                SecurityContextHolder.getContext().setAuthentication(an);
-    			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME : getNavigator().getState();
-    			getNavigator().navigateTo(v);
-			});
-			setContent(lv);
-			addStyleName("loginview");
+		if (!M3958SecurityUtil.isLogined()) {
+			if (applicationConfig.isAutoLogin()) {
+				M3958SecurityUtil.doLogin(personRepository.findByEmail(AppInitializer.firstEmail));
+				showMainView = true;
+			} else {
+				LoginView lv = new LoginView(messageSource, localeResolver, (username, password) -> {
+	                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+	                WebAuthenticationDetails wd = new WebAuthenticationDetailsSource().buildDetails(vsr.getHttpServletRequest());
+	                authRequest.setDetails(wd);
+	                Authentication an = am.authenticate(authRequest);
+	                SecurityContextHolder.getContext().setAuthentication(an);
+	    			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME : getNavigator().getState();
+	    			getNavigator().navigateTo(v);
+				});
+				setContent(lv);
+				addStyleName("loginview");
+			}
 		} else {
+			showMainView = true;
+		}
+		if (showMainView){
 			MainView mv = new MainView(viewProvider);
 			setContent(mv);
 			removeStyleName("loginview");
@@ -166,12 +183,6 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 		}
 	}
 
-	/**
-	 * @return An instance for accessing the (dummy) services layer.
-	 */
-	public static DataProvider getDataProvider() {
-		return ((DashboardUI) getCurrent()).dataProvider;
-	}
 
 	public static DashboardEventBus getDashboardEventbus() {
 		return ((DashboardUI) getCurrent()).dashboardEventbus;

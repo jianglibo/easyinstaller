@@ -51,8 +51,8 @@ public abstract class ButtonWillPopupWindow extends Button {
         @Subscribe
         public void updateNotificationsCount(
                 final NotificationsCountUpdatedEvent event) {
-            setUnreadCount(DashboardUI.getDataProvider()
-                    .getUnreadNotificationsCount());
+//            setUnreadCount(DashboardUI.getDataProvider()
+//                    .getUnreadNotificationsCount());
         }
 
         public void setUnreadCount(final int count) {

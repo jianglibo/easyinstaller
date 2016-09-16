@@ -5,7 +5,7 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="Dali", date="2016-08-10T08:41:34.659+0800")
+@Generated(value="Dali", date="2016-09-16T14:10:51.832+0800")
 @StaticMetamodel(ClusterInstallation.class)
 public class ClusterInstallation_ extends BaseEntity_ {
 	public static volatile SingularAttribute<ClusterInstallation, String> name;

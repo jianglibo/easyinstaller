@@ -45,8 +45,7 @@ public final class TopTenMoviesTable extends Table {
         setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
         setSizeFull();
 
-        List<MovieRevenue> movieRevenues = new ArrayList<MovieRevenue>(
-                DashboardUI.getDataProvider().getTotalMovieRevenues());
+        List<MovieRevenue> movieRevenues = new ArrayList<MovieRevenue>();
         Collections.sort(movieRevenues, new Comparator<MovieRevenue>() {
             @Override
             public int compare(final MovieRevenue o1, final MovieRevenue o2) {

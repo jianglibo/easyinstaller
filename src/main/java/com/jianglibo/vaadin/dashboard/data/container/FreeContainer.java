@@ -16,6 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.data.ManualPagable;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -85,7 +87,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		this.sortableContainerPropertyIds = sortableContainerPropertyIds;
 		this.clazz = clazz;
 		this.simpleClassName = clazz.getSimpleName();
-		this.defaultSort = SortUtil.fromString(domains.getTables().get(clazz.getSimpleName()).getVt().defaultSort());
+		this.defaultSort = domains.getDefaultSort(clazz);
 		this.sort = this.defaultSort;
 		this.perPage = perPage;
 	}

@@ -34,9 +34,6 @@ public class BoxListView extends BaseListView<Box, BoxTable, BoxRepository> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BoxListView.class);
 
 	public static final String VIEW_NAME = "box";
-
-	public static final FontAwesome ICON_VALUE = FontAwesome.DESKTOP;
-
 	
 	@Autowired
 	public BoxListView(BoxRepository repository,Domains domains, MessageSource messageSource,

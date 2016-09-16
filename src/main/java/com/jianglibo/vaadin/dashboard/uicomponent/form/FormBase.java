@@ -52,8 +52,6 @@ public abstract class FormBase<T> extends FormLayout {
 
 	protected BeanFieldGroup<T> fieldGroup;
 
-	protected EventBus eventBus;
-
 	protected String domainName;
 
 	private List<PropertyIdAndField> fields;
@@ -74,10 +72,10 @@ public abstract class FormBase<T> extends FormLayout {
 		fieldGroup = new BeanFieldGroup<T>(clazz);
 		addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 		addEnterListener();
-		addEscapeListener();
+//		addEscapeListener();
 
 		VaadinTableWrapper vtw = domains.getTables().get(domainName);
-		List<VaadinFormFieldWrapper> ffs = domains.getTables().get(domainName).getFormFields();
+		List<VaadinFormFieldWrapper> ffs = domains.getFormFields(clazz);
 
 		fields = buildFields(vtw, ffs);
 
@@ -111,14 +109,14 @@ public abstract class FormBase<T> extends FormLayout {
 		});
 	}
 
-	protected void addEscapeListener() {
-		addShortcutListener(new ShortcutListener("submit", null, KeyCode.ESCAPE) {
-			@Override
-			public void handleAction(Object sender, Object target) {
-				eventBus.post(new HistoryBackEvent());
-			}
-		});
-	}
+//	protected void addEscapeListener() {
+//		addShortcutListener(new ShortcutListener("submit", null, KeyCode.ESCAPE) {
+//			@Override
+//			public void handleAction(Object sender, Object target) {
+//				eventBus.post(new HistoryBackEvent());
+//			}
+//		});
+//	}
 
 	public abstract boolean saveToRepo();
 
@@ -168,15 +166,10 @@ public abstract class FormBase<T> extends FormLayout {
 				addStyleName(vffw, fcf);
 				fields.add(new PropertyIdAndField(vffw, fcf));
 				break;
-//			case TWIN_GRID:
-//				TwinGridField<?> tgf = fieldFactories.getTwinGridFieldFactory().create(vtw, vffw);
-//				tgf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
-//				addStyleName(vffw, tgf);
-//				fields.add(new PropertyIdAndField(vffw, tgf));
-//				break;
 			default:
 				String caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw);
 				TextField tf = new TextField(caption);
+				tf.setDescription(MsgUtil.getFieldDescription(messageSource, vtw.getVt().messagePrefix(), vffw));
 				tf.setNullRepresentation("");
 				addStyleName(vffw, tf);
 				fields.add(new PropertyIdAndField(vffw, tf));

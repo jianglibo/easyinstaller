@@ -1,9 +1,12 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -12,6 +15,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.google.common.collect.Sets;
 import com.google.gwt.thirdparty.guava.common.base.Objects;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
@@ -42,6 +46,9 @@ public class Box extends BaseEntity {
 	@VaadinFormField(order = 10)
 	private String name;
 	
+	@ManyToMany(fetch=FetchType.EAGER)
+	private Set<BoxGroup> boxGroup = Sets.newHashSet();
+	
 	/**
 	 * Owning side is which has no mappedBy property. So this IS NOT owning side.
 	 */
@@ -67,6 +74,18 @@ public class Box extends BaseEntity {
 	
 	@VaadinFormField(order = 70)
 	private String sshUser = "root";
+	
+	@VaadinFormField(order = 70)
+	private String hostname;
+	
+	@VaadinFormField(order = 70)
+	private String dnsServer;
+	
+	@VaadinFormField(order = 70)
+	private String commaSepIps;
+	
+	@VaadinFormField(order = 70)
+	private String commaSepPorts;
 
 	public String getIp() {
 		return ip;
@@ -146,4 +165,45 @@ public class Box extends BaseEntity {
 	public void setSshUser(String sshUser) {
 		this.sshUser = sshUser;
 	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
+	public String getDnsServer() {
+		return dnsServer;
+	}
+
+	public void setDnsServer(String dnsServer) {
+		this.dnsServer = dnsServer;
+	}
+
+	public String getCommaSepIps() {
+		return commaSepIps;
+	}
+
+	public void setCommaSepIps(String commaSepIps) {
+		this.commaSepIps = commaSepIps;
+	}
+
+	public String getCommaSepPorts() {
+		return commaSepPorts;
+	}
+
+	public void setCommaSepPorts(String commaSepPorts) {
+		this.commaSepPorts = commaSepPorts;
+	}
+
+	public Set<BoxGroup> getBoxGroup() {
+		return boxGroup;
+	}
+
+	public void setBoxGroup(Set<BoxGroup> boxGroup) {
+		this.boxGroup = boxGroup;
+	}
+	
 }

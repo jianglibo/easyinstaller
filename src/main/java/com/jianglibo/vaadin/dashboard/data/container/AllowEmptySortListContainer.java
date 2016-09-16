@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import org.vaadin.maddon.ListContainer;
 
+import com.google.common.collect.Lists;
+
 public class AllowEmptySortListContainer<T>  extends ListContainer<T> {
 
 	/**
@@ -16,7 +18,7 @@ public class AllowEmptySortListContainer<T>  extends ListContainer<T> {
 	}
 	
 	public AllowEmptySortListContainer(Class<T> leftClazz, Collection<T> internalValue) {
-		super(leftClazz, internalValue);
+		super(leftClazz, internalValue == null ? Lists.newArrayList() : internalValue);
 	}
 
 	@Override

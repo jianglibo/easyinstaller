@@ -3,6 +3,7 @@ package com.jianglibo.vaadin.dashboard.security;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,19 @@ public class M3958SecurityUtil {
     public static void loginAs(Authentication au) {
         au.setAuthenticated(true);
         SecurityContextHolder.getContext().setAuthentication(au);
+    }
+    
+    public static boolean isLogined() {
+    	Authentication au = SecurityContextHolder.getContext().getAuthentication();
+    	if (au == null) {
+    		return false;
+    	}
+    	
+    	if (au instanceof PersonAuthenticationToken) {
+    		return true;
+    	}
+    	
+    	return false;
     }
 
 

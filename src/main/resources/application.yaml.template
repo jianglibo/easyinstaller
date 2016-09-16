@@ -14,8 +14,8 @@ spring:
         database: H2
         show-sql: true
         hibernate:
-            generate-ddl: false
-            ddl-auto: none
+            generate-ddl: true
+            ddl-auto: update
             naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
 #            dialect: org.hibernate.dialect.HSQLDialect
             dialect: org.hibernate.dialect.H2Dialect
@@ -67,10 +67,12 @@ vaadin:
     internalErrorNotificationEnabled: true
     sessionExpiredNotificationEnabled: true
 application:
-  upload-dst: ~/easyinstaller-files
-  local-folder: c:/software-package-folder
-  remote-folder: /opt/easy-installer
-  step-folder:
+  upload-dst: ~/easyinstaller-uploaded
+  local-folder: ~/easyinstaller-toupload
+  remote-folder: ~/easy-installer
+  step-folder: ~/easyinstaller-steps
+  ssh-key-folder: ~/easyinstaller-sshs
+  auto-login: true
   combo-datas:
     ostype:
       - caption: CentOs
@@ -94,8 +96,8 @@ application:
     boxrole:
       - value: Java
 flyway:
-  enabled: true
-  baseline-on-migrate: true
+  enabled: false
+  baseline-on-migrate: false
 softwares:
   predefined:
     - name: Java

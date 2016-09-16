@@ -34,6 +34,8 @@ import com.vaadin.ui.TextField;
  * 
  * Field's datasource has no relation to leftGrid's datasource.  
  * 
+ * The left grid is a listcontainer, right grid is a general FreeContainer.
+ * 
  * @author jianglibo@gmail.com
  *
  * @param <LC>
@@ -84,7 +86,7 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 		
 		setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
 		
-		leftGrid = createLeftGrid(vtw, vffw, Lists.newArrayList(), true);
+		leftGrid = createLeftGrid(vtw, vffw, null, true);
 		rightGrid = createRightGrid(vtw, vffw);
 		
 		leftGrid.setWidth(100.0f, Unit.PERCENTAGE);
@@ -131,7 +133,7 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 	public abstract void whenLeftItemClicked(ItemClickEvent event);
 	public abstract void whenRightItemClicked(ItemClickEvent event);
 	
-	public Grid createLeftGrid(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw, List<L> lc, boolean createGrid) {
+	public Grid createLeftGrid(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw, LC lc, boolean createGrid) {
 		AllowEmptySortListContainer<L> lcc = new AllowEmptySortListContainer<L>(leftClazz, lc);
 		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(lcc);
 		
@@ -284,7 +286,7 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 	protected class MyValueChangeListener implements ValueChangeListener {
 		@Override
 		public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-			BaseTwinGridField.this.createLeftGrid(getVtw(), getVffw(), (List<L>) event.getProperty().getValue(), false);
+			BaseTwinGridField.this.createLeftGrid(getVtw(), getVffw(), (LC) event.getProperty().getValue(), false);
 		}
 	}
 }

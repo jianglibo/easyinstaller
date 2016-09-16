@@ -43,8 +43,10 @@ public final class DashboardView extends Panel implements View,
 
     private Label titleLabel;
     
-    private ButtonWillPopupWindow notificationsButton;
+//    private ButtonWillPopupWindow notificationsButton;
+    
     private CssLayout dashboardPanels;
+    
     private final VerticalLayout root;
     
 
@@ -62,7 +64,7 @@ public final class DashboardView extends Panel implements View,
 
         root.addComponent(buildHeader());
 
-        TileContainer content = new TileContainer(new NotesTile(), new TopTenTile(), new HtmlContentTile());
+        TileContainer content = new TileContainer(/*new NotesTile(), new TopTenTile(),*/ new HtmlContentTile());
         
         content.AddTileMenuClickListener((panel, menuitem, b) -> {
         	toggleMaximized(panel, b);
@@ -95,42 +97,42 @@ public final class DashboardView extends Panel implements View,
         titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         header.addComponent(titleLabel);
 
-        notificationsButton = new NotificationsButton();
+//        notificationsButton = new NotificationsButton();
         
         
-        Component edit = buildEditButton();
-        HorizontalLayout tools = new HorizontalLayout(notificationsButton, edit);
-        tools.setSpacing(true);
-        tools.addStyleName("toolbar");
-        header.addComponent(tools);
-
+//        Component edit = buildEditButton();
+//        HorizontalLayout tools = new HorizontalLayout(notificationsButton, edit);
+//        tools.setSpacing(true);
+//        tools.addStyleName("toolbar");
+//        header.addComponent(tools);
+//
         return header;
     }
 
-    private Component buildEditButton() {
-        Button result = new Button();
-        result.setId(EDIT_ID);
-        result.setIcon(FontAwesome.EDIT);
-        result.addStyleName("icon-edit");
-        result.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        result.setDescription("Edit Dashboard");
-        result.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                getUI().addWindow(
-                        new DashboardEdit(DashboardView.this, titleLabel
-                                .getValue()));
-            }
-        });
-        return result;
-    }
+//    private Component buildEditButton() {
+//        Button result = new Button();
+//        result.setId(EDIT_ID);
+//        result.setIcon(FontAwesome.EDIT);
+//        result.addStyleName("icon-edit");
+//        result.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+//        result.setDescription("Edit Dashboard");
+//        result.addClickListener(new ClickListener() {
+//            @Override
+//            public void buttonClick(final ClickEvent event) {
+//                getUI().addWindow(
+//                        new DashboardEdit(DashboardView.this, titleLabel
+//                                .getValue()));
+//            }
+//        });
+//        return result;
+//    }
 
 
 
 
     @Override
     public void enter(final ViewChangeEvent event) {
-        notificationsButton.updateNotificationsCount(null);
+//        notificationsButton.updateNotificationsCount(null);
     }
 
     @Override

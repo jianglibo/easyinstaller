@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.software;
+package com.jianglibo.vaadin.dashboard.view.boxgroup;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -6,10 +6,11 @@ import org.springframework.context.MessageSource;
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Component;
 
-@MainMenu(menuOrder = 500)
-public class SoftwareViewMenuItem implements MenuItemWrapper {
+@MainMenu(menuOrder = 300)
+public class BoxGroupViewMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;
 
@@ -17,9 +18,9 @@ public class SoftwareViewMenuItem implements MenuItemWrapper {
 	
 	
 	@Autowired
-	public SoftwareViewMenuItem(MessageSource messageSource) {
+	public BoxGroupViewMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.menuItem = new ValoMenuItemButton(SoftwareListView.VIEW_NAME, SoftwareListView.ICON_VALUE, messageSource);
+		this.menuItem = new ValoMenuItemButton(BoxGroupListView.VIEW_NAME, FontAwesome.CUBES, messageSource);
 	}
 	
 	public Component getMenuItem() {

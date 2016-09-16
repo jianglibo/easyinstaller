@@ -8,7 +8,7 @@ import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
-@MainMenu(menuOrder = 900)
+@MainMenu(menuOrder = 700)
 public class KvvViewMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;

@@ -213,7 +213,7 @@ public class LocaleSelector implements Wrapper<Button> {
 		table.setDragMode(TableDragMode.MULTIROW);
 		table.setMultiSelect(false);
 
-		table.addActionHandler(new TransactionsActionHandler());
+//		table.addActionHandler(new TransactionsActionHandler());
 
 		table.setImmediate(true);
 
@@ -253,33 +253,33 @@ public class LocaleSelector implements Wrapper<Button> {
 		}
 	}
 
-	@SuppressWarnings("serial")
-	private class TransactionsActionHandler implements Handler {
-		private final Action report = new Action("Create Report");
-
-		private final Action discard = new Action("Discard");
-
-		private final Action details = new Action("Movie details");
-
-		@Override
-		public void handleAction(final Action action, final Object sender, final Object target) {
-			if (action == report) {
-			} else if (action == discard) {
-				Notification.show("Not implemented in this demo");
-			} else if (action == details) {
-				Item item = ((Table) sender).getItem(target);
-				if (item != null) {
-					Long movieId = (Long) item.getItemProperty("movieId").getValue();
-					MovieDetailsWindow.open(DashboardUI.getDataProvider().getMovie(movieId), null, null);
-				}
-			}
-		}
-
-		@Override
-		public Action[] getActions(final Object target, final Object sender) {
-			return new Action[] { details, report, discard };
-		}
-	}
+//	@SuppressWarnings("serial")
+//	private class TransactionsActionHandler implements Handler {
+//		private final Action report = new Action("Create Report");
+//
+//		private final Action discard = new Action("Discard");
+//
+//		private final Action details = new Action("Movie details");
+//
+//		@Override
+//		public void handleAction(final Action action, final Object sender, final Object target) {
+//			if (action == report) {
+//			} else if (action == discard) {
+//				Notification.show("Not implemented in this demo");
+//			} else if (action == details) {
+//				Item item = ((Table) sender).getItem(target);
+//				if (item != null) {
+//					Long movieId = (Long) item.getItemProperty("movieId").getValue();
+//					MovieDetailsWindow.open(DashboardUI.getDataProvider().getMovie(movieId), null, null);
+//				}
+//			}
+//		}
+//
+//		@Override
+//		public Action[] getActions(final Object target, final Object sender) {
+//			return new Action[] { details, report, discard };
+//		}
+//	}
 
 	public static class Lan {
 		private String name;

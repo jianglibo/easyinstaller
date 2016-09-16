@@ -2,7 +2,7 @@ package com.jianglibo.vaadin.dashboard.uicomponent.button;
 
 import java.util.Collection;
 
-import com.jianglibo.vaadin.dashboard.DashboardUI;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.domain.DashboardNotification;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.NotificationsCountUpdatedEvent;
@@ -34,8 +34,8 @@ public class NotificationsButton extends ButtonWillPopupWindow {
         title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         notificationsLayout.addComponent(title);
 
-        Collection<DashboardNotification> notifications = DashboardUI
-                .getDataProvider().getNotifications();
+        Collection<DashboardNotification> notifications = Lists.newArrayList();
+        
         DashboardEventBus.post(new NotificationsCountUpdatedEvent());
 
         for (DashboardNotification notification : notifications) {

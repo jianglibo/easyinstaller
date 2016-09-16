@@ -1,7 +1,6 @@
 package com.jianglibo.vaadin.dashboard.util;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
-import com.jianglibo.vaadin.dashboard.domain.Kkv;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryUtil;
 
 @Component
@@ -51,6 +49,8 @@ public class JpqlUtil {
 	public String selectLikeJpql(Class<? extends BaseEntity> clazz, String...fns) {
 		return String.format("SELECT DISTINCT s FROM %s as s WHERE %s", clazz.getSimpleName(), getWhereClause(fns));
 	}
+	
+
 
 	public <T extends BaseEntity> List<T> getFilteredPage(Class<T> clazz, Pageable page, String filterString,
 			boolean trashed, String...fns) {
@@ -73,6 +73,8 @@ public class JpqlUtil {
 		List<T> results = q.getResultList();
 		return results;
 	}
+	
+	
 
 	public long getFilteredNumber(Class<? extends BaseEntity> clazz, String filterString, boolean trashed,String...fns) {
 		String jpql;

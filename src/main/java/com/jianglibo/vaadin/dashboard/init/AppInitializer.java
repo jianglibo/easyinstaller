@@ -17,6 +17,7 @@ import com.jianglibo.vaadin.dashboard.repositories.RoleRepository;
 import com.jianglibo.vaadin.dashboard.security.PersonManager;
 import com.jianglibo.vaadin.dashboard.security.PersonVo;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
 import com.jianglibo.vaadin.dashboard.vo.RoleNames;
 
@@ -60,7 +61,7 @@ public class AppInitializer implements InitializingBean {
 				Role ur = roleRepo.findByName(RoleNames.USER);
 				Role superman = roleRepo.findByName(RoleNames.SUPERMAN);
 				Set<Role> roles = Sets.newHashSet(ur, superman);
-				PersonVo pvo = new PersonVo.PersonVoBuilder("root", firstEmail, "18888888888", "root")
+				PersonVo pvo = new PersonVo.PersonVoBuilder("root", firstEmail, "18888888888", "root").setAvatar(ColumnUtil.getFullIconPath("avatar.jpg"))
 						.setAuthorities(roles).build();
 				personManager.createUser(pvo);
 			}

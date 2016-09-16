@@ -8,7 +8,7 @@ import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
-@MainMenu(menuOrder = 1000)
+@MainMenu(menuOrder = 800)
 public class PersonMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;

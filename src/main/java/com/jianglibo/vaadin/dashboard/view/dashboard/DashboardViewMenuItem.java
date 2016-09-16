@@ -14,7 +14,7 @@ import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
-@MainMenu
+@MainMenu(menuOrder = 100)
 public class DashboardViewMenuItem implements MenuItemWrapper {
 	
 	public static final String NOTIFICATIONS_BADGE_ID = "dashboard-menu-notifications-badge";
@@ -36,12 +36,12 @@ public class DashboardViewMenuItem implements MenuItemWrapper {
         DashboardEventBus.register(this);
 	}
 	
-	@Subscribe
-	public void updateNotificationsCount(final NotificationsCountUpdatedEvent event) {
-		int unreadNotificationsCount = DashboardUI.getDataProvider().getUnreadNotificationsCount();
-		notificationsBadge.setValue(String.valueOf(unreadNotificationsCount));
-		notificationsBadge.setVisible(unreadNotificationsCount > 0);
-	}
+//	@Subscribe
+//	public void updateNotificationsCount(final NotificationsCountUpdatedEvent event) {
+//		int unreadNotificationsCount = DashboardUI.getDataProvider().getUnreadNotificationsCount();
+//		notificationsBadge.setValue(String.valueOf(unreadNotificationsCount));
+//		notificationsBadge.setVisible(unreadNotificationsCount > 0);
+//	}
 
 	public Component getMenuItem() {
 		return menuItem;
@@ -49,6 +49,6 @@ public class DashboardViewMenuItem implements MenuItemWrapper {
 
 	@Override
 	public void onAttach() {
-		updateNotificationsCount(null);
+//		updateNotificationsCount(null);
 	}
 }

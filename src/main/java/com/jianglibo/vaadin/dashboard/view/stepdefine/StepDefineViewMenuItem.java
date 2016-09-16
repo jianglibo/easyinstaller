@@ -8,7 +8,7 @@ import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
-@MainMenu(menuOrder = 10)
+@MainMenu(menuOrder = 600)
 public class StepDefineViewMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;

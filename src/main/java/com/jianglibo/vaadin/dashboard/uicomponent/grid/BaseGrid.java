@@ -47,7 +47,7 @@ public abstract class BaseGrid<T extends BaseEntity> extends Grid {
 		setSizeFull();
 		
 		setColumns(columns);
-		setSelectionMode(SelectionMode.NONE);
+		setSelectionMode(vgw.getVg().selectMode());
 		setContainerDataSource(gpcontainer);
 		
 		String messagePrefix = domains.getGrids().get(clazz.getSimpleName()).getVg().messagePrefix();
