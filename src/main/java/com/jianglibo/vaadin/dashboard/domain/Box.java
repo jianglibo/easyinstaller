@@ -5,7 +5,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -46,15 +45,15 @@ public class Box extends BaseEntity {
 	@VaadinFormField(order = 10)
 	private String name;
 	
-	@ManyToMany(fetch=FetchType.EAGER)
-	private Set<BoxGroup> boxGroup = Sets.newHashSet();
+	@ManyToMany
+	private Set<BoxGroup> boxGroups = Sets.newHashSet();
 	
 	/**
 	 * Owning side is which has no mappedBy property. So this IS NOT owning side.
 	 */
 	@OneToMany(mappedBy = "box", cascade=CascadeType.REMOVE)
-	@OrderBy("position ASC")
-	private List<Install> installations = Lists.newArrayList();
+	@OrderBy("createdAt DESC")
+	private List<BoxHistory> boxHistories = Lists.newArrayList();
 	
 	@VaadinTableColumn(order=2)
 	@ComboBoxBackByStringOptions(key = GlobalComboOptions.OS_TYPES)
@@ -127,13 +126,12 @@ public class Box extends BaseEntity {
 		this.osType = osType;
 	}
 
-
-	public List<Install> getInstallations() {
-		return installations;
+	public List<BoxHistory> getBoxHistories() {
+		return boxHistories;
 	}
 
-	public void setInstallations(List<Install> installations) {
-		this.installations = installations;
+	public void setBoxHistories(List<BoxHistory> boxHistories) {
+		this.boxHistories = boxHistories;
 	}
 
 	public static long getSerialversionuid() {
@@ -198,12 +196,12 @@ public class Box extends BaseEntity {
 		this.commaSepPorts = commaSepPorts;
 	}
 
-	public Set<BoxGroup> getBoxGroup() {
-		return boxGroup;
+	public Set<BoxGroup> getBoxGroups() {
+		return boxGroups;
 	}
 
-	public void setBoxGroup(Set<BoxGroup> boxGroup) {
-		this.boxGroup = boxGroup;
+	public void setBoxGroups(Set<BoxGroup> boxGroups) {
+		this.boxGroups = boxGroups;
 	}
-	
+
 }

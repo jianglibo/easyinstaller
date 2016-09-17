@@ -95,7 +95,7 @@ public class PreDefinedSteps {
 						stepDefine.setName(name);
 						stepDefine.setOstype(ostype);
 						stepDefine.setRunner(runner);
-						stepDefine.setYmlContent(s);
+						stepDefine.setInfoContent(s);
 						stepDefine.setCodeContent(c);
 						stepDefineRepository.save(stepDefine);
 					}
@@ -132,11 +132,11 @@ public class PreDefinedSteps {
 				if (sw == null) {
 					sw = new Software(pds.getName(), pds.getOstype());
 				} else {
-					List<OrderedStepDefine> preExists = sw.getOrderedStepDefines();
-					sw.setOrderedStepDefines(Lists.newArrayList());
-					sw.getOrderedStepDefines().forEach(d -> {
-						orderedStepDefineRepository.delete(d);
-					});
+//					List<OrderedStepDefine> preExists = sw.getOrderedStepDefines();
+//					sw.setOrderedStepDefines(Lists.newArrayList());
+//					sw.getOrderedStepDefines().forEach(d -> {
+//						orderedStepDefineRepository.delete(d);
+//					});
 				}
 				List<OrderedStepDefine> ordered = Lists.newArrayList();
 				for(int i = 0; i< sds.size(); i++) {
@@ -144,7 +144,7 @@ public class PreDefinedSteps {
 					orderedStepDefineRepository.save(od);
 					ordered.add(od);
 				}
-				sw.setOrderedStepDefines(ordered);
+//				sw.setOrderedStepDefines(ordered);
 				softwareRepository.save(sw);
 			}
 		});

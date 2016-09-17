@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.context.MessageSource;
 
-import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;

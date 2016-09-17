@@ -44,6 +44,8 @@ public class ApplicationConfig {
 	private String remoteFolder;
 	
 	private boolean autoLogin;
+	
+	private Map<String, List<ComboItem>> comboDatas;
 
 	@Autowired
 	public ApplicationConfig(RawApplicationConfig racfig, PersonRepository personRepository,
@@ -82,6 +84,8 @@ public class ApplicationConfig {
 			remoteFolder = remoteFolder + "/";
 		}
 		setRemoteFolder(remoteFolder);
+		
+		setComboDatas(racfig.getComboDatas());
 	}
 	
 	private String processOneItem(Map<String, String> applicationMap,Person root, String fname, String fvalue) {
@@ -124,7 +128,7 @@ public class ApplicationConfig {
 	}
 
 	public Map<String, List<ComboItem>> getComboDatas() {
-		return null;
+		return comboDatas;
 	}
 
 	public Path getStepFolderPath() {
@@ -165,6 +169,10 @@ public class ApplicationConfig {
 
 	public void setAutoLogin(boolean autoLogin) {
 		this.autoLogin = autoLogin;
+	}
+
+	public void setComboDatas(Map<String, List<ComboItem>> comboDatas) {
+		this.comboDatas = comboDatas;
 	}
 	
 

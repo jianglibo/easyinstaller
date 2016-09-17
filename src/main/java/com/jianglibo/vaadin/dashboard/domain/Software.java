@@ -1,8 +1,10 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
@@ -13,19 +15,23 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByStringOptions;
-import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.GridFieldDescription;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ScalarGridFieldDescription;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.themes.ValoTheme;
 
 /**
- * A installation can not exists alone, It must install to a machine.
+ * Software is made of files to upload, code to execute, and custom
+ * configurations. When install happen, also given an environment which take
+ * information of box to install, and boxgroup target box belongs.
+ * 
  * 
  * @author jianglibo@gmail.com
  *
@@ -40,31 +46,35 @@ import com.vaadin.ui.themes.ValoTheme;
 public class Software extends BaseEntity {
 
 	@ComboBoxBackByStringOptions(key = GlobalComboOptions.SOFTWARE_NAMES)
-	@VaadinFormField(fieldType = Ft.COMBO_BOX)
+	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 10)
 	@VaadinTableColumn(alignment = Align.LEFT)
 	@NotNull
 	private String name;
 
 	@ComboBoxBackByStringOptions(key = GlobalComboOptions.OS_TYPES)
-	@VaadinFormField(fieldType = Ft.COMBO_BOX)
+	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 20)
 	@VaadinTableColumn()
 	@NotNull
 	private String ostype;
 
-	@OneToMany(fetch = FetchType.EAGER)
-	@OrderBy("position ASC")
-	@TwinGridFieldDescription(leftClazz = OrderedStepDefine.class, rightClazz = StepDefine.class, leftPageLength = 100, rightColumns = {"!addtoleft",
-			"name", "ostype" }, leftColumns = { "position", "stepDefine", "!remove", "!up" })
-	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 30)
-	private List<OrderedStepDefine> orderedStepDefines = Lists.newArrayList();
-
-	/**
-	 * when orderedStepDefines changes name, change static file bellow too.
-	 */
-	public static final String orderedStepDefinesFieldName = "orderedStepDefines";
+	@ElementCollection(fetch = FetchType.EAGER)
+	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 100)
+	@ScalarGridFieldDescription(columns = { "value", "!remove"}, clazz = String.class, rowNumber=4)
+	private Set<String> filesToUpload;
 
 	@Lob
-	private String sortedIds;
+	@Column(length = 154112)
+	@VaadinFormField(fieldType=Ft.TEXT_AREA, order = 120, rowNumber=10)
+	private String codeToExecute;
+
+	@Lob
+	@Column(length = 154112)
+	@VaadinFormField(fieldType=Ft.TEXT_AREA, order = 110)
+	private String configContent;
+	
+	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 115)
+	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.PREFERED_FORMAT)
+	private String preferredFormat;
 
 	public Software() {
 
@@ -73,12 +83,6 @@ public class Software extends BaseEntity {
 	public Software(String name, String ostype) {
 		setName(name);
 		setOstype(ostype);
-	}
-
-	public Install createNewInstall() {
-		Install in = new Install(this);
-		in.setStepRuns(getOrderedStepDefines().stream().map(isd -> new StepRun(isd)).collect(Collectors.toList()));
-		return in;
 	}
 
 	public String getName() {
@@ -97,6 +101,14 @@ public class Software extends BaseEntity {
 		this.ostype = ostype;
 	}
 
+	public Set<String> getFilesToUpload() {
+		return filesToUpload;
+	}
+
+	public void setFilesToUpload(Set<String> filesToUpload) {
+		this.filesToUpload = filesToUpload;
+	}
+
 	@Override
 	public String toString() {
 		return Objects.toStringHelper(this).add("name", getName()).add("ostye", getOstype()).toString();
@@ -107,19 +119,28 @@ public class Software extends BaseEntity {
 		return name;
 	}
 
-	public List<OrderedStepDefine> getOrderedStepDefines() {
-		return orderedStepDefines;
+	public String getCodeToExecute() {
+		return codeToExecute;
 	}
 
-	public void setOrderedStepDefines(List<OrderedStepDefine> orderedStepDefines) {
-		this.orderedStepDefines = orderedStepDefines;
+	public void setCodeToExecute(String codeToExecute) {
+		this.codeToExecute = codeToExecute;
 	}
 
-	public String getSortedIds() {
-		return sortedIds;
+	public String getConfigContent() {
+		return configContent;
 	}
 
-	public void setSortedIds(String sortedIds) {
-		this.sortedIds = sortedIds;
+	public void setConfigContent(String configContent) {
+		this.configContent = configContent;
 	}
+
+	public String getPreferredFormat() {
+		return preferredFormat;
+	}
+
+	public void setPreferredFormat(String preferredFormat) {
+		this.preferredFormat = preferredFormat;
+	}
+	
 }

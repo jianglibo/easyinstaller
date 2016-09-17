@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.twingrid2;
 
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.OrderedStepDefine;
@@ -23,7 +24,8 @@ public class OrderedStepDefineContainer extends FreeContainer<OrderedStepDefine>
 		if (software == null) {
 			return 0;
 		} else {
-			return software.getOrderedStepDefines().size();
+			return 0;
+//			return software.getOrderedStepDefines().size();
 		}
 	}
 	
@@ -32,7 +34,8 @@ public class OrderedStepDefineContainer extends FreeContainer<OrderedStepDefine>
 		if (software != null) {
 			int start = getCurrentPage() * getPerPage();
 			int end = (start + getPerPage()) > size() ? size() : start + getPerPage(); 
-			setCurrentWindow(software.getOrderedStepDefines().subList(start, end));
+			setCurrentWindow(Lists.newArrayList());
+//			setCurrentWindow(software.getOrderedStepDefines().subList(start, end));
 		}
 	}
 

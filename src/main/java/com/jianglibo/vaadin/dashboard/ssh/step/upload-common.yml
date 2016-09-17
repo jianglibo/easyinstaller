@@ -2,6 +2,9 @@
 name: Upload
 ostype: Common
 runner: SshUploadRunner
+perferredFormat: YAML
 executable: bash
-from: noneexist
-to: 
+from: 
+  - fileone
+  - filetwo
+to: easyinstaller-upload 

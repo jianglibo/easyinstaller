@@ -25,13 +25,17 @@ public class NotificationBuilder {
 		this.notifyId = notifyId;
 	}
 	
+	private String getMsg(String postfix) {
+		return MsgUtil.getMsgFallbackToSelf(messageSource, "notification.bottom.", postfix);
+	}
+	
 
 //    "Welcome to Dashboard Demo"
 //	"<span>This application is not real, it only demonstrates an application built with the <a href=\"https://vaadin.com\">Vaadin framework</a>.</span> <span>No username or password is required, just click the <b>Sign In</b> button to continue.</span>"	
 	
 	public Notification build() {
-		String cp = MsgUtil.getBottomNotifiMsg(messageSource, notifyId + ".caption");
-		String de = MsgUtil.getBottomNotifiMsg(messageSource, notifyId + ".description");
+		String cp = getMsg(notifyId + ".caption");
+		String de = getMsg(notifyId + ".description");
 		
         Notification notification = new Notification(cp);
         notification.setDescription(de);

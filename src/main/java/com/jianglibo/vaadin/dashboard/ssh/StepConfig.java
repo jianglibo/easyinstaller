@@ -5,7 +5,13 @@ import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
+import com.jianglibo.vaadin.dashboard.sshrunner.SshUploadRunner.UploadDescription;
 
+/**
+ * If StepDefine is a template, Then StepConfig like as a instance. If any properties has no value, the value will come from StepDefine.
+ * @author jianglibo@gmail.com
+ *
+ */
 public class StepConfig {
 
 	private static final Yaml yaml = new Yaml();
@@ -18,7 +24,11 @@ public class StepConfig {
 	}
 	
 	public static StepConfig createStepConfig(StepRun stepRun) {
-		return new StepConfig(stepRun.getYmlContent());
+		return new StepConfig(stepRun.getInfoContent());
+	}
+	
+	public static UploadDescription getUploadDescription(StepRun stepRun) {
+		return yaml.loadAs(stepRun.getInfoContent(), UploadDescription.class);
 	}
 
 	public String getStringValue(String... keys) {

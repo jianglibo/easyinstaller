@@ -17,6 +17,8 @@ public class GlobalComboOptions {
 	public static final String OS_TYPES = "ostypes";
 	
 	public static final String RUNNERS = "runners";
+
+	public static final String PREFERED_FORMAT = "preferredFormat";
 	
 	private Map<String, Set<String>> stringOptions = Maps.newHashMap();
 	

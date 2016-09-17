@@ -20,10 +20,11 @@ import com.jianglibo.vaadin.dashboard.ssh.CodeSubstitudeUtil;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 
 /**
- * It must upload execute content to server before execute.
- * A working folder to hold uploaded code file is needed.
+ * Beside code this runner will create 4 files total. One is code file, other three are clusterInfo, selfInfo, customInfo file.
+ * As a convention, code file name is a uuid, others are uuid_clusterInfo, uuid_selfInfo, uuid_customInfo 
  * 
- * It's design to run a batch of command in a file.
+ * Uuid as a parameter to code. For example, bash(tcl|perl|python) 123e4567-e89b-12d3-a456-426655440000 -self /root/easyinstaller/123e4567-e89b-12d3-a456-426655440000
+ * So you can get other three files /root/easyinstaller/123e4567-e89b-12d3-a456-426655440000_clusterInfo etc.
  * 
  * @author jianglibo@gmail.com
  *
@@ -50,11 +51,11 @@ public class SshExecRunner implements BaseRunner {
 	private JschExecuteResult copyCodeToServerAndRun(JschSession jsession, StepRun stepRun) {
 		String code = CodeSubstitudeUtil.process(stepRun);
 		ChannelSftp sftp = null;
-		String cmdFile = applicationConfig.getRemoteFolder() + "code/"   + stepRun.getUniqueFileName();
+		String codeFileToRun = applicationConfig.getRemoteFolder() + stepRun.getUniqueFileName();
 		try {
 			sftp = jsession.getSftpCh();
 			try {
-				OutputStream os = sftp.put(cmdFile, ChannelSftp.OVERWRITE);
+				OutputStream os = sftp.put(codeFileToRun, ChannelSftp.OVERWRITE);
 				os.write(code.getBytes(Charsets.UTF_8));
 				os.flush();
 				os.close();
@@ -68,7 +69,7 @@ public class SshExecRunner implements BaseRunner {
 				sftp.disconnect();
 			}
 		}
-		String cmd = stepRun.getStepDefine().getRunner() + " " + cmdFile;
+		String cmd = stepRun.getStepDefine().getRunner() + " " + codeFileToRun + "-self " + codeFileToRun;
 		JschExecuteResult jer = jsession.exec(cmd);
 		JschExecuteResult oldJer = stepRun.getResult();
 		stepRun.setResult(jer);

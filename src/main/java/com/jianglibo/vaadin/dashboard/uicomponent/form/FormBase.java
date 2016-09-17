@@ -71,7 +71,7 @@ public abstract class FormBase<T> extends FormLayout {
 		this.handMakeFieldsListener = handMakeFieldsListener;
 		fieldGroup = new BeanFieldGroup<T>(clazz);
 		addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-		addEnterListener();
+//		addEnterListener();
 //		addEscapeListener();
 
 		VaadinTableWrapper vtw = domains.getTables().get(domainName);
@@ -140,6 +140,7 @@ public abstract class FormBase<T> extends FormLayout {
 			case COMBO_BOX:
 				ComboBox cb = fieldFactories.getComboBoxFieldFactory().create(vtw, vffw);
 				addStyleName(vffw, cb);
+				cb.setDescription(MsgUtil.getFieldDescription(messageSource, vtw.getVt().messagePrefix(), vffw));
 				fields.add(new PropertyIdAndField(vffw, cb));
 				break;
 			case HAND_MAKER:
@@ -151,18 +152,24 @@ public abstract class FormBase<T> extends FormLayout {
 				break;
 			case TEXT_AREA:
 				TextArea ta = new TextArea(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
+				if (vffw.getVff().rowNumber() > 0) {
+					ta.setRows(vffw.getVff().rowNumber());
+				}
 				ta.setNullRepresentation("");
 				addStyleName(vffw, ta);
+				ta.setDescription(MsgUtil.getFieldDescription(messageSource, vtw.getVt().messagePrefix(), vffw));
 				fields.add(new PropertyIdAndField(vffw, ta));
 				break;
 			case TWIN_COL_SELECT:
 				TwinColSelect tcs = fieldFactories.getTwinColSelectFieldFactory().create(vtw, vffw);
 				addStyleName(vffw, tcs);
+				tcs.setDescription(MsgUtil.getFieldDescription(messageSource, vtw.getVt().messagePrefix(), vffw));
 				fields.add(new PropertyIdAndField(vffw, tcs));
 				break;
 			case FILE_CONTENT_STRING:
 				FileContentField fcf = new FileContentField(messageSource);
 				fcf.setCaption(MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw));
+				fcf.setDescription(MsgUtil.getFieldDescription(messageSource, vtw.getVt().messagePrefix(), vffw));
 				addStyleName(vffw, fcf);
 				fields.add(new PropertyIdAndField(vffw, fcf));
 				break;

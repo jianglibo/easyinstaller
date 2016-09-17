@@ -1,13 +1,22 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
+/**
+ * Software is install on BoxAndRole, not box. Single box is meaningless, when take different role, It behave differently.
+ * 
+ * @author jianglibo@gmail.com
+ *
+ */
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "singleInstallation")
+@Table(name = "box_and_role", uniqueConstraints = { @UniqueConstraint(columnNames = {"box", "role"}) })
 public class BoxAndRole extends BaseEntity {
 	
+	@ManyToOne
 	private Box box;
 	
 	private String role;
@@ -30,6 +39,6 @@ public class BoxAndRole extends BaseEntity {
 
 	@Override
 	public String getDisplayName() {
-		return null;
+		return this.toString();
 	}
 }

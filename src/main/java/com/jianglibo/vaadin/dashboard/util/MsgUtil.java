@@ -34,16 +34,16 @@ public class MsgUtil {
 		return msg == null ? ci.getCaption() : msg;
 	}
 	
-	public static String getBottomNotifiMsg(MessageSource messageSource, String mname) {
-		String key = "bottom.notifi." + mname;
-		String msg = null;
-		try {
-			msg = messageSource.getMessage(key, null, UI.getCurrent().getLocale());
-		} catch (NoSuchMessageException e) {
-			LOGGER.info("field {} has no localized message", key);
-		}
-		return msg == null ? key : msg;
-	}
+//	public static String getBottomNotifiMsg(MessageSource messageSource, String mname) {
+//		String key = "bottom.notifi." + mname;
+//		String msg = null;
+//		try {
+//			msg = messageSource.getMessage(key, null, UI.getCurrent().getLocale());
+//		} catch (NoSuchMessageException e) {
+//			LOGGER.info("field {} has no localized message", key);
+//		}
+//		return msg == null ? key : msg;
+//	}
 	
 	public static String getViewMenuMsg(MessageSource messageSource, String viewName) {
 		String key = "mainmenu." + viewName;

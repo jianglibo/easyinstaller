@@ -16,6 +16,12 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
 import com.vaadin.ui.themes.ValoTheme;
 
+/**
+ *
+ * 
+ * @author jianglibo@gmail.com
+ *
+ */
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "box_group")
@@ -31,12 +37,15 @@ public class BoxGroup extends BaseEntity {
 	@VaadinFormField(order = 10)
 	private String name;
 	
-	@ManyToMany(mappedBy="boxGroup", fetch=FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.EAGER, mappedBy = "boxGroups")
 	@TwinGridFieldDescription(leftClazz = Box.class, rightClazz = Box.class, leftPageLength = 100, rightColumns = {"!addtoleft",
 			"name", "ip" }, leftColumns = { "name", "ip", "!remove" })
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 30)
-	private Set<Box> servers = Sets.newHashSet();
+	private Set<Box> boxes = Sets.newHashSet();
 	
+	/**
+	 * If box has no dnsServer, It should be found here.
+	 */
 	@VaadinGridColumn
 	@VaadinFormField(order = 20)
 	private String dnsServer;
@@ -51,13 +60,13 @@ public class BoxGroup extends BaseEntity {
 		this.name = name;
 	}
 
-	public Set<Box> getServers() {
-		return servers;
+	public Set<Box> getBoxes() {
+		return boxes;
 	}
 
 
-	public void setServers(Set<Box> servers) {
-		this.servers = servers;
+	public void setBoxes(Set<Box> boxes) {
+		this.boxes = boxes;
 	}
 
 
@@ -73,7 +82,6 @@ public class BoxGroup extends BaseEntity {
 
 	@Override
 	public String getDisplayName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

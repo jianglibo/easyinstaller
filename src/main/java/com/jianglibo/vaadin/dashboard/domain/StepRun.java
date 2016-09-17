@@ -47,6 +47,16 @@ public class StepRun extends BaseEntity implements HasPositionField {
 	@VaadinTableColumn(sortable=true, order=20)
 	private int position;
 	
+	@Lob
+	@Column(length = 64000)
+	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 40)
+	private String infoContent;
+
+	@Lob
+	@Column(length = 64000)
+	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 30)
+	private String codeContent;
+	
 	public StepRun() {
 	}
 	
@@ -62,18 +72,6 @@ public class StepRun extends BaseEntity implements HasPositionField {
 		setName(orderedStepDefine.getStepDefine().getName());
 		setOstype(orderedStepDefine.getStepDefine().getOstype());
 	}
-	
-	@Lob
-	@Column(length = 64000)
-	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 40)
-	private String ymlContent;
-
-	@Lob
-	@Column(length = 64000)
-	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 30)
-	private String codeContent;
-
-	private boolean ifSuccessSkipNext;
 
 	@Override
 	public String getDisplayName() {
@@ -134,12 +132,12 @@ public class StepRun extends BaseEntity implements HasPositionField {
 		this.ostype = ostype;
 	}
 
-	public String getYmlContent() {
-		return ymlContent;
+	public String getInfoContent() {
+		return infoContent;
 	}
 
-	public void setYmlContent(String ymlContent) {
-		this.ymlContent = ymlContent;
+	public void setInfoContent(String infoContent) {
+		this.infoContent = infoContent;
 	}
 
 	public String getCodeContent() {
@@ -148,14 +146,6 @@ public class StepRun extends BaseEntity implements HasPositionField {
 
 	public void setCodeContent(String codeContent) {
 		this.codeContent = codeContent;
-	}
-
-	public boolean isIfSuccessSkipNext() {
-		return ifSuccessSkipNext;
-	}
-
-	public void setIfSuccessSkipNext(boolean ifSuccessSkipNext) {
-		this.ifSuccessSkipNext = ifSuccessSkipNext;
 	}
 
 	public String getUniqueFileName() {

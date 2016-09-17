@@ -15,6 +15,7 @@ import com.jianglibo.vaadin.dashboard.repositories.OrderedStepDefineRepository;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
+import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.FilesToUploadScalarGridField;
 import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.OrderedStepDefineTwinGrid;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.view.BaseEditView;
@@ -128,7 +129,13 @@ public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>
 
 	@Override
 	protected Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		return new OrderedStepDefineTwinGrid(getDomains(),getMessageSource(),orderedStepDefineRepository, vtw, vffw);
+		switch (vffw.getName()) {
+		case "filesToUpload":
+			return new FilesToUploadScalarGridField(getDomains(), String.class, getMessageSource(), vtw, vffw);
+		default:
+			break;
+		}
+		return null;
 	}
 
 	@Override

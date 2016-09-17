@@ -80,6 +80,10 @@ application:
         localized: false
         valueType: String
       - value: UbuntuOs
+    preferredFormat:
+      - value: JSON
+      - value: YAML
+      - value: XML
     installRoles:
       Java:
         - value: java6

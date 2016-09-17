@@ -75,10 +75,6 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 
 	private final Class<E> clazz;
 
-	private final Class<T> tableClazz;
-
-	private VaadinTableWrapper vtw;
-
 	private ListViewFragmentBuilder lvfb;
 
 	private UiEventListener uel = new UiEventListener();
@@ -96,8 +92,7 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 		this.domains = domains;
 		this.applicationContext = applicationContext;
 		this.clazz = clazz;
-		this.tableClazz = tableClazz;
-
+		
 		setSizeFull();
 		addStyleName("transactions");
 
@@ -262,7 +257,7 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 		return repository;
 	}
 	
-	public boolean autoCollapseColumnsNeedChangeState(Table table) {
+	public boolean autoCollapseColumnsNeedChangeState(VaadinTableWrapper vtw, Table table) {
 		boolean result = true;
 		for (String propertyId : vtw.getAutoCollapseColumns()) {
 			if (table.isColumnCollapsed(propertyId) == Page.getCurrent().getBrowserWindowWidth() < 800) {
@@ -278,9 +273,12 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 			// Some columns are collapsed when browser window width gets small
 			// enough to make the table fit better.
 			BottomBlock bb = (BaseListView<E, T, J>.BottomBlock) bottomBlock;
-			if (autoCollapseColumnsNeedChangeState(bb.getTable())) {
-				for (String propertyId : vtw.getAutoCollapseColumns()) {
-					bb.getTable().setColumnCollapsed(propertyId, Page.getCurrent().getBrowserWindowWidth() < 800);
+			VaadinTableWrapper vtw = getDomains().getTables().get(clazz);
+			if (vtw != null) {
+				if (autoCollapseColumnsNeedChangeState(vtw ,bb.getTable())) {
+					for (String propertyId : vtw.getAutoCollapseColumns()) {
+						bb.getTable().setColumnCollapsed(propertyId, Page.getCurrent().getBrowserWindowWidth() < 800);
+					}
 				}
 			}
 		}

@@ -15,6 +15,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByStringOptions;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
@@ -45,17 +46,19 @@ public class StepDefine extends BaseEntity {
 	@VaadinFormField(order = 20)
 	private String ostype;
 
+	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 30)
+	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.PREFERED_FORMAT)
+	private String preferredInfoFormat;
+
 	@Lob
 	@Column(length = 64000)
 	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 30)
-	private String ymlContent;
+	private String infoContent;
 
 	@Lob
 	@Column(length = 64000)
 	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 40)
 	private String codeContent;
-
-	private boolean ifSuccessSkipNext;
 
 	public String getName() {
 		return name;
@@ -81,25 +84,17 @@ public class StepDefine extends BaseEntity {
 		this.codeContent = codeContent;
 	}
 
-	public String getYmlContent() {
-		return ymlContent;
+	public String getInfoContent() {
+		return infoContent;
 	}
 
-	public void setYmlContent(String ymlContent) {
-		this.ymlContent = ymlContent;
+	public void setInfoContent(String infoContent) {
+		this.infoContent = infoContent;
 	}
 
 	@Override
 	public String getDisplayName() {
 		return String.format("[%s,%s,%s]", getName(), getOstype(), getId());
-	}
-
-	public boolean isIfSuccessSkipNext() {
-		return ifSuccessSkipNext;
-	}
-
-	public void setIfSuccessSkipNext(boolean ifSuccessSkipNext) {
-		this.ifSuccessSkipNext = ifSuccessSkipNext;
 	}
 
 	public String getRunner() {
@@ -108,5 +103,13 @@ public class StepDefine extends BaseEntity {
 
 	public void setRunner(String runner) {
 		this.runner = runner;
+	}
+
+	public String getPreferredInfoFormat() {
+		return preferredInfoFormat;
+	}
+
+	public void setPreferredInfoFormat(String preferredInfoFormat) {
+		this.preferredInfoFormat = preferredInfoFormat;
 	}
 }
