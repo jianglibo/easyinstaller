@@ -15,6 +15,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Objects;
+import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
@@ -60,7 +61,7 @@ public class Software extends BaseEntity {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 100)
 	@ScalarGridFieldDescription(columns = { "value", "!remove"}, clazz = String.class, rowNumber=4)
-	private Set<String> filesToUpload;
+	private Set<String> filesToUpload = Sets.newHashSet();
 
 	@Lob
 	@Column(length = 154112)

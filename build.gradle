@@ -68,6 +68,8 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-starter-hateoas")
     compile("org.springframework.boot:spring-boot-devtools")
+	
+    compile("org.springframework:spring-oxm")
     
 	compile("com.vaadin:vaadin-spring-boot:1.0.0")
 	compile("de.fatalix:codmirror-addon:1.2.2")

@@ -1,8 +1,8 @@
 package com.jianglibo.vaadin.dashboard.sshrunner;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,14 +11,11 @@ import org.springframework.stereotype.Component;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jcraft.jsch.ChannelSftp;
-import com.jianglibo.vaadin.dashboard.annotation.Runner;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
-import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult;
-import com.jianglibo.vaadin.dashboard.domain.StepRun;
-import com.jianglibo.vaadin.dashboard.repositories.JschExecuteResultRepository;
-import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
+import com.jianglibo.vaadin.dashboard.domain.Box;
+import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
-import com.jianglibo.vaadin.dashboard.ssh.StepConfig;
+import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 
 /**
  * ApplicationConfig has a configurable remoteFolder property. Files upload to
@@ -27,138 +24,49 @@ import com.jianglibo.vaadin.dashboard.ssh.StepConfig;
  * @author jianglibo@gmail.com
  *
  */
-@Runner(SshUploadRunner.UNIQUE_NAME)
-@Component(SshUploadRunner.UNIQUE_NAME)
+@Component()
 public class SshUploadRunner implements BaseRunner {
-
-	public static final String UNIQUE_NAME = "SshUploadRunner";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SshUploadRunner.class);
 
 	@Autowired
-	private StepRunRepository stepRunRepository;
-
-	@Autowired
 	private ApplicationConfig applicationConfig;
 
-	private JschExecuteResultRepository jschExecuteResultRepository;
-
 	@Override
-	public JschExecuteResult run(JschSession jsession, StepRun stepRun) {
-		UploadDescription udesc = StepConfig.getUploadDescription(stepRun);
+	public void run(JschSession jsession, Box box, TaskDesc taskDesc) {
 
-		JschExecuteResult jschExecuteResult = null;
-		if (udesc.getFrom().isEmpty()) {
-			String msg = "step {}, SshUploadRunner need 'from' configuration.";
-			LOGGER.error(msg, stepRun.toString());
-			jschExecuteResult = new JschExecuteResult(msg, msg, 1);
-		} else {
-			String toFolder;
-			if (udesc.getTo().isEmpty()) {
-				toFolder = applicationConfig.getRemoteFolder();
-			} else {
-				toFolder = udesc.getTo();
+		// confirm all files exists in local.
+		List<String> noneExistsFiles = Lists.newArrayList();
+		for(String fileToUpload : taskDesc.getSoftware().getFilesToUpload()) {
+			Path sourceFile = applicationConfig.getLocalFolderPath().resolve(fileToUpload); 
+			if (!Files.exists(sourceFile)) {
+				noneExistsFiles.add(sourceFile.toAbsolutePath().toString());
 			}
-			List<FromToPair> fromToPairs = udesc.getFrom().stream().map(f -> new FromToPair(f, toFolder))
-					.collect(Collectors.toList());
-
+		}
+		BoxHistory bh = taskDesc.getHistory(box);
+		if (noneExistsFiles.size() > 0) {
+			String log = noneExistsFiles.stream().reduce("", (result, l) -> result + l);
+			bh.appendLog(log);
+		} else {
 			ChannelSftp sftp = null;
 			try {
 				sftp = jsession.getSftpCh();
 				try {
-					for (FromToPair pair : fromToPairs) {
-						sftp.put(pair.getFrom(), pair.getTo(), ChannelSftp.OVERWRITE);
+					for(String fileToUpload : taskDesc.getSoftware().getFilesToUpload()) {
+						String targetFile = applicationConfig.getRemoteFolder() + fileToUpload.replaceAll("\\\\", "/");
+						sftp.put(fileToUpload, targetFile, ChannelSftp.OVERWRITE);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
-					jschExecuteResult = new JschExecuteResult(e.getMessage(), e.getMessage(), 1);
+					bh.appendLog(e.getMessage());
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				jschExecuteResult = new JschExecuteResult(e.getMessage(), e.getMessage(), 1);
+				bh.appendLog(e.getMessage());
+				bh.setSuccess(false);
 			} finally {
 				if (sftp != null) {
 					sftp.disconnect();
 				}
 			}
 		}
-
-		if (jschExecuteResult == null) {
-			jschExecuteResult = new JschExecuteResult(null, null, 0);
-		}
-
-		JschExecuteResult oldJer = stepRun.getResult();
-		stepRun.setResult(jschExecuteResult);
-		if (oldJer != null) {
-			jschExecuteResultRepository.delete(oldJer);
-		}
-		stepRunRepository.save(stepRun);
-		return jschExecuteResult;
 	}
-
-	@Override
-	public String uniqueName() {
-		return UNIQUE_NAME;
-	}
-
-	public static class UploadDescription {
-		private List<String> from;
-		private String to;
-
-		public List<String> getFrom() {
-			if (from == null) {
-				return Lists.newArrayList();
-			} else {
-				return from;
-			}
-		}
-
-		public void setFrom(List<String> from) {
-			this.from = from;
-		}
-
-		public String getTo() {
-			if (to == null) {
-				return "";
-			} else {
-				return to;
-			}
-		}
-
-		public void setTo(String to) {
-			this.to = to;
-		}
-	}
-
-	private class FromToPair {
-		private String from;
-		private String to;
-
-		public FromToPair(String fromItem, String toFolder) {
-			Path fp = applicationConfig.getLocalFolderPath().resolve(fromItem); 
-			setFrom(fp.toFile().getAbsolutePath());
-			String t = fromItem.replaceAll("\\\\", "/");
-			if (!t.endsWith("/")) {
-				t = t + "/";
-			}
-			setTo(t + fp.getFileName().toString());
-		}
-
-		public String getFrom() {
-			return from;
-		}
-
-		public void setFrom(String from) {
-			this.from = from;
-		}
-
-		public String getTo() {
-			return to;
-		}
-
-		public void setTo(String to) {
-			this.to = to;
-		}
-	}
-
 }

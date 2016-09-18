@@ -18,11 +18,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.oxm.Marshaller;
+import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jianglibo.vaadin.dashboard.config.CatchAllErrorHandler;
 import com.vaadin.server.SystemMessagesProvider;
 import com.vaadin.server.VaadinServlet;
@@ -45,6 +48,11 @@ public class VaadinApplication {
     @Bean
     public VaadinServlet vaadinServlet() {
     	return new DashboardServlet();
+    }
+    
+    @Bean
+    public Marshaller castorMarshaller(){
+        return new CastorMarshaller();
     }
     
 //	@Bean

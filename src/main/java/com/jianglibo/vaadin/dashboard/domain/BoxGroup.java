@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -50,6 +51,9 @@ public class BoxGroup extends BaseEntity {
 	@VaadinFormField(order = 20)
 	private String dnsServer;
 	
+	@Lob
+	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 30, rowNumber=6)
+	private String configContent;
 	
 	public String getName() {
 		return name;
@@ -77,6 +81,15 @@ public class BoxGroup extends BaseEntity {
 
 	public void setDnsServer(String dnsServer) {
 		this.dnsServer = dnsServer;
+	}
+	
+	public String getConfigContent() {
+		return configContent;
+	}
+
+
+	public void setConfigContent(String configContent) {
+		this.configContent = configContent;
 	}
 
 

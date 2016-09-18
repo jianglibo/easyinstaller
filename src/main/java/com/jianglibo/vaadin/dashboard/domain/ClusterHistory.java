@@ -1,7 +1,10 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
@@ -21,11 +24,10 @@ public class ClusterHistory extends BaseEntity {
 
 	@ManyToOne
 	private BoxGroup boxGroup;
-	
-	@ManyToOne
-	private BoxHistory boxHistories;
-	
-	
+
+	@OneToMany(mappedBy = "clusterHistory")
+	private List<BoxHistory> boxHistories;
+
 	@Override
 	public String getDisplayName() {
 		return null;

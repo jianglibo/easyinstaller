@@ -2,86 +2,139 @@ package com.jianglibo.vaadin.dashboard.sshrunner;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
+import java.util.UUID;
 
+import javax.xml.transform.stream.StreamResult;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.oxm.Marshaller;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.jianglibo.vaadin.dashboard.annotation.Runner;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
-import com.jianglibo.vaadin.dashboard.domain.JschExecuteResult;
-import com.jianglibo.vaadin.dashboard.domain.StepRun;
-import com.jianglibo.vaadin.dashboard.repositories.JschExecuteResultRepository;
-import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
-import com.jianglibo.vaadin.dashboard.ssh.CodeSubstitudeUtil;
+import com.jianglibo.vaadin.dashboard.domain.Box;
+import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
+import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 
 /**
- * Beside code this runner will create 4 files total. One is code file, other three are clusterInfo, selfInfo, customInfo file.
- * As a convention, code file name is a uuid, others are uuid_clusterInfo, uuid_selfInfo, uuid_customInfo 
+ * Beside code this runner will create 4 files total. One is code file, other
+ * three are clusterInfo, selfInfo, customInfo file. As a convention, code file
+ * name is a uuid, others are uuid_clusterInfo, uuid_selfInfo, uuid_customInfo
  * 
- * Uuid as a parameter to code. For example, bash(tcl|perl|python) 123e4567-e89b-12d3-a456-426655440000 -self /root/easyinstaller/123e4567-e89b-12d3-a456-426655440000
- * So you can get other three files /root/easyinstaller/123e4567-e89b-12d3-a456-426655440000_clusterInfo etc.
+ * Uuid as a parameter to code. For example, bash(tcl|perl|python)
+ * 123e4567-e89b-12d3-a456-426655440000 -self
+ * /root/easyinstaller/123e4567-e89b-12d3-a456-426655440000 So you can get other
+ * three files
+ * /root/easyinstaller/123e4567-e89b-12d3-a456-426655440000_clusterInfo etc.
+ * 
+ * What about uploaded files? You had known the file names. They are put in
+ * configuration item "remoteFolder".
  * 
  * @author jianglibo@gmail.com
  *
  */
-@Runner(SshExecRunner.UNIQUE_NAME)
-@Component(SshExecRunner.UNIQUE_NAME)
+@Component
 public class SshExecRunner implements BaseRunner {
-	
-	public static final String UNIQUE_NAME = "SshExecRunner";
-	
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(SshExecRunner.class);
+
+	private static final Yaml yaml = new Yaml();
+
 	@Autowired
-	private StepRunRepository stepRunRepository;
-	
+	private Marshaller marshaller;
+
 	@Autowired
 	private ApplicationConfig applicationConfig;
-	
-	private JschExecuteResultRepository jschExecuteResultRepository;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Override
-	public JschExecuteResult run(JschSession jsession, StepRun stepRun) {
-		return copyCodeToServerAndRun(jsession, stepRun);
+	public void run(JschSession jsession, Box box, TaskDesc taskDesc) {
+		copyCodeToServerAndRun(jsession, box, taskDesc);
 	}
-	
-	private JschExecuteResult copyCodeToServerAndRun(JschSession jsession, StepRun stepRun) {
-		String code = CodeSubstitudeUtil.process(stepRun);
+
+	private void copyCodeToServerAndRun(JschSession jsession, Box box, TaskDesc taskDesc) {
+		String uuid = UUID.randomUUID().toString();
+		BoxHistory bh = taskDesc.getHistory(box);
+
+		uplocadEnv(jsession, box, bh, taskDesc, uuid);
+		uploadCode(jsession, box, bh, taskDesc, uuid);
+
+		// String cmd = stepRun.getStepDefine().getRunner() + " " +
+		// codeFileToRun + "-self " + codeFileToRun;
+		// JschExecuteResult jer = jsession.exec(cmd);
+		// JschExecuteResult oldJer = stepRun.getResult();
+		// stepRun.setResult(jer);
+		// if (oldJer != null) {
+		// jschExecuteResultRepository.delete(oldJer);
+		// }
+		// stepRunRepository.save(stepRun);
+		// return jer;
+	}
+
+	private void uplocadEnv(JschSession jsession, Box box,BoxHistory bh, TaskDesc taskDesc, String uuid) {
+		EvnForCodeExec env = new EvnForCodeExec(taskDesc.getBoxGroup(), box, taskDesc.getSoftware(),
+				applicationConfig.getRemoteFolder());
+		String envstr = null;
+		try {
+			switch (taskDesc.getSoftware().getPreferredFormat()) {
+			case "XML":
+				StringWriter sw = new StringWriter();
+				marshaller.marshal(env, new StreamResult(sw));
+				envstr = sw.getBuffer().toString();
+				break;
+			case "JSON":
+				envstr = objectMapper.writeValueAsString(env);
+				break;
+			case "YAML":
+				envstr = yaml.dump(env);
+				break;
+			default:
+				LOGGER.error("unsupported format: {}", taskDesc.getSoftware().getPreferredFormat());
+				bh.appendLog("unsupported format: " + taskDesc.getSoftware().getPreferredFormat()) ;
+				return;
+			}
+			String targetFile = applicationConfig.getRemoteFolder() + uuid + "_env";
+			putStream(bh, jsession, targetFile, envstr);
+		} catch (Exception e) {
+			bh.appendLog(e.getMessage());
+		}
+	}
+
+	private void putStream(BoxHistory bh, JschSession jsession, String targetFile, String content) {
 		ChannelSftp sftp = null;
-		String codeFileToRun = applicationConfig.getRemoteFolder() + stepRun.getUniqueFileName();
 		try {
 			sftp = jsession.getSftpCh();
 			try {
-				OutputStream os = sftp.put(codeFileToRun, ChannelSftp.OVERWRITE);
-				os.write(code.getBytes(Charsets.UTF_8));
+				OutputStream os = sftp.put(targetFile, ChannelSftp.OVERWRITE);
+				os.write(content.getBytes(Charsets.UTF_8));
 				os.flush();
 				os.close();
 			} catch (SftpException | IOException e) {
-				e.printStackTrace();
+				bh.appendLog(e.getMessage());
 			}
 		} catch (JSchException e) {
-			e.printStackTrace();
+			bh.appendLog(e.getMessage());
 		} finally {
 			if (sftp != null) {
 				sftp.disconnect();
 			}
 		}
-		String cmd = stepRun.getStepDefine().getRunner() + " " + codeFileToRun + "-self " + codeFileToRun;
-		JschExecuteResult jer = jsession.exec(cmd);
-		JschExecuteResult oldJer = stepRun.getResult();
-		stepRun.setResult(jer);
-		if (oldJer != null) {
-			jschExecuteResultRepository.delete(oldJer);
-		}
-		stepRunRepository.save(stepRun);
-		return jer;
 	}
 
-	@Override
-	public String uniqueName() {
-		return UNIQUE_NAME;
+	private void uploadCode(JschSession jsession, Box box,BoxHistory bh, TaskDesc taskDesc, String uuid) {
+		String targetFile = applicationConfig.getRemoteFolder() + uuid;
+		putStream(bh, jsession, targetFile, taskDesc.getSoftware().getCodeToExecute());
 	}
+
 }

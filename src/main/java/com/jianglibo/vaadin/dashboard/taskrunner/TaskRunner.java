@@ -27,18 +27,17 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Install;
+import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession.JschSessionBuilder;
 import com.jianglibo.vaadin.dashboard.sshrunner.BaseRunner;
-import com.jianglibo.vaadin.dashboard.sshrunner.Runners;
+import com.jianglibo.vaadin.dashboard.sshrunner.SshExecRunner;
+import com.jianglibo.vaadin.dashboard.sshrunner.SshUploadRunner;
 
 /**
- * It's not safe to run one box's installation in different thread because of
- * order.
+ * Give a list of box and software pair.
  * 
- * For a box, process installation by the order. First arrive first got
- * executed.
  * 
  * @author jianglibo@gmail.com
  *
@@ -55,84 +54,17 @@ public class TaskRunner implements ApplicationContextAware {
 	private ApplicationContext applicationContext;
 
 	@Autowired
-	private Runners runners;
+	private SshUploadRunner sshUploadRunner;
 
-	// list of installation must belongs to same box;
-	private final Map<Long, Queue<List<Install>>> boxidMap2WaitingToInstalls = Maps.newHashMap();
-
-	private final Map<Long, Boolean> boxidMap2AvailableState = Maps.newHashMap();
+	@Autowired
+	private SshExecRunner sshExecRunner;
 
 	public TaskRunner() {
 		this.service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
 	}
 
-	public void submitTasks(List<Install> installs) {
-		lock.lock(); // block until condition holds
-		try {
-			if (checkValidate(installs)) {
-				Long boxid = installs.get(0).getBox().getId();
-				if (boxidMap2WaitingToInstalls.get(boxid) == null) {
-					boxidMap2WaitingToInstalls.put(boxid, new LinkedBlockingQueue<List<Install>>());
-				}
-				boxidMap2WaitingToInstalls.get(boxid).add(installs);
-				if (!boxidMap2AvailableState.containsKey(boxid)) {
-					boxidMap2AvailableState.put(boxid, true);
-				}
-			}
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	private boolean checkValidate(List<Install> installs) {
-		if (installs == null || installs.isEmpty()) {
-			return false;
-		}
-		Box box = installs.get(0).getBox();
-		for (Install ist : installs) {
-			if (ist.getBox().getId() != box.getId()) {
-				LOGGER.error("all installs in a batch submit must belong to same box: {}", ist.toString());
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private List<Long> getAvailableBox() {
-		lock.lock(); // block until condition holds
-		try {
-			return boxidMap2AvailableState.entrySet().stream().filter(se -> se.getValue()).map(se -> se.getKey())
-					.collect(Collectors.toList());
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	private void setBoxAvailable(Long bid) {
-		lock.lock(); // block until condition holds
-		try {
-			boxidMap2AvailableState.put(bid, true);
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	@Scheduled(fixedDelay = 1000)
-	protected void consumeTasks() {
-		getAvailableBox().stream().forEach(bid -> {
-			Queue<List<Install>> waitings = boxidMap2WaitingToInstalls.get(bid);
-			if (waitings != null) {
-				executeOne(waitings.poll());
-			}
-		});
-	}
-
-	private void executeOne(List<Install> installs) {
-		if (installs == null) {
-			return;
-		}
-		Long bid = installs.get(0).getBox().getId();
-		ListenableFuture<Void> installResult = service.submit(new OneBoxTaskCallable(installs));
+	public void submitTasks(TaskDesc taskDesc) {
+		ListenableFuture<Void> installResult = service.submit(new OneTaskCallable(taskDesc));
 		Futures.addCallback(installResult, new FutureCallback<Void>() {
 			public void onSuccess(Void vid) {
 				setBoxAvailable(bid);
@@ -144,19 +76,28 @@ public class TaskRunner implements ApplicationContextAware {
 		});
 	}
 
-	private class OneBoxTaskCallable implements Callable<Void> {
+	private class OneTaskCallable implements Callable<Void> {
 
-		private List<Install> installs;
+		private TaskDesc taskDesc;
 
-		public OneBoxTaskCallable(List<Install> installs) {
-			this.installs = installs;
+		public OneTaskCallable(TaskDesc taskDesc) {
+			this.taskDesc = taskDesc;
 		}
 
 		@Override
 		public Void call() throws Exception {
-			Box box = installs.get(0).getBox();
-			JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(box.getKeyFilePath())
-					.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
+			if (taskDesc.isGroupTask()) {
+				
+			} else {
+				Box box = taskDesc.getBox();
+				Software software = taskDesc.getSoftware();
+				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(box.getKeyFilePath())
+						.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
+				
+				if (software.getFilesToUpload())
+
+			}
+			
 			for (Install ist : installs) {
 				for (StepRun stepRun : ist.getStepRuns()) {
 					BaseRunner br = runners.getRunners().get(stepRun.getStepDefine().getRunner());
