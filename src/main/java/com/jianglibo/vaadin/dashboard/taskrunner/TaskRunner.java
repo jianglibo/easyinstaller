@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -64,19 +65,33 @@ public class TaskRunner implements ApplicationContextAware {
 	}
 
 	public void submitTasks(TaskDesc taskDesc) {
-		ListenableFuture<Void> installResult = service.submit(new OneTaskCallable(taskDesc));
-		Futures.addCallback(installResult, new FutureCallback<Void>() {
-			public void onSuccess(Void vid) {
-				setBoxAvailable(bid);
+		List<TaskDesc> tds;
+
+		if (taskDesc.isGroupTask()) {
+			tds = taskDesc.getBoxGroup().getBoxes().stream().map(b -> new TaskDesc(b, taskDesc.getSoftware()))
+					.collect(Collectors.toList());
+		} else {
+			tds = Lists.newArrayList(taskDesc);
+		}
+
+		List<ListenableFuture<TaskDesc>> llfs = tds.stream().map(td -> service.submit(new OneTaskCallable(td)))
+				.collect(Collectors.toList());
+
+		ListenableFuture<List<TaskDesc>> lf = Futures.successfulAsList(llfs);
+
+		Futures.addCallback(lf, new FutureCallback<List<TaskDesc>>() {
+
+			@Override
+			public void onSuccess(List<TaskDesc> result) {
 			}
 
-			public void onFailure(Throwable thrown) {
-				setBoxAvailable(bid);
+			@Override
+			public void onFailure(Throwable t) {
 			}
 		});
 	}
 
-	private class OneTaskCallable implements Callable<Void> {
+	private class OneTaskCallable implements Callable<TaskDesc> {
 
 		private TaskDesc taskDesc;
 
@@ -85,19 +100,16 @@ public class TaskRunner implements ApplicationContextAware {
 		}
 
 		@Override
-		public Void call() throws Exception {
-			if (taskDesc.isGroupTask()) {
-				
-			} else {
-				Box box = taskDesc.getBox();
-				Software software = taskDesc.getSoftware();
-				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(box.getKeyFilePath())
-						.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
-				
-				if (software.getFilesToUpload())
+		public TaskDesc call() throws Exception {
+			Box box = taskDesc.getBox();
+			Software software = taskDesc.getSoftware();
+			JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(box.getKeyFilePath())
+					.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
 
-			}
-			
+			// if (software.getFilesToUpload())
+
+			// }
+
 			for (Install ist : installs) {
 				for (StepRun stepRun : ist.getStepRuns()) {
 					BaseRunner br = runners.getRunners().get(stepRun.getStepDefine().getRunner());
@@ -107,7 +119,7 @@ public class TaskRunner implements ApplicationContextAware {
 			if (jsession.getSession().isConnected()) {
 				jsession.getSession().disconnect();
 			}
-			return null;
+			return taskDesc;
 		}
 	}
 

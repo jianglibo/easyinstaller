@@ -98,6 +98,10 @@ dependencies {
 	compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.2'
 
     compile('org.springframework.security:spring-security-acl:4.0.4.RELEASE')
+    
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
+	compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.6.6'
+    
  
  	compile group: 'org.vaadin.addons.lazyquerycontainer', name: 'vaadin-lazyquerycontainer', version: '7.6.1.3'
     

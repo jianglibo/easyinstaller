@@ -26,6 +26,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jianglibo.vaadin.dashboard.config.CatchAllErrorHandler;
 import com.vaadin.server.SystemMessagesProvider;
 import com.vaadin.server.VaadinServlet;
@@ -53,6 +54,11 @@ public class VaadinApplication {
     @Bean
     public Marshaller castorMarshaller(){
         return new CastorMarshaller();
+    }
+    
+    @Bean
+    public ObjectMapper ymlObjectMapper() {
+    	return new ObjectMapper(new YAMLFactory());
     }
     
 //	@Bean
