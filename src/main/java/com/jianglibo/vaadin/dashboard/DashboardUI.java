@@ -32,7 +32,6 @@ import com.jianglibo.vaadin.dashboard.view.LoginView;
 import com.jianglibo.vaadin.dashboard.view.MainMenuItems;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelector;
-import com.jianglibo.vaadin.dashboard.wrapper.DashboardNavigatorWrapper;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -132,6 +131,8 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME : getNavigator().getState();
 			getNavigator().navigateTo(v);
 		}
+		
+		new FeederThread().start();
 	}
 	
 	public void notifyProgress(TaskDesc taskDesc) {
@@ -142,6 +143,42 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 			}
 		});
 	}
+	
+	
+	class FeederThread extends Thread {
+        int count = 0;
+
+        @Override
+        public void run() {
+            try {
+                // Update the data for a while
+                while (count < 100) {
+                    Thread.sleep(1000);
+
+                    access(new Runnable() {
+                        @Override
+                        public void run() {
+                            double y = Math.random();
+//                            series.add(
+//                                new DataSeriesItem(count++, y),
+//                                true, count > 10);
+                        }
+                    });
+                }
+
+                // Inform that we have stopped running
+                access(new Runnable() {
+                    @Override
+                    public void run() {
+//                        setContent(new Label("Done!"));
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
 //	/**
 //	 * 
@@ -210,7 +247,8 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	        content.setSizeFull();
 	        addComponent(content);
 	        setExpandRatio(content, 1.0f);
-	        applicationContext.getBean(DashboardNavigatorWrapper.class).unwrap(content);
+	        new DashboardNavigator(viewProvider, content);
+//	        applicationContext.getBean(DashboardNavigatorWrapper.class).unwrap(content);
 	    }
 	}
 }

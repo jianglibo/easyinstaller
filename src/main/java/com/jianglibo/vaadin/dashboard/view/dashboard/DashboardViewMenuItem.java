@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.NotificationsCountUpdatedEvent;
@@ -36,12 +35,12 @@ public class DashboardViewMenuItem implements MenuItemWrapper {
         DashboardEventBus.register(this);
 	}
 	
-//	@Subscribe
-//	public void updateNotificationsCount(final NotificationsCountUpdatedEvent event) {
-//		int unreadNotificationsCount = DashboardUI.getDataProvider().getUnreadNotificationsCount();
-//		notificationsBadge.setValue(String.valueOf(unreadNotificationsCount));
-//		notificationsBadge.setVisible(unreadNotificationsCount > 0);
-//	}
+	@Subscribe
+	public void updateNotificationsCount(final NotificationsCountUpdatedEvent event) {
+		int unreadNotificationsCount = 55; //read from other source.
+		notificationsBadge.setValue(String.valueOf(unreadNotificationsCount));
+		notificationsBadge.setVisible(unreadNotificationsCount > 0);
+	}
 
 	public Component getMenuItem() {
 		return menuItem;

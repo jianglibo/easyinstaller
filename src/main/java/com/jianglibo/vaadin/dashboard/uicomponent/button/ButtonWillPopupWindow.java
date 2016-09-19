@@ -1,7 +1,6 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.button;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.NotificationsCountUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -51,8 +50,7 @@ public abstract class ButtonWillPopupWindow extends Button {
         @Subscribe
         public void updateNotificationsCount(
                 final NotificationsCountUpdatedEvent event) {
-//            setUnreadCount(DashboardUI.getDataProvider()
-//                    .getUnreadNotificationsCount());
+            setUnreadCount(55);
         }
 
         public void setUnreadCount(final int count) {
