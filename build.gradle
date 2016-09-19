@@ -68,8 +68,6 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-starter-hateoas")
     compile("org.springframework.boot:spring-boot-devtools")
-	
-    compile("org.springframework:spring-oxm")
     
 	compile("com.vaadin:vaadin-spring-boot:1.0.0")
 	compile("de.fatalix:codmirror-addon:1.2.2")
@@ -101,6 +99,8 @@ dependencies {
     
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
 	compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.6.6'
+	
+	compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.6.6'
     
  
  	compile group: 'org.vaadin.addons.lazyquerycontainer', name: 'vaadin-lazyquerycontainer', version: '7.6.1.3'

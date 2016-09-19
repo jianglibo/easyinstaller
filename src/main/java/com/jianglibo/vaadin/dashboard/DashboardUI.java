@@ -23,6 +23,7 @@ import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
 import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
+import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
@@ -32,6 +33,7 @@ import com.jianglibo.vaadin.dashboard.view.MainMenuItems;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelector;
 import com.jianglibo.vaadin.dashboard.wrapper.DashboardNavigatorWrapper;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.Widgetset;
@@ -42,6 +44,7 @@ import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.ComponentContainer;
@@ -56,6 +59,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @Title("EasyInstaller Dashboard")
 @SuppressWarnings("serial")
 @SpringUI(path = "/")
+@Push(PushMode.MANUAL)
 public final class DashboardUI extends UI implements ApplicationContextAware {
 	
 	private ApplicationContext applicationContext;
@@ -78,13 +82,6 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
     @Autowired
     private PersonRepository personRepository;
 
-	/*
-	 * This field stores an access to the dummy backend layer. In real
-	 * applications you most likely gain access to your beans trough lookup or
-	 * injection; and not in the UI but somewhere closer to where they're
-	 * actually accessed.
-	 */
-//	private final DataProvider dataProvider = new DummyDataProvider();
 	private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
 	@Override
@@ -135,6 +132,15 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME : getNavigator().getState();
 			getNavigator().navigateTo(v);
 		}
+	}
+	
+	public void notifyProgress(TaskDesc taskDesc) {
+		access(new Runnable() {
+			@Override
+			public void run() {
+				
+			}
+		});
 	}
 
 //	/**

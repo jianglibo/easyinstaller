@@ -1,11 +1,8 @@
 package com.jianglibo.vaadin.dashboard.taskrunner;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -16,7 +13,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -25,14 +21,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.domain.Box;
-import com.jianglibo.vaadin.dashboard.domain.Install;
-import com.jianglibo.vaadin.dashboard.domain.Software;
-import com.jianglibo.vaadin.dashboard.domain.StepRun;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession.JschSessionBuilder;
-import com.jianglibo.vaadin.dashboard.sshrunner.BaseRunner;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshExecRunner;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshUploadRunner;
 
@@ -102,19 +93,12 @@ public class TaskRunner implements ApplicationContextAware {
 		@Override
 		public TaskDesc call() throws Exception {
 			Box box = taskDesc.getBox();
-			Software software = taskDesc.getSoftware();
 			JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(box.getKeyFilePath())
 					.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
 
-			// if (software.getFilesToUpload())
-
-			// }
-
-			for (Install ist : installs) {
-				for (StepRun stepRun : ist.getStepRuns()) {
-					BaseRunner br = runners.getRunners().get(stepRun.getStepDefine().getRunner());
-					br.run(jsession, stepRun);
-				}
+			sshUploadRunner.run(jsession, box, taskDesc);
+			if (taskDesc.getHistory(box).isSuccess()) {
+				sshExecRunner.run(jsession, box, taskDesc);
 			}
 			if (jsession.getSession().isConnected()) {
 				jsession.getSession().disconnect();

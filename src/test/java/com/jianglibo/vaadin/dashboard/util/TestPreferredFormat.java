@@ -1,19 +1,20 @@
 package com.jianglibo.vaadin.dashboard.util;
 
-import java.io.IOException;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertThat;
 
-import org.junit.Before;
-import org.springframework.core.io.Resource;
+import java.util.List;
+
+import org.junit.Test;
 
 import com.jianglibo.vaadin.dashboard.Tbase;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 
 public class TestPreferredFormat extends Tbase {
 
-	private Software software;
-	
-	@Before
-	public void before() {
-
+	@Test
+	public void t() {
+		List<Software> sfs = getSoftwareFixtures();
+		assertThat(sfs.size(), greaterThan(0));
 	}
 }

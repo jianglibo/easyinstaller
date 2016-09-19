@@ -18,14 +18,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.oxm.Marshaller;
-import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jianglibo.vaadin.dashboard.config.CatchAllErrorHandler;
 import com.vaadin.server.SystemMessagesProvider;
@@ -52,13 +52,17 @@ public class VaadinApplication {
     }
     
     @Bean
-    public Marshaller castorMarshaller(){
-        return new CastorMarshaller();
+    public ObjectMapper ymlObjectMapper() {
+    	return new ObjectMapper(new YAMLFactory());
     }
     
     @Bean
-    public ObjectMapper ymlObjectMapper() {
-    	return new ObjectMapper(new YAMLFactory());
+    public ObjectMapper xmlObjectMapper() {
+    	JacksonXmlModule module = new JacksonXmlModule();
+    	// and then configure, for example:
+    	module.setDefaultUseWrapper(false);
+    	return new XmlMapper(module);
+    	// and you can also configure AnnotationIntrospectors 
     }
     
 //	@Bean

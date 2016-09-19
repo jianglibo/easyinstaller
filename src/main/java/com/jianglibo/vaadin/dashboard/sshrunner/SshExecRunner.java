@@ -2,17 +2,12 @@ package com.jianglibo.vaadin.dashboard.sshrunner;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.util.UUID;
-
-import javax.xml.transform.stream.StreamResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.oxm.Marshaller;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
@@ -47,16 +42,17 @@ public class SshExecRunner implements BaseRunner {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SshExecRunner.class);
 
-	private static final Yaml yaml = new Yaml();
-
-	@Autowired
-	private Marshaller marshaller;
-
 	@Autowired
 	private ApplicationConfig applicationConfig;
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired
+	private ObjectMapper ymlObjectMapper;
+	
+	@Autowired
+	private ObjectMapper xmlObjectMapper;
 
 	@Override
 	public void run(JschSession jsession, Box box, TaskDesc taskDesc) {
@@ -69,17 +65,6 @@ public class SshExecRunner implements BaseRunner {
 
 		uplocadEnv(jsession, box, bh, taskDesc, uuid);
 		uploadCode(jsession, box, bh, taskDesc, uuid);
-
-		// String cmd = stepRun.getStepDefine().getRunner() + " " +
-		// codeFileToRun + "-self " + codeFileToRun;
-		// JschExecuteResult jer = jsession.exec(cmd);
-		// JschExecuteResult oldJer = stepRun.getResult();
-		// stepRun.setResult(jer);
-		// if (oldJer != null) {
-		// jschExecuteResultRepository.delete(oldJer);
-		// }
-		// stepRunRepository.save(stepRun);
-		// return jer;
 	}
 
 	private void uplocadEnv(JschSession jsession, Box box,BoxHistory bh, TaskDesc taskDesc, String uuid) {
@@ -89,15 +74,13 @@ public class SshExecRunner implements BaseRunner {
 		try {
 			switch (taskDesc.getSoftware().getPreferredFormat()) {
 			case "XML":
-				StringWriter sw = new StringWriter();
-				marshaller.marshal(env, new StreamResult(sw));
-				envstr = sw.getBuffer().toString();
+				envstr = xmlObjectMapper.writeValueAsString(env);
 				break;
 			case "JSON":
 				envstr = objectMapper.writeValueAsString(env);
 				break;
 			case "YAML":
-				envstr = yaml.dump(env);
+				envstr = ymlObjectMapper.writeValueAsString(env);
 				break;
 			default:
 				LOGGER.error("unsupported format: {}", taskDesc.getSoftware().getPreferredFormat());
