@@ -34,6 +34,9 @@ public class BoxHistory extends BaseEntity {
 	@ManyToOne
 	private ClusterHistory clusterHistory;
 	
+	@ManyToOne
+	private Person runner;
+	
 	@VaadinTableColumn
 	@VaadinGridColumn
 	private boolean success;
@@ -82,7 +85,13 @@ public class BoxHistory extends BaseEntity {
 		return success;
 	}
 
+	public Person getRunner() {
+		return runner;
+	}
 
+	public void setRunner(Person runner) {
+		this.runner = runner;
+	}
 
 	public void setSuccess(boolean success) {
 		this.success = success;

@@ -47,7 +47,6 @@ public class SoftwareListView extends BaseListView<Software, SoftwareTable, Soft
 	@Override
 	public void handleException(Throwable exception, SubscriberExceptionContext context) {
 		exception.printStackTrace();
-		
 	}
 
 	@Override
@@ -95,6 +94,7 @@ public class SoftwareListView extends BaseListView<Software, SoftwareTable, Soft
 		return new ButtonGroup[]{ //
 		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
 				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
+		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
 		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
 	}
 

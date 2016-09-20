@@ -14,6 +14,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
+import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.BoxRoleScalarGridField;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.view.BaseEditView;
 import com.vaadin.server.FontAwesome;
@@ -41,6 +42,12 @@ public class BoxEditView  extends BaseEditView<Box, FormBase<Box>, BoxRepository
 	}
 
 	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		switch (vffw.getName()) {
+		case "roles":
+			return new BoxRoleScalarGridField(getDomains(), String.class, getMessageSource(), vtw, vffw);
+		default:
+			break;
+		}
 		return null;
 	}
 

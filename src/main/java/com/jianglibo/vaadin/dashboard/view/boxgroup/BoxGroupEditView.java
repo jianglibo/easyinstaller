@@ -46,7 +46,7 @@ public class BoxGroupEditView  extends BaseEditView<BoxGroup, FormBase<BoxGroup>
 	@Override
 	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		switch (vffw.getName()) {
-		case "servers":
+		case "boxes":
 			return new BoxTwinGrid(getDomains(),getMessageSource(), boxRepository, vtw, vffw);
 		default:
 			break;

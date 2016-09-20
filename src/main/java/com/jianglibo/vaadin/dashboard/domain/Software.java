@@ -2,14 +2,12 @@ package com.jianglibo.vaadin.dashboard.domain;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -23,7 +21,6 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByStringOptions;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
-import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.GridFieldDescription;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ScalarGridFieldDescription;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.themes.ValoTheme;
@@ -46,13 +43,12 @@ import com.vaadin.ui.themes.ValoTheme;
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
 public class Software extends BaseEntity {
 
-	@ComboBoxBackByStringOptions(key = GlobalComboOptions.SOFTWARE_NAMES)
-	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 10)
+	@VaadinFormField(order = 10)
 	@VaadinTableColumn(alignment = Align.LEFT)
 	@NotNull
 	private String name;
 
-	@ComboBoxBackByStringOptions(key = GlobalComboOptions.OS_TYPES)
+	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.OS_TYPES)
 	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 20)
 	@VaadinTableColumn()
 	@NotNull
@@ -76,6 +72,9 @@ public class Software extends BaseEntity {
 	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 115)
 	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.PREFERED_FORMAT)
 	private String preferredFormat;
+	
+	@ManyToOne
+	private Person creator;
 
 	public Software() {
 
@@ -143,5 +142,12 @@ public class Software extends BaseEntity {
 	public void setPreferredFormat(String preferredFormat) {
 		this.preferredFormat = preferredFormat;
 	}
-	
+
+	public Person getCreator() {
+		return creator;
+	}
+
+	public void setCreator(Person creator) {
+		this.creator = creator;
+	}
 }

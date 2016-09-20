@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -48,6 +49,9 @@ public class BoxGroup extends BaseEntity {
 	
 	@OneToMany(mappedBy="boxGroup")
 	private List<ClusterHistory> histories;
+	
+	@ManyToOne
+	private Person creator;
 	
 	/**
 	 * If box has no dnsServer, It should be found here.
@@ -113,4 +117,13 @@ public class BoxGroup extends BaseEntity {
 		return null;
 	}
 
+
+	public Person getCreator() {
+		return creator;
+	}
+
+
+	public void setCreator(Person creator) {
+		this.creator = creator;
+	}
 }

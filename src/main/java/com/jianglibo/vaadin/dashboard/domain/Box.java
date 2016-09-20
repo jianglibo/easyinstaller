@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -21,6 +24,8 @@ import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByStringOptions;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ScalarGridFieldDescription;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
@@ -48,6 +53,14 @@ public class Box extends BaseEntity {
 	@ManyToMany
 	private Set<BoxGroup> boxGroups = Sets.newHashSet();
 	
+	@ElementCollection(fetch = FetchType.EAGER)
+	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 100)
+	@ScalarGridFieldDescription(columns = { "value", "!remove"}, clazz = String.class, rowNumber=4)
+	private Set<String> roles = Sets.newHashSet();
+	
+	@ManyToOne
+	private Person creator;
+	
 	/**
 	 * Owning side is which has no mappedBy property. So this IS NOT owning side.
 	 */
@@ -56,7 +69,7 @@ public class Box extends BaseEntity {
 	private List<BoxHistory> boxHistories = Lists.newArrayList();
 	
 	@VaadinTableColumn(order=2)
-	@ComboBoxBackByStringOptions(key = GlobalComboOptions.OS_TYPES)
+	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.OS_TYPES)
 	@VaadinFormField(order = 20, fieldType=Ft.COMBO_BOX)
 	@NotNull
 	@NotEmpty
@@ -204,4 +217,19 @@ public class Box extends BaseEntity {
 		this.boxGroups = boxGroups;
 	}
 
+	public Person getCreator() {
+		return creator;
+	}
+
+	public void setCreator(Person creator) {
+		this.creator = creator;
+	}
+
+	public Set<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<String> roles) {
+		this.roles = roles;
+	}
 }

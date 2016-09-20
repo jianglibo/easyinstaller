@@ -15,9 +15,7 @@ import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.FilesToUploadScalarGridField;
-import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.OrderedStepDefineTwinGrid;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
-import com.jianglibo.vaadin.dashboard.unused.OrderedStepDefineRepository;
 import com.jianglibo.vaadin.dashboard.view.BaseEditView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
@@ -39,13 +37,11 @@ public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 	
-	private final OrderedStepDefineRepository orderedStepDefineRepository;
 
 	@Autowired
-	public SoftwareEditView(SoftwareRepository repository,OrderedStepDefineRepository orderedStepDefineRepository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
+	public SoftwareEditView(SoftwareRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
 		super(messageSource, Software.class, domains, fieldFactories, repository);
-		this.orderedStepDefineRepository = orderedStepDefineRepository;
 //		this.messageSource = messageSource;
 //		this.repository= repository;
 //		this.eventBus = new EventBus(this.getClass().getName());

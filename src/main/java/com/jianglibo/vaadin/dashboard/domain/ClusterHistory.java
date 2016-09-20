@@ -27,6 +27,10 @@ public class ClusterHistory extends BaseEntity {
 
 	@OneToMany(mappedBy = "clusterHistory")
 	private List<BoxHistory> boxHistories;
+	
+	
+	@ManyToOne
+	private Person runner;
 
 	public BoxGroup getBoxGroup() {
 		return boxGroup;
@@ -42,6 +46,14 @@ public class ClusterHistory extends BaseEntity {
 
 	public void setBoxHistories(List<BoxHistory> boxHistories) {
 		this.boxHistories = boxHistories;
+	}
+
+	public Person getRunner() {
+		return runner;
+	}
+
+	public void setRunner(Person runner) {
+		this.runner = runner;
 	}
 
 	@Override

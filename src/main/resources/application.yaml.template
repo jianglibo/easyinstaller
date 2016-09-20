@@ -74,11 +74,12 @@ application:
   ssh-key-folder: ~/easyinstaller-sshs
   auto-login: true
   combo-datas:
-    ostype:
-      - caption: CentOs
-        value: CentOs
+    ostypes:
+      - caption: CentOs7
+        value: CentOs7
         localized: false
         valueType: String
+      - value: Centos6
       - value: UbuntuOs
     preferredFormat:
       - value: JSON
