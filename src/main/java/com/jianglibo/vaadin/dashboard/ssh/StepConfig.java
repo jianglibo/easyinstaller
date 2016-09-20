@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
-import com.jianglibo.vaadin.dashboard.domain.StepRun;
+import com.jianglibo.vaadin.dashboard.unused.StepRun;
 
 /**
  * If StepDefine is a template, Then StepConfig like as a instance. If any properties has no value, the value will come from StepDefine.

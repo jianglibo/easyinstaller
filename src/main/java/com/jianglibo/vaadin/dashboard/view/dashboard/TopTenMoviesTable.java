@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.jianglibo.vaadin.dashboard.DashboardUI;
-import com.jianglibo.vaadin.dashboard.domain.MovieRevenue;
+import com.jianglibo.vaadin.dashboard.unused.MovieRevenue;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Table;

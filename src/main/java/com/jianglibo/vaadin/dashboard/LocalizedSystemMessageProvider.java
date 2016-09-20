@@ -13,8 +13,7 @@ import com.vaadin.server.SystemMessages;
 import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.server.SpringVaadinServletRequest;
 
@@ -51,7 +50,14 @@ public class LocalizedSystemMessageProvider implements SystemMessagesProvider {
 		if (systemMessagesInfo.getRequest() == null) {
 			locale = Locale.US;
 		} else {
-			locale = LocaleSelector.getLocaleSupported(RequestContextUtils.getLocale((SpringVaadinServletRequest)systemMessagesInfo.getRequest()));	
+			VaadinRequest vr = systemMessagesInfo.getRequest();
+			if (vr instanceof VaadinServletRequest) {
+				locale = LocaleSelector.getLocaleSupported(RequestContextUtils.getLocale(((VaadinServletRequest)vr).getHttpServletRequest()));
+			} else if ( vr instanceof SpringVaadinServletRequest) {
+				locale = LocaleSelector.getLocaleSupported(RequestContextUtils.getLocale((SpringVaadinServletRequest)vr));
+			} else {
+				locale = Locale.US;
+			}
 		}
 		
 		messages.setAuthenticationErrorCaption(messageSource.getMessage("systemmessage.authenticationErrorCaption", null, locale));

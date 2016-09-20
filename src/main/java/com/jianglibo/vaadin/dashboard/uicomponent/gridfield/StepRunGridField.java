@@ -8,7 +8,7 @@ import org.springframework.context.MessageSource;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.StepRun;
+import com.jianglibo.vaadin.dashboard.unused.StepRun;
 import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;

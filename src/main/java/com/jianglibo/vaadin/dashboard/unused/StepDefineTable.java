@@ -1,22 +1,20 @@
-package com.jianglibo.vaadin.dashboard.view.install;
+package com.jianglibo.vaadin.dashboard.unused;
 
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
-import com.jianglibo.vaadin.dashboard.unused.Install;
-import com.jianglibo.vaadin.dashboard.unused.InstallRepository;
 import com.vaadin.data.Property;
 
 @SuppressWarnings("serial")
-public class InstallTable extends TableBase<Install> {
+public class StepDefineTable extends TableBase<StepDefine> {
 	
-	public InstallTable(MessageSource messageSource, Domains domains,InstallContainer container, InstallRepository repository) {
-		super(Install.class, domains,container, messageSource);
+	public StepDefineTable(MessageSource messageSource, Domains domains,StepDefineContainer container, StepDefineRepository repository) {
+		super(StepDefine.class, domains,container, messageSource);
 		container.setEnableSort(true);
 	}
-
+	
 	@Override
 	public void setFooter(PageMetaEvent pme) {
 		if (pme == null) {

@@ -1,36 +1,36 @@
-package com.jianglibo.vaadin.dashboard.view.install;
-
+package com.jianglibo.vaadin.dashboard.unused;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
-import com.jianglibo.vaadin.dashboard.unused.Install;
-import com.jianglibo.vaadin.dashboard.unused.InstallRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.vaadin.spring.annotation.SpringComponent;
 
 @SuppressWarnings("serial")
-public class InstallContainer extends JpaContainer<Install>{
-	
-	private final InstallRepository repository;
+//@SpringComponent
+//@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+public class StepRunContainer extends JpaContainer<StepRun> {
+
+	private final StepRunRepository repository;
 	
 	@Autowired
-	public InstallContainer(InstallRepository repository, Domains domains) {
-		super(Install.class, domains);
+	public StepRunContainer(StepRunRepository repository, Domains domains) {
+		super(StepRun.class, domains);
 		this.repository = repository;
 	}
 
-	@Subscribe
 	public void whenUriFragmentChange(ListViewFragmentBuilder vfb) {
 		persistState(vfb);
 		setList();
 	}
-	
+
 	public void setList() {
 		Pageable pageable;
 		if (getSort() == null) {
@@ -38,17 +38,12 @@ public class InstallContainer extends JpaContainer<Install>{
 		} else {
 			pageable = new PageRequest(getCurrentPage() - 1, getPerPage(), getSort());
 		}
-		
-		Page<Install> entities;
+
+		Page<StepRun> entities;
 		String filterStr = getFilterStr();
 		long total;
-//		if (Strings.isNullOrEmpty(filterStr)) {
-			entities = repository.findByArchivedEquals(isTrashed(), pageable);
-			total = repository.countByArchivedEquals(isTrashed());
-//		} else {
-//			entities = repository.findByNameContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, isTrashed(), pageable);
-//			total = repository.countByNameContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, isTrashed());
-//		}
+		entities = repository.findByArchivedEquals(isTrashed(), pageable);
+		total = repository.countByArchivedEquals(isTrashed());
 		setCollection(entities.getContent());
 		notifyPageMetaChangeListeners(new PageMetaEvent(total, getPerPage()));
 	}

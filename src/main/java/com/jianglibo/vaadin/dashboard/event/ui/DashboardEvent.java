@@ -2,8 +2,6 @@ package com.jianglibo.vaadin.dashboard.event.ui;
 
 import java.util.Collection;
 
-import com.jianglibo.vaadin.dashboard.domain.Transaction;
-
 /*
  * Event bus events used in Dashboard are listed here as inner classes.
  */
@@ -51,17 +49,6 @@ public abstract class DashboardEvent {
 
     }
 
-    public static final class TransactionReportEvent {
-        private final Collection<Transaction> transactions;
-
-        public TransactionReportEvent(final Collection<Transaction> transactions) {
-            this.transactions = transactions;
-        }
-
-        public Collection<Transaction> getTransactions() {
-            return transactions;
-        }
-    }
 
 //    public static final class PostViewChangeEvent {
 //        private final DashboardViewType view;

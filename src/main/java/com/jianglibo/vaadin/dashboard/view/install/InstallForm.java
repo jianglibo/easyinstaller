@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.Install;
-import com.jianglibo.vaadin.dashboard.domain.StepRun;
-import com.jianglibo.vaadin.dashboard.repositories.InstallRepository;
-import com.jianglibo.vaadin.dashboard.repositories.StepRunRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
+import com.jianglibo.vaadin.dashboard.unused.Install;
+import com.jianglibo.vaadin.dashboard.unused.InstallRepository;
+import com.jianglibo.vaadin.dashboard.unused.StepRun;
+import com.jianglibo.vaadin.dashboard.unused.StepRunRepository;
 
 @SuppressWarnings("serial")
 public class InstallForm extends FormBase<Install> {

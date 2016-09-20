@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
-import com.jianglibo.vaadin.dashboard.domain.StepRun;
+import com.jianglibo.vaadin.dashboard.unused.StepRun;
 
 /**
  * Only allow one level string and list of strings map. tags:

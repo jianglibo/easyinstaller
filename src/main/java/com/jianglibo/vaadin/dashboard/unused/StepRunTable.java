@@ -1,19 +1,18 @@
-package com.jianglibo.vaadin.dashboard.view.install;
+package com.jianglibo.vaadin.dashboard.unused;
 
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
-import com.jianglibo.vaadin.dashboard.unused.Install;
-import com.jianglibo.vaadin.dashboard.unused.InstallRepository;
 import com.vaadin.data.Property;
 
 @SuppressWarnings("serial")
-public class InstallTable extends TableBase<Install> {
+public class StepRunTable extends TableBase<StepRun> {
 	
-	public InstallTable(MessageSource messageSource, Domains domains,InstallContainer container, InstallRepository repository) {
-		super(Install.class, domains,container, messageSource);
+
+	public StepRunTable(MessageSource messageSource, Domains domains,StepRunContainer container, StepRunRepository repository) {
+		super(StepRun.class, domains,container, messageSource);
 		container.setEnableSort(true);
 	}
 
@@ -22,10 +21,10 @@ public class InstallTable extends TableBase<Install> {
 		if (pme == null) {
 			setColumnFooter("createdAt", "");
 			setColumnFooter("ip", "Total");
-		} else {
-			setColumnFooter("createdAt", pme.getTotalRecordString());
-			setColumnFooter("ip", "Total");
-		}
+ 		} else {
+ 			setColumnFooter("createdAt", pme.getTotalRecordString());
+ 			setColumnFooter("ip", "Total");
+ 		}
 	}
 	
 	@Override

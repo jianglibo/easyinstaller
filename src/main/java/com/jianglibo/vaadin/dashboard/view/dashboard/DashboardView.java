@@ -47,11 +47,9 @@ public final class DashboardView extends Panel implements View,
 
     private Label titleLabel;
     
-    private ButtonWillPopupWindow notificationsButton;
+//    private ButtonWillPopupWindow notificationsButton;
     
     private CssLayout dashboardPanels;
-    
-    
     
     private final VerticalLayout root;
 
@@ -103,14 +101,14 @@ public final class DashboardView extends Panel implements View,
         titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         header.addComponent(titleLabel);
 
-        notificationsButton = new NotificationsButton();
+//        notificationsButton = new NotificationsButton();
         
         
 //        Component edit = buildEditButton();
-        HorizontalLayout tools = new HorizontalLayout(notificationsButton);
-        tools.setSpacing(true);
-        tools.addStyleName("toolbar");
-        header.addComponent(tools);
+//        HorizontalLayout tools = new HorizontalLayout(notificationsButton);
+//        tools.setSpacing(true);
+//        tools.addStyleName("toolbar");
+//        header.addComponent(tools);
 //
         return header;
     }
@@ -138,7 +136,7 @@ public final class DashboardView extends Panel implements View,
 
     @Override
     public void enter(final ViewChangeEvent event) {
-        notificationsButton.updateNotificationsCount(null);
+//        notificationsButton.updateNotificationsCount(null);
     }
 
     @Override

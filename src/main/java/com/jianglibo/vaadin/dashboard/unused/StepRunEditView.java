@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.software;
+package com.jianglibo.vaadin.dashboard.unused;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,46 +10,38 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.Software;
-import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
-import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.FilesToUploadScalarGridField;
-import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.OrderedStepDefineTwinGrid;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
-import com.jianglibo.vaadin.dashboard.unused.OrderedStepDefineRepository;
 import com.jianglibo.vaadin.dashboard.view.BaseEditView;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Field;
 
 
-@SpringView(name = SoftwareEditView.VIEW_NAME)
-public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>, JpaRepository<Software,Long>>{
+//@SpringView(name = StepRunEditView.VIEW_NAME)
+public class StepRunEditView  extends BaseEditView<StepRun, FormBase<StepRun>, JpaRepository<StepRun,Long>> {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SoftwareEditView.class);
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(StepRunEditView.class);
 	
 
-	public static final String VIEW_NAME = SoftwareListView.VIEW_NAME + "/edit";
+	public static final String VIEW_NAME = StepRunListView.VIEW_NAME + "/edit";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
-	
-	private final OrderedStepDefineRepository orderedStepDefineRepository;
 
+   
 	@Autowired
-	public SoftwareEditView(SoftwareRepository repository,OrderedStepDefineRepository orderedStepDefineRepository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
+	public StepRunEditView(StepRunRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
-		super(messageSource, Software.class, domains, fieldFactories, repository);
-		this.orderedStepDefineRepository = orderedStepDefineRepository;
+		super(messageSource, StepRun.class, domains, fieldFactories, repository);
 //		this.messageSource = messageSource;
 //		this.repository= repository;
 //		this.eventBus = new EventBus(this.getClass().getName());
-//		this.applicationContext = applicationContext;
 //		eventBus.register(this);
 //		setSizeFull();
 //		addStyleName("transactions");
@@ -59,9 +51,7 @@ public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>
 ////		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
 //		
 //		addComponent(header);
-//		
-////		form = (SoftwareForm) applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus, this);
-//		
+////		form = (StepRunForm) applicationContext.getBean(StepRunForm.class).afterInjection(eventBus, this);
 //		addComponent(form);
 //		Component ft = buildFooter();
 //		addComponent(ft);
@@ -69,12 +59,6 @@ public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>
 //		setExpandRatio(form, 1);
 	}
 	
-//	@Override
-//	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-//		return applicationContext.getBean(OrderedStepDefineTwinGrid.class).afterInjection(vtw, vffw);
-//	}
-//
-//	
 //    @SuppressWarnings("serial")
 //	private Component buildFooter() {
 //        HorizontalLayout footer = new HorizontalLayout();
@@ -107,51 +91,48 @@ public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>
 //	public void onBackBtnClicked(HistoryBackEvent hbe) {
 //		String bu = ifb.getPreviousView();
 //		if (Strings.isNullOrEmpty(bu)) {
-//			bu = SoftwareListView.VIEW_NAME;
+//			bu = StepRunListView.VIEW_NAME;
 //		}
 //		UI.getCurrent().getNavigator().navigateTo(bu);
 //	}
 
-//	@Override
-//	public void enter(ViewChangeEvent event) {
+	@Override
+	public void enter(ViewChangeEvent event) {
 //		LOGGER.info("parameter string is: {}", event.getParameters());
 //		ifb = new ItemViewFragmentBuilder(event);
 //		long bid = ifb.getBeanId();
 //		if (bid == 0) {
-//			bean = new Software();
-//			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, Software.class.getSimpleName() + ".newtitle"));
+//			bean = new StepRun();
+//			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, StepDefine.class.getSimpleName() + ".newtitle"));
 //		} else {
 //			bean = repository.findOne(bid);
-//			header.setLabelTxt(bean.getName());
+//			header.setLabelTxt(bean.getStepDefine().toString());
 //		}
 //        form.setItemDataSource(bean);
-//	}
+	}
 
 	@Override
-	protected Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		switch (vffw.getName()) {
-		case "filesToUpload":
-			return new FilesToUploadScalarGridField(getDomains(), String.class, getMessageSource(), vtw, vffw);
-		default:
-			break;
-		}
+	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	protected FormBase<Software> createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
-			JpaRepository<Software, Long> repository, HandMakeFieldsListener handMakeFieldsListener) {
-		return new SoftwareForm(getMessageSource(), getDomains(), fieldFactories, (SoftwareRepository) repository,handMakeFieldsListener);
+	protected FormBase<StepRun> createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
+			JpaRepository<StepRun, Long> repository, HandMakeFieldsListener handMakeFieldsListener) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	protected Software createNewBean() {
-		return new Software();
+	protected StepRun createNewBean() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	protected String getListViewName() {
-		return VIEW_NAME;
+		// TODO Auto-generated method stub
+		return null;
 	}
-
 }
