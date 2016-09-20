@@ -1,11 +1,13 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.google.gwt.thirdparty.guava.common.collect.Sets;
@@ -43,6 +45,9 @@ public class BoxGroup extends BaseEntity {
 			"name", "ip" }, leftColumns = { "name", "ip", "!remove" })
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 30)
 	private Set<Box> boxes = Sets.newHashSet();
+	
+	@OneToMany(mappedBy="boxGroup")
+	private List<ClusterHistory> histories;
 	
 	/**
 	 * If box has no dnsServer, It should be found here.
@@ -90,6 +95,16 @@ public class BoxGroup extends BaseEntity {
 
 	public void setConfigContent(String configContent) {
 		this.configContent = configContent;
+	}
+	
+
+	public List<ClusterHistory> getHistories() {
+		return histories;
+	}
+
+
+	public void setHistories(List<ClusterHistory> histories) {
+		this.histories = histories;
 	}
 
 

@@ -15,10 +15,9 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
-import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
-import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
+import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 
 /**
  * Beside code this runner will create 4 files total. One is code file, other
@@ -55,21 +54,18 @@ public class SshExecRunner implements BaseRunner {
 	private ObjectMapper xmlObjectMapper;
 
 	@Override
-	public void run(JschSession jsession, Box box, TaskDesc taskDesc) {
-		copyCodeToServerAndRun(jsession, box, taskDesc);
+	public void run(JschSession jsession, OneThreadTaskDesc taskDesc) {
+		copyCodeToServerAndRun(jsession, taskDesc);
 	}
 
-	private void copyCodeToServerAndRun(JschSession jsession, Box box, TaskDesc taskDesc) {
+	private void copyCodeToServerAndRun(JschSession jsession, OneThreadTaskDesc taskDesc) {
 		String uuid = UUID.randomUUID().toString();
-		BoxHistory bh = taskDesc.getHistory(box);
-
-		uplocadEnv(jsession, box, bh, taskDesc, uuid);
-		uploadCode(jsession, box, bh, taskDesc, uuid);
+		uplocadEnv(jsession, taskDesc, uuid);
+		uploadCode(jsession, taskDesc, uuid);
 	}
 
-	private void uplocadEnv(JschSession jsession, Box box,BoxHistory bh, TaskDesc taskDesc, String uuid) {
-		EvnForCodeExec env = new EvnForCodeExec(taskDesc.getBoxGroup(), box, taskDesc.getSoftware(),
-				applicationConfig.getRemoteFolder());
+	private void uplocadEnv(JschSession jsession, OneThreadTaskDesc taskDesc, String uuid) {
+		EvnForCodeExec env = new EvnForCodeExec(taskDesc, applicationConfig.getRemoteFolder());
 		String envstr = null;
 		try {
 			switch (taskDesc.getSoftware().getPreferredFormat()) {
@@ -84,13 +80,13 @@ public class SshExecRunner implements BaseRunner {
 				break;
 			default:
 				LOGGER.error("unsupported format: {}", taskDesc.getSoftware().getPreferredFormat());
-				bh.appendLog("unsupported format: " + taskDesc.getSoftware().getPreferredFormat()) ;
+				taskDesc.getBoxHistory().appendLog("unsupported format: " + taskDesc.getSoftware().getPreferredFormat()) ;
 				return;
 			}
 			String targetFile = applicationConfig.getRemoteFolder() + uuid + "_env";
-			putStream(bh, jsession, targetFile, envstr);
+			putStream(taskDesc.getBoxHistory(), jsession, targetFile, envstr);
 		} catch (Exception e) {
-			bh.appendLog(e.getMessage());
+			taskDesc.getBoxHistory().appendLog(e.getMessage());
 		}
 	}
 
@@ -115,9 +111,9 @@ public class SshExecRunner implements BaseRunner {
 		}
 	}
 
-	private void uploadCode(JschSession jsession, Box box,BoxHistory bh, TaskDesc taskDesc, String uuid) {
+	private void uploadCode(JschSession jsession, OneThreadTaskDesc taskDesc, String uuid) {
 		String targetFile = applicationConfig.getRemoteFolder() + uuid;
-		putStream(bh, jsession, targetFile, taskDesc.getSoftware().getCodeToExecute());
+		putStream(taskDesc.getBoxHistory(), jsession, targetFile, taskDesc.getSoftware().getCodeToExecute());
 	}
 
 }

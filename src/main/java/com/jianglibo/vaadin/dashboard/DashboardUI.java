@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.BeansException;
@@ -18,12 +19,16 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
+import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
 import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
+import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
+import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc.OneTaskFinishListener;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
@@ -49,6 +54,8 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -59,7 +66,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 @SpringUI(path = "/")
 @Push(PushMode.MANUAL)
-public final class DashboardUI extends UI implements ApplicationContextAware {
+public final class DashboardUI extends UI implements ApplicationContextAware, OneTaskFinishListener {
 	
 	private ApplicationContext applicationContext;
 	
@@ -82,6 +89,8 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
     private PersonRepository personRepository;
 
 	private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
+	
+	private final List<BoxHistory> boxHistories = Lists.newArrayList();
 
 	@Override
 	protected void init(final VaadinRequest request) {
@@ -159,9 +168,8 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
                         @Override
                         public void run() {
                             double y = Math.random();
-//                            series.add(
-//                                new DataSeriesItem(count++, y),
-//                                true, count > 10);
+                            Notification.show(count++ + ", item", Type.TRAY_NOTIFICATION);
+                            push();
                         }
                     });
                 }
@@ -225,7 +233,10 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 			window.close();
 		}
 	}
-
+	
+	public static List<BoxHistory> getBoxHistories() {
+		return ((DashboardUI) getCurrent()).boxHistories;
+	}
 
 	public static DashboardEventBus getDashboardEventbus() {
 		return ((DashboardUI) getCurrent()).dashboardEventbus;
@@ -248,7 +259,18 @@ public final class DashboardUI extends UI implements ApplicationContextAware {
 	        addComponent(content);
 	        setExpandRatio(content, 1.0f);
 	        new DashboardNavigator(viewProvider, content);
-//	        applicationContext.getBean(DashboardNavigatorWrapper.class).unwrap(content);
 	    }
+	}
+
+
+	@Override
+	public void OneTaskFinished(OneThreadTaskDesc ottd) {
+        access(new Runnable() {
+            @Override
+            public void run() {
+//                setContent(new Label("Done!"));
+            }
+        });
+		
 	}
 }

@@ -12,10 +12,9 @@ import org.springframework.stereotype.Component;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jcraft.jsch.ChannelSftp;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
-import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
-import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
+import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 
 /**
  * ApplicationConfig has a configurable remoteFolder property. Files upload to
@@ -33,7 +32,7 @@ public class SshUploadRunner implements BaseRunner {
 	private ApplicationConfig applicationConfig;
 
 	@Override
-	public void run(JschSession jsession, Box box, TaskDesc taskDesc) {
+	public void run(JschSession jsession,  OneThreadTaskDesc taskDesc) {
 
 		// confirm all files exists in local.
 		List<String> noneExistsFiles = Lists.newArrayList();
@@ -43,7 +42,7 @@ public class SshUploadRunner implements BaseRunner {
 				noneExistsFiles.add(sourceFile.toAbsolutePath().toString());
 			}
 		}
-		BoxHistory bh = taskDesc.getHistory(box);
+		BoxHistory bh = taskDesc.getBoxHistory();
 		if (noneExistsFiles.size() > 0) {
 			String log = noneExistsFiles.stream().reduce("", (result, l) -> result + l);
 			bh.appendLog(log);

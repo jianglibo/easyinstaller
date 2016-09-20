@@ -1,51 +1,42 @@
 package com.jianglibo.vaadin.dashboard.taskrunner;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
-import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 
 public class TaskDesc {
-
-	private final String id;
 
 	private Box box;
 
 	private final Software software;
 
 	private BoxGroup boxGroup;
+	
+	private final OneTaskFinishListener tfl;
 
-	private final Map<Long, BoxHistory> histories = Maps.newHashMap();
-
-	public TaskDesc(Box box, Software software) {
+	public TaskDesc(Box box, Software software, OneTaskFinishListener tfl) {
 		this.box = box;
+		this.tfl = tfl;
 		this.software = software;
-		this.id = UUID.randomUUID().toString();
 	}
 
-	public TaskDesc(BoxGroup boxGroup, Software software) {
+	public TaskDesc(BoxGroup boxGroup, Software software, OneTaskFinishListener tfl) {
 		this.boxGroup = boxGroup;
 		this.software = software;
-		this.id = UUID.randomUUID().toString();
+		this.tfl = tfl;
 	}
-
-	public synchronized void addHistory(BoxHistory history) {
-		histories.put(history.getBox().getId(), history);
-	}
-
-	public synchronized BoxHistory getHistory(Box box) {
-		if (!histories.containsKey(box.getId())) {
-			histories.put(box.getId(), new BoxHistory.BoxHistoryBuilder(software, box, "", true).build());
+	
+	public List<OneThreadTaskDesc> createOneThreadTaskDescs() {
+		if (isGroupTask()) {
+			return getBoxGroup().getBoxes().stream().map(b -> new OneThreadTaskDesc(this, b, getSoftware(), getTfl()))
+					.collect(Collectors.toList());
+		} else {
+			return Lists.newArrayList(new OneThreadTaskDesc(this, getBox(), getSoftware(), getTfl()));
 		}
-		return histories.get(box.getId());
-	}
-
-	public String getId() {
-		return id;
 	}
 
 	public boolean isGroupTask() {
@@ -72,7 +63,11 @@ public class TaskDesc {
 		return software;
 	}
 
-	public Map<Long, BoxHistory> getHistories() {
-		return histories;
+	public OneTaskFinishListener getTfl() {
+		return tfl;
+	}
+	
+	public static interface OneTaskFinishListener {
+		void OneTaskFinished(OneThreadTaskDesc ottd);
 	}
 }

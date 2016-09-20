@@ -7,6 +7,7 @@ import com.google.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 
 /**
  * This Object will be encoded to user preferred format and upload to target
@@ -22,11 +23,11 @@ public class EvnForCodeExec {
 	private final BoxGroupDescription boxGroup;
 	private final SoftwareDescription software;
 	
-	public EvnForCodeExec(BoxGroup boxGroup, Box box, Software software, String remoteFolder) {
+	public EvnForCodeExec(OneThreadTaskDesc oneThreadTaskDesc, String remoteFolder) {
 		this.remoteFolder = remoteFolder;
-		this.box = new BoxDescription(box);
-		this.boxGroup = new BoxGroupDescription(boxGroup);
-		this.software = new SoftwareDescription(software);
+		this.box = new BoxDescription(oneThreadTaskDesc.getBox());
+		this.boxGroup = new BoxGroupDescription(oneThreadTaskDesc.getTd().getBoxGroup());
+		this.software = new SoftwareDescription(oneThreadTaskDesc.getSoftware());
 	}
 
 	public String getRemoteFolder() {
