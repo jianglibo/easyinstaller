@@ -3,12 +3,10 @@ package com.jianglibo.vaadin.dashboard.view.stepdefine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
-import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.ui.Component;
 
-@MainMenu(menuOrder = 600)
 public class StepDefineViewMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;

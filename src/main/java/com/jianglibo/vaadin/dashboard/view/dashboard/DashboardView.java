@@ -2,6 +2,10 @@ package com.jianglibo.vaadin.dashboard.view.dashboard;
 
 import java.util.Iterator;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+
+import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.uicomponent.button.ButtonWillPopupWindow;
@@ -47,10 +51,12 @@ public final class DashboardView extends Panel implements View,
     
     private CssLayout dashboardPanels;
     
-    private final VerticalLayout root;
     
+    
+    private final VerticalLayout root;
 
-    public DashboardView() {
+    @Autowired
+    public DashboardView(Domains domains, MessageSource messageSource) {
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
         DashboardEventBus.register(this);
@@ -64,7 +70,7 @@ public final class DashboardView extends Panel implements View,
 
         root.addComponent(buildHeader());
 
-        TileContainer content = new TileContainer(/*new NotesTile(), new TopTenTile(),*/ new HtmlContentTile());
+        TileContainer content = new TileContainer(/*new NotesTile(), new TopTenTile(),*/ new HtmlContentTile(messageSource, "about").setupAndReturnSelf(), new BoxHistoryTile(domains, messageSource, "boxhistory").setupAndReturnSelf());
         
         content.AddTileMenuClickListener((panel, menuitem, b) -> {
         	toggleMaximized(panel, b);

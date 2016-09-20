@@ -15,7 +15,4 @@ public interface BoxHistoryRepository extends JpaRepository<BoxHistory, Long>,Bo
 	Page<BoxHistory> findByArchivedEquals(boolean trashed, Pageable pageable);
 
 	long countByArchivedEquals(boolean trashed);
-	
-	
-    
 }

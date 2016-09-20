@@ -7,6 +7,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
@@ -23,16 +24,21 @@ import com.vaadin.ui.themes.ValoTheme;
 public class BoxHistory extends BaseEntity {
 
 	@ManyToOne
+	@VaadinGridColumn
 	private Software software;
 	
 	@ManyToOne
+	@VaadinGridColumn
 	private Box box;
 	
 	@ManyToOne
 	private ClusterHistory clusterHistory;
 	
 	@VaadinTableColumn
+	@VaadinGridColumn
 	private boolean success;
+	
+	private boolean readed = false;
 	
 	@Lob
 	@Column(length = 131072)
@@ -45,7 +51,7 @@ public class BoxHistory extends BaseEntity {
 	
 	@Override
 	public String getDisplayName() {
-		return "";
+		return String.format("[%s, %s, %s]", box.getIp(), software.getName(), isSuccess());
 	}
 	
 	public Software getSoftware() {
@@ -82,18 +88,21 @@ public class BoxHistory extends BaseEntity {
 		this.success = success;
 	}
 
+	public boolean isReaded() {
+		return readed;
+	}
 
+	public void setReaded(boolean readed) {
+		this.readed = readed;
+	}
 
 	public String getLog() {
 		return log;
 	}
 
-
-
 	private void setLog(String log) {
 		this.log = log;
 	}
-
 
 	public static class BoxHistoryBuilder {
 		

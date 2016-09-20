@@ -7,10 +7,13 @@ import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.security.PersonVo;
 
 public class TaskDesc {
 
 	private Box box;
+	
+	private final PersonVo person;
 
 	private final Software software;
 
@@ -18,16 +21,18 @@ public class TaskDesc {
 	
 	private final OneTaskFinishListener tfl;
 
-	public TaskDesc(Box box, Software software, OneTaskFinishListener tfl) {
+	public TaskDesc(PersonVo person, Box box, Software software, OneTaskFinishListener tfl) {
 		this.box = box;
 		this.tfl = tfl;
 		this.software = software;
+		this.person = person;
 	}
 
-	public TaskDesc(BoxGroup boxGroup, Software software, OneTaskFinishListener tfl) {
+	public TaskDesc(PersonVo person, BoxGroup boxGroup, Software software, OneTaskFinishListener tfl) {
 		this.boxGroup = boxGroup;
 		this.software = software;
 		this.tfl = tfl;
+		this.person = person;
 	}
 	
 	public List<OneThreadTaskDesc> createOneThreadTaskDescs() {
@@ -67,6 +72,10 @@ public class TaskDesc {
 		return tfl;
 	}
 	
+	public PersonVo getPerson() {
+		return person;
+	}
+
 	public static interface OneTaskFinishListener {
 		void OneTaskFinished(OneThreadTaskDesc ottd);
 	}

@@ -46,6 +46,7 @@ public class LocalizedSystemMessageProvider implements SystemMessagesProvider {
 //		VaadinRequest vr = VaadinService.getCurrentRequest();
 //		Locale locale = LocaleSelector.getLocaleSupported(RequestContextUtils.getLocale((SpringVaadinServletRequest)vr));
 //		VaadinSession.getCurrent().getLocale();
+		
 		Locale locale;
 		if (systemMessagesInfo.getRequest() == null) {
 			locale = Locale.US;

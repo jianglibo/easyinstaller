@@ -1,5 +1,8 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.tile;
 
+import org.springframework.context.MessageSource;
+
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
@@ -7,27 +10,28 @@ import com.vaadin.ui.Label;
 
 @SuppressWarnings("serial")
 public class HtmlContentTile extends TileBase {
-
-	@Override
-	public void setTileStyles() {
-		// TODO Auto-generated method stub
-		
-		
+	
+	public HtmlContentTile(MessageSource messageSource, String messageId) {
+		super(messageSource, messageId);
 	}
 
 	@Override
-	protected Component getWrapedContent() {
+	public void setTileStyles() {
+	}
+
+	@Override
+	protected Component getWrapedContent(MessageSource messageSource, String messageId) {
 		Label lb = new Label();
 		lb.setSizeFull();
 		lb.setContentMode(ContentMode.HTML);
-		lb.setValue("<h3><a href=\"https://github.com\" target=\"_blank\">github</a></h3><br/><ul><li>aaaaaaaa</li><li>bbbbbbbbbb</li></ul>");
+		lb.setValue(MsgUtil.getMsgFallbackToSelf(messageSource, "tiles.content.", messageId));
 		StyleUtil.setMarginTen(lb);
 		return lb;
 	}
 
 	@Override
-	protected String getTileTitle() {
-		return "Html Content";
+	protected String getTileTitle(MessageSource messageSource, String messageId) {
+		return MsgUtil.getMsgFallbackToSelf(messageSource, "tiles.title.", messageId);
 	}
 
 }

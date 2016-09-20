@@ -10,17 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.web.servlet.LocaleResolver;
 import org.vaadin.maddon.FilterableListContainer;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.wrapper.Wrapper;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
@@ -37,7 +33,6 @@ import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinServletResponse;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -51,17 +46,14 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.ValoTheme;
 
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class LocaleSelector implements Wrapper<Button> {
+public class LocaleSelector {
 
-	@Autowired
-	private MessageSource messageSource;
+	
+	private final MessageSource messageSource;
 
 	private static final Set<String> supportedLanguages = Sets.newHashSet("en", "zh");
 
-	@Autowired
-	private LocaleResolver localeResolver;
+	private final LocaleResolver localeResolver;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocaleSelector.class);
 
@@ -76,9 +68,13 @@ public class LocaleSelector implements Wrapper<Button> {
 	private Button btn;
 
 	private Table table;
+	
+	public LocaleSelector(MessageSource messageSource, LocaleResolver localeResolver){
+		this.messageSource = messageSource;
+		this.localeResolver = localeResolver;
+	}
 
-	@Override
-	public Button unwrap() {
+	public Button getButton() {
 		btn = new Button(messageSource.getMessage("lanselector.btn", null, UI.getCurrent().getLocale()));
 		btn.setStyleName(Reindeer.BUTTON_LINK);
 		btn.setIcon(FontAwesome.LANGUAGE);

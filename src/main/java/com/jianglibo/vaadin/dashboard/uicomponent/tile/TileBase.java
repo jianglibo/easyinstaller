@@ -2,7 +2,11 @@ package com.jianglibo.vaadin.dashboard.uicomponent.tile;
 
 import java.util.List;
 
+import org.apache.catalina.valves.ExtendedAccessLogValve;
+import org.springframework.context.MessageSource;
+
 import com.google.common.collect.Lists;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
@@ -22,9 +26,18 @@ public abstract class TileBase extends CssLayout {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private final MessageSource messageSource;
+	
+	private final String messageId;
+	
 	private List<TileMenuClickListener> tmcls = Lists.newArrayList();
 
-	public TileBase() {
+	public TileBase(MessageSource messageSource, String messageId) {
+		this.messageSource = messageSource;
+		this.messageId = messageId;
+	}
+	
+	public TileBase setupAndReturnSelf() {
 		setWidth("100%");
 		addStyleName("dashboard-panel-slot");
 		setTileStyles();
@@ -36,9 +49,9 @@ public abstract class TileBase extends CssLayout {
 		toolbar.addStyleName("dashboard-panel-toolbar");
 		toolbar.setWidth("100%");
 		
-		Component content = getWrapedContent();
+		Component content = getWrapedContent(messageSource, messageId);
 
-		Label caption = new Label(getTileTitle());
+		Label caption = new Label(getTileTitle(messageSource, messageId));
 		caption.addStyleName(ValoTheme.LABEL_H4);
 		caption.addStyleName(ValoTheme.LABEL_COLORED);
 		caption.addStyleName(ValoTheme.LABEL_NO_MARGIN);
@@ -82,9 +95,16 @@ public abstract class TileBase extends CssLayout {
 
 		card.addComponents(toolbar, content);
 		addComponent(card);
+		return this;
 	}
 	
-	protected abstract String getTileTitle();
+	public MessageSource getMessageSource() {
+		return messageSource;
+	}
+
+	protected String getTileTitle(MessageSource messageSource, String messageId) {
+		return MsgUtil.getMsgFallbackToSelf(messageSource, "tiles.title.", messageId);
+	};
 
 	public abstract void setTileStyles();
 	
@@ -92,7 +112,7 @@ public abstract class TileBase extends CssLayout {
 		this.tmcls.add(tmcl);
 	}
 	
-	protected abstract Component getWrapedContent();
+	protected abstract Component getWrapedContent(MessageSource messageSource, String messageId);
 
 	public static interface TileMenuClickListener {
 		void menuClicked(TileBase tb, MenuItem mi, boolean b);
