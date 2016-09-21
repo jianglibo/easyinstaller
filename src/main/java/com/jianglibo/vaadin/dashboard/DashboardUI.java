@@ -67,41 +67,41 @@ import com.vaadin.ui.themes.ValoTheme;
 @SpringUI(path = "/")
 @Push(PushMode.MANUAL)
 public final class DashboardUI extends UI implements ApplicationContextAware, OneTaskFinishListener {
-	
+
 	private ApplicationContext applicationContext;
-	
+
 	@Autowired
-    private SpringViewProvider viewProvider;
-	
+	private SpringViewProvider viewProvider;
+
 	@Autowired
 	private MessageSource messageSource;
-	
+
 	@Autowired
 	private LocaleResolver localeResolver;
-	
-    @Autowired
-    private AuthenticationManager am;
-    
-    @Autowired
-    private ApplicationConfig applicationConfig;
-    
-    @Autowired
-    private PersonRepository personRepository;
+
+	@Autowired
+	private AuthenticationManager am;
+
+	@Autowired
+	private ApplicationConfig applicationConfig;
+
+	@Autowired
+	private PersonRepository personRepository;
 
 	private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
-	
+
 	private final List<BoxHistory> boxHistories = Lists.newArrayList();
 
 	@Override
 	protected void init(final VaadinRequest request) {
 		VaadinServletRequest vsr = (VaadinServletRequest) request;
 		Locale lo = LocaleSelector.getLocaleSupported(RequestContextUtils.getLocale(vsr.getHttpServletRequest()));
-		
+
 		setLocale(lo);
 		DashboardEventBus.register(this);
 		Responsive.makeResponsive(this);
 		addStyleName(ValoTheme.UI_WITH_MENU);
-		
+
 		// Some views need to be aware of browser resize events so a
 		// BrowserResizeEvent gets fired to the event bus on every occasion.
 		Page.getCurrent().addBrowserWindowResizeListener(new BrowserWindowResizeListener() {
@@ -110,113 +110,134 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 				DashboardEventBus.post(new BrowserResizeEvent());
 			}
 		});
-		
+
 		boolean showMainView = false;
-		
+
 		if (!M3958SecurityUtil.isLogined()) {
 			if (applicationConfig.isAutoLogin()) {
-				M3958SecurityUtil.doLogin(personRepository.findByEmail(AppInitializer.firstEmail));
-				showMainView = true;
+				// UI.getCurrent().getPage().setLocation("/autologin");
+				// return;
+				UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("root",
+						"root");
+				WebAuthenticationDetails wd = new WebAuthenticationDetailsSource()
+						.buildDetails(vsr.getHttpServletRequest());
+				authRequest.setDetails(wd);
+				Authentication an = am.authenticate(authRequest);
+				SecurityContextHolder.getContext().setAuthentication(an);
+				// M3958SecurityUtil.doLogin(personRepository.findByEmail(AppInitializer.firstEmail));
+				// after login, spring security change the sessionid, so must
+				// reload it.
+				UI.getCurrent().getPage().reload();
+				return;
+				// showMainView = true;
 			} else {
 				LoginView lv = new LoginView(messageSource, localeResolver, (username, password) -> {
-	                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-	                WebAuthenticationDetails wd = new WebAuthenticationDetailsSource().buildDetails(vsr.getHttpServletRequest());
-	                authRequest.setDetails(wd);
-	                Authentication an = am.authenticate(authRequest);
-	                SecurityContextHolder.getContext().setAuthentication(an);
-	    			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME : getNavigator().getState();
-	    			getNavigator().navigateTo(v);
+					UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username,
+							password);
+					WebAuthenticationDetails wd = new WebAuthenticationDetailsSource()
+							.buildDetails(vsr.getHttpServletRequest());
+					authRequest.setDetails(wd);
+					Authentication an = am.authenticate(authRequest);
+					SecurityContextHolder.getContext().setAuthentication(an);
+					String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME
+							: getNavigator().getState();
+					getNavigator().navigateTo(v);
 				});
 				setContent(lv);
 				addStyleName("loginview");
 			}
 		} else {
+			VaadinSession.getCurrent().setAttribute(Authentication.class,
+					M3958SecurityUtil.getLoginAuthentication());
 			showMainView = true;
 		}
-		if (showMainView){
+		if (showMainView) {
 			MainView mv = new MainView(viewProvider);
 			setContent(mv);
 			removeStyleName("loginview");
-			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME : getNavigator().getState();
+			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME
+					: getNavigator().getState();
 			getNavigator().navigateTo(v);
 		}
-		
+
 		new FeederThread().start();
 	}
-	
+
 	public void notifyProgress(TaskDesc taskDesc) {
 		access(new Runnable() {
 			@Override
 			public void run() {
-				
+
 			}
 		});
 	}
-	
-	
+
 	class FeederThread extends Thread {
-        int count = 0;
+		int count = 0;
 
-        @Override
-        public void run() {
-            try {
-                // Update the data for a while
-                while (count < 2) {
-                    Thread.sleep(1000);
+		@Override
+		public void run() {
+			try {
+				// Update the data for a while
+				while (count < 2) {
+					Thread.sleep(1000);
 
-                    access(new Runnable() {
-                        @Override
-                        public void run() {
-                            double y = Math.random();
-                            Notification.show(count++ + ", item", Type.TRAY_NOTIFICATION);
-                            push();
-                        }
-                    });
-                }
+					access(new Runnable() {
+						@Override
+						public void run() {
+							double y = Math.random();
+							Notification.show(count++ + ", item", Type.TRAY_NOTIFICATION);
+							push();
+						}
+					});
+				}
 
-                // Inform that we have stopped running
-                access(new Runnable() {
-                    @Override
-                    public void run() {
-//                        setContent(new Label("Done!"));
-                    }
-                });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+				// Inform that we have stopped running
+				access(new Runnable() {
+					@Override
+					public void run() {
+						// setContent(new Label("Done!"));
+					}
+				});
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
+	// /**
+	// *
+	// * do nothing here.
+	// *
+	// */
+	// private void updateContent(boolean loginFailed, VaadinRequest request) {
+	// User user = (User)
+	// VaadinSession.getCurrent().setAttribute(User.class.getName(), new
+	// User());
+	//
+	// if (user != null && "admin".equals(user.getRole())) {
+	// MainView mv = new MainView(viewProvider);
+	// setContent(mv);
+	// removeStyleName("loginview");
+	// String v = Strings.isNullOrEmpty(getNavigator().getState()) ?
+	// DashboardView.VIEW_NAME : getNavigator().getState();
+	// getNavigator().navigateTo(v);
+	// } else {
+	// LoginView lv = new LoginView(messageSource, localeResolver);
+	// lv.setup(loginFailed, noticeHasShown);
+	// setContent(lv);
+	// noticeHasShown++;
+	// addStyleName("loginview");
+	// }
+	// }
 
-//	/**
-//	 * 
-//	 * do nothing here.
-//	 * 
-//	 */
-//	private void updateContent(boolean loginFailed, VaadinRequest request) {
-//		User user = (User) VaadinSession.getCurrent().setAttribute(User.class.getName(), new User());
-//
-//		if (user != null && "admin".equals(user.getRole())) {
-//			MainView mv = new MainView(viewProvider);
-//			setContent(mv);
-//			removeStyleName("loginview");
-//			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME : getNavigator().getState();
-//			getNavigator().navigateTo(v);
-//		} else {
-//			LoginView lv = new LoginView(messageSource, localeResolver);
-//			lv.setup(loginFailed, noticeHasShown);
-//			setContent(lv);
-//			noticeHasShown++;
-//			addStyleName("loginview");
-//		}
-//	}
-
-//	@Subscribe
-//	public void userLoginRequested(final UserLoginRequestedEvent event) {
-//		User user = getDataProvider().authenticate(event.getUserName(), event.getPassword());
-//		VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
-//		updateContent(true);
-//	}
+	// @Subscribe
+	// public void userLoginRequested(final UserLoginRequestedEvent event) {
+	// User user = getDataProvider().authenticate(event.getUserName(),
+	// event.getPassword());
+	// VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
+	// updateContent(true);
+	// }
 
 	@Subscribe
 	public void userLoggedOut(final UserLoggedOutEvent event) {
@@ -233,7 +254,7 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 			window.close();
 		}
 	}
-	
+
 	public static List<BoxHistory> getBoxHistories() {
 		return ((DashboardUI) getCurrent()).boxHistories;
 	}
@@ -246,31 +267,31 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
-	
-	public class MainView extends HorizontalLayout {
-	    public MainView(SpringViewProvider viewProvider) {
-	        setSizeFull();
-	        addStyleName("mainview");
-	        // MainMenuItems must inject this way.
-	        addComponent(new DashboardMenu(messageSource, localeResolver, applicationContext.getBean(MainMenuItems.class)));
-	        ComponentContainer content = new CssLayout();
-	        content.addStyleName("view-content");
-	        content.setSizeFull();
-	        addComponent(content);
-	        setExpandRatio(content, 1.0f);
-	        new DashboardNavigator(viewProvider, content);
-	    }
-	}
 
+	public class MainView extends HorizontalLayout {
+		public MainView(SpringViewProvider viewProvider) {
+			setSizeFull();
+			addStyleName("mainview");
+			// MainMenuItems must inject this way.
+			addComponent(
+					new DashboardMenu(messageSource, localeResolver, applicationContext.getBean(MainMenuItems.class)));
+			ComponentContainer content = new CssLayout();
+			content.addStyleName("view-content");
+			content.setSizeFull();
+			addComponent(content);
+			setExpandRatio(content, 1.0f);
+			new DashboardNavigator(viewProvider, content);
+		}
+	}
 
 	@Override
 	public void OneTaskFinished(OneThreadTaskDesc ottd) {
-        access(new Runnable() {
-            @Override
-            public void run() {
-//                setContent(new Label("Done!"));
-            }
-        });
-		
+		access(new Runnable() {
+			@Override
+			public void run() {
+				// setContent(new Label("Done!"));
+			}
+		});
+
 	}
 }

@@ -60,7 +60,7 @@ public class PersonVo extends User {
 			this.mobile = person.getMobile();
 			this.email = person.getEmail();
 			this.name = person.getName();
-			this.password = "";
+			this.password = person.getPassword();
 			this.id = person.getId();
 			this.avatar = person.getAvatar();
 			this.gender = person.getGender();
@@ -70,7 +70,7 @@ public class PersonVo extends User {
 			this.accountNonExpired = person.isAccountNonExpired();
 			this.credentialsNonExpired = person.isCredentialsNonExpired();
 			this.accountNonLocked = person.isAccountNonLocked();
-			authorities = person.getRoles();
+			this.authorities = person.getRoles();
 		}
 		
 		public PersonVo build() {

@@ -69,7 +69,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-hateoas")
     compile("org.springframework.boot:spring-boot-devtools")
     
-	compile("com.vaadin:vaadin-spring-boot:1.0.0")
+	compile("com.vaadin:vaadin-spring-boot:1.0.2")
 	compile("de.fatalix:codmirror-addon:1.2.2")
 
 	// http://mvnrepository.com/artifact/com.vaadin/vaadin-themes

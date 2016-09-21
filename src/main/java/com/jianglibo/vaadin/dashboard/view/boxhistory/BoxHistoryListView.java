@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
+import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Kkv;
@@ -41,11 +42,14 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 	public static final String VIEW_NAME = "boxhistory";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.HISTORY;
+	
+	private BoxRepository boxRepository;
 
 	@Autowired
 	public BoxHistoryListView(BoxRepository repository, Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, BoxHistory.class, BoxHistoryGrid.class);
+		this.boxRepository = repository;
 		delayCreateContent();
 	}
 
@@ -100,8 +104,16 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 		DashboardEventBus.register(getUel());
 		setLvfb(new ListViewFragmentBuilder(event));
 		// start alter state.
-		((TopBlock) getTopBlock()).alterState(getLvfb(),
-				MsgUtil.getListViewTitle(getMessageSource(), getClazz().getSimpleName()));
+		long boxid = getLvfb().getLong("boxid");
+		String title = MsgUtil.getListViewTitle(getMessageSource(), getClazz().getSimpleName());
+		if ( boxid > 0) {
+			Box box = boxRepository.findOne(boxid);
+			title = box.getDisplayName() + "'s " + title;
+			
+		}
+		((TopBlock) getTopBlock()).getTitle().setCaption(title);
+//		alterState(getLvfb(),
+//				MsgUtil.getListViewTitle(getMessageSource(), getClazz().getSimpleName()));
 		((MiddleBlock) getMiddleBlock()).alterState(getLvfb());
 		((BoxHistoryContainer)(getGrid().getOriginDataSource())).whenUriFragmentChange(getLvfb());
 	}

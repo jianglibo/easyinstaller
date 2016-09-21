@@ -47,9 +47,9 @@ public class PersonManager implements UserDetailsManager {
         if (emailOrMobile.indexOf('@') != -1) {
             person = personRepo.findByEmail(emailOrMobile);
         } else if(mobilePtn.matcher(emailOrMobile).matches()) {
-        	person = personRepo.findByName(emailOrMobile);
+        	person = personRepo.findByMobile(emailOrMobile);
         } else{
-            person = personRepo.findByMobile(emailOrMobile);
+            person = personRepo.findByName(emailOrMobile);
         }
         if (person == null) {
             throw new UsernameNotFoundException(emailOrMobile);

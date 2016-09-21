@@ -36,14 +36,15 @@ public class BoxEditView  extends BaseEditView<Box, FormBase<Box>, BoxRepository
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 	
-	@Autowired
-	private PersonRepository personRepository;
+	
+	private final PersonRepository personRepository;
 
     
 	@Autowired
-	public BoxEditView(BoxRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
+	public BoxEditView(PersonRepository personRepository, BoxRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
 		super(messageSource,Box.class, domains, fieldFactories, repository);
+		this.personRepository = personRepository;
 		delayCreateContent();
 	}
 

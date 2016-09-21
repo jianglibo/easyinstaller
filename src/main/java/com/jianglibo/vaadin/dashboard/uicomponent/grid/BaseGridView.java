@@ -237,6 +237,27 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 
 			tools.addComponent(backBtn);
 		}
+		
+		
+		public Label getTitle() {
+			return title;
+		}
+
+
+		public void setTitle(Label title) {
+			this.title = title;
+		}
+
+
+		public Button getBackBtn() {
+			return backBtn;
+		}
+
+
+		public void setBackBtn(Button backBtn) {
+			this.backBtn = backBtn;
+		}
+
 
 		public void alterState(ListViewFragmentBuilder lvfb, String title) {
 			this.title.setValue(title);
