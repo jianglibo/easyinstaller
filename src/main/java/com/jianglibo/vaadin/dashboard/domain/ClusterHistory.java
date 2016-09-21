@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
@@ -30,6 +31,7 @@ public class ClusterHistory extends BaseEntity {
 	
 	
 	@ManyToOne
+	@NotNull
 	private Person runner;
 
 	public BoxGroup getBoxGroup() {

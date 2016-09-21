@@ -42,6 +42,7 @@ public class SoftwareListView extends BaseListView<Software, SoftwareTable, Soft
 	public SoftwareListView(SoftwareRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains,repository, Software.class, SoftwareTable.class);
+		delayCreateContent();
 	}
 
 	@Override

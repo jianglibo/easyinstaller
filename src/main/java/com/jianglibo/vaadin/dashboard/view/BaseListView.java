@@ -92,7 +92,9 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 		this.domains = domains;
 		this.applicationContext = applicationContext;
 		this.clazz = clazz;
-		
+	}
+	
+	public void delayCreateContent() {
 		setSizeFull();
 		addStyleName("transactions");
 
@@ -169,8 +171,6 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 	}
 
 	protected abstract void onDynButtonClicked(ButtonDescription btnDsc);
-
-
 
 	public abstract T createTable();
 	
@@ -331,14 +331,6 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 		public Button getBackBtn() {
 			return backBtn;
 		}
-
-//		public void addValueChangeListener(FilterValueChangeListener fvcl) {
-//			this.filterForm.addValueChangeListener(fvcl);
-//		}
-
-//		public void addClickListener(ClickListener cl) {
-//			this.backBtn.addClickListener(cl);
-//		}
 	}
 
 	protected class MiddleBlock extends HorizontalLayout {
@@ -417,10 +409,6 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 		public void alterState(ListViewFragmentBuilder lvfb) {
 			table.getContainer().whenUriFragmentChange(lvfb);
 		}
-
-//		public void addTableValueChangeListener(ValueChangeListener vcl) {
-//			this.table.addValueChangeListener(vcl);
-//		}
 
 		public T getTable() {
 			return table;

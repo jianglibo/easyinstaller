@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.install;
+package com.jianglibo.vaadin.dashboard.unused;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,15 +20,12 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
+import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.PropertyIdAndField;
 import com.jianglibo.vaadin.dashboard.uicomponent.gridfield.StepRunGridField;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
-import com.jianglibo.vaadin.dashboard.unused.Install;
-import com.jianglibo.vaadin.dashboard.unused.InstallRepository;
-import com.jianglibo.vaadin.dashboard.unused.StepRun;
-import com.jianglibo.vaadin.dashboard.unused.StepRunRepository;
 import com.jianglibo.vaadin.dashboard.util.ItemViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
@@ -73,12 +70,16 @@ public class InstallEditView  extends BaseEditView<Install, FormBase<Install>, J
     
     private final StepRunRepository stepRunRepository;
     
+    private final PersonRepository personRepository;
+    
 	@SuppressWarnings("serial")
 	@Autowired
-	public InstallEditView(InstallRepository repository,StepRunRepository stepRunRepository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
+	public InstallEditView(PersonRepository personRepository, InstallRepository repository,StepRunRepository stepRunRepository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
 		super(messageSource,Install.class, domains, fieldFactories, repository);
 		this.stepRunRepository = stepRunRepository;
+		this.personRepository = personRepository;
+		delayCreateContent();
 //		this.messageSource = messageSource;
 //		this.applicationContext = applicationContext;
 //		this.repository= repository;
@@ -176,7 +177,7 @@ public class InstallEditView  extends BaseEditView<Install, FormBase<Install>, J
 	@Override
 	protected FormBase<Install> createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
 			JpaRepository<Install, Long> repository,HandMakeFieldsListener handMakeFieldsListener) {
-		return new InstallForm(getMessageSource(), getDomains(), fieldFactories, (InstallRepository) repository, stepRunRepository, handMakeFieldsListener);
+		return new InstallForm(personRepository, getMessageSource(), getDomains(), fieldFactories, (InstallRepository) repository, stepRunRepository, handMakeFieldsListener);
 	}
 
 	@Override

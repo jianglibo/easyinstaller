@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.install;
+package com.jianglibo.vaadin.dashboard.unused;
 
 import java.util.Collection;
 
@@ -17,8 +17,6 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
-import com.jianglibo.vaadin.dashboard.unused.Install;
-import com.jianglibo.vaadin.dashboard.unused.InstallRepository;
 import com.jianglibo.vaadin.dashboard.view.BaseListView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;

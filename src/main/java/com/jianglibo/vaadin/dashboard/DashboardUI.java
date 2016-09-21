@@ -161,7 +161,7 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
         public void run() {
             try {
                 // Update the data for a while
-                while (count < 100) {
+                while (count < 2) {
                     Thread.sleep(1000);
 
                     access(new Runnable() {

@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
+import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Kkv;
 import com.jianglibo.vaadin.dashboard.domain.Person;
@@ -22,7 +23,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 
 @SpringView(name = PersonListView.VIEW_NAME)
-public class PersonListView extends BaseGridView<Person, PersonGrid> {
+public class PersonListView extends BaseGridView<Person, PersonGrid, FreeContainer<Person>> {
 
 	/**
 	 * 
@@ -40,6 +41,7 @@ public class PersonListView extends BaseGridView<Person, PersonGrid> {
 	public PersonListView(PersonRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, Person.class, PersonGrid.class);
+		delayCreateContent();
 		new NotificationBuilder(messageSource, "personlist").setDelayMsec(20000).buildAndShow();
 	}
 

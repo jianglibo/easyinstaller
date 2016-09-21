@@ -11,6 +11,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
@@ -37,11 +38,15 @@ public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 	
+	private final PersonRepository personRepository;
+	
 
 	@Autowired
-	public SoftwareEditView(SoftwareRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
+	public SoftwareEditView(PersonRepository personRepository, SoftwareRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
 		super(messageSource, Software.class, domains, fieldFactories, repository);
+		this.personRepository = personRepository;
+		delayCreateContent();
 //		this.messageSource = messageSource;
 //		this.repository= repository;
 //		this.eventBus = new EventBus(this.getClass().getName());
@@ -137,7 +142,7 @@ public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>
 	@Override
 	protected FormBase<Software> createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
 			JpaRepository<Software, Long> repository, HandMakeFieldsListener handMakeFieldsListener) {
-		return new SoftwareForm(getMessageSource(), getDomains(), fieldFactories, (SoftwareRepository) repository,handMakeFieldsListener);
+		return new SoftwareForm(personRepository, getMessageSource(), getDomains(), fieldFactories, (SoftwareRepository) repository,handMakeFieldsListener);
 	}
 
 	@Override

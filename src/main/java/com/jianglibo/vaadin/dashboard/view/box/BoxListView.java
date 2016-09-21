@@ -18,7 +18,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.view.BaseListView;
-import com.jianglibo.vaadin.dashboard.view.install.InstallListView;
+import com.jianglibo.vaadin.dashboard.view.boxhistory.BoxHistoryListView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
@@ -34,24 +34,24 @@ public class BoxListView extends BaseListView<Box, BoxTable, BoxRepository> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BoxListView.class);
 
 	public static final String VIEW_NAME = "box";
-	
+
 	@Autowired
-	public BoxListView(BoxRepository repository,Domains domains, MessageSource messageSource,
+	public BoxListView(BoxRepository repository, Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		super(applicationContext, messageSource, domains,repository, Box.class, BoxTable.class);
+		super(applicationContext, messageSource, domains, repository, Box.class, BoxTable.class);
+		delayCreateContent();
 	}
 
-	
 	public void whenTotalPageChange(PageMetaEvent tpe) {
-		getTable().setColumnFooter("createdAt", String.valueOf(tpe.getTotalRecord()));	
+		getTable().setColumnFooter("createdAt", String.valueOf(tpe.getTotalRecord()));
 	}
-	
+
 	@Override
 	public void onDynButtonClicked(ButtonDescription btnDesc) {
-		Collection<Box> selected;
+		Collection<Box> selected = (Collection<Box>) getTable().getValue();
 		switch (btnDesc.getItemId()) {
 		case CommonMenuItemIds.DELETE:
-			selected = (Collection<Box>) getTable().getValue();
+
 			selected.forEach(b -> {
 				if (b.isArchived()) {
 					getRepository().delete(b);
@@ -60,21 +60,21 @@ public class BoxListView extends BaseListView<Box, BoxTable, BoxRepository> {
 					getRepository().save(b);
 				}
 			});
-			((BoxContainer)getTable().getContainerDataSource()).refresh();
+			((BoxContainer) getTable().getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.REFRESH:
-			((BoxContainer)getTable().getContainerDataSource()).refresh();
+			((BoxContainer) getTable().getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
-			selected = (Collection<Box>) getTable().getValue();
-			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
+			UI.getCurrent().getNavigator().navigateTo(
+					VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
 			break;
-		case "installedSoftware":
-			selected = (Collection<Box>) getTable().getValue();
-			UI.getCurrent().getNavigator().navigateTo(InstallListView.VIEW_NAME + "/?boxid=" + selected.iterator().next().getId() + "&pv=" + getLvfb().toNavigateString());
+		case "boxHistories":
+			UI.getCurrent().getNavigator().navigateTo(BoxHistoryListView.VIEW_NAME + "/?boxid="
+					+ selected.iterator().next().getId() + "&pv=" + getLvfb().toNavigateString());
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
@@ -83,22 +83,24 @@ public class BoxListView extends BaseListView<Box, BoxTable, BoxRepository> {
 
 	@Override
 	public ButtonGroup[] getButtonGroups() {
-		return new ButtonGroup[]{ //
+		return new ButtonGroup[] { //
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS)), //
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
-				new ButtonGroup(new ButtonDescription("installedSoftware", null, ButtonEnableType.ONE))};
+						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)), //
+				new ButtonGroup(
+						new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS)), //
+				new ButtonGroup(
+						new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)), //
+				new ButtonGroup(new ButtonDescription("boxHistories", null, ButtonEnableType.ONE)) };
 	}
-
+	
 	public void notifySort(Sort sort) {
-		
+
 	}
 
 	@Override
 	public BoxTable createTable() {
 		BoxContainer bc = new BoxContainer(getRepository(), getDomains());
-		return new BoxTable(getMessageSource(), getDomains(),bc, getRepository());
+		return new BoxTable(getMessageSource(), getDomains(), bc, getRepository());
 	}
 
 	@Override

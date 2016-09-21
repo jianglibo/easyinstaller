@@ -16,19 +16,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.data.ManualPagable;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.util.SortUtil;
+import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.vaadin.data.Buffered;
 import com.vaadin.data.Container;
-import com.vaadin.data.ContainerHelpers;
 import com.vaadin.data.Container.Indexed;
 import com.vaadin.data.Container.ItemSetChangeNotifier;
 import com.vaadin.data.Container.PropertySetChangeNotifier;
 import com.vaadin.data.Container.Sortable;
+import com.vaadin.data.ContainerHelpers;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator.InvalidValueException;
@@ -68,7 +66,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	private boolean enableSort = false;
 
-	private Class<T> clazz;
+	private final Class<T> clazz;
 
 	private String simpleClassName;
 
@@ -78,9 +76,18 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	private Filter filter;
 
-	private Domains domains;
+	private final Domains domains;
 	
 	private final List<?> sortableContainerPropertyIds;
+	
+	private ListViewFragmentBuilder lvfb;
+	/**
+	 * The change is from url change.
+	 * @param lvfb
+	 */
+	public void whenUriFragmentChange(ListViewFragmentBuilder lvfb) {
+		this.lvfb = lvfb;
+	}
 
 	public FreeContainer(Domains domains, Class<T> clazz, int perPage, List<?> sortableContainerPropertyIds) {
 		this.domains = domains;
@@ -91,6 +98,8 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		this.sort = this.defaultSort;
 		this.perPage = perPage;
 	}
+	
+	
 
 	public List<ItemSetChangeListener> getItemSetChangeListeners() {
 		return itemSetChangeListeners;
@@ -152,49 +161,33 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		return simpleClassName;
 	}
 
-
-
 	public void setSimpleClassName(String simpleClassName) {
 		this.simpleClassName = simpleClassName;
 	}
-
-
 
 	public Sort getDefaultSort() {
 		return defaultSort;
 	}
 
-
-
 	public void setDefaultSort(Sort defaultSort) {
 		this.defaultSort = defaultSort;
 	}
-
-
 
 	public List<T> getCurrentWindow() {
 		return currentWindow;
 	}
 
-
-
 	public void setCurrentWindow(List<T> currentWindow) {
 		this.currentWindow = currentWindow;
 	}
-
-
 
 	public Filter getFilter() {
 		return filter;
 	}
 
-
-
 	public void setFilter(Filter filter) {
 		this.filter = filter;
 	}
-
-
 
 	/**
 	 * Can I believe itemId always in currentWindow? If so, the block of code
@@ -551,6 +544,18 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 			return currentWindow.get(currentWindow.size() - 1);
 		}
 		return null;
+	}
+	
+	public Class<T> getClazz() {
+		return clazz;
+	}
+
+	public Domains getDomains() {
+		return domains;
+	}
+
+	public ListViewFragmentBuilder getLvfb() {
+		return lvfb;
 	}
 
 	// Code bellow Copy and paste from @ListContainer

@@ -10,17 +10,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
+import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 
 @SpringView(name = BoxGroupListView.VIEW_NAME)
-public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid> {
+public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeContainer<BoxGroup>> {
 
 	/**
 	 * 
@@ -36,6 +36,7 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid> {
 	public BoxGroupListView(BoxRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, BoxGroup.class, BoxGroupGrid.class);
+		delayCreateContent();
 	}
 
 	

@@ -113,7 +113,7 @@ public class StepDefineEditView  extends BaseEditView<StepDefine, FormBase<StepD
 	@Override
 	protected FormBase<StepDefine> createForm(MessageSource messageSource, Domains domains,
 			FieldFactories fieldFactories, JpaRepository<StepDefine, Long> repository, HandMakeFieldsListener handMakeFieldsListener) {
-		return new StepDefineForm(getMessageSource(), getDomains(), fieldFactories, (StepDefineRepository) repository,handMakeFieldsListener);
+		return new StepDefineForm(null, getMessageSource(), getDomains(), fieldFactories, (StepDefineRepository) repository,handMakeFieldsListener);
 	}
 
 	@Override

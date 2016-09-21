@@ -23,18 +23,37 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
-public abstract class BaseGrid<T extends BaseEntity> extends Grid {
+public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>> extends Grid {
 
 	private final VaadinGridWrapper vgw;
 
+	private final Class<T> clazz;
+	private final Domains domains;
+
+	private final MessageSource messageSource;
+	
+	private C originDataSource;
+
 	public BaseGrid(MessageSource messageSource, Domains domains, Class<T> clazz) {
+		this.messageSource = messageSource;
+		this.clazz = clazz;
+		this.domains = domains;
 		this.vgw = domains.getGrids().get(clazz.getSimpleName());
-		FreeContainer<T> lcc = new FreeContainer<>(domains, clazz, vgw.getVg().defaultPerPage(),
-				vgw.getSortableColumnNames());
+	}
+
+	public C getOriginDataSource() {
+		return originDataSource;
+	}
+
+	public void setOriginDataSource(C originDataSource) {
+		this.originDataSource = originDataSource;
+	}
+
+	public void delayCreateContent() {
 
 		StyleUtil.setDisableCellFocus(this);
-
-		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(lcc);
+		originDataSource = createContainer();
+		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(originDataSource);
 
 		List<VaadinGridColumnWrapper> columnWrappers = vgw.getColumns();
 
@@ -72,6 +91,10 @@ public abstract class BaseGrid<T extends BaseEntity> extends Grid {
 
 		// Allow column reordering
 		setColumnReorderingAllowed(true);
+	}
+
+	protected C createContainer() {
+		return (C) new FreeContainer(domains, clazz, vgw.getVg().defaultPerPage(), vgw.getSortableColumnNames());
 	}
 
 	protected abstract void setSummaryFooterCells(FooterRow footer);
@@ -139,6 +162,22 @@ public abstract class BaseGrid<T extends BaseEntity> extends Grid {
 	// }
 
 	protected abstract void setupColumn(Column col, VaadinGridColumnWrapper vgcw);
+
+	public VaadinGridWrapper getVgw() {
+		return vgw;
+	}
+
+	public Class<T> getClazz() {
+		return clazz;
+	}
+
+	public Domains getDomains() {
+		return domains;
+	}
+
+	public MessageSource getMessageSource() {
+		return messageSource;
+	}
 
 	protected abstract void addGeneratedProperty(GeneratedPropertyContainer gpcontainer, String name);
 }

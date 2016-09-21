@@ -10,6 +10,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
@@ -43,7 +44,7 @@ public class BoxGroup extends BaseEntity {
 	
 	@ManyToMany(fetch=FetchType.EAGER, mappedBy = "boxGroups")
 	@TwinGridFieldDescription(leftClazz = Box.class, rightClazz = Box.class, leftPageLength = 100, rightColumns = {"!addtoleft",
-			"name", "ip" }, leftColumns = { "name", "ip", "!remove" })
+			"name", "ip" }, leftColumns = { "name", "ip", "!remove" }, rowNumber = 4)
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 30)
 	private Set<Box> boxes = Sets.newHashSet();
 	
@@ -51,6 +52,7 @@ public class BoxGroup extends BaseEntity {
 	private List<ClusterHistory> histories;
 	
 	@ManyToOne
+	@NotNull
 	private Person creator;
 	
 	/**

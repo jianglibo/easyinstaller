@@ -71,18 +71,22 @@ public abstract class JpaContainer<T> extends ListContainer<T> {
 		setPerPage(perPage);
 	}
 	
-	public void persistState(ListViewFragmentBuilder vfb) {
-		setTrashed(vfb.getBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME));
+	public void persistState(ListViewFragmentBuilder lvfb) {
+		setTrashed(lvfb.getBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME));
 		// only if vfb.getSort() exists.
-		if (vfb.getSort().isPresent()) {
-			setSort(vfb.getSort().get());
+		if (lvfb.getSort().isPresent()) {
+			setSort(lvfb.getSort().get());
 		}
-		setFilterStr(vfb.getFilterStr().orElse(""));
-		setCurrentPage(vfb.getCurrentPage());
+		setFilterStr(lvfb.getFilterStr().orElse(""));
+		setCurrentPage(lvfb.getCurrentPage());
 		// will cause circular sort event.
 	}
 	
-	public abstract void whenUriFragmentChange(ListViewFragmentBuilder vfb);
+	/**
+	 * The change is from url change.
+	 * @param lvfb
+	 */
+	public abstract void whenUriFragmentChange(ListViewFragmentBuilder lvfb);
 	
 	@Override
 	public void sort(Object[] propertyId, boolean[] ascending) {

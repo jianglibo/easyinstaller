@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
@@ -43,6 +44,7 @@ public class Kkv extends BaseEntity {
 	private String value;
 	
 	@ManyToOne
+	@NotNull
 	private Person owner;
 	
 	public Kkv() {

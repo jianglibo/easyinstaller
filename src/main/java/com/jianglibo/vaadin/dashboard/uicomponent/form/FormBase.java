@@ -10,6 +10,9 @@ import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.domain.Person;
+import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
+import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.uicomponent.filecontentfield.FileContentField;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
@@ -55,18 +58,24 @@ public abstract class FormBase<T> extends FormLayout {
 	private List<PropertyIdAndField> fields;
 
 	private HandMakeFieldsListener handMakeFieldsListener;
+	
+	private final PersonRepository personRepository;
 
 	public static interface HandMakeFieldsListener {
 		Field<?> handMakeFieldCounted(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw);
 	}
 	
-	public FormBase(Class<T> clazz, MessageSource messageSource, Domains domains, FieldFactories fieldFactories, HandMakeFieldsListener handMakeFieldsListener) {
+	public FormBase(Class<T> clazz, PersonRepository personRepository, MessageSource messageSource, Domains domains, FieldFactories fieldFactories, HandMakeFieldsListener handMakeFieldsListener) {
 		this.clazz = clazz;
 		this.domainName = clazz.getSimpleName();
 		this.domains = domains;
 		this.messageSource = messageSource;
 		this.fieldFactories = fieldFactories;
 		this.handMakeFieldsListener = handMakeFieldsListener;
+		this.personRepository = personRepository;
+	}
+	
+	protected void delayCreateContent() {
 		fieldGroup = new BeanFieldGroup<T>(clazz);
 		addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 //		addEnterListener();
@@ -82,6 +91,10 @@ public abstract class FormBase<T> extends FormLayout {
 			addComponent(paf.getField());
 		}
 		StyleUtil.setMarginTopTwenty(this);
+	}
+	
+	protected Person getCurrentUser() {
+		return getPersonRepository().findOne(M3958SecurityUtil.getLoginPersonId());
 	}
 
 	public void notifySuccess() {
@@ -106,6 +119,8 @@ public abstract class FormBase<T> extends FormLayout {
 			}
 		});
 	}
+	
+	
 
 //	protected void addEscapeListener() {
 //		addShortcutListener(new ShortcutListener("submit", null, KeyCode.ESCAPE) {
@@ -115,6 +130,10 @@ public abstract class FormBase<T> extends FormLayout {
 //			}
 //		});
 //	}
+
+	public PersonRepository getPersonRepository() {
+		return personRepository;
+	}
 
 	public abstract boolean saveToRepo();
 

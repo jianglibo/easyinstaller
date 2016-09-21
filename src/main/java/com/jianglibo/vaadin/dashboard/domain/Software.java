@@ -74,6 +74,7 @@ public class Software extends BaseEntity {
 	private String preferredFormat;
 	
 	@ManyToOne
+	@NotNull
 	private Person creator;
 
 	public Software() {

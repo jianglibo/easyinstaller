@@ -1,12 +1,10 @@
-package com.jianglibo.vaadin.dashboard.view.install;
+package com.jianglibo.vaadin.dashboard.unused;
 
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.table.TableBase;
-import com.jianglibo.vaadin.dashboard.unused.Install;
-import com.jianglibo.vaadin.dashboard.unused.InstallRepository;
 import com.vaadin.data.Property;
 
 @SuppressWarnings("serial")

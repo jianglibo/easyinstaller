@@ -15,6 +15,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.event.view.HistoryBackEvent;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
+import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
@@ -52,11 +53,14 @@ public class PkSourceEditView  extends BaseEditView<PkSource, FormBase<PkSource>
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 	
+	private final PersonRepository personRepository;
     
 	@Autowired
-	public PkSourceEditView(PkSourceRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
+	public PkSourceEditView(PersonRepository personRepository, PkSourceRepository repository, MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
 		super(messageSource,PkSource.class, domains, fieldFactories, repository);
+		this.personRepository = personRepository;
+		delayCreateContent();
 //		this.messageSource = messageSource;
 //		this.pkSourceRepository = pkSourceRepository;
 //		this.eventBus = new EventBus(this.getClass().getName());
@@ -133,7 +137,7 @@ public class PkSourceEditView  extends BaseEditView<PkSource, FormBase<PkSource>
 	@Override
 	protected FormBase<PkSource> createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
 			JpaRepository<PkSource, Long> repository, HandMakeFieldsListener handMakeFieldsListener) {
-		return new PkSourceForm(getMessageSource(), getDomains(), getFieldFactories(), (PkSourceRepository) repository, handMakeFieldsListener);
+		return new PkSourceForm(personRepository, getMessageSource(), getDomains(), getFieldFactories(), (PkSourceRepository) repository, handMakeFieldsListener);
 	}
 
 	@Override

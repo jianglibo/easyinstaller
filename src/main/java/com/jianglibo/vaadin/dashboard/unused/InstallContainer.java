@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.install;
+package com.jianglibo.vaadin.dashboard.unused;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +10,6 @@ import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
-import com.jianglibo.vaadin.dashboard.unused.Install;
-import com.jianglibo.vaadin.dashboard.unused.InstallRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 
 @SuppressWarnings("serial")

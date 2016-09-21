@@ -23,4 +23,5 @@ public @interface TwinGridFieldDescription {
 	String[] rightSortableColumns() default {};
 	boolean addItemClickListenerForLeft() default false;
 	boolean addItemClickListenerForRight() default false;
+	int rowNumber() default -1;
 }

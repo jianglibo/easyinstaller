@@ -17,6 +17,7 @@ import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Grid;
@@ -154,6 +155,10 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 		setWidth(100.0f, Unit.PERCENTAGE);
 		Grid grid = new Grid();
 		grid.setWidth(100.0f, Unit.PERCENTAGE);
+		if (tgfd.rowNumber() > 0) {
+			grid.setHeightMode(HeightMode.ROW);
+			grid.setHeightByRows(tgfd.rowNumber());
+		}
 		grid.setColumns(columns);
 		grid.setSelectionMode(SelectionMode.NONE);
 		grid.setContainerDataSource(gpcontainer);
@@ -209,6 +214,11 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 		grid.setColumns(columns);
 		grid.setSelectionMode(SelectionMode.NONE);
 		grid.setContainerDataSource(gpcontainer);
+		
+		if (tgfd.rowNumber() > 0) {
+			grid.setHeightMode(HeightMode.ROW);
+			grid.setHeightByRows(tgfd.rowNumber());
+		}
 		
 		String messagePrefix = domains.getTables().get(rightClazz.getSimpleName()).getVt().messagePrefix();
 		

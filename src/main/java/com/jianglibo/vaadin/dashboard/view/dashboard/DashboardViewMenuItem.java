@@ -3,10 +3,7 @@ package com.jianglibo.vaadin.dashboard.view.dashboard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
-import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.NotificationsCountUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.view.DboardViewUtil;
 import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
@@ -32,15 +29,15 @@ public class DashboardViewMenuItem implements MenuItemWrapper {
         notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
         this.menuItem = DboardViewUtil.buildBadgeWrapper(menuItemComponent,
                 notificationsBadge);
-        DashboardEventBus.register(this);
+//        DashboardEventBus.register(this);
 	}
 	
-	@Subscribe
-	public void updateNotificationsCount(final NotificationsCountUpdatedEvent event) {
-		int unreadNotificationsCount = 55; //read from other source.
-		notificationsBadge.setValue(String.valueOf(unreadNotificationsCount));
-		notificationsBadge.setVisible(unreadNotificationsCount > 0);
-	}
+//	@Subscribe
+//	public void updateNotificationsCount(final NotificationsCountUpdatedEvent event) {
+//		int unreadNotificationsCount = 55; //read from other source.
+//		notificationsBadge.setValue(String.valueOf(unreadNotificationsCount));
+//		notificationsBadge.setVisible(unreadNotificationsCount > 0);
+//	}
 
 	public Component getMenuItem() {
 		return menuItem;

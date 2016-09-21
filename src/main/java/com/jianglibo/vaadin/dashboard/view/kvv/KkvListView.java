@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
+import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Kkv;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
@@ -20,7 +21,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 
 @SpringView(name = KkvListView.VIEW_NAME)
-public class KkvListView extends BaseGridView<Kkv, KkvGrid> {
+public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> {
 
 	/**
 	 * 
@@ -38,6 +39,7 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid> {
 	public KkvListView(BoxRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, Kkv.class, KkvGrid.class);
+		delayCreateContent();
 	}
 
 	

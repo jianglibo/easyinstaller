@@ -33,54 +33,58 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
-public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, J extends JpaRepository<E, Long>> extends VerticalLayout implements View {
-	
-	
+public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, J extends JpaRepository<E, Long>>
+		extends VerticalLayout implements View {
+
 	private final Logger LOGGER = LoggerFactory.getLogger(BaseEditView.class);;
-	
+
 	private final MessageSource messageSource;
-	
+
 	private final J repository;
-	
+
 	private F form;
-	
+
 	private E bean;
-	
+
 	private final Class<E> clazz;
-	
+
 	private final Domains domains;
-	
-    private ItemViewFragmentBuilder ifb;
-	
+
+	private ItemViewFragmentBuilder ifb;
+
 	private final FieldFactories fieldFactories;
-	
+
 	private Label headTitle;
-	
-	public BaseEditView(MessageSource messageSource,Class<E> clazz, Domains domains, FieldFactories fieldFactories, J repository) {
+
+	public BaseEditView(MessageSource messageSource, Class<E> clazz, Domains domains, FieldFactories fieldFactories,
+			J repository) {
 		this.messageSource = messageSource;
-		this.repository= repository;
+		this.repository = repository;
 		this.domains = domains;
 		this.clazz = clazz;
 		this.fieldFactories = fieldFactories;
-		
+
+	}
+
+	protected void delayCreateContent() {
 		setSizeFull();
 		addStyleName("transactions");
 
 		setMargin(new MarginInfo(true, true, false, true));
-		
+
 		addComponent(createHeaderLayout());
 		form = createForm(messageSource, domains, fieldFactories, repository, (vtw, vffw) -> {
 			return createField(vtw, vffw);
 		});
-		
+
 		StyleUtil.setOverflowAuto(form, true);
-		
+
 		addComponent(form);
-		
+
 		form.setSizeFull();
-		
+
 		Component ft = buildFooter();
-		
+
 		form.addComponent(ft);
 		setExpandRatio(form, 1);
 	}
@@ -96,7 +100,7 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 	}
 
 	protected abstract F createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
-			JpaRepository<E, Long> repository,HandMakeFieldsListener handMakeFieldsListener);
+			JpaRepository<E, Long> repository, HandMakeFieldsListener handMakeFieldsListener);
 
 	protected HorizontalLayout createHeaderLayout() {
 		HorizontalLayout hl = new HorizontalLayout();
@@ -111,7 +115,7 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 		HorizontalLayout tools = new HorizontalLayout();
 		tools.addStyleName("toolbar");
 		hl.addComponent(tools);
-		
+
 		Button backBtn = new Button(FontAwesome.MAIL_REPLY);
 		backBtn.setDescription(messageSource.getMessage("shared.btn.return", null, UI.getCurrent().getLocale()));
 		backBtn.addClickListener(new ClickListener() {
@@ -124,25 +128,25 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 		tools.addComponent(backBtn);
 		return hl;
 	}
-	
-	private Component buildFooter() {
-        HorizontalLayout footer = new HorizontalLayout();
-        footer.setMargin(true);
-        footer.setWidth(100.0f, Unit.PERCENTAGE);
 
-        Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));
-        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        ok.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-            	form.save();
-            }
-        });
-        ok.focus();
-        footer.addComponent(ok);
-        footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
-        return footer;
-    }
+	private Component buildFooter() {
+		HorizontalLayout footer = new HorizontalLayout();
+		footer.setMargin(true);
+		footer.setWidth(100.0f, Unit.PERCENTAGE);
+
+		Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));
+		ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		ok.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				form.save();
+			}
+		});
+		ok.focus();
+		footer.addComponent(ok);
+		footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
+		return footer;
+	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
@@ -156,13 +160,11 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 			bean = repository.findOne(bid);
 			headTitle.setValue(getBeanDisplayName());
 		}
-        form.setItemDataSource(bean);
+		form.setItemDataSource(bean);
 	}
-	
 
-	
 	protected abstract E createNewBean();
-	
+
 	protected String getBeanDisplayName() {
 		return bean.getDisplayName();
 	}
@@ -194,7 +196,7 @@ public abstract class BaseEditView<E extends BaseEntity, F extends FormBase<E>, 
 	public FieldFactories getFieldFactories() {
 		return fieldFactories;
 	}
-	
+
 	public void backward() {
 		UI.getCurrent().getNavigator().navigateTo(getIfb().getPreviousView().orElse(getListViewName()));
 	}

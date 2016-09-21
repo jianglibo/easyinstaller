@@ -35,6 +35,7 @@ public class PersonEditView  extends BaseEditView<Person, FormBase<Person>, JpaR
 	public PersonEditView(PersonRepository repository,MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
 		super(messageSource,Person.class, domains, fieldFactories, repository);
+		delayCreateContent();
 	}
 
 

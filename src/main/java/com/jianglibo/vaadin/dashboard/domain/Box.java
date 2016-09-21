@@ -23,7 +23,6 @@ import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
-import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByStringOptions;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ScalarGridFieldDescription;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
@@ -50,7 +49,7 @@ public class Box extends BaseEntity {
 	@VaadinFormField(order = 10)
 	private String name;
 	
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<BoxGroup> boxGroups = Sets.newHashSet();
 	
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -58,7 +57,8 @@ public class Box extends BaseEntity {
 	@ScalarGridFieldDescription(columns = { "value", "!remove"}, clazz = String.class, rowNumber=4)
 	private Set<String> roles = Sets.newHashSet();
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
+	@NotNull
 	private Person creator;
 	
 	/**

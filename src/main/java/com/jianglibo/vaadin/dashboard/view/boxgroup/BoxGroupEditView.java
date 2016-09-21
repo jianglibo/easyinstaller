@@ -13,6 +13,8 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
+import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
+import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.BoxTwinGrid;
@@ -34,12 +36,16 @@ public class BoxGroupEditView  extends BaseEditView<BoxGroup, FormBase<BoxGroup>
 	public static final String VIEW_NAME = BoxGroupListView.VIEW_NAME + "/edit";
 	
 	private final BoxRepository boxRepository;
+	
+	private final PersonRepository personRepository;
 
 	@Autowired
-	public BoxGroupEditView(BoxRepository boxRepository, BoxGroupRepository repository,MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
+	public BoxGroupEditView(BoxRepository boxRepository,PersonRepository personRepository, BoxGroupRepository repository,MessageSource messageSource,Domains domains,FieldFactories fieldFactories,
 			ApplicationContext applicationContext) {
 		super(messageSource,BoxGroup.class, domains, fieldFactories, repository);
 		this.boxRepository = boxRepository;
+		this.personRepository = personRepository;
+		delayCreateContent();
 	}
 
 
@@ -57,7 +63,7 @@ public class BoxGroupEditView  extends BaseEditView<BoxGroup, FormBase<BoxGroup>
 	@Override
 	protected FormBase<BoxGroup> createForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories,
 			JpaRepository<BoxGroup, Long> repository,HandMakeFieldsListener handMakeFieldsListener) {
-		return new BoxGroupForm(getMessageSource(), getDomains(), fieldFactories, (BoxGroupRepository) repository, handMakeFieldsListener);
+		return new BoxGroupForm(personRepository, getMessageSource(), getDomains(), fieldFactories, (BoxGroupRepository) repository, boxRepository, handMakeFieldsListener);
 	}
 
 	@Override

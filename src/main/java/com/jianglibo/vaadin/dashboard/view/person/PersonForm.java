@@ -11,17 +11,16 @@ import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 @SuppressWarnings("serial")
 public class PersonForm extends FormBase<Person> {
 	
-	private final PersonRepository repository;
 	
 	public PersonForm(MessageSource messageSource, Domains domains, FieldFactories fieldFactories, PersonRepository repository, HandMakeFieldsListener handMakeFieldsListener) {
-		super(Person.class, messageSource, domains, fieldFactories, handMakeFieldsListener);
-		this.repository = repository;
+		super(Person.class, repository, messageSource, domains, fieldFactories, handMakeFieldsListener);
+		delayCreateContent();
 	}
 
 	@Override
 	public boolean saveToRepo() {
 		Person in = getWrappedBean();
-		repository.save(in);
+		getPersonRepository().save(in);
 		return true;
 	}
 }

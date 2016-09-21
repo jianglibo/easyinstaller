@@ -4,8 +4,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
+import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
@@ -18,7 +18,6 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent.Dyn
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -34,7 +33,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
-public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> extends VerticalLayout implements View {
+public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C>, C extends FreeContainer<E>> extends VerticalLayout implements View {
 	
 	private final ApplicationContext applicationContext;
 	
@@ -45,8 +44,6 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 	private final Class<E> clazz;
 	
 	private final Class<G> gridClazz;
-	
-	private VaadinGridWrapper vgw;
 	
 	private ListViewFragmentBuilder lvfb;
 	
@@ -65,35 +62,56 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 		this.domains = domains;
 		this.clazz = clazz;
 		this.gridClazz = gridClazz;
-		
+	}
+	
+	public void delayCreateContent() {
 		setSizeFull();
 		addStyleName("transactions");
-		
-		this.vgw = domains.getGrids().get(clazz.getSimpleName());
-
-		topBlock = createTopBlock();
-		addComponent(topBlock);
-
-		middleBlock = createMiddleBlock();
-		addComponent(middleBlock);
-
-		bottomBlock = createBottomBlock();
-		addComponent(bottomBlock);
-
-		setExpandRatio(bottomBlock, 1);
+		setTopBlock(createTopBlock());
+		addComponent(getTopBlock());
+		setMiddleBlock(createMiddleBlock());
+		addComponent(getMiddleBlock());
+		setBottomBlock(createBottomBlock());
+		addComponent(getBottomBlock());
+		setExpandRatio(getBottomBlock(), 1);
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
 		DashboardEventBus.register(uel);
-		lvfb = new ListViewFragmentBuilder(event);
+		setLvfb(new ListViewFragmentBuilder(event));
 
 		// start alter state.
-		((TopBlock) topBlock).alterState(lvfb, MsgUtil.getListViewTitle(messageSource, clazz.getSimpleName()));
-		((MiddleBlock)middleBlock).alterState(lvfb);
-		((BottomBlock) bottomBlock).alterState(lvfb);
+		((TopBlock) topBlock).alterState(getLvfb(), MsgUtil.getListViewTitle(messageSource, getClazz().getSimpleName()));
+		((MiddleBlock)middleBlock).alterState(getLvfb());
 	}
 	
+	
+	
+	public void setTopBlock(Component topBlock) {
+		this.topBlock = topBlock;
+	}
+
+	public void setMiddleBlock(Component middleBlock) {
+		this.middleBlock = middleBlock;
+	}
+
+	public void setBottomBlock(Component bottomBlock) {
+		this.bottomBlock = bottomBlock;
+	}
+
+	public Component getTopBlock() {
+		return topBlock;
+	}
+
+	public Component getMiddleBlock() {
+		return middleBlock;
+	}
+
+	public Component getBottomBlock() {
+		return bottomBlock;
+	}
+
 	@Override
 	public void detach() {
 		super.detach();
@@ -103,7 +121,7 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 	}
 
 	
-	private Component createTopBlock() {
+	protected Component createTopBlock() {
 		TopBlock tb = new TopBlock();
 
 		tb.addClickListener(event -> {
@@ -111,9 +129,16 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 		});
 		return tb;
 	}
-	
 
-	private Component createMiddleBlock() {
+	public void setLvfb(ListViewFragmentBuilder lvfb) {
+		this.lvfb = lvfb;
+	}
+
+	public UiEventListener getUel() {
+		return uel;
+	}
+
+	protected Component createMiddleBlock() {
 		DynButtonComponent dynMenu = new DynButtonComponent(messageSource,getButtonGroups());
 		MiddleBlock mb = new MiddleBlock(dynMenu);
 
@@ -123,10 +148,19 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 		return mb;
 	}
 	
-	private Component createBottomBlock() {
-		grid = createGrid(messageSource, domains, clazz);
+	protected Component createBottomBlock() {
+		setGrid(createGrid(messageSource, domains, clazz));
 		BottomBlock bottomBlock = new BottomBlock();
+		
+		getGrid().addSelectionListener(event -> {
+			((MiddleBlock)middleBlock).alterState(event.getSelected().size());
+		});
+		
 		return bottomBlock;
+	}
+
+	public void setGrid(G grid) {
+		this.grid = grid;
 	}
 
 	protected abstract G createGrid(MessageSource messageSource, Domains domains, Class<E> clazz);
@@ -257,15 +291,6 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 			setSizeFull();
 			addComponent(grid);
 		}
-		
-		public void alterState(ListViewFragmentBuilder lvfb) {
-//			table.getContainer().whenUriFragmentChange(lvfb);
-		}
-
-		public void addTableValueChangeListener(ValueChangeListener vcl) {
-//			this.table.addValueChangeListener(vcl);
-		}
-
 		public G getGrid() {
 			return grid;
 		}
@@ -282,7 +307,7 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E>> 
 		public void browserResized(final BrowserResizeEvent event) {
 			// Some columns are collapsed when browser window width gets small
 			// enough to make the table fit better.
-			BottomBlock bb = (BaseGridView<E, G>.BottomBlock) bottomBlock;
+//			BottomBlock bb = (BaseGridView<E, G, C>.BottomBlock) bottomBlock;
 		}
 	}
 

@@ -1,6 +1,5 @@
 package com.jianglibo.vaadin.dashboard.view.box;
 
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,15 +13,17 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 
 @SuppressWarnings("serial")
-public class BoxContainer extends JpaContainer<Box>{
-	
+public class BoxContainer extends JpaContainer<Box> {
+
 	private final BoxRepository repository;
 	
+	private ListViewFragmentBuilder lvfb;
+
 	public BoxContainer(BoxRepository repository, Domains domains) {
 		super(Box.class, domains);
 		this.repository = repository;
 	}
-	
+
 	public void setList() {
 		Pageable pageable;
 		if (getSort() == null) {
@@ -30,7 +31,6 @@ public class BoxContainer extends JpaContainer<Box>{
 		} else {
 			pageable = new PageRequest(getCurrentPage() - 1, getPerPage(), getSort());
 		}
-		
 		Page<Box> entities;
 		String filterStr = getFilterStr();
 		long total;
@@ -38,21 +38,24 @@ public class BoxContainer extends JpaContainer<Box>{
 			entities = repository.findByArchivedEquals(isTrashed(), pageable);
 			total = repository.countByArchivedEquals(isTrashed());
 		} else {
-			entities = repository.findByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, isTrashed(), pageable);
-			total = repository.countByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(filterStr,filterStr, isTrashed());
+			entities = repository.findByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(
+					filterStr, filterStr, isTrashed(), pageable);
+			total = repository.countByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(
+					filterStr, filterStr, isTrashed());
 		}
 		setCollection(entities.getContent());
 		PageMetaEvent pme = new PageMetaEvent(total, getPerPage());
 		notifyPageMetaChangeListeners(pme);
 	}
-	
+
 	public void refresh() {
 		setList();
 	}
 
 	@Override
-	public void whenUriFragmentChange(ListViewFragmentBuilder vfb) {
-		persistState(vfb);
+	public void whenUriFragmentChange(ListViewFragmentBuilder lvfb) {
+		this.lvfb = lvfb;
+		persistState(lvfb);
 		setList();
 	}
 
