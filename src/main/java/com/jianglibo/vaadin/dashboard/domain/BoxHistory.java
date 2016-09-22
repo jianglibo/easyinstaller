@@ -25,22 +25,29 @@ import com.vaadin.ui.themes.ValoTheme;
 public class BoxHistory extends BaseEntity {
 
 	@ManyToOne
-	@VaadinGridColumn
+	@VaadinGridColumn(order = 10)
 	private Software software;
 	
+	/**
+	 * unique TaskId, usually is uuid.
+	 */
+	@VaadinGridColumn(order = 40)
+	private String taskId;
+	
 	@ManyToOne
-	@VaadinGridColumn
+	@VaadinGridColumn(order = 30)
 	private Box box;
 	
 	@ManyToOne
-	private ClusterHistory clusterHistory;
+	@VaadinGridColumn(order = 20)
+	private BoxGroup boxGroup;
 	
 	@ManyToOne
 	@NotNull
 	private Person runner;
 	
 	@VaadinTableColumn
-	@VaadinGridColumn
+	@VaadinGridColumn(order = 50)
 	private boolean success;
 	
 	private boolean readed = false;
@@ -75,14 +82,6 @@ public class BoxHistory extends BaseEntity {
 		this.box = box;
 	}
 
-	public ClusterHistory getClusterHistory() {
-		return clusterHistory;
-	}
-
-	public void setClusterHistory(ClusterHistory clusterHistory) {
-		this.clusterHistory = clusterHistory;
-	}
-
 	public boolean isSuccess() {
 		return success;
 	}
@@ -111,8 +110,24 @@ public class BoxHistory extends BaseEntity {
 		return log;
 	}
 
+	public BoxGroup getBoxGroup() {
+		return boxGroup;
+	}
+
+	public void setBoxGroup(BoxGroup boxGroup) {
+		this.boxGroup = boxGroup;
+	}
+
 	private void setLog(String log) {
 		this.log = log;
+	}
+
+	public String getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
 	}
 
 	public static class BoxHistoryBuilder {
@@ -121,16 +136,20 @@ public class BoxHistory extends BaseEntity {
 		
 		private final Box box;
 		
-		private ClusterHistory clusterHistory;
+		private final BoxGroup boxGroup;
 		
 		private final boolean success;
 		
+		private final String taskId;
+		
 		private final String log;
 		
-		public BoxHistoryBuilder(Software software, Box box, String log, boolean success) {
+		public BoxHistoryBuilder(String taskId,BoxGroup boxGroup, Software software, Box box, String log, boolean success) {
 			this.software = software;
 			this.box = box;
 			this.log = log;
+			this.taskId = taskId;
+			this.boxGroup = boxGroup;
 			this.success = success;
 		}
 		
@@ -139,14 +158,10 @@ public class BoxHistory extends BaseEntity {
 			bh.setSoftware(software);
 			bh.setBox(box);
 			bh.setLog(log);
+			bh.setBoxGroup(boxGroup);
 			bh.setSuccess(success);
-			bh.setClusterHistory(clusterHistory);
+			bh.setTaskId(taskId);
 			return bh;
-		}
-		
-		public BoxHistoryBuilder setClusterHistory(ClusterHistory clusterHistory) {
-			this.clusterHistory = clusterHistory;
-			return this;
 		}
 	}
 

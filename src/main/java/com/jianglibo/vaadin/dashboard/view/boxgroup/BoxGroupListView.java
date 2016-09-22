@@ -15,7 +15,10 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 
@@ -39,10 +42,16 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 		delayCreateContent();
 	}
 
-	
-//	public void whenTotalPageChange(PageMetaEvent tpe) {
-//		getTable().setColumnFooter("createdAt", String.valueOf(tpe.getTotalRecord()));	
-//	}
+	public ButtonGroup[] getButtonGroups() {
+		return new ButtonGroup[]{ //
+		new ButtonGroup( //
+				new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+				new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
+		new ButtonGroup( //
+				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
+		new ButtonGroup( //
+					new ButtonDescription("manageClusterSoftware", null, ButtonEnableType.ONE))};
+	}
 	
 	@Override
 	public void onDynButtonClicked(ButtonDescription btnDesc) {

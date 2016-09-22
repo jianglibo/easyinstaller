@@ -25,12 +25,10 @@ import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
-import com.jianglibo.vaadin.dashboard.view.clusterhistory.ClusterHistoryListView;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
@@ -119,9 +117,6 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 
 		private DynButtonComponent menu;
 
-		private CheckBox checkboxServer;
-		private CheckBox checkboxCluster;
-
 		public MyMiddleBlock(DynButtonComponent menu) {
 			this.menu = menu;
 			addStyleName("table-controller");
@@ -130,33 +125,15 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 
 			setComponentAlignment(menu, Alignment.MIDDLE_LEFT);
 
-			checkboxServer = new CheckBox("Server Histories");
-			checkboxServer.setValue(true);
-			checkboxServer.setEnabled(false);
-
-			checkboxCluster = new CheckBox("Cluster Histories");
-			checkboxCluster.setValue(false);
-
-			checkboxCluster.addValueChangeListener(event -> {
-				UI.getCurrent().getNavigator().navigateTo(ClusterHistoryListView.VIEW_NAME);
-			});
 
 			HorizontalLayout hl = new HorizontalLayout();
 			hl.setSpacing(true);
-			hl.addComponents(checkboxServer, checkboxCluster);
 			StyleUtil.setMarginRightTwenty(hl);
 			addComponent(hl);
 			setComponentAlignment(hl, Alignment.MIDDLE_RIGHT);
 		}
 
 		public void alterState(ListViewFragmentBuilder lvfb) {
-			if (lvfb.getLong("boxid") > 0) {
-				checkboxServer.setVisible(false);
-				checkboxCluster.setVisible(false);
-			} else {
-				checkboxServer.setVisible(true);
-				checkboxCluster.setVisible(true);
-			}
 		}
 
 		public void addDynaMenuItemClickListener(DynaMenuItemClickListener dynaMenuItemClickListener) {

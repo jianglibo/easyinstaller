@@ -85,12 +85,10 @@ public class BoxListView extends BaseListView<Box, BoxTable, BoxRepository> {
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[] { //
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)), //
-				new ButtonGroup(
-						new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS)), //
-				new ButtonGroup(
 						new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)), //
-				new ButtonGroup(new ButtonDescription("boxHistories", null, ButtonEnableType.ONE)) };
+				new ButtonGroup(
+						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)), //
+				new ButtonGroup(new ButtonDescription("manageBoxSoftware", null, ButtonEnableType.ONE)) };
 	}
 	
 	public void notifySort(Sort sort) {

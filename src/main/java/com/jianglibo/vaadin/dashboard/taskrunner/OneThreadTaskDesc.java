@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.taskrunner;
 
 import com.jianglibo.vaadin.dashboard.domain.Box;
+import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc.OneTaskFinishListener;
@@ -21,14 +22,20 @@ public class OneThreadTaskDesc {
 	private final BoxHistory boxHistory;
 	
 	private final TaskDesc td;
+	
+	private final String taskId;
+	
+	private final BoxGroup boxGroup;
 
-	public OneThreadTaskDesc(TaskDesc td, Box box, Software software, OneTaskFinishListener tfl) {
+	public OneThreadTaskDesc(TaskDesc td,BoxGroup boxGroup, Box box, Software software, OneTaskFinishListener tfl) {
 		super();
 		this.td = td;
 		this.box = box;
 		this.software = software;
 		this.tfl = tfl;
-		this.boxHistory = new BoxHistory.BoxHistoryBuilder(software, box, "", true).build();
+		this.taskId = td.getTaskId();
+		this.boxGroup = boxGroup;
+		this.boxHistory = new BoxHistory.BoxHistoryBuilder(td.getTaskId(),boxGroup, software, box, "", true).build();
 	}
 	
 	public void notifyOneTaskFinished() {

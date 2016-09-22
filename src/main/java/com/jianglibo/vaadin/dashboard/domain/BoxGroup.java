@@ -49,7 +49,7 @@ public class BoxGroup extends BaseEntity {
 	private Set<Box> boxes = Sets.newHashSet();
 	
 	@OneToMany(mappedBy="boxGroup")
-	private List<ClusterHistory> histories;
+	private List<BoxHistory> histories;
 	
 	@ManyToOne
 	@NotNull
@@ -102,17 +102,14 @@ public class BoxGroup extends BaseEntity {
 	public void setConfigContent(String configContent) {
 		this.configContent = configContent;
 	}
-	
 
-	public List<ClusterHistory> getHistories() {
+	public List<BoxHistory> getHistories() {
 		return histories;
 	}
 
-
-	public void setHistories(List<ClusterHistory> histories) {
+	public void setHistories(List<BoxHistory> histories) {
 		this.histories = histories;
 	}
-
 
 	@Override
 	public String getDisplayName() {

@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.taskrunner;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
@@ -12,13 +13,15 @@ import com.jianglibo.vaadin.dashboard.security.PersonVo;
 public class TaskDesc {
 
 	private Box box;
-	
+
 	private final PersonVo person;
 
 	private final Software software;
 
 	private BoxGroup boxGroup;
-	
+
+	private final String taskId;
+
 	private final OneTaskFinishListener tfl;
 
 	public TaskDesc(PersonVo person, Box box, Software software, OneTaskFinishListener tfl) {
@@ -26,6 +29,7 @@ public class TaskDesc {
 		this.tfl = tfl;
 		this.software = software;
 		this.person = person;
+		this.taskId = UUID.randomUUID().toString();
 	}
 
 	public TaskDesc(PersonVo person, BoxGroup boxGroup, Software software, OneTaskFinishListener tfl) {
@@ -33,15 +37,21 @@ public class TaskDesc {
 		this.software = software;
 		this.tfl = tfl;
 		this.person = person;
+		this.taskId = UUID.randomUUID().toString();
 	}
-	
+
 	public List<OneThreadTaskDesc> createOneThreadTaskDescs() {
 		if (isGroupTask()) {
-			return getBoxGroup().getBoxes().stream().map(b -> new OneThreadTaskDesc(this, b, getSoftware(), getTfl()))
+			return getBoxGroup().getBoxes().stream()
+					.map(b -> new OneThreadTaskDesc(this, boxGroup, b, getSoftware(), getTfl()))
 					.collect(Collectors.toList());
 		} else {
-			return Lists.newArrayList(new OneThreadTaskDesc(this, getBox(), getSoftware(), getTfl()));
+			return Lists.newArrayList(new OneThreadTaskDesc(this, boxGroup, getBox(), getSoftware(), getTfl()));
 		}
+	}
+
+	public String getTaskId() {
+		return taskId;
 	}
 
 	public boolean isGroupTask() {
@@ -71,7 +81,7 @@ public class TaskDesc {
 	public OneTaskFinishListener getTfl() {
 		return tfl;
 	}
-	
+
 	public PersonVo getPerson() {
 		return person;
 	}

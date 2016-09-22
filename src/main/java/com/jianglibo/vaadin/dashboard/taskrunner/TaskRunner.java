@@ -19,9 +19,8 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
-import com.jianglibo.vaadin.dashboard.domain.ClusterHistory;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
-import com.jianglibo.vaadin.dashboard.repositories.ClusterHistoryRepository;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession.JschSessionBuilder;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshExecRunner;
@@ -45,7 +44,7 @@ public class TaskRunner {
 	private BoxHistoryRepository boxHistoryRepository;
 	
 	@Autowired
-	private ClusterHistoryRepository clusterHistoryRepository;
+	private BoxGroupRepository boxGroupRepository;
 
 	@Autowired
 	private SshUploadRunner sshUploadRunner;
@@ -80,12 +79,9 @@ public class TaskRunner {
 						bhs.add(bh);
 					});
 					
-					ClusterHistory ch = new ClusterHistory();
 					BoxGroup bg = initTaskDesc.getBoxGroup();
-					ch.setBoxGroup(bg);
-					ch.setBoxHistories(bhs);
-					ch = clusterHistoryRepository.save(ch);
-					bg.getHistories().add(ch);
+					bg.getHistories().addAll(bhs);
+					boxGroupRepository.save(bg);
 				} else { // single box run.
 					OneThreadTaskDesc td = result.get(0);
 					BoxHistory bh = boxHistoryRepository.save(td.getBoxHistory());
