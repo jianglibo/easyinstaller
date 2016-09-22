@@ -16,6 +16,8 @@ import com.google.common.base.Objects;
 import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
@@ -40,17 +42,22 @@ import com.vaadin.ui.themes.ValoTheme;
 @VaadinTable(multiSelect = true, footerVisible = true, messagePrefix = "domain.software.", styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+@VaadinGrid(multiSelect = true, footerVisible = true, messagePrefix = "domain.software.", styleNames = {
+		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
 public class Software extends BaseEntity {
 
 	@VaadinFormField(order = 10)
 	@VaadinTableColumn(alignment = Align.LEFT)
 	@NotNull
+	@VaadinGridColumn
 	private String name;
 
 	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.OS_TYPES)
 	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 20)
 	@VaadinTableColumn()
 	@NotNull
+	@VaadinGridColumn
 	private String ostype;
 
 	@ElementCollection(fetch = FetchType.EAGER)

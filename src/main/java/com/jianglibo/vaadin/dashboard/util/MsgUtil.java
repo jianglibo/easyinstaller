@@ -156,5 +156,14 @@ public class MsgUtil {
 		}
 		return name;
 	}
+	
+	public static String getMsgWithSubs(MessageSource messageSource, String key, String...substitudes) {
+		try {
+			return messageSource.getMessage(key, substitudes, UI.getCurrent().getLocale());
+		} catch (NoSuchMessageException e) {
+			LOGGER.info("field {} has no localized message", key);
+		}
+		return key;
+	}
 
 }

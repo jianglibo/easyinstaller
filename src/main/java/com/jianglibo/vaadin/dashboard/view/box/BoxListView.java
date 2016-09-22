@@ -19,6 +19,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.Butt
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.view.BaseListView;
 import com.jianglibo.vaadin.dashboard.view.boxhistory.BoxHistoryListView;
+import com.jianglibo.vaadin.dashboard.view.boxsoftware.BoxSoftwareView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
@@ -72,8 +73,8 @@ public class BoxListView extends BaseListView<Box, BoxTable, BoxRepository> {
 		case CommonMenuItemIds.ADD:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
 			break;
-		case "boxHistories":
-			UI.getCurrent().getNavigator().navigateTo(BoxHistoryListView.VIEW_NAME + "/?boxid="
+		case "manageBoxSoftware":
+			UI.getCurrent().getNavigator().navigateTo(BoxSoftwareView.VIEW_NAME + "/?boxid="
 					+ selected.iterator().next().getId() + "&pv=" + getLvfb().toNavigateString());
 			break;
 		default:
