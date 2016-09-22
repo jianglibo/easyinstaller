@@ -19,7 +19,6 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
-import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByStringOptions;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ScalarGridFieldDescription;
 import com.vaadin.ui.Table.Align;
@@ -76,6 +75,9 @@ public class Software extends BaseEntity {
 	@ManyToOne
 	@NotNull
 	private Person creator;
+	
+	@VaadinFormField(order = 200)
+	private String actions;
 
 	public Software() {
 
@@ -150,5 +152,13 @@ public class Software extends BaseEntity {
 
 	public void setCreator(Person creator) {
 		this.creator = creator;
+	}
+
+	public String getActions() {
+		return actions;
+	}
+
+	public void setActions(String actions) {
+		this.actions = actions;
 	}
 }

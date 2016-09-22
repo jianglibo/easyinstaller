@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.boxhistory;
+package com.jianglibo.vaadin.dashboard.view.clusterhistory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,7 +11,7 @@ import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Box;
-import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
+import com.jianglibo.vaadin.dashboard.domain.ClusterHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Kkv;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
@@ -25,7 +25,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
-import com.jianglibo.vaadin.dashboard.view.clusterhistory.ClusterHistoryListView;
+import com.jianglibo.vaadin.dashboard.view.boxhistory.BoxHistoryListView;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
@@ -33,28 +33,29 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 
-@SpringView(name = BoxHistoryListView.VIEW_NAME)
-public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid, BoxHistoryContainer> {
+@SpringView(name = ClusterHistoryListView.VIEW_NAME)
+public class ClusterHistoryListView extends BaseGridView<ClusterHistory, ClusterHistoryGrid, ClusterHistoryContainer> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(BoxHistoryListView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClusterHistoryListView.class);
 
-	public static final String VIEW_NAME = "boxhistory";
+	public static final String VIEW_NAME = "clusterhistory";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.HISTORY;
 
 	private BoxRepository boxRepository;
 
 	@Autowired
-	public BoxHistoryListView(BoxRepository repository, Domains domains, MessageSource messageSource,
+	public ClusterHistoryListView(BoxRepository repository, Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		super(applicationContext, messageSource, domains, BoxHistory.class, BoxHistoryGrid.class);
+		super(applicationContext, messageSource, domains, ClusterHistory.class, ClusterHistoryGrid.class);
 		this.boxRepository = repository;
 		delayCreateContent();
 	}
@@ -130,16 +131,17 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 
 			setComponentAlignment(menu, Alignment.MIDDLE_LEFT);
 
-			checkboxServer = new CheckBox("Server Histories");
-			checkboxServer.setValue(true);
-			checkboxServer.setEnabled(false);
-
 			checkboxCluster = new CheckBox("Cluster Histories");
-			checkboxCluster.setValue(false);
+			checkboxCluster.setValue(true);
+			checkboxCluster.setEnabled(false);
 
-			checkboxCluster.addValueChangeListener(event -> {
-				UI.getCurrent().getNavigator().navigateTo(ClusterHistoryListView.VIEW_NAME);
+			checkboxServer = new CheckBox("Server Histories");
+			checkboxServer.setValue(false);
+
+			checkboxServer.addValueChangeListener(event -> {
+				UI.getCurrent().getNavigator().navigateTo(BoxHistoryListView.VIEW_NAME);
 			});
+			
 
 			HorizontalLayout hl = new HorizontalLayout();
 			hl.setSpacing(true);
@@ -150,12 +152,10 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 		}
 
 		public void alterState(ListViewFragmentBuilder lvfb) {
-			if (lvfb.getLong("boxid") > 0) {
-				checkboxServer.setVisible(false);
-				checkboxCluster.setVisible(false);
+			if (lvfb.toNavigateString().contains("ClusterHistory")) {
+				checkboxServer.setValue(true);
 			} else {
-				checkboxServer.setVisible(true);
-				checkboxCluster.setVisible(true);
+				checkboxCluster.setValue(true);
 			}
 		}
 
@@ -184,12 +184,12 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 			title = box.getDisplayName() + "'s " + title;
 
 		}
-		((TopBlock) getTopBlock()).alterState(getLvfb(), title);
+		((TopBlock) getTopBlock()).getTitle().setValue(title);
 		// alterState(getLvfb(),
 		// MsgUtil.getListViewTitle(getMessageSource(),
 		// getClazz().getSimpleName()));
 		((MyMiddleBlock) getMiddleBlock()).alterState(getLvfb());
-		((BoxHistoryContainer) (getGrid().getOriginDataSource())).whenUriFragmentChange(getLvfb());
+		((ClusterHistoryContainer) (getGrid().getOriginDataSource())).whenUriFragmentChange(getLvfb());
 	}
 
 	@Override
@@ -224,7 +224,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 	}
 
 	@Override
-	protected BoxHistoryGrid createGrid(MessageSource messageSource, Domains domains, Class<BoxHistory> clazz) {
-		return new BoxHistoryGrid(messageSource, domains, clazz);
+	protected ClusterHistoryGrid createGrid(MessageSource messageSource, Domains domains, Class<ClusterHistory> clazz) {
+		return new ClusterHistoryGrid(messageSource, domains, clazz);
 	}
 }

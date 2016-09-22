@@ -303,7 +303,6 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		public DynButtonComponent getMenu() {
 			return menu;
 		}
-
 	}
 
 	protected class BottomBlock extends HorizontalLayout {
