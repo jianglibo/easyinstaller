@@ -56,9 +56,13 @@ public class BoxHistory extends BaseEntity {
 	@Column(length = 131072)
 	private String log = "";
 	
-	public void appendLog(String onelog) {
+	public void appendLogAndSetFailure(String onelog) {
 		setLog(getLog() + "\n" + onelog);
 		setSuccess(false);
+	}
+
+	public void appendLog(String onelog) {
+		setLog(getLog() + "\n" + onelog);
 	}
 	
 	@Override

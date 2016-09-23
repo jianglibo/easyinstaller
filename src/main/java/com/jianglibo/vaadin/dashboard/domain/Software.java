@@ -59,6 +59,10 @@ public class Software extends BaseEntity {
 	@NotNull
 	@VaadinGridColumn
 	private String ostype;
+	
+	@VaadinGridColumn
+	@NotNull
+	private String runner;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 100)
@@ -167,5 +171,13 @@ public class Software extends BaseEntity {
 
 	public void setActions(String actions) {
 		this.actions = actions;
+	}
+
+	public String getRunner() {
+		return runner;
+	}
+
+	public void setRunner(String runner) {
+		this.runner = runner;
 	}
 }

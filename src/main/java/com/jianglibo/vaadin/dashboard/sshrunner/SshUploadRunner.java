@@ -45,7 +45,7 @@ public class SshUploadRunner implements BaseRunner {
 		BoxHistory bh = taskDesc.getBoxHistory();
 		if (noneExistsFiles.size() > 0) {
 			String log = noneExistsFiles.stream().reduce("", (result, l) -> result + l);
-			bh.appendLog(log);
+			bh.appendLogAndSetFailure(log);
 		} else {
 			ChannelSftp sftp = null;
 			try {
@@ -56,10 +56,10 @@ public class SshUploadRunner implements BaseRunner {
 						sftp.put(fileToUpload, targetFile, ChannelSftp.OVERWRITE);
 					}
 				} catch (Exception e) {
-					bh.appendLog(e.getMessage());
+					bh.appendLogAndSetFailure(e.getMessage());
 				}
 			} catch (Exception e) {
-				bh.appendLog(e.getMessage());
+				bh.appendLogAndSetFailure(e.getMessage());
 				bh.setSuccess(false);
 			} finally {
 				if (sftp != null) {

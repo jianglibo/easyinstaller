@@ -16,6 +16,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.HasPositionField;
+import com.jianglibo.vaadin.dashboard.vo.JschExecuteResult;
 import com.vaadin.ui.themes.ValoTheme;
 
 

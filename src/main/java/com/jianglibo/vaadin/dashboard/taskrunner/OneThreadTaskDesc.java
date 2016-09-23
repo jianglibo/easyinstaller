@@ -26,10 +26,13 @@ public class OneThreadTaskDesc {
 	private final String taskId;
 	
 	private final BoxGroup boxGroup;
+	
+	private final String action;
 
-	public OneThreadTaskDesc(TaskDesc td,BoxGroup boxGroup, Box box, Software software, OneTaskFinishListener tfl) {
+	public OneThreadTaskDesc(TaskDesc td,BoxGroup boxGroup, Box box, Software software, String action, OneTaskFinishListener tfl) {
 		super();
 		this.td = td;
+		this.action = action;
 		this.box = box;
 		this.software = software;
 		this.tfl = tfl;
@@ -61,4 +64,18 @@ public class OneThreadTaskDesc {
 	public BoxHistory getBoxHistory() {
 		return boxHistory;
 	}
+
+	public String getTaskId() {
+		return taskId;
+	}
+
+	public BoxGroup getBoxGroup() {
+		return boxGroup;
+	}
+
+	public String getAction() {
+		return action;
+	}
+	
+	
 }

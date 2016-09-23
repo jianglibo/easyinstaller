@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import com.jcraft.jsch.JSchException;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
-import com.jianglibo.vaadin.dashboard.unused.JschExecuteResult;
+import com.jianglibo.vaadin.dashboard.vo.JschExecuteResult;
 
 public class TestSessionBuilder extends SshBaset {
 

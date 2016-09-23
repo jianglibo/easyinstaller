@@ -70,7 +70,7 @@ public class TaskRunner {
 		Futures.addCallback(lf, new FutureCallback<List<OneThreadTaskDesc>>() {
 			@Override
 			public void onSuccess(List<OneThreadTaskDesc> result) {
-				if (initTaskDesc.isGroupTask()) {
+				if (initTaskDesc.isClusterAction()) {
 					List<BoxHistory> bhs = Lists.newArrayList();
 					result.stream().forEach(td -> {
 						BoxHistory bh = boxHistoryRepository.save(td.getBoxHistory());
