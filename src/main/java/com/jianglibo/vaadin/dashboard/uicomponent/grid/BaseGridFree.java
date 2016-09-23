@@ -59,7 +59,6 @@ public abstract class BaseGridFree<T extends BaseEntity, C extends FreeContainer
 		setSizeFull();
 
 		setColumns(columns);
-		setSelectionMode(SelectionMode.NONE);
 		setContainerDataSource(gpcontainer);
 
 		String messagePrefix = domains.getGrids().get(clazz.getSimpleName()).getVg().messagePrefix();
@@ -75,6 +74,7 @@ public abstract class BaseGridFree<T extends BaseEntity, C extends FreeContainer
 		});
 
 		
+		setupGrid();
 
 		// Add a summary footer row to the Grid
 		FooterRow footer = addFooterRowAt(0);
@@ -84,6 +84,8 @@ public abstract class BaseGridFree<T extends BaseEntity, C extends FreeContainer
 		// Allow column reordering
 		setColumnReorderingAllowed(true);
 	}
+
+	protected abstract void setupGrid();
 
 	protected abstract void setupColumn(Column col, String cn);
 

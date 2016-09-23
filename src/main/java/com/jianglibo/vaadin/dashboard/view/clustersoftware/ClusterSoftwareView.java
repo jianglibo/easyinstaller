@@ -1,10 +1,12 @@
-package com.jianglibo.vaadin.dashboard.view.boxsoftware;
+package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.domain.Box;
+import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
@@ -15,7 +17,9 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -23,13 +27,13 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
-@SpringView(name = BoxSoftwareView.VIEW_NAME)
-public class BoxSoftwareView extends VerticalLayout implements View {
+@SpringView(name = ClusterSoftwareView.VIEW_NAME)
+public class ClusterSoftwareView extends VerticalLayout implements View {
 	
 	
 	private final MessageSource messageSource;
 	
-	public final static String VIEW_NAME = "boxsoftware";
+	public final static String VIEW_NAME = "clustersoftware";
 	
 	private ListViewFragmentBuilder lvfb;
 	
@@ -37,14 +41,14 @@ public class BoxSoftwareView extends VerticalLayout implements View {
 	
 	private Label title;
 	
-	private final BoxRepository boxRepository;
+	private final BoxGroupRepository boxGroupRepository;
 	
 	private final Domains domains;
 	
 	@Autowired
-	public BoxSoftwareView(MessageSource messageSource,BoxRepository boxRepository, Domains domains) {
+	public ClusterSoftwareView(MessageSource messageSource,BoxGroupRepository boxGroupRepository, Domains domains) {
 		this.messageSource = messageSource;
-		this.boxRepository = boxRepository;
+		this.boxGroupRepository = boxGroupRepository;
 		this.domains = domains;
 		setSizeFull();
 		addStyleName("transactions");
@@ -54,19 +58,23 @@ public class BoxSoftwareView extends VerticalLayout implements View {
 		vl.setSpacing(true);
 		vl.setSizeFull();
 
-		Label label = new Label(MsgUtil.getMsgWithSubs(messageSource, "view.boxsoftware.intro"));
-		StyleUtil.setMarginTwenty(label);
-		Component c = createInstallForm();
-		vl.addComponents(label, c);
-		vl.setExpandRatio(c, 1);
+		vl.addComponent(createInstalledBlock());
+		vl.addComponent(createAllBlock());
 		
 		addComponent(vl);
 		setExpandRatio(vl, 1);
 	}
 	
 
-	private Component createInstallForm() {
-		BoxSoftwareViewSoftwareGrid g = new BoxSoftwareViewSoftwareGrid(messageSource, domains);
+	private Component createAllBlock() {
+		AllSoftwareGrid g = new AllSoftwareGrid(messageSource, domains);
+		g.delayCreateContent();
+		return g;
+	}
+
+
+	private Component createInstalledBlock() {
+		ClusterInstalledSoftwareGrid g = new ClusterInstalledSoftwareGrid(messageSource, domains);
 		g.delayCreateContent();
 		return g;
 	}
@@ -79,10 +87,10 @@ public class BoxSoftwareView extends VerticalLayout implements View {
 			StyleUtil.show(backBtn);
 		}
 		
-		if (getLvfb().getLong("boxid") > 0) {
-			Box box = boxRepository.findOne(getLvfb().getLong("boxid"));
-			if (box != null) {
-				title.setValue(MsgUtil.getMsgWithSubs(messageSource, "view.boxsoftware.title", box.getDisplayName()));
+		if (getLvfb().getLong("boxgroup") > 0) {
+			BoxGroup boxGroup = boxGroupRepository.findOne(getLvfb().getLong("boxgroup"));
+			if (boxGroup != null) {
+				title.setValue(MsgUtil.getMsgWithSubs(messageSource, "view.clustersoftware.title", boxGroup.getDisplayName()));
 			}
 		}
 	}

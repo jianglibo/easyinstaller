@@ -113,7 +113,7 @@ public class BoxGroup extends BaseEntity {
 
 	@Override
 	public String getDisplayName() {
-		return null;
+		return getName();
 	}
 
 

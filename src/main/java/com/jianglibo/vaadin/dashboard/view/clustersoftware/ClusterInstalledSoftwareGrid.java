@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.boxsoftware;
+package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
 import org.springframework.context.MessageSource;
 
@@ -12,15 +12,12 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Grid.HeaderCell;
-import com.vaadin.ui.Grid.HeaderRow;
-import com.vaadin.ui.Grid.SelectionMode;
 
 @SuppressWarnings("serial")
-public class BoxSoftwareViewSoftwareGrid  extends BaseGridFree<Software, BoxSoftwareContainer>{
+public class ClusterInstalledSoftwareGrid  extends BaseGridFree<Software, ClusterSoftwareInstalledContainer>{
 
 
-	public BoxSoftwareViewSoftwareGrid(MessageSource messageSource, Domains domains) {
+	public ClusterInstalledSoftwareGrid(MessageSource messageSource, Domains domains) {
 		super(messageSource, domains, Software.class, new String[]{"name", "ostype"});
 	}
 
@@ -45,8 +42,8 @@ public class BoxSoftwareViewSoftwareGrid  extends BaseGridFree<Software, BoxSoft
 	}
 
 	@Override
-	protected BoxSoftwareContainer createContainer() {
-		return new BoxSoftwareContainer(getDomains(), getClazz(), 10, Lists.newArrayList());
+	protected ClusterSoftwareInstalledContainer createContainer() {
+		return new ClusterSoftwareInstalledContainer(getDomains(), getClazz(), 10, Lists.newArrayList());
 	}
 
 	@Override
@@ -70,9 +67,15 @@ public class BoxSoftwareViewSoftwareGrid  extends BaseGridFree<Software, BoxSoft
 		
 		setSelectionMode(SelectionMode.SINGLE);
 		
+		cb.addValueChangeListener(event -> {
+			event.getProperty().getValue();
+		});
+		
 		addSelectionListener(event -> {
 			if (event.getSelected().size() == 1) {
 				cb.setEnabled(true);
+			} else {
+				cb.setEnabled(false);
 			}
 		});
 	}

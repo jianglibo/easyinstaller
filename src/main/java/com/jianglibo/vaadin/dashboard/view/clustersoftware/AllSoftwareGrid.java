@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.boxsoftware;
+package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
 import org.springframework.context.MessageSource;
 
@@ -12,15 +12,12 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Grid.HeaderCell;
-import com.vaadin.ui.Grid.HeaderRow;
-import com.vaadin.ui.Grid.SelectionMode;
 
 @SuppressWarnings("serial")
-public class BoxSoftwareViewSoftwareGrid  extends BaseGridFree<Software, BoxSoftwareContainer>{
+public class AllSoftwareGrid  extends BaseGridFree<Software, AllSoftwareContainer>{
 
 
-	public BoxSoftwareViewSoftwareGrid(MessageSource messageSource, Domains domains) {
+	public AllSoftwareGrid(MessageSource messageSource, Domains domains) {
 		super(messageSource, domains, Software.class, new String[]{"name", "ostype"});
 	}
 
@@ -45,8 +42,8 @@ public class BoxSoftwareViewSoftwareGrid  extends BaseGridFree<Software, BoxSoft
 	}
 
 	@Override
-	protected BoxSoftwareContainer createContainer() {
-		return new BoxSoftwareContainer(getDomains(), getClazz(), 10, Lists.newArrayList());
+	protected AllSoftwareContainer createContainer() {
+		return new AllSoftwareContainer(getDomains(), getClazz(), 10, Lists.newArrayList());
 	}
 
 	@Override
@@ -61,7 +58,7 @@ public class BoxSoftwareViewSoftwareGrid  extends BaseGridFree<Software, BoxSoft
 			    groupingHeader.getCell("name"),
 			    groupingHeader.getCell("ostype"));
 		HorizontalLayout hl = new HorizontalLayout();
-		Label lb = new Label(MsgUtil.getMsgWithSubs(getMessageSource(), "view.boxsoftware.gridtitleinstalled"));
+		Label lb = new Label(MsgUtil.getMsgWithSubs(getMessageSource(), "view.boxsoftware.gridtitleall"));
 		ComboBox cb = new ComboBox();
 		cb.setEnabled(false);
 		hl.addComponents(lb, cb);
