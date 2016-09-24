@@ -1,5 +1,4 @@
 name: tcl-centos7
-sversion: 1
 ostype: centos7
 runner: bash
 preferredFormat: YAML

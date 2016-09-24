@@ -16,12 +16,7 @@ import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
-import com.jianglibo.vaadin.dashboard.event.view.CurrentPageEvent;
-import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
-import com.jianglibo.vaadin.dashboard.event.view.FilterStrEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
-import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
-import com.jianglibo.vaadin.dashboard.event.view.TrashedCheckBoxEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
@@ -129,60 +124,55 @@ public class PkSourceListView extends VerticalLayout
 		table.setColumnFooter("createdAt", String.valueOf(tpe.getTotalRecord()));
 	}
 
-	@Subscribe
-	public void whenCurrentPageChange(CurrentPageEvent cpe) {
-		String nvs = lvfb.setCurrentPage(cpe.getCurrentPage()).toNavigateString();
-		UI.getCurrent().getNavigator().navigateTo(nvs);
-	}
 
-	@Subscribe
-	public void whenFilterStrChange(FilterStrEvent fse) {
-		String nvs = lvfb.setFilterStr(fse.getFilterStr()).toNavigateString();
-		UI.getCurrent().getNavigator().navigateTo(nvs);
-	}
+//	@Subscribe
+//	public void whenFilterStrChange(FilterStrEvent fse) {
+//		String nvs = lvfb.setFilterStr(fse.getFilterStr()).toNavigateString();
+//		UI.getCurrent().getNavigator().navigateTo(nvs);
+//	}
+//
+//	@Subscribe
+//	public void whenSortChanged(TableSortEvent tse) {
+//		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(PkSource.class.getSimpleName()), lvfb);
+//		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
+//	}
 
-	@Subscribe
-	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(PkSource.class.getSimpleName()), lvfb);
-		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
-	}
+//	@Subscribe
+//	public void whenTrashedCheckboxChange(TrashedCheckBoxEvent tce) {
+//		String nvs = lvfb.setFilterStr("").setCurrentPage(1)
+//				.setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
+//		UI.getCurrent().getNavigator().navigateTo(nvs);
+//	}
 
-	@Subscribe
-	public void whenTrashedCheckboxChange(TrashedCheckBoxEvent tce) {
-		String nvs = lvfb.setFilterStr("").setCurrentPage(1)
-				.setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
-		UI.getCurrent().getNavigator().navigateTo(nvs);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Subscribe
-	public void dynMenuClicked(DynMenuClickEvent dce) {
-		Collection<PkSource> selected;
-		switch (dce.getBtnId()) {
-		case CommonMenuItemIds.DELETE:
-			selected = (Collection<PkSource>) table.getValue();
-			selected.forEach(b -> {
-				if (b.isArchived()) {
-					repository.delete(b);
-				} else {
-					b.setArchived(true);
-					repository.save(b);
-				}
-			});
-			((PkSourceContainer) table.getContainerDataSource()).refresh();
-			break;
-		case CommonMenuItemIds.REFRESH:
-			((PkSourceContainer) table.getContainerDataSource()).refresh();
-			break;
-		case CommonMenuItemIds.EDIT:
-			selected = (Collection<PkSource>) table.getValue();
-			UI.getCurrent().getNavigator().navigateTo(
-					VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
-			break;
-		default:
-			LOGGER.error("unKnown menuName {}", dce.getBtnId());
-		}
-	}
+//	@SuppressWarnings("unchecked")
+//	@Subscribe
+//	public void dynMenuClicked(DynMenuClickEvent dce) {
+//		Collection<PkSource> selected;
+//		switch (dce.getBtnId()) {
+//		case CommonMenuItemIds.DELETE:
+//			selected = (Collection<PkSource>) table.getValue();
+//			selected.forEach(b -> {
+//				if (b.isArchived()) {
+//					repository.delete(b);
+//				} else {
+//					b.setArchived(true);
+//					repository.save(b);
+//				}
+//			});
+//			((PkSourceContainer) table.getContainerDataSource()).refresh();
+//			break;
+//		case CommonMenuItemIds.REFRESH:
+//			((PkSourceContainer) table.getContainerDataSource()).refresh();
+//			break;
+//		case CommonMenuItemIds.EDIT:
+//			selected = (Collection<PkSource>) table.getValue();
+//			UI.getCurrent().getNavigator().navigateTo(
+//					VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + lvfb.toNavigateString());
+//			break;
+//		default:
+//			LOGGER.error("unKnown menuName {}", dce.getBtnId());
+//		}
+//	}
 
 	@Subscribe
 	public void browserResized(final BrowserResizeEvent event) {

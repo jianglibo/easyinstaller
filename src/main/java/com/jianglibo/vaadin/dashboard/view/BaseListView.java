@@ -18,7 +18,6 @@ import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.event.view.TableSortEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -221,11 +220,6 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 
 	public void backward() {
 		UI.getCurrent().getNavigator().navigateTo(getLvfb().getPreviousView().orElse(getListViewName()));
-	}
-
-	public void whenSortChanged(TableSortEvent tse) {
-		SortUtil.setUrlObSort(tse.getSort(), getDomains().getTables().get(Box.class.getSimpleName()), getLvfb());
-		UI.getCurrent().getNavigator().navigateTo(getLvfb().toNavigateString());
 	}
 
 	@Override

@@ -3,9 +3,14 @@ package com.jianglibo.vaadin.dashboard.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -17,12 +22,20 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
+import com.jianglibo.vaadin.dashboard.Broadcaster;
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
+import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.NewSoftwareAddedEvent;
+import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 
 @Component
 public class HttpPageGetter {
@@ -30,6 +43,15 @@ public class HttpPageGetter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpPageGetter.class);
 	
 	private CloseableHttpClient httpclient;
+	
+	@Autowired
+	private ApplicationConfig applicationConfig;
+	
+	@Autowired
+	private SoftwareRepository softwareRepository;
+	
+	@Autowired
+	private ObjectMapper ymlObjectMapper;
 
 	@PostConstruct
 	public void after() {
@@ -38,6 +60,38 @@ public class HttpPageGetter {
 
 	public String getPage(String url) {
 		return getPage(url, Charsets.UTF_8);
+	}
+	
+	public void getFile(String url, Path target) {
+		CloseableHttpResponse response = null;
+		try {
+			Path tmpFile = Files.createTempFile(HttpPageGetter.class.getName(), "");
+			HttpGet httpget = new HttpGet(url);
+			response = httpclient.execute(httpget);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				InputStream instream = entity.getContent();
+				OutputStream outstream = Files.newOutputStream(tmpFile);
+				try {
+					ByteStreams.copy(instream, outstream);
+					instream.close();
+					outstream.flush();
+					outstream.close();
+					Files.move(tmpFile, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+				} finally {
+					
+				}
+				
+			}
+		} catch (IOException e) {
+		} finally {
+			if (response != null) {
+				try {
+					response.close();
+				} catch (IOException e) {
+				}
+			}
+		}
 	}
 
 	public String getPage(String url, Charset cs) {
@@ -65,6 +119,69 @@ public class HttpPageGetter {
 			}
 		}
 		return "";
+	}
+	
+	@Async
+	public void fetchSoftwareLists() {
+		String urlBase = "https://raw.githubusercontent.com/jianglibo/easyinstaller/master/softwares/";
+		String listfn = "softwarelist.txt";
+		final Path sfFolder = applicationConfig.getSoftwareFolderPath();
+		if (!Files.exists(sfFolder)) {
+			try {
+				Files.createDirectories(applicationConfig.getSoftwareFolderPath());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				String snLines = getPage(urlBase + listfn);
+				
+				Files.write(applicationConfig.getSoftwareFolderPath().resolve(listfn), snLines.getBytes(Charsets.UTF_8));
+				CharStreams.readLines(new StringReader(snLines)).stream().forEach(sn -> {
+					if (!Files.exists(sfFolder.resolve(sn))) {
+						getFile(urlBase + sn, sfFolder.resolve(sn));
+					}
+					// tcl--centos7--1.zip
+					int idx = sn.lastIndexOf('.');
+					String snnoext = sn.substring(0, idx);
+					String[] ss = snnoext.split("--");
+					if (ss.length == 3) {
+						Software sf = softwareRepository.findByNameAndOstypeAndSversion(ss[0], ss[1], ss[2]);
+						if (sf == null) {
+							Path unpackedFolder = SoftwarePackUtil.unpack(sfFolder.resolve(sn));
+							try {
+								sf = ymlObjectMapper.readValue(Files.newInputStream(unpackedFolder.resolve("description.yml")), Software.class);
+								sf.setSversion(ss[2]);
+								StringBuffer bf = new StringBuffer();
+								com.google.common.io.Files.asCharSource(unpackedFolder.resolve(sf.getCodeToExecute()).toFile(), Charsets.UTF_8).copyTo(bf);
+								sf.setCodeToExecute(bf.toString());
+								
+								bf = new StringBuffer();
+								com.google.common.io.Files.asCharSource(unpackedFolder.resolve(sf.getConfigContent()).toFile(), Charsets.UTF_8).copyTo(bf);
+								sf.setConfigContent(bf.toString());
+								
+								Path filesToUploadPath = unpackedFolder.resolve("filesToUpload");
+								
+								Map<Boolean, List<String>> fntypemap = Files.list(filesToUploadPath).map(Path::getFileName).map(Path::toString).collect(Collectors.groupingBy(fn -> fn.endsWith(".placeholder")));
+								
+								List<String> phfn = fntypemap.get(true).stream().map(fn -> fn.substring(0, fn.length() - 12)).collect(Collectors.toList());
+								
+								phfn.addAll(fntypemap.get(false));
+								
+								sf.setFilesToUpload(Sets.newHashSet(phfn));
+								
+								softwareRepository.save(sf);
+								Broadcaster.broadcast(NewSoftwareAddedEvent.class.getSimpleName());
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**

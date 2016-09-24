@@ -66,7 +66,7 @@ public class ApplicationConfig {
 		Map<String, String> applicationMap = mmap.get(APPLICATION_KGROUP) == null ? Maps.newHashMap() : mmap.get(APPLICATION_KGROUP);
 
 		String uploadDst = processOneItem(applicationMap, root, "uploadDst", racfig.getUploadDst());
-		String stepFolder = processOneItem(applicationMap, root, "stepFolder", racfig.getSoftwareFolder());
+		String softwareFolder = processOneItem(applicationMap, root, "softwareFolder", racfig.getSoftwareFolder());
 		String localFolder = processOneItem(applicationMap, root, "localFolder", racfig.getLocalFolder());
 		String sshKeyFolder = processOneItem(applicationMap, root, "sshKeyFolder", racfig.getSshKeyFolder());
 		String remoteFolder = processOneItem(applicationMap, root, "remoteFolder", racfig.getRemoteFolder());
@@ -74,7 +74,7 @@ public class ApplicationConfig {
 		boolean autoLogin = "true".equals(autoLoginStr);
 
 		setUploadDstPath(convertToPath(uploadDst));
-		setSoftwareFolderPath(convertToPath(stepFolder));
+		setSoftwareFolderPath(convertToPath(softwareFolder));
 		setLocalFolderPath(convertToPath(localFolder));
 		setSshKeyFolderPath(convertToPath(sshKeyFolder));
 		setAutoLogin(autoLogin);
@@ -176,6 +176,4 @@ public class ApplicationConfig {
 	public void setComboDatas(Map<String, List<ComboItem>> comboDatas) {
 		this.comboDatas = comboDatas;
 	}
-	
-
 }

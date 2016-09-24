@@ -41,7 +41,7 @@ public class TestZipSoftwareFolder {
 	
 	@Test
 	public void packone() throws IOException {
-		String fn = "tcl-centos7-1";	
+		String fn = "tcl--centos7--1";	
 		SoftwarePackUtil.pack(baseFolder.resolve(fn), baseFolder.resolve(fn + ".zip"));
 		assertTrue(Files.exists(baseFolder.resolve(fn + ".zip")));
 		assertThat(Files.size(baseFolder.resolve(fn + ".zip")), greaterThan(0L));

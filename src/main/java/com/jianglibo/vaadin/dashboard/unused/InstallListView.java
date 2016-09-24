@@ -14,7 +14,6 @@ import com.google.common.eventbus.SubscriberExceptionContext;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.event.view.DynMenuClickEvent;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.view.BaseListView;
@@ -118,37 +117,37 @@ public class InstallListView extends BaseListView<Install, InstallTable, Install
 //		UI.getCurrent().getNavigator().navigateTo(bu);
 //	}
 	
-	@SuppressWarnings("unchecked")
-	@Subscribe
-	public void dynMenuClicked(DynMenuClickEvent dce) {
-		Collection<Install> selected;
-		switch (dce.getBtnId()) {
-		case CommonMenuItemIds.DELETE:
-			selected = (Collection<Install>) getTable().getValue();
-			selected.forEach(b -> {
-				if (b.isArchived()) {
-					getRepository().delete(b);
-				} else {
-					b.setArchived(true);
-					getRepository().save(b);
-				}
-			});
-			((JpaContainer)getTable().getContainerDataSource()).refresh();
-			break;
-		case CommonMenuItemIds.REFRESH:
-			((InstallContainer)getTable().getContainerDataSource()).refresh();
-			break;
-		case CommonMenuItemIds.EDIT:
-			selected = (Collection<Install>) getTable().getValue();
-			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
-			break;
-		case CommonMenuItemIds.ADD:
-			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
-			break;
-		default:
-			LOGGER.error("unKnown menuName {}", dce.getBtnId());
-		}
-	}
+//	@SuppressWarnings("unchecked")
+//	@Subscribe
+//	public void dynMenuClicked(DynMenuClickEvent dce) {
+//		Collection<Install> selected;
+//		switch (dce.getBtnId()) {
+//		case CommonMenuItemIds.DELETE:
+//			selected = (Collection<Install>) getTable().getValue();
+//			selected.forEach(b -> {
+//				if (b.isArchived()) {
+//					getRepository().delete(b);
+//				} else {
+//					b.setArchived(true);
+//					getRepository().save(b);
+//				}
+//			});
+//			((JpaContainer)getTable().getContainerDataSource()).refresh();
+//			break;
+//		case CommonMenuItemIds.REFRESH:
+//			((InstallContainer)getTable().getContainerDataSource()).refresh();
+//			break;
+//		case CommonMenuItemIds.EDIT:
+//			selected = (Collection<Install>) getTable().getValue();
+//			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
+//			break;
+//		case CommonMenuItemIds.ADD:
+//			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
+//			break;
+//		default:
+//			LOGGER.error("unKnown menuName {}", dce.getBtnId());
+//		}
+//	}
 
 //	@Override
 //	public void enter(final ViewChangeEvent event) {

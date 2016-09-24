@@ -1,11 +1,13 @@
 package com.jianglibo.vaadin.dashboard.event.ui;
 
-import java.util.Collection;
-
 /*
  * Event bus events used in Dashboard are listed here as inner classes.
  */
 public abstract class DashboardEvent {
+	
+	public static final class NewSoftwareAddedEvent {
+		
+	}
 
     public static final class UserLoginRequestedEvent {
         private final String userName, password;
@@ -48,19 +50,6 @@ public abstract class DashboardEvent {
         }
 
     }
-
-
-//    public static final class PostViewChangeEvent {
-//        private final DashboardViewType view;
-//
-//        public PostViewChangeEvent(final DashboardViewType view) {
-//            this.view = view;
-//        }
-//
-//        public DashboardViewType getView() {
-//            return view;
-//        }
-//    }
 
     public static final class PostViewChangeEvent {
         private final String viewName;

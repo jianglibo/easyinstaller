@@ -195,7 +195,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	 */
 	@Override
 	public Object nextItemId(Object itemId) {
-		LOGGER.info("{} called with parameter {}", "nextItemId", itemId.toString());
+//		LOGGER.info("{} called with parameter {}", "nextItemId", itemId.toString());
 		int idx = inWindowIdx(itemId);
 		if (idx == -1) {
 			return null;
@@ -211,7 +211,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public Object prevItemId(Object itemId) {
-		LOGGER.info("{} called with parameter {}", "prevItemId", itemId.toString());
+//		LOGGER.info("{} called with parameter {}", "prevItemId", itemId.toString());
 		int idx = inWindowIdx(itemId);
 		if (idx == -1) {
 			return null;
@@ -227,14 +227,14 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public Object firstItemId() {
-		LOGGER.info("{} called with parameter", "firstItemId");
+//		LOGGER.info("{} called with parameter", "firstItemId");
 		currentPage = 0;
 		return topItem();
 	}
 
 	@Override
 	public Object lastItemId() {
-		LOGGER.info("{} called with parameter", "lastItemId");
+//		LOGGER.info("{} called with parameter", "lastItemId");
 		currentPage = ManualPagable.lastPageNum(size(), perPage);
 		fetchPage();
 		return bottomItem();
@@ -242,13 +242,13 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public boolean isFirstId(Object itemId) {
-		LOGGER.info("{} called with parameter {}", "isFirstId", itemId);
+//		LOGGER.info("{} called with parameter {}", "isFirstId", itemId);
 		return false;
 	}
 
 	@Override
 	public boolean isLastId(Object itemId) {
-		LOGGER.info("{} called with parameter {}", "isLastId", itemId);
+//		LOGGER.info("{} called with parameter {}", "isLastId", itemId);
 		return false;
 	}
 

@@ -109,7 +109,7 @@ public class PreDefinedSteps {
 
 	private void insertPreDefinedSoftwares() {
 		preDefinedSoftwares.getPredefined().stream().forEach(pds -> {
-			Software sw = softwareRepository.findByNameAndOstype(pds.getName(), pds.getOstype());
+			Software sw = softwareRepository.findByNameAndOstypeAndSversion(pds.getName(), pds.getOstype(), "");
 			List<NameOstype> nos = pds.getNameOstypes();
 			List<StepDefine> sds = Lists.newArrayList();
 			nos.stream().forEach(no -> {

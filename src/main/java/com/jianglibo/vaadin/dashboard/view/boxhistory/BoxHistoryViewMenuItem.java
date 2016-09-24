@@ -26,9 +26,8 @@ public class BoxHistoryViewMenuItem implements MenuItemWrapper {
 	@Autowired
 	public BoxHistoryViewMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
-		this.menuItem = new ValoMenuItemButton(BoxHistoryListView.VIEW_NAME, BoxHistoryListView.ICON_VALUE, messageSource);
-        notificationsBadge = new Label();
-        this.menuItem = DboardViewUtil.buildBadgeWrapper(this.menuItem,
+        this.notificationsBadge = new Label();
+        this.menuItem = DboardViewUtil.buildBadgeWrapper(new ValoMenuItemButton(BoxHistoryListView.VIEW_NAME, BoxHistoryListView.ICON_VALUE, messageSource),
                 notificationsBadge);
         DashboardEventBus.register(this);
 	}

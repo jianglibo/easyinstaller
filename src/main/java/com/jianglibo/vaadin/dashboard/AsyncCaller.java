@@ -16,6 +16,6 @@ public class AsyncCaller {
 	
 	@PostConstruct
 	public void after() {
-		httpPageGetter.fetchNews();
+		httpPageGetter.fetchSoftwareLists();
 	}
 }

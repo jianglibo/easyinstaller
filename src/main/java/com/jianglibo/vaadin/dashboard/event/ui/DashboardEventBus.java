@@ -30,4 +30,8 @@ public class DashboardEventBus implements SubscriberExceptionHandler {
             final SubscriberExceptionContext context) {
         exception.printStackTrace();
     }
+
+	public EventBus getEventBus() {
+		return eventBus;
+	}
 }

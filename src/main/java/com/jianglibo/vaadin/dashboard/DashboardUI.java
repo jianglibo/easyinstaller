@@ -24,13 +24,13 @@ import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.NewSoftwareAddedEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
 import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc.OneTaskFinishListener;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
 import com.jianglibo.vaadin.dashboard.view.LoginView;
@@ -54,8 +54,6 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -66,7 +64,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 @SpringUI(path = "/")
 @Push(PushMode.MANUAL)
-public final class DashboardUI extends UI implements ApplicationContextAware, OneTaskFinishListener {
+public final class DashboardUI extends UI implements ApplicationContextAware, OneTaskFinishListener, Broadcaster.BroadcastListener {
 
 	private ApplicationContext applicationContext;
 
@@ -159,9 +157,15 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 					: getNavigator().getState();
 			getNavigator().navigateTo(v);
 		}
-
-		new FeederThread().start();
+		Broadcaster.unregister(this);
+//		new FeederThread().start();
 	}
+	
+    @Override
+    public void detach() {
+        Broadcaster.unregister(this);
+        super.detach();
+    }
 
 	public void notifyProgress(TaskDesc taskDesc) {
 		access(new Runnable() {
@@ -172,38 +176,38 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 		});
 	}
 
-	class FeederThread extends Thread {
-		int count = 0;
-
-		@Override
-		public void run() {
-			try {
-				// Update the data for a while
-				while (count < 2) {
-					Thread.sleep(1000);
-
-					access(new Runnable() {
-						@Override
-						public void run() {
-							double y = Math.random();
-							Notification.show(count++ + ", item", Type.TRAY_NOTIFICATION);
-							push();
-						}
-					});
-				}
-
-				// Inform that we have stopped running
-				access(new Runnable() {
-					@Override
-					public void run() {
-						// setContent(new Label("Done!"));
-					}
-				});
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+//	class FeederThread extends Thread {
+//		int count = 0;
+//
+//		@Override
+//		public void run() {
+//			try {
+//				// Update the data for a while
+//				while (count < 2) {
+//					Thread.sleep(1000);
+//
+//					access(new Runnable() {
+//						@Override
+//						public void run() {
+//							double y = Math.random();
+//							Notification.show(count++ + ", item", Type.TRAY_NOTIFICATION);
+//							push();
+//						}
+//					});
+//				}
+//
+//				// Inform that we have stopped running
+//				access(new Runnable() {
+//					@Override
+//					public void run() {
+//						// setContent(new Label("Done!"));
+//					}
+//				});
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 
 	// /**
 	// *
@@ -293,5 +297,27 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 			}
 		});
 
+	}
+	
+	
+	/**
+	 * We don't care of current Thread, But track for this UI instance, If instance is right, dashboardEventbus must be right.
+	 */
+	@Override
+	public void receiveBroadcast(String message) {
+        // Must lock the session to execute logic safely
+        access(new Runnable() {
+            @Override
+            public void run() {
+            	switch (message) {
+				case "NewSoftwareAddedEvent":
+					dashboardEventbus.getEventBus().post(new NewSoftwareAddedEvent());
+					break;
+				default:
+					break;
+				}
+                push();
+            }
+        });
 	}
 }

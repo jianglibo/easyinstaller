@@ -45,40 +45,6 @@ public class MainMenuItems {
 		}
 	}
 	
-//	@PostConstruct
-//	void init() {
-//        final String[] viewBeanNames = applicationContext
-//                .getBeanNamesForAnnotation(SpringView.class);
-//        for (String beanName : viewBeanNames) {
-//            final Class<?> type = applicationContext.getType(beanName);
-//            if (View.class.isAssignableFrom(type)) {
-//                final SpringView annotation = applicationContext
-//                        .findAnnotationOnBean(beanName, SpringView.class);
-//                final String viewName = getViewNameFromAnnotation(type,
-//                        annotation);
-//                
-//                try {
-//					MethodInvoker mi = new MethodInvoker(type, "getMenuItem");
-//					Object o = mi.invokeStatic();
-//					items.put(viewName, (Component) o);
-//				} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-//						| InvocationTargetException e) {
-//					LOGGER.info("The view bean [{}] does not has getMenuItem static method.");
-//				}
-//
-//            } else {
-//                LOGGER.error("The view bean [{}] does not implement View",
-//                        beanName);
-//                throw new IllegalStateException("SpringView bean [" + beanName
-//                        + "] must implement View");
-//            }
-//        } 
-//	}
-
-//	protected String getViewNameFromAnnotation(Class<?> beanClass, SpringView annotation) {
-//		return Conventions.deriveMappingForView(beanClass, annotation);
-//	}
-	
 	public SortedMap<Integer, MenuItemWrapper> getItems() {
 		return items;
 	}
