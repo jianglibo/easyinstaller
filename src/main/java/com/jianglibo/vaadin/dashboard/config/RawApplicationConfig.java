@@ -21,7 +21,7 @@ public class RawApplicationConfig {
 	/**
 	 * where application read custom install steps.
 	 */
-	private String stepFolder;
+	private String softwareFolder;
 	
 	/**
 	 * where upload runner to find files.
@@ -61,13 +61,12 @@ public class RawApplicationConfig {
 		this.comboDatas = comboDatas;
 	}
 
-
-	public String getStepFolder() {
-		return stepFolder;
+	public String getSoftwareFolder() {
+		return softwareFolder;
 	}
 
-	public void setStepFolder(String stepFolder) {
-		this.stepFolder = stepFolder;
+	public void setSoftwareFolder(String softwareFolder) {
+		this.softwareFolder = softwareFolder;
 	}
 
 	public String getLocalFolder() {

@@ -70,7 +70,7 @@ application:
   upload-dst: ~/easyinstaller-uploaded
   local-folder: ~/easyinstaller-toupload
   remote-folder: ~/easy-installer
-  step-folder: ~/easyinstaller-steps
+  software-folder: ~/easyinstaller-softwares
   ssh-key-folder: ~/easyinstaller-sshs
   auto-login: true
   combo-datas:
@@ -79,7 +79,7 @@ application:
         value: CentOs7
         localized: false
         valueType: String
-      - value: Centos6
+      - value: CentOs6
       - value: UbuntuOs
     preferredFormat:
       - value: JSON

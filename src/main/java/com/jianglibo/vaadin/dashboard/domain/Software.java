@@ -38,7 +38,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "software", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "ostype" }) })
+@Table(name = "software", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "ostype", "sversion" }) })
 @VaadinTable(multiSelect = true, footerVisible = true, messagePrefix = "domain.software.", styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
@@ -52,6 +52,10 @@ public class Software extends BaseEntity {
 	@NotNull
 	@VaadinGridColumn
 	private String name;
+	
+	@VaadinFormField(order = 15)
+	@VaadinGridColumn
+	private String sversion;
 
 	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.OS_TYPES)
 	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 20)
@@ -125,7 +129,7 @@ public class Software extends BaseEntity {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).add("name", getName()).add("ostye", getOstype()).toString();
+		return Objects.toStringHelper(this).add("name", getName()).add("ostye", getOstype()).add("sversion", getSversion()).toString();
 	}
 
 	@Override
@@ -180,4 +184,14 @@ public class Software extends BaseEntity {
 	public void setRunner(String runner) {
 		this.runner = runner;
 	}
+
+	public String getSversion() {
+		return sversion;
+	}
+
+	public void setSversion(String sversion) {
+		this.sversion = sversion;
+	}
+	
+	
 }

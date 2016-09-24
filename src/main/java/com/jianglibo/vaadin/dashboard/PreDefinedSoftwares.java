@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import com.jianglibo.vaadin.dashboard.vo.PreDefinedSoftware;
 
 /**
- * Software is just combination of stepruns.
  * 
  * @author jianglibo@gmail.com
  *

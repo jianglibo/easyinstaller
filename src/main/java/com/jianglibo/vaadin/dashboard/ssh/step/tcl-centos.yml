@@ -1,6 +1,0 @@
-# available runners: SshExecRunner 
-name: Tcl
-ostype: Centos
-runner: SshExecRunner
-perferredFormat: YAML
-executable: bash

@@ -35,7 +35,7 @@ public class ApplicationConfig {
 
 	private Path uploadDstPath;
 
-	private Path stepFolderPath;
+	private Path softwareFolderPath;
 
 	private Path localFolderPath;
 
@@ -66,7 +66,7 @@ public class ApplicationConfig {
 		Map<String, String> applicationMap = mmap.get(APPLICATION_KGROUP) == null ? Maps.newHashMap() : mmap.get(APPLICATION_KGROUP);
 
 		String uploadDst = processOneItem(applicationMap, root, "uploadDst", racfig.getUploadDst());
-		String stepFolder = processOneItem(applicationMap, root, "stepFolder", racfig.getStepFolder());
+		String stepFolder = processOneItem(applicationMap, root, "stepFolder", racfig.getSoftwareFolder());
 		String localFolder = processOneItem(applicationMap, root, "localFolder", racfig.getLocalFolder());
 		String sshKeyFolder = processOneItem(applicationMap, root, "sshKeyFolder", racfig.getSshKeyFolder());
 		String remoteFolder = processOneItem(applicationMap, root, "remoteFolder", racfig.getRemoteFolder());
@@ -74,7 +74,7 @@ public class ApplicationConfig {
 		boolean autoLogin = "true".equals(autoLoginStr);
 
 		setUploadDstPath(convertToPath(uploadDst));
-		setStepFolderPath(convertToPath(stepFolder));
+		setSoftwareFolderPath(convertToPath(stepFolder));
 		setLocalFolderPath(convertToPath(localFolder));
 		setSshKeyFolderPath(convertToPath(sshKeyFolder));
 		setAutoLogin(autoLogin);
@@ -131,12 +131,14 @@ public class ApplicationConfig {
 		return comboDatas;
 	}
 
-	public Path getStepFolderPath() {
-		return stepFolderPath;
+
+
+	public Path getSoftwareFolderPath() {
+		return softwareFolderPath;
 	}
 
-	public void setStepFolderPath(Path stepFolderPath) {
-		this.stepFolderPath = stepFolderPath;
+	public void setSoftwareFolderPath(Path softwareFolderPath) {
+		this.softwareFolderPath = softwareFolderPath;
 	}
 
 	public Path getLocalFolderPath() {
