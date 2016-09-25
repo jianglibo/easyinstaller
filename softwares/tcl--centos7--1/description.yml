@@ -1,5 +1,3 @@
-name: tcl-centos7
-ostype: centos7
 runner: bash
 preferredFormat: YAML
 codeToExecute: code.sh

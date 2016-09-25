@@ -32,6 +32,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
+import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.domain.Software;
@@ -131,7 +132,6 @@ public class HttpPageGetter {
 	}
 
 	protected boolean processOneSoftware(final Path sfFolder, String sn) {
-
 		// tcl--centos7--1.zip
 		int idx = sn.lastIndexOf('.');
 		String snnoext = sn.substring(0, idx);
@@ -143,6 +143,8 @@ public class HttpPageGetter {
 				try {
 					sf = ymlObjectMapper.readValue(Files.newInputStream(unpackedFolder.resolve("description.yml")),
 							Software.class);
+					sf.setName(ss[0]);
+					sf.setOstype(ss[1]);
 					sf.setSversion(ss[2]);
 					StringBuffer bf = new StringBuffer();
 					com.google.common.io.Files
@@ -181,8 +183,7 @@ public class HttpPageGetter {
 		return false;
 	}
 
-	@Async
-	public void fetchSoftwareLists(NewSoftwareAddedEventListener nsfael) {
+	public void fetchSoftwareLists(DashboardUI ui) {
 		String urlBase = "https://raw.githubusercontent.com/jianglibo/easyinstaller/master/softwares/";
 		String listfn = "softwarelist.txt";
 		final Path sfFolder = applicationConfig.getSoftwareFolderPath();
@@ -206,7 +207,7 @@ public class HttpPageGetter {
 				if (Files.exists(targetZipFile)) {
 					boolean success = processOneSoftware(sfFolder, sn);
 					if (success) {
-						nsfael.newSoftwareAdded();
+						ui.newSoftwareAdded();
 					}
 				}
 			});

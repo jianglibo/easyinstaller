@@ -3,6 +3,8 @@ package com.jianglibo.vaadin.dashboard;
 import java.util.List;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -24,7 +26,7 @@ import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.NewSoftwareAddedEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.SoftwareNumberChangeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
 import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
@@ -65,7 +67,9 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 @SpringUI(path = "/")
 @Push(PushMode.MANUAL)
-public final class DashboardUI extends UI implements ApplicationContextAware, OneTaskFinishListener, Broadcaster.BroadcastListener {
+public final class DashboardUI extends UI implements ApplicationContextAware, OneTaskFinishListener/*, Broadcaster.BroadcastListener*/ {
+	
+	private static Logger LOGGER = LoggerFactory.getLogger(DashboardUI.class);
 
 	private ApplicationContext applicationContext;
 
@@ -160,17 +164,18 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME
 					: getNavigator().getState();
 			getNavigator().navigateTo(v);
+			new Thread(() -> {
+				httpPageGetter.fetchSoftwareLists(DashboardUI.this);
+			}).start();
 		}
-		Broadcaster.register(this);
+//		Broadcaster.register(this);
 		// every user will trigger this method. But It's a special web application, usually only one user on line.
-		httpPageGetter.fetchSoftwareLists(() -> {
-			dashboardEventbus.getEventBus().post(new NewSoftwareAddedEvent());
-		});
+//		
 	}
 	
     @Override
     public void detach() {
-        Broadcaster.unregister(this);
+//        Broadcaster.unregister(this);
         super.detach();
     }
 
@@ -182,39 +187,6 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 			}
 		});
 	}
-
-//	class FeederThread extends Thread {
-//		int count = 0;
-//
-//		@Override
-//		public void run() {
-//			try {
-//				// Update the data for a while
-//				while (count < 2) {
-//					Thread.sleep(1000);
-//
-//					access(new Runnable() {
-//						@Override
-//						public void run() {
-//							double y = Math.random();
-//							Notification.show(count++ + ", item", Type.TRAY_NOTIFICATION);
-//							push();
-//						}
-//					});
-//				}
-//
-//				// Inform that we have stopped running
-//				access(new Runnable() {
-//					@Override
-//					public void run() {
-//						// setContent(new Label("Done!"));
-//					}
-//				});
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
 
 	// /**
 	// *
@@ -307,23 +279,34 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 	}
 	
 	
-	/**
-	 * We don't care of current Thread, But track for this UI instance, If instance is right, dashboardEventbus must be right.
-	 */
-	@Override
-	public void receiveBroadcast(String message) {
-        // Must lock the session to execute logic safely
+//	/**
+//	 * We don't care of current Thread, But track for this UI instance, If instance is right, dashboardEventbus must be right.
+//	 */
+//	@Override
+//	public void receiveBroadcast(String message) {
+//        // Must lock the session to execute logic safely
+//        access(new Runnable() {
+//            @Override
+//            public void run() {
+//            	switch (message) {
+//				case "NewSoftwareAddedEvent":
+//					dashboardEventbus.getEventBus().post(new SoftwareNumberChangeEvent());
+//					break;
+//				default:
+//					break;
+//				}
+//                push();
+//            }
+//        });
+//	}
+
+	public void newSoftwareAdded() {
         access(new Runnable() {
             @Override
             public void run() {
-            	switch (message) {
-				case "NewSoftwareAddedEvent":
-					dashboardEventbus.getEventBus().post(new NewSoftwareAddedEvent());
-					break;
-				default:
-					break;
-				}
-                push();
+            	LOGGER.info("fetch software event posted.");
+            	DashboardEventBus.post(new SoftwareNumberChangeEvent());
+            	push();
             }
         });
 	}

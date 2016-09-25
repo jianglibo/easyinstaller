@@ -13,11 +13,14 @@ import com.google.common.eventbus.SubscriberExceptionContext;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.SoftwareNumberChangeEvent;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.view.BaseListView;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
@@ -79,6 +82,13 @@ public class SoftwareListView extends BaseListView<Software, SoftwareTable, Soft
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
 		}
+	}
+	
+
+	@Override
+	public void enter(final ViewChangeEvent event) {
+		super.enter(event);
+		DashboardEventBus.post(new SoftwareNumberChangeEvent(-1));
 	}
 
 	public void notifySort(Sort sort) {

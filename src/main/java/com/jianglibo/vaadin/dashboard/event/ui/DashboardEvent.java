@@ -5,7 +5,24 @@ package com.jianglibo.vaadin.dashboard.event.ui;
  */
 public abstract class DashboardEvent {
 	
-	public static final class NewSoftwareAddedEvent {
+	public static final class SoftwareNumberChangeEvent {
+		
+		private final int number;
+		
+		public SoftwareNumberChangeEvent() {
+			super();
+			this.number = 1;
+		}
+
+
+		public SoftwareNumberChangeEvent(int number) {
+			super();
+			this.number = number;
+		}
+
+		public int getNumber() {
+			return number;
+		}
 		
 	}
 

@@ -254,19 +254,19 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
-		LOGGER.info("{} called with parameter {}", "addItemAfter", previousItemId);
+//		LOGGER.info("{} called with parameter {}", "addItemAfter", previousItemId);
 		return null;
 	}
 
 	@Override
 	public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
-		LOGGER.info("{} called with parameter {} {}", "addItemAfter", previousItemId, newItemId);
+//		LOGGER.info("{} called with parameter {} {}", "addItemAfter", previousItemId, newItemId);
 		return null;
 	}
 
 	@Override
 	public Item getItem(Object itemId) {
-		LOGGER.info("{} called with parameter {}.", "getItem", itemId);
+//		LOGGER.info("{} called with parameter {}.", "getItem", itemId);
 		if (itemId == null) {
 			return null;
 		}
