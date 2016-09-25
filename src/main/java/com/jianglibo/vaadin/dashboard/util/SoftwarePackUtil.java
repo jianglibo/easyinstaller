@@ -47,7 +47,6 @@ public class SoftwarePackUtil {
 			// create output directory is not exists
 			if (outputFolder == null) {
 				outputFolder = Files.createTempDirectory(SoftwarePackUtil.class.getName());
-				outputFolder = outputFolder.resolve("extradir");
 			}
 			
 			if (!Files.exists(outputFolder)) {
@@ -64,15 +63,13 @@ public class SoftwarePackUtil {
 
 				String fileName = ze.getName();
 				
-				File newFile = new File(outputFolder + File.separator + fileName);
-
-				System.out.println("file unzip : " + newFile.getAbsoluteFile());
-
-				// create all non exists folders
-				// else you will hit FileNotFoundException for compressed folder
-				new File(newFile.getParent()).mkdirs();
-				
-				if (newFile.isFile()) {
+				if (ze.isDirectory()) {
+					if (!"/".equals(fileName)) {
+						new File(outputFolder + File.separator + fileName).mkdirs();
+					}
+				} else {
+					File newFile = new File(outputFolder + File.separator + fileName);
+					new File(newFile.getParent()).mkdirs();
 					FileOutputStream fos = new FileOutputStream(newFile);
 
 					int len;
@@ -80,16 +77,12 @@ public class SoftwarePackUtil {
 						fos.write(buffer, 0, len);
 					}
 					fos.close();
-				} else {
-					newFile.mkdirs();
 				}
 				ze = zis.getNextEntry();
 			}
 
 			zis.closeEntry();
 			zis.close();
-
-			System.out.println("Done");
 			return outputFolder;
 
 		} catch (IOException ex) {

@@ -26,6 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.VaadinApplication;
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Role;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.domain.Person;
@@ -61,6 +62,9 @@ public abstract class Tbase {
     
     @Autowired
     private ObjectMapper ymlObjectMapper;
+    
+    @Autowired
+    protected ApplicationConfig applicationConfig;
 
 	public static void printme(Object o) {
 		System.out.println(o);

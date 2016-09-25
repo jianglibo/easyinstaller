@@ -30,6 +30,7 @@ import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc.OneTaskFinishListener;
+import com.jianglibo.vaadin.dashboard.util.HttpPageGetter;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
@@ -82,6 +83,9 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 
 	@Autowired
 	private ApplicationConfig applicationConfig;
+	
+	@Autowired
+	private HttpPageGetter httpPageGetter;
 
 	@Autowired
 	private PersonRepository personRepository;
@@ -157,8 +161,11 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 					: getNavigator().getState();
 			getNavigator().navigateTo(v);
 		}
-		Broadcaster.unregister(this);
-//		new FeederThread().start();
+		Broadcaster.register(this);
+		// every user will trigger this method. But It's a special web application, usually only one user on line.
+		httpPageGetter.fetchSoftwareLists(() -> {
+			dashboardEventbus.getEventBus().post(new NewSoftwareAddedEvent());
+		});
 	}
 	
     @Override
