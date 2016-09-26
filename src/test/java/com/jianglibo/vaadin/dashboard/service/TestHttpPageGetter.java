@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard.service;
 
 import static org.junit.Assert.assertTrue;
 
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,4 +19,5 @@ public class TestHttpPageGetter extends Tbase {
 		boolean success = httpPageGetter.processOneSoftware(applicationConfig.getSoftwareFolderPath(), "tcl--centos7--1.zip");
 		assertTrue(success);
 	}
+
 }

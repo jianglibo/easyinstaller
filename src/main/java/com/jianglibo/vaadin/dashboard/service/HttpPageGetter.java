@@ -39,6 +39,7 @@ import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.util.SoftwarePackUtil;
+import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
 @Component
 public class HttpPageGetter {
@@ -56,6 +57,9 @@ public class HttpPageGetter {
 
 	@Autowired
 	private SoftwareRepository softwareRepository;
+	
+	@Autowired
+	private SoftwareDownloader softwareDownloader;
 	
 	@Autowired
 	private PersonRepository personRepository;
@@ -174,8 +178,14 @@ public class HttpPageGetter {
 					if (fntypemap.containsKey("real")) {
 						phfn.addAll(fntypemap.get("real"));
 					}
-					sf.setFilesToUpload(Sets.newHashSet(phfn));
+					phfn.forEach(fn -> {
+						softwareDownloader.submitTasks(fn);
+					});
 					
+//					normorlize file to upload.
+					phfn = phfn.stream().map(FileToUploadVo::new).map(FileToUploadVo::getRelative).collect(Collectors.toList());
+					
+					sf.setFilesToUpload(Sets.newHashSet(phfn));
 					Person root = personRepository.findByEmail(AppInitializer.firstEmail);
 					sf.setCreator(root);
 					softwareRepository.save(sf);

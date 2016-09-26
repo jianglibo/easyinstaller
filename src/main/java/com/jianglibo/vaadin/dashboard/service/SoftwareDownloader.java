@@ -98,25 +98,26 @@ public class SoftwareDownloader {
 	public void submitTasks(String fileUrl) {
 		try {
 			URL url = new URL(fileUrl);
+			if ("http".equals(url.getProtocol()) || "https".equals(url.getProtocol())) {
+				Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fileUrl), Broadcaster.BroadCasterMessageType.DOWNLOAD));
+				
+				ListenableFuture<Boolean> lf = service.submit(new DownloadOne(fileUrl));
+
+				Futures.addCallback(lf, new FutureCallback<Boolean>() {
+					@Override
+					public void onSuccess(Boolean result) {
+						Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fileUrl, result), Broadcaster.BroadCasterMessageType.DOWNLOAD));
+					}
+
+					@Override
+					public void onFailure(Throwable t) {
+						Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fileUrl, false), Broadcaster.BroadCasterMessageType.DOWNLOAD));	
+					}
+				} );
+			}
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			return;
 		}
-		
-		Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fileUrl), Broadcaster.BroadCasterMessageType.DOWNLOAD));
-		
-		ListenableFuture<Boolean> lf = service.submit(new DownloadOne(fileUrl));
-
-		Futures.addCallback(lf, new FutureCallback<Boolean>() {
-			@Override
-			public void onSuccess(Boolean result) {
-				Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fileUrl, result), Broadcaster.BroadCasterMessageType.DOWNLOAD));
-			}
-
-			@Override
-			public void onFailure(Throwable t) {
-				Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fileUrl, false), Broadcaster.BroadCasterMessageType.DOWNLOAD));	
-			}
-		} );
 	}
 
 	private class DownloadOne implements Callable<Boolean> {

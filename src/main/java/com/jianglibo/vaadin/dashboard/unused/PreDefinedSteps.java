@@ -23,7 +23,6 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
-import com.jianglibo.vaadin.dashboard.PreDefinedSoftwares;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.ssh.StepConfig;
