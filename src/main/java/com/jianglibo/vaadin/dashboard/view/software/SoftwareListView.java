@@ -10,11 +10,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 
 import com.google.common.eventbus.SubscriberExceptionContext;
+import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.SoftwareNumberChangeEvent;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
@@ -55,10 +54,9 @@ public class SoftwareListView extends BaseListView<Software, SoftwareTable, Soft
 
 	@Override
 	public void onDynButtonClicked(ButtonDescription btnDesc) {
-		Collection<Software> selected;
+		Collection<Software> selected = (Collection<Software>) getTable().getValue();
 		switch (btnDesc.getItemId()) {
 		case CommonMenuItemIds.DELETE:
-			selected = (Collection<Software>) getTable().getValue();
 			selected.forEach(b -> {
 				if (b.isArchived()) {
 					getRepository().delete(b);
@@ -73,7 +71,6 @@ public class SoftwareListView extends BaseListView<Software, SoftwareTable, Soft
 			((SoftwareContainer)getTable().getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
-			selected = (Collection<Software>) getTable().getValue();
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:
@@ -88,7 +85,8 @@ public class SoftwareListView extends BaseListView<Software, SoftwareTable, Soft
 	@Override
 	public void enter(final ViewChangeEvent event) {
 		super.enter(event);
-		DashboardEventBus.post(new SoftwareNumberChangeEvent(-1));
+		SoftwareViewMenuItem svmi = (SoftwareViewMenuItem)((DashboardUI)UI.getCurrent()).getDm().getMmis().getMenuMap().get(SoftwareViewMenuItem.class.getName());
+		svmi.updateNotificationsCount(0);
 	}
 
 	public void notifySort(Sort sort) {

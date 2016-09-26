@@ -23,7 +23,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +32,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
-import com.jianglibo.vaadin.dashboard.DashboardUI;
+import com.jianglibo.vaadin.dashboard.Broadcaster;
+import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessage;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.domain.Software;
@@ -44,6 +45,10 @@ import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 public class HttpPageGetter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpPageGetter.class);
+	
+	private int newSoftwareCountAfterLastStart = 0;
+	
+	private List<NewNew> allNews = Lists.newArrayList();
 
 	private CloseableHttpClient httpclient;
 
@@ -127,10 +132,6 @@ public class HttpPageGetter {
 		return "";
 	}
 
-	public static interface NewSoftwareAddedEventListener {
-		void newSoftwareAdded();
-	}
-
 	protected boolean processOneSoftware(final Path sfFolder, String sn) {
 		// tcl--centos7--1.zip
 		int idx = sn.lastIndexOf('.');
@@ -182,8 +183,52 @@ public class HttpPageGetter {
 		}
 		return false;
 	}
+	
+	public static class NewSoftwareMessage {
+		private int newSoftwareCountAfterLastStart;
 
-	public void fetchSoftwareLists(DashboardUI ui) {
+		public NewSoftwareMessage(int newSoftwareCountAfterLastStart) {
+			super();
+			this.newSoftwareCountAfterLastStart = newSoftwareCountAfterLastStart;
+		}
+
+		public int getNewSoftwareCountAfterLastStart() {
+			return newSoftwareCountAfterLastStart;
+		}
+
+		public void setNewSoftwareCountAfterLastStart(int newSoftwareCountAfterLastStart) {
+			this.newSoftwareCountAfterLastStart = newSoftwareCountAfterLastStart;
+		}
+	}
+	
+	public static class NewNewsMessage {
+		private List<NewNew> newNews;
+
+		public NewNewsMessage(List<NewNew> newNews) {
+			super();
+			this.newNews = newNews;
+		}
+
+		public List<NewNew> getNewNews() {
+			return newNews;
+		}
+
+		public void setNewNews(List<NewNew> newNews) {
+			this.newNews = newNews;
+		}
+	}
+	
+	/**
+	 * for every 5 seconds, report the new software inserted count from start of application.
+	 */
+	@Scheduled(fixedRate = 5000)
+	public void broadcastNewSoftware() {
+		Broadcaster.broadcast(new BroadCasterMessage(new NewSoftwareMessage(newSoftwareCountAfterLastStart), Broadcaster.BroadCasterMessageType.NEW_SOFTWARE));
+	}
+
+	// ten minutes.
+	@Scheduled(initialDelay=1000, fixedDelay=600000)
+	public void fetchSoftwareLists() {
 		String urlBase = "https://raw.githubusercontent.com/jianglibo/easyinstaller/master/softwares/";
 		String listfn = "softwarelist.txt";
 		final Path sfFolder = applicationConfig.getSoftwareFolderPath();
@@ -196,65 +241,43 @@ public class HttpPageGetter {
 		}
 		try {
 			String snLines = getPage(urlBase + listfn);
-
 			Files.write(applicationConfig.getSoftwareFolderPath().resolve(listfn), snLines.getBytes(Charsets.UTF_8));
-			CharStreams.readLines(new StringReader(snLines)).stream().forEach(sn -> {
+			newSoftwareCountAfterLastStart += CharStreams.readLines(new StringReader(snLines)).stream().map(sn -> {
 				Path targetZipFile = sfFolder.resolve(sn); 
 				if (!Files.exists(targetZipFile)) {
 					getFile(urlBase + sn, targetZipFile);
 				}
-				
 				if (Files.exists(targetZipFile)) {
-					boolean success = processOneSoftware(sfFolder, sn);
-					if (success) {
-						ui.newSoftwareAdded();
-					}
+					return processOneSoftware(sfFolder, sn);
+				} else {
+					return false;
 				}
-			});
+			}).mapToInt(b -> b ? 1 : 0).sum();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * Because this is a special web application, most of times only one user is
-	 * active, and it shutdown often.
-	 * 
-	 * Make a version marker at github site, and save every user's last access
-	 * version in database. So when new version arrive, can alert user.
-	 * 
-	 * @return
-	 */
-	@Async
+	@Scheduled(initialDelay=1000, fixedDelay=600000)
 	public void fetchNews() {
 		String s = getPage("https://raw.githubusercontent.com/jianglibo/first-vaadin/master/wiki/news/newslist.txt");
 		try {
-			List<NewNew> nn = CharStreams.readLines(new StringReader(s)).stream().map(line -> line.split("\\s+", 3))
+			allNews = CharStreams.readLines(new StringReader(s)).stream().map(line -> line.split("\\s+", 3))
 					.map(ft -> new NewNew(ft[2], ft[1],
 							"https://github.com/jianglibo/first-vaadin/tree/master/wiki/news/" + ft[0]))
 					.collect(Collectors.toList());
-			nn.stream().forEach(n -> LOGGER.info(n.toString()));
+		Broadcaster.broadcast(new BroadCasterMessage(new NewNewsMessage(allNews), Broadcaster.BroadCasterMessageType.NEW_NEWS));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// Document doc = Jsoup.parse(s, "https://github.com");
-		// List<String[]> tus = doc.select("div.file-wrap tr.js-navigation-item
-		// td.content a") //
-		// .stream() //
-		// .map(ele -> new String[] { tripExt(ele.html()), ele.absUrl("href")
-		// }).collect(Collectors.toList());
-		//
-		// List<String> datetimes = doc.select("div.file-wrap
-		// tr.js-navigation-item td.age time-ago").stream() //
-		// .map(ele -> ele.attr("datetime")).collect(Collectors.toList());
-		//
-		// List<NewNew> news = Lists.newArrayList();
-		//
-		// for (int i = 0; i < tus.size(); i++) {
-		// news.add(new NewNew(tus.get(i)[0], datetimes.get(i), tus.get(i)[1]));
-		// }
-		//
-		// return news;
+	}
+
+	public void setNewSoftwareCountAfterLastStart(int newSoftwareCountAfterLastStart) {
+		this.newSoftwareCountAfterLastStart = newSoftwareCountAfterLastStart;
+	}
+
+	public int getNewSoftwareCountAfterLastStart() {
+		return newSoftwareCountAfterLastStart;
 	}
 
 	public static class NewNew {

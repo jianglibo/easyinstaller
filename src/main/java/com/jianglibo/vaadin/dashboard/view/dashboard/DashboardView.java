@@ -49,9 +49,11 @@ public final class DashboardView extends Panel implements View,
     
 //    private ButtonWillPopupWindow notificationsButton;
     
-    private CssLayout dashboardPanels;
+//    private CssLayout dashboardPanels;
     
     private final VerticalLayout root;
+    
+    private TileContainer tc = new TileContainer();
 
     @Autowired
     public DashboardView(Domains domains, MessageSource messageSource) {
@@ -67,15 +69,17 @@ public final class DashboardView extends Panel implements View,
         Responsive.makeResponsive(root);
 
         root.addComponent(buildHeader());
-
-        TileContainer content = new TileContainer(/*new NotesTile(), new TopTenTile(),*/ new HtmlContentTile(messageSource, "about").setupAndReturnSelf(), new BoxHistoryTile(domains, messageSource, "boxhistory").setupAndReturnSelf());
         
-        content.AddTileMenuClickListener((panel, menuitem, b) -> {
+        tc.AddTileMenuClickListener((panel, menuitem, b) -> {
         	toggleMaximized(panel, b);
         });
-        dashboardPanels = content;
-        root.addComponent(content);
-        root.setExpandRatio(content, 1);
+        
+        tc.addTile(new HtmlContentTile(messageSource, "about").setupAndReturnSelf());
+        tc.addTile(new NewNewsTile(messageSource, "newnews").setupAndReturnSelf());
+        
+//        dashboardPanels = content;
+        root.addComponent(tc);
+        root.setExpandRatio(tc, 1);
 
         // All the open sub-windows should be closed whenever the root layout
         // gets clicked.
@@ -139,7 +143,11 @@ public final class DashboardView extends Panel implements View,
 //        notificationsButton.updateNotificationsCount(null);
     }
 
-    @Override
+    public TileContainer getTc() {
+		return tc;
+	}
+
+	@Override
     public void dashboardNameEdited(final String name) {
         titleLabel.setValue(name);
     }
@@ -148,9 +156,9 @@ public final class DashboardView extends Panel implements View,
         for (Iterator<Component> it = root.iterator(); it.hasNext();) {
             it.next().setVisible(!maximized);
         }
-        dashboardPanels.setVisible(true);
+        tc.setVisible(true);
 
-        for (Iterator<Component> it = dashboardPanels.iterator(); it.hasNext();) {
+        for (Iterator<Component> it = tc.iterator(); it.hasNext();) {
             Component c = it.next();
             c.setVisible(!maximized);
         }

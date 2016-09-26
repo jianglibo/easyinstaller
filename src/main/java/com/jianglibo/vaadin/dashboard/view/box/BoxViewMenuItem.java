@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
+import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
 import com.vaadin.server.FontAwesome;
@@ -29,7 +30,5 @@ public class BoxViewMenuItem implements MenuItemWrapper {
 
 	@Override
 	public void onAttach() {
-		// TODO Auto-generated method stub
-		
 	}
 }

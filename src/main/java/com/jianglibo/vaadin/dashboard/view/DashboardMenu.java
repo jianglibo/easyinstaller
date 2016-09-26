@@ -141,7 +141,7 @@ public final class DashboardMenu extends CustomComponent {
 		CssLayout menuItemsLayout = new CssLayout();
 		menuItemsLayout.addStyleName("valo-menuitems");
 		
-		mmis.getItems().values().forEach(mw -> {
+		mmis.getOrderedItems().forEach(mw -> {
 			menuItemsLayout.addComponent(mw.getMenuItem());
 		});
 		return menuItemsLayout;
@@ -150,10 +150,14 @@ public final class DashboardMenu extends CustomComponent {
 	@Override
 	public void attach() {
 		super.attach();
-		mmis.getItems().values().forEach(mw -> {
+		mmis.getOrderedItems().forEach(mw -> {
 			mw.onAttach();
 		});
 
+	}
+
+	public MainMenuItems getMmis() {
+		return mmis;
 	}
 
 	@Subscribe

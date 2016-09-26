@@ -47,4 +47,5 @@ public class DashboardViewMenuItem implements MenuItemWrapper {
 	public void onAttach() {
 //		updateNotificationsCount(null);
 	}
+
 }

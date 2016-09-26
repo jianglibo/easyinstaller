@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessage;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
@@ -32,13 +34,17 @@ import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc.OneTaskFinishListener;
-import com.jianglibo.vaadin.dashboard.util.HttpPageGetter;
+import com.jianglibo.vaadin.dashboard.uicomponent.tile.TileBase;
+import com.jianglibo.vaadin.dashboard.util.HttpPageGetter.NewNewsMessage;
+import com.jianglibo.vaadin.dashboard.util.HttpPageGetter.NewSoftwareMessage;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
 import com.jianglibo.vaadin.dashboard.view.LoginView;
 import com.jianglibo.vaadin.dashboard.view.MainMenuItems;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
+import com.jianglibo.vaadin.dashboard.view.dashboard.NewNewsTile;
+import com.jianglibo.vaadin.dashboard.view.software.SoftwareViewMenuItem;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelector;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
@@ -67,11 +73,13 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 @SpringUI(path = "/")
 @Push(PushMode.MANUAL)
-public final class DashboardUI extends UI implements ApplicationContextAware, OneTaskFinishListener/*, Broadcaster.BroadcastListener*/ {
+public final class DashboardUI extends UI implements ApplicationContextAware, OneTaskFinishListener, Broadcaster.BroadcastListener {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(DashboardUI.class);
 
 	private ApplicationContext applicationContext;
+	
+	private int newSoftwareCountAfterLastStart = 0;
 
 	@Autowired
 	private SpringViewProvider viewProvider;
@@ -88,9 +96,6 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 	@Autowired
 	private ApplicationConfig applicationConfig;
 	
-	@Autowired
-	private HttpPageGetter httpPageGetter;
-
 	@Autowired
 	private PersonRepository personRepository;
 
@@ -164,18 +169,43 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 			String v = Strings.isNullOrEmpty(getNavigator().getState()) ? DashboardView.VIEW_NAME
 					: getNavigator().getState();
 			getNavigator().navigateTo(v);
-			new Thread(() -> {
-				httpPageGetter.fetchSoftwareLists(DashboardUI.this);
-			}).start();
 		}
-//		Broadcaster.register(this);
-		// every user will trigger this method. But It's a special web application, usually only one user on line.
-//		
+		Broadcaster.register(this);
 	}
+	
+	/**
+	 * 
+	 * query every backgroup work results, when view changed. 
+	 *
+	 */
+//	private class MyViewChangeListener implements ViewChangeListener {
+//
+//		@Override
+//		public boolean beforeViewChange(ViewChangeEvent event) {
+//			return true;
+//		}
+//
+//		@Override
+//		public void afterViewChange(ViewChangeEvent event) {
+//			LOGGER.info("swithing to view: {}", event.getViewName());
+//			if (asyncCaller.getNewSoftwareCountAfterLastStart() > 0) {
+//				SoftwareViewMenuItem svmi = (SoftwareViewMenuItem)getDm().getMmis().getMenuMap().get(SoftwareViewMenuItem.class.getName());
+//				svmi.updateNotificationsCount(asyncCaller.getNewSoftwareCountAfterLastStart());
+//			}
+//			
+//			if (event.getViewName().startsWith("software")) {
+//				if (asyncCaller.getNewSoftwareCountAfterLastStart() > 0) {
+//					SoftwareViewMenuItem svmi = (SoftwareViewMenuItem)getDm().getMmis().getMenuMap().get(SoftwareViewMenuItem.class.getName());
+//					asyncCaller.resetNewSoftwareCountAfterLastStart();
+//					svmi.updateNotificationsCount(0);
+//				}
+//			}
+//		}
+//	}
 	
     @Override
     public void detach() {
-//        Broadcaster.unregister(this);
+        Broadcaster.unregister(this);
         super.detach();
     }
 
@@ -187,40 +217,6 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 			}
 		});
 	}
-
-	// /**
-	// *
-	// * do nothing here.
-	// *
-	// */
-	// private void updateContent(boolean loginFailed, VaadinRequest request) {
-	// User user = (User)
-	// VaadinSession.getCurrent().setAttribute(User.class.getName(), new
-	// User());
-	//
-	// if (user != null && "admin".equals(user.getRole())) {
-	// MainView mv = new MainView(viewProvider);
-	// setContent(mv);
-	// removeStyleName("loginview");
-	// String v = Strings.isNullOrEmpty(getNavigator().getState()) ?
-	// DashboardView.VIEW_NAME : getNavigator().getState();
-	// getNavigator().navigateTo(v);
-	// } else {
-	// LoginView lv = new LoginView(messageSource, localeResolver);
-	// lv.setup(loginFailed, noticeHasShown);
-	// setContent(lv);
-	// noticeHasShown++;
-	// addStyleName("loginview");
-	// }
-	// }
-
-	// @Subscribe
-	// public void userLoginRequested(final UserLoginRequestedEvent event) {
-	// User user = getDataProvider().authenticate(event.getUserName(),
-	// event.getPassword());
-	// VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
-	// updateContent(true);
-	// }
 
 	@Subscribe
 	public void userLoggedOut(final UserLoggedOutEvent event) {
@@ -250,14 +246,16 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
+	
+	private DashboardMenu dm;
 
 	public class MainView extends HorizontalLayout {
 		public MainView(SpringViewProvider viewProvider) {
 			setSizeFull();
 			addStyleName("mainview");
 			// MainMenuItems must inject this way.
-			addComponent(
-					new DashboardMenu(messageSource, localeResolver, applicationContext.getBean(MainMenuItems.class)));
+			setDm(new DashboardMenu(messageSource, localeResolver, applicationContext.getBean(MainMenuItems.class)));
+			addComponent(getDm());
 			ComponentContainer content = new CssLayout();
 			content.addStyleName("view-content");
 			content.setSizeFull();
@@ -275,30 +273,59 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 				// setContent(new Label("Done!"));
 			}
 		});
-
 	}
 	
 	
-//	/**
-//	 * We don't care of current Thread, But track for this UI instance, If instance is right, dashboardEventbus must be right.
-//	 */
-//	@Override
-//	public void receiveBroadcast(String message) {
-//        // Must lock the session to execute logic safely
-//        access(new Runnable() {
-//            @Override
-//            public void run() {
-//            	switch (message) {
-//				case "NewSoftwareAddedEvent":
-//					dashboardEventbus.getEventBus().post(new SoftwareNumberChangeEvent());
-//					break;
-//				default:
-//					break;
-//				}
-//                push();
-//            }
-//        });
-//	}
+	/**
+	 * 
+	 */
+	@Override
+	public void receiveBroadcast(BroadCasterMessage message) {
+        // Must lock the session to execute logic safely
+        access(new Runnable() {
+            @Override
+            public void run() {
+            	switch (message.getBcmt()) {
+				case NEW_SOFTWARE:
+					NewSoftwareMessage nsm = (NewSoftwareMessage) message.getBody();
+					if (nsm.getNewSoftwareCountAfterLastStart() > getNewSoftwareCountAfterLastStart()) {
+						SoftwareViewMenuItem svmi = (SoftwareViewMenuItem)getDm().getMmis().getMenuMap().get(SoftwareViewMenuItem.class.getName());
+						svmi.updateNotificationsCount(nsm.getNewSoftwareCountAfterLastStart() - getNewSoftwareCountAfterLastStart());
+						setNewSoftwareCountAfterLastStart(nsm.getNewSoftwareCountAfterLastStart());
+						push();
+					}
+					break;
+				case NEW_NEWS:
+					// Must sure view interested is current view.
+					if (getNavigator().getCurrentView() instanceof DashboardView) {
+						NewNewsMessage nnm = (NewNewsMessage) message.getBody();
+						Optional<TileBase> tbOp = ((DashboardView)getNavigator().getCurrentView()).getTc().findTile(NewNewsTile.class);
+						NewNewsTile nnt;
+						if (tbOp.isPresent()) {
+							((NewNewsTile)tbOp.get()).getNewNewTable().addNews(nnm.getNewNews());
+						} else {
+							nnt = new NewNewsTile(messageSource, "newnews");
+							((DashboardView)getNavigator().getCurrentView()).getTc().addTile(nnt);
+							nnt.getNewNewTable().addNews(nnm.getNewNews());
+						}
+						push();
+ 					}
+					break;
+				default:
+					break;
+				}
+                push();
+            }
+        });
+	}
+
+	public int getNewSoftwareCountAfterLastStart() {
+		return newSoftwareCountAfterLastStart;
+	}
+
+	public void setNewSoftwareCountAfterLastStart(int newSoftwareCountAfterLastStart) {
+		this.newSoftwareCountAfterLastStart = newSoftwareCountAfterLastStart;
+	}
 
 	public void newSoftwareAdded() {
         access(new Runnable() {
@@ -309,5 +336,13 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
             	push();
             }
         });
+	}
+
+	public DashboardMenu getDm() {
+		return dm;
+	}
+
+	public void setDm(DashboardMenu dm) {
+		this.dm = dm;
 	}
 }

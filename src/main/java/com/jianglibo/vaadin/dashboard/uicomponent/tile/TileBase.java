@@ -2,7 +2,6 @@ package com.jianglibo.vaadin.dashboard.uicomponent.tile;
 
 import java.util.List;
 
-import org.apache.catalina.valves.ExtendedAccessLogValve;
 import org.springframework.context.MessageSource;
 
 import com.google.common.collect.Lists;
@@ -108,7 +107,7 @@ public abstract class TileBase extends CssLayout {
 
 	public abstract void setTileStyles();
 	
-	public void AddTileMenuClickListener(TileMenuClickListener tmcl) {
+	public void addTileMenuClickListener(TileMenuClickListener tmcl) {
 		this.tmcls.add(tmcl);
 	}
 	

@@ -3,10 +3,8 @@ package com.jianglibo.vaadin.dashboard.view.software;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
-import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.SoftwareNumberChangeEvent;
 import com.jianglibo.vaadin.dashboard.view.DboardViewUtil;
 import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
@@ -38,21 +36,14 @@ public class SoftwareViewMenuItem implements MenuItemWrapper {
 		return menuItem;
 	}
 	
-	@Subscribe
-	public void updateNotificationsCount(final SoftwareNumberChangeEvent event) {
-		if (event != null) {
-			if (event.getNumber() == 1) {
-				unreadNotificationsCount++; 
-			} else {
-				unreadNotificationsCount = 0;
-			}
-		}
+	public void updateNotificationsCount(int count) {
+		unreadNotificationsCount = count;
 		notificationsBadge.setValue(String.valueOf(unreadNotificationsCount));
 		notificationsBadge.setVisible(unreadNotificationsCount > 0);
 	}
 	
 	@Override
 	public void onAttach() {
-		updateNotificationsCount(null);
+		updateNotificationsCount(0);
 	}
 }

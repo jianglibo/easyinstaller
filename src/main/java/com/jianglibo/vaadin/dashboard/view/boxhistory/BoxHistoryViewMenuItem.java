@@ -5,6 +5,7 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.Subscribe;
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
+import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.NotificationsCountUpdatedEvent;
 import com.jianglibo.vaadin.dashboard.view.DboardViewUtil;

@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.view;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -13,10 +14,16 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.vaadin.spring.annotation.SpringComponent;
 
+/**
+ * 
+ * @author jianglibo@gmail.com
+ *
+ */
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class MainMenuItems {
@@ -24,7 +31,9 @@ public class MainMenuItems {
 
 	private final ApplicationContext applicationContext;
 	
-	private SortedMap<Integer, MenuItemWrapper> items = Maps.newTreeMap();
+	private Map<String, MenuItemWrapper> menuMap = Maps.newHashMap();
+	
+	private List<MenuItemWrapper> orderedItems;
 	
 	@Autowired
 	public MainMenuItems(ApplicationContext applicationContext) {
@@ -33,6 +42,7 @@ public class MainMenuItems {
 	
 	@PostConstruct
 	void after() {
+		SortedMap<Integer, MenuItemWrapper> items = Maps.newTreeMap();
 		Map<String, Object> wrappers =  applicationContext.getBeansWithAnnotation(MainMenu.class);
 		
 		for(Entry<String, Object> entry : wrappers.entrySet()) {
@@ -41,12 +51,26 @@ public class MainMenuItems {
 			while(items.containsKey(i)) {
 				i++;
 			}
-			items.put(i, (MenuItemWrapper) entry.getValue());
+			MenuItemWrapper miw = (MenuItemWrapper) entry.getValue(); 
+			items.put(i, miw);
+			menuMap.put(miw.getClass().getName(), miw);
 		}
-	}
-	
-	public SortedMap<Integer, MenuItemWrapper> getItems() {
-		return items;
+		setOrderedItems(Lists.newArrayList(items.values()));
 	}
 
+	public List<MenuItemWrapper> getOrderedItems() {
+		return orderedItems;
+	}
+
+	public void setOrderedItems(List<MenuItemWrapper> orderedItems) {
+		this.orderedItems = orderedItems;
+	}
+
+	public Map<String, MenuItemWrapper> getMenuMap() {
+		return menuMap;
+	}
+
+	public void setMenuMap(Map<String, MenuItemWrapper> menuMap) {
+		this.menuMap = menuMap;
+	}
 }
