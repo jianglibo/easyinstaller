@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.util;
+package com.jianglibo.vaadin.dashboard.service;
 
 import static org.junit.Assert.assertTrue;
 
@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jianglibo.vaadin.dashboard.Tbase;
+import com.jianglibo.vaadin.dashboard.service.HttpPageGetter;
 
 public class TestHttpPageGetter extends Tbase {
 	

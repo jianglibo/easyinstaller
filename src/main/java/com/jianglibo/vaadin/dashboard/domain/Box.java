@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
@@ -24,7 +23,6 @@ import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
-import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ScalarGridFieldDescription;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
@@ -52,10 +50,8 @@ public class Box extends BaseEntity {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<BoxGroup> boxGroups = Sets.newHashSet();
 	
-	@ElementCollection(fetch = FetchType.EAGER)
-	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 100)
-	@ScalarGridFieldDescription(columns = { "value", "!remove"}, clazz = String.class, rowNumber=4)
-	private Set<String> roles = Sets.newHashSet();
+	@VaadinFormField(order = 100)
+	private String roles;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@NotNull
@@ -225,11 +221,11 @@ public class Box extends BaseEntity {
 		this.creator = creator;
 	}
 
-	public Set<String> getRoles() {
+	public String getRoles() {
 		return roles;
 	}
 
-	public void setRoles(Set<String> roles) {
+	public void setRoles(String roles) {
 		this.roles = roles;
 	}
 }

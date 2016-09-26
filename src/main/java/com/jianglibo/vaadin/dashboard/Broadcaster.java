@@ -35,7 +35,7 @@ public class Broadcaster implements Serializable {
 	}
 	
 	public static enum BroadCasterMessageType {
-		NEW_SOFTWARE, NEW_NEWS
+		NEW_SOFTWARE, NEW_NEWS, DOWNLOAD
 	}
 	
 	public static class BroadCasterMessage {

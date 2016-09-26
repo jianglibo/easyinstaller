@@ -31,12 +31,12 @@ import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEv
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.SoftwareNumberChangeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
 import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
+import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNewsMessage;
+import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewSoftwareMessage;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc.OneTaskFinishListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.tile.TileBase;
-import com.jianglibo.vaadin.dashboard.util.HttpPageGetter.NewNewsMessage;
-import com.jianglibo.vaadin.dashboard.util.HttpPageGetter.NewSoftwareMessage;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
@@ -80,6 +80,8 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 	private ApplicationContext applicationContext;
 	
 	private int newSoftwareCountAfterLastStart = 0;
+	
+	private int fetchNewsCount = 0;
 
 	@Autowired
 	private SpringViewProvider viewProvider;
@@ -299,16 +301,19 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 					// Must sure view interested is current view.
 					if (getNavigator().getCurrentView() instanceof DashboardView) {
 						NewNewsMessage nnm = (NewNewsMessage) message.getBody();
-						Optional<TileBase> tbOp = ((DashboardView)getNavigator().getCurrentView()).getTc().findTile(NewNewsTile.class);
-						NewNewsTile nnt;
-						if (tbOp.isPresent()) {
-							((NewNewsTile)tbOp.get()).getNewNewTable().addNews(nnm.getNewNews());
-						} else {
-							nnt = new NewNewsTile(messageSource, "newnews");
-							((DashboardView)getNavigator().getCurrentView()).getTc().addTile(nnt);
-							nnt.getNewNewTable().addNews(nnm.getNewNews());
+						if (nnm.getFetchCount() > fetchNewsCount) {
+							fetchNewsCount = nnm.getFetchCount();
+							Optional<TileBase> tbOp = ((DashboardView)getNavigator().getCurrentView()).getTc().findTile(NewNewsTile.class);
+							NewNewsTile nnt;
+							if (tbOp.isPresent()) {
+								((NewNewsTile)tbOp.get()).getNewNewTable().addNews(nnm.getNewNews());
+							} else {
+								nnt = new NewNewsTile(messageSource, "newnews");
+								((DashboardView)getNavigator().getCurrentView()).getTc().addTile(nnt);
+								nnt.getNewNewTable().addNews(nnm.getNewNews());
+							}
+							push();
 						}
-						push();
  					}
 					break;
 				default:

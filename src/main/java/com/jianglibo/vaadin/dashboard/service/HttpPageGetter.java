@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.util;
+package com.jianglibo.vaadin.dashboard.service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +12,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -40,6 +38,7 @@ import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
+import com.jianglibo.vaadin.dashboard.util.SoftwarePackUtil;
 
 @Component
 public class HttpPageGetter {
@@ -48,9 +47,9 @@ public class HttpPageGetter {
 	
 	private int newSoftwareCountAfterLastStart = 0;
 	
+	private int fetchNewsCount = 0;
+	
 	private List<NewNew> allNews = Lists.newArrayList();
-
-	private CloseableHttpClient httpclient;
 
 	@Autowired
 	private ApplicationConfig applicationConfig;
@@ -64,70 +63,75 @@ public class HttpPageGetter {
 	@Autowired
 	private ObjectMapper ymlObjectMapper;
 
-	@PostConstruct
-	public void after() {
-		httpclient = HttpClients.createDefault();
-	}
-
 	public String getPage(String url) {
 		return getPage(url, Charsets.UTF_8);
 	}
 
 	public void getFile(String url, Path target) {
-		CloseableHttpResponse response = null;
-		try {
-			Path tmpFile = Files.createTempFile(HttpPageGetter.class.getName(), "");
-			HttpGet httpget = new HttpGet(url);
-			response = httpclient.execute(httpget);
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				InputStream instream = entity.getContent();
-				OutputStream outstream = Files.newOutputStream(tmpFile);
-				try {
-					ByteStreams.copy(instream, outstream);
-					instream.close();
-					outstream.flush();
-					outstream.close();
-					Files.move(tmpFile, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-				} finally {
+		try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+			CloseableHttpResponse response = null;
+			try {
+				Path tmpFile = Files.createTempFile(HttpPageGetter.class.getName(), "");
+				HttpGet httpget = new HttpGet(url);
+				response = httpclient.execute(httpget);
+				HttpEntity entity = response.getEntity();
+				if (entity != null) {
+					InputStream instream = entity.getContent();
+					OutputStream outstream = Files.newOutputStream(tmpFile);
+					try {
+						ByteStreams.copy(instream, outstream);
+						instream.close();
+						outstream.flush();
+						outstream.close();
+						Files.move(tmpFile, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+					} finally {
+
+					}
 
 				}
-
-			}
-		} catch (IOException e) {
-		} finally {
-			if (response != null) {
-				try {
-					response.close();
-				} catch (IOException e) {
+			} catch (IOException e) {
+			} finally {
+				if (response != null) {
+					try {
+						response.close();
+					} catch (IOException e) {
+					}
 				}
 			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 	}
 
 	public String getPage(String url, Charset cs) {
-		CloseableHttpResponse response = null;
-		try {
-			HttpGet httpget = new HttpGet(url);
-			response = httpclient.execute(httpget);
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				InputStream instream = entity.getContent();
-				try {
-					InputStreamReader isr = new InputStreamReader(instream, cs);
-					return CharStreams.toString(isr);
-				} finally {
-					instream.close();
+		try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+			CloseableHttpResponse response = null;
+			try {
+				HttpGet httpget = new HttpGet(url);
+				response = httpclient.execute(httpget);
+				HttpEntity entity = response.getEntity();
+				if (entity != null) {
+					InputStream instream = entity.getContent();
+					try {
+						InputStreamReader isr = new InputStreamReader(instream, cs);
+						return CharStreams.toString(isr);
+					} finally {
+						instream.close();
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (response != null) {
+					try {
+						response.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
-		} catch (IOException e) {
-		} finally {
-			if (response != null) {
-				try {
-					response.close();
-				} catch (IOException e) {
-				}
-			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 		return "";
 	}
@@ -203,10 +207,21 @@ public class HttpPageGetter {
 	
 	public static class NewNewsMessage {
 		private List<NewNew> newNews;
+		
+		private int fetchCount;
 
-		public NewNewsMessage(List<NewNew> newNews) {
+		public NewNewsMessage(List<NewNew> newNews, int fetchCount) {
 			super();
 			this.newNews = newNews;
+			this.fetchCount = fetchCount;
+		}
+
+		public int getFetchCount() {
+			return fetchCount;
+		}
+
+		public void setFetchCount(int fetchCount) {
+			this.fetchCount = fetchCount;
 		}
 
 		public List<NewNew> getNewNews() {
@@ -221,9 +236,10 @@ public class HttpPageGetter {
 	/**
 	 * for every 5 seconds, report the new software inserted count from start of application.
 	 */
-	@Scheduled(fixedRate = 5000)
+	@Scheduled(fixedRate = 10000)
 	public void broadcastNewSoftware() {
 		Broadcaster.broadcast(new BroadCasterMessage(new NewSoftwareMessage(newSoftwareCountAfterLastStart), Broadcaster.BroadCasterMessageType.NEW_SOFTWARE));
+		Broadcaster.broadcast(new BroadCasterMessage(new NewNewsMessage(getAllNews(), fetchNewsCount), Broadcaster.BroadCasterMessageType.NEW_NEWS));
 	}
 
 	// ten minutes.
@@ -240,6 +256,7 @@ public class HttpPageGetter {
 			}
 		}
 		try {
+			LOGGER.info("start fetching from {}", urlBase + listfn);
 			String snLines = getPage(urlBase + listfn);
 			Files.write(applicationConfig.getSoftwareFolderPath().resolve(listfn), snLines.getBytes(Charsets.UTF_8));
 			newSoftwareCountAfterLastStart += CharStreams.readLines(new StringReader(snLines)).stream().map(sn -> {
@@ -262,11 +279,11 @@ public class HttpPageGetter {
 	public void fetchNews() {
 		String s = getPage("https://raw.githubusercontent.com/jianglibo/first-vaadin/master/wiki/news/newslist.txt");
 		try {
-			allNews = CharStreams.readLines(new StringReader(s)).stream().map(line -> line.split("\\s+", 3))
+			setAllNews(CharStreams.readLines(new StringReader(s)).stream().map(line -> line.split("\\s+", 3))
 					.map(ft -> new NewNew(ft[2], ft[1],
 							"https://github.com/jianglibo/first-vaadin/tree/master/wiki/news/" + ft[0]))
-					.collect(Collectors.toList());
-		Broadcaster.broadcast(new BroadCasterMessage(new NewNewsMessage(allNews), Broadcaster.BroadCasterMessageType.NEW_NEWS));
+					.collect(Collectors.toList()));
+		fetchNewsCount++;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -278,6 +295,14 @@ public class HttpPageGetter {
 
 	public int getNewSoftwareCountAfterLastStart() {
 		return newSoftwareCountAfterLastStart;
+	}
+
+	public List<NewNew> getAllNews() {
+		return allNews;
+	}
+
+	public void setAllNews(List<NewNew> allNews) {
+		this.allNews = allNews;
 	}
 
 	public static class NewNew {
