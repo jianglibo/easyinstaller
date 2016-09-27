@@ -12,10 +12,14 @@ import org.springframework.stereotype.Component;
 
 import com.jianglibo.vaadin.dashboard.domain.Role;
 import com.google.common.collect.Sets;
+import com.jianglibo.vaadin.dashboard.domain.Box;
+import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.repositories.RoleRepository;
 import com.jianglibo.vaadin.dashboard.security.PersonManager;
 import com.jianglibo.vaadin.dashboard.security.PersonVo;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
+import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
@@ -33,6 +37,12 @@ public class AppInitializer implements InitializingBean {
 
 	@Autowired
 	private PersonManager personManager;
+	
+	@Autowired
+	private BoxRepository boxRepository;
+	
+	@Autowired
+	private BoxGroupRepository boxGroupRepository;
 
 	@Autowired
 	public AppInitializer(PersonRepository userRepo, RoleRepository roleRepo) {
@@ -46,17 +56,53 @@ public class AppInitializer implements InitializingBean {
 		if (logger.isDebugEnabled()) {
 			logger.debug("checking empty role users.");
 		}
-		initFisrstUser();
+		boolean firstCreate = initFisrstUser();
+		if (firstCreate) {
+			initFirstCluster();
+		}
+	}
+
+	private void initFirstCluster() {
+		Person person = userRepo.findByEmail(firstEmail);
+		final String bgName = "demoboxgroup";
+		final String demoIp = "192.168.33.10";
+		
+		BoxGroup bg = boxGroupRepository.findByName(bgName);
+		
+		if (bg == null) {
+			bg = new BoxGroup();
+			bg.setCreator(person);
+			bg.setDnsServer("8.8.8.8");
+			bg.setName("demoboxgroup");
+			bg = boxGroupRepository.save(bg);
+		}
+		
+		Box box = boxRepository.findByIp("192.168.33.10");
+		if (box == null) {
+			box = new Box();
+			box.setArchived(false);
+			box.setCommaSepPorts("80,8080");
+			box.setCreator(person);
+			box.setOsType("centos7");
+			box.setDnsServer("8.8.8.8");
+			box.setHostname("s1.example.com");
+			box.setIp(demoIp);
+			box.setName("demobox");
+			box.setBoxGroups(Sets.newHashSet(bg));
+			box = boxRepository.save(box);
+			
+			bg.getBoxes().add(box);
+		}
 	}
 
 	/**
 	 * 
+	 * @return is user new created.
 	 */
 	@Transactional
-	private void initFisrstUser() {
+	private boolean initFisrstUser() {
 		try {
 			Person person = userRepo.findByEmail(firstEmail);
-
 			if (person == null) {
 				Role ur = roleRepo.findByName(RoleNames.USER);
 				Role superman = roleRepo.findByName(RoleNames.SUPERMAN);
@@ -64,10 +110,14 @@ public class AppInitializer implements InitializingBean {
 				PersonVo pvo = new PersonVo.PersonVoBuilder("root", firstEmail, "18888888888", "root").setAvatar(ColumnUtil.getFullIconPath("avatar.jpg"))
 						.setAuthorities(roles).build();
 				personManager.createUser(pvo);
+				return true;
+			} else {
+				return false;
 			}
 		} catch (Exception e) {
 			logger.error("create init user throw exception: {}", ThrowableUtil.printToString(e));
 		}
+		return false;
 	}
 
 	private void initRoles() {

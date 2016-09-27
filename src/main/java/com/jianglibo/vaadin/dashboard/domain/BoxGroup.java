@@ -10,6 +10,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import com.google.gwt.thirdparty.guava.common.collect.Sets;
@@ -29,7 +30,7 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "box_group")
+@Table(name = "box_group", uniqueConstraints = { @UniqueConstraint(columnNames = "name") })
 @VaadinGrid(multiSelect = true, messagePrefix = "domain.boxgroup.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
@@ -40,6 +41,7 @@ public class BoxGroup extends BaseEntity {
 
 	@VaadinGridColumn
 	@VaadinFormField(order = 10)
+	@NotNull
 	private String name;
 	
 	@ManyToMany(fetch=FetchType.EAGER, mappedBy = "boxGroups")

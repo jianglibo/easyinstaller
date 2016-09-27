@@ -22,4 +22,6 @@ public interface BoxRepository extends JpaRepository<Box, Long>, BoxRepositoryCu
 	long countByIpContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndArchivedEquals(String filterStr,
 			String filterStr2, boolean trashed);
 
+	Box findByIp(String string);
+
 }

@@ -45,6 +45,7 @@ public class Box extends BaseEntity {
 	
 	@VaadinTableColumn(order = 1)
 	@VaadinFormField(order = 10)
+	@NotNull
 	private String name;
 	
 	@ManyToMany(fetch = FetchType.EAGER)

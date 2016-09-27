@@ -15,5 +15,7 @@ public interface BoxGroupRepository extends JpaRepository<BoxGroup, Long>,BoxGro
 	Page<BoxGroup> findByArchivedEquals(boolean trashed, Pageable pageable);
 
 	long countByArchivedEquals(boolean trashed);
+
+	BoxGroup findByName(String bgName);
     
 }
