@@ -3,3 +3,5 @@ preferredFormat: YAML
 codeToExecute: code.sh
 configContent: config.yml
 actions: install,upgrade
+filesToUpload:
+  - https://github.com/jianglibo/easyinstaller/blob/master/Vagrantfile.tpl

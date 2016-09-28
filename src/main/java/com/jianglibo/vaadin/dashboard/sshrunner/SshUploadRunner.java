@@ -3,6 +3,7 @@ package com.jianglibo.vaadin.dashboard.sshrunner;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
+import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
 /**
  * ApplicationConfig has a configurable remoteFolder property. Files upload to
@@ -36,12 +38,16 @@ public class SshUploadRunner implements BaseRunner {
 
 		// confirm all files exists in local.
 		List<String> noneExistsFiles = Lists.newArrayList();
-		for(String fileToUpload : taskDesc.getSoftware().getFilesToUpload()) {
-			Path sourceFile = applicationConfig.getLocalFolderPath().resolve(fileToUpload); 
+		
+		Set<FileToUploadVo> ftuvos = taskDesc.getSoftware().getFileToUploadVos();
+		
+		ftuvos.forEach(fvo -> {
+			Path sourceFile = applicationConfig.getLocalFolderPath().resolve(fvo.getRelative()); 
 			if (!Files.exists(sourceFile)) {
 				noneExistsFiles.add(sourceFile.toAbsolutePath().toString());
 			}
-		}
+		});
+		
 		BoxHistory bh = taskDesc.getBoxHistory();
 		if (noneExistsFiles.size() > 0) {
 			String log = noneExistsFiles.stream().reduce("", (result, l) -> result + l);
@@ -51,8 +57,9 @@ public class SshUploadRunner implements BaseRunner {
 			try {
 				sftp = jsession.getSftpCh();
 				try {
-					for(String fileToUpload : taskDesc.getSoftware().getFilesToUpload()) {
-						String targetFile = applicationConfig.getRemoteFolder() + fileToUpload.replaceAll("\\\\", "/");
+					for(FileToUploadVo fvo : taskDesc.getSoftware().getFileToUploadVos()) {
+						String fileToUpload = applicationConfig.getLocalFolderPath().resolve(fvo.getRelative()).toAbsolutePath().toString();
+						String targetFile = applicationConfig.getRemoteFolder() + fvo.getRelative().replaceAll("\\\\", "/");
 						sftp.put(fileToUpload, targetFile, ChannelSftp.OVERWRITE);
 					}
 				} catch (Exception e) {

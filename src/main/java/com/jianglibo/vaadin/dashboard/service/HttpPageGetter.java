@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.http.HttpEntity;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.Broadcaster;
@@ -166,26 +164,11 @@ public class HttpPageGetter {
 							.asCharSource(unpackedFolder.resolve(sf.getConfigContent()).toFile(), Charsets.UTF_8)
 							.copyTo(bf);
 					sf.setConfigContent(bf.toString());
-
-					Path filesToUploadPath = unpackedFolder.resolve("filesToUpload");
-
-					Map<String, List<String>> fntypemap = Files.list(filesToUploadPath).map(Path::getFileName)
-							.map(Path::toString).collect(Collectors.groupingBy(fn -> fn.endsWith(".placeholder") ? "placeholder" : "real"));
-
-					List<String> phfn = fntypemap.containsKey("placeholder") ? fntypemap.get("placeholder").stream().map(fn -> fn.substring(0, fn.length() - 12))
-							.collect(Collectors.toList()) : Lists.newArrayList();
-
-					if (fntypemap.containsKey("real")) {
-						phfn.addAll(fntypemap.get("real"));
-					}
-					phfn.forEach(fn -> {
-						softwareDownloader.submitTasks(fn);
+					
+					sf.getFileToUploadVos().stream().filter(FileToUploadVo::isRemoteFile).forEach(vo -> {
+						softwareDownloader.submitTasks(vo);
 					});
 					
-//					normorlize file to upload.
-					phfn = phfn.stream().map(FileToUploadVo::new).map(FileToUploadVo::getRelative).collect(Collectors.toList());
-					
-					sf.setFilesToUpload(Sets.newHashSet(phfn));
 					Person root = personRepository.findByEmail(AppInitializer.firstEmail);
 					sf.setCreator(root);
 					softwareRepository.save(sf);

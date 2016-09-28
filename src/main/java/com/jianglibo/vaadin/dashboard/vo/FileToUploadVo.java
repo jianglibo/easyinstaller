@@ -4,9 +4,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class FileToUploadVo {
-	
+
 	private boolean remoteFile;
-	
+
 	private String orignValue;
 
 	public FileToUploadVo(String orignValue) {
@@ -25,9 +25,9 @@ public class FileToUploadVo {
 			}
 		} catch (MalformedURLException e) {
 			setRemoteFile(false);
-		}		
+		}
 	}
-	
+
 	public String getRelative() {
 		if (isRemoteFile()) {
 			int idx = getOrignValue().lastIndexOf('/') + 1;
@@ -35,6 +35,11 @@ public class FileToUploadVo {
 		} else {
 			return getOrignValue();
 		}
+	}
+
+	public static String getFileNameFromUrl(String url) {
+		int idx = url.lastIndexOf('/') + 1;
+		return url.substring(idx);
 	}
 
 	public boolean isRemoteFile() {
@@ -52,7 +57,5 @@ public class FileToUploadVo {
 	public void setOrignValue(String orignValue) {
 		this.orignValue = orignValue;
 	}
-	
-	
-	
+
 }

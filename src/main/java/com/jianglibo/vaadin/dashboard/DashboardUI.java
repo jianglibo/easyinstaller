@@ -33,10 +33,12 @@ import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent
 import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNewsMessage;
 import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewSoftwareMessage;
+import com.jianglibo.vaadin.dashboard.service.SoftwareDownloader.DownloadMessage;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc.OneTaskFinishListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.tile.TileBase;
+import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
@@ -315,6 +317,19 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 							push();
 						}
  					}
+					break;
+				case DOWNLOAD:
+					DownloadMessage dm = (DownloadMessage) message.getBody();
+					if (dm.getStage() == "start") {
+						NotificationUtil.humanized(messageSource, "sd.start", dm.getFileUrl());
+					} else {
+						if (dm.isSuccess()) {
+							NotificationUtil.humanized(messageSource, "sd.success", dm.getFileUrl());
+						} else {
+							NotificationUtil.humanized(messageSource, "sd.failed", dm.getFileUrl());
+						}
+					}
+					push();
 					break;
 				default:
 					break;

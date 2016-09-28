@@ -47,7 +47,6 @@ public class TestZipSoftwareFolder {
 		assertThat(Files.size(baseFolder.resolve(fn + ".zip")), greaterThan(0L));
 		
 		Path unpackFolder = SoftwarePackUtil.unpack(baseFolder.resolve(fn + ".zip"));
-		assertTrue(Files.exists(unpackFolder.resolve("filesToUpload")));
 		assertTrue(Files.exists(unpackFolder.resolve("code.sh")));
 		assertTrue(Files.exists(unpackFolder.resolve("config.yml")));
 		assertTrue(Files.exists(unpackFolder.resolve("description.yml")));

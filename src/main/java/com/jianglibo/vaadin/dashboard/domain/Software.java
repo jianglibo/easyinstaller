@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -23,6 +24,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ScalarGridFieldDescription;
+import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -96,6 +98,10 @@ public class Software extends BaseEntity {
 
 	public Software() {
 
+	}
+	
+	public Set<FileToUploadVo> getFileToUploadVos() {
+		return getFilesToUpload().stream().map(FileToUploadVo::new).collect(Collectors.toSet());
 	}
 
 	public Software(String name, String ostype) {

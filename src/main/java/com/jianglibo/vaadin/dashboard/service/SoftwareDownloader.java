@@ -3,8 +3,6 @@ package com.jianglibo.vaadin.dashboard.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -30,6 +28,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.jianglibo.vaadin.dashboard.Broadcaster;
 import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessage;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
+import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
 /**
  * 
@@ -95,45 +94,44 @@ public class SoftwareDownloader {
 		}
 	}
 
-	public void submitTasks(String fileUrl) {
-		try {
-			URL url = new URL(fileUrl);
-			if ("http".equals(url.getProtocol()) || "https".equals(url.getProtocol())) {
-				Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fileUrl), Broadcaster.BroadCasterMessageType.DOWNLOAD));
-				
-				ListenableFuture<Boolean> lf = service.submit(new DownloadOne(fileUrl));
-
-				Futures.addCallback(lf, new FutureCallback<Boolean>() {
-					@Override
-					public void onSuccess(Boolean result) {
-						Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fileUrl, result), Broadcaster.BroadCasterMessageType.DOWNLOAD));
-					}
-
-					@Override
-					public void onFailure(Throwable t) {
-						Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fileUrl, false), Broadcaster.BroadCasterMessageType.DOWNLOAD));	
-					}
-				} );
-			}
-		} catch (MalformedURLException e) {
+	public void submitTasks(FileToUploadVo fvo) {
+		if (Files.exists(localFolder.resolve(fvo.getRelative()))) {
 			return;
+		}
+		
+		if (fvo.isRemoteFile()) {
+			Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue()), Broadcaster.BroadCasterMessageType.DOWNLOAD));
+			
+			ListenableFuture<Boolean> lf = service.submit(new DownloadOne(fvo));
+
+			Futures.addCallback(lf, new FutureCallback<Boolean>() {
+				@Override
+				public void onSuccess(Boolean result) {
+					Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue(), result), Broadcaster.BroadCasterMessageType.DOWNLOAD));
+				}
+
+				@Override
+				public void onFailure(Throwable t) {
+					Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue(), false), Broadcaster.BroadCasterMessageType.DOWNLOAD));	
+				}
+			} );
 		}
 	}
 
 	private class DownloadOne implements Callable<Boolean> {
 
-		private String fileUrl;
+		private FileToUploadVo fvo;
 
-		public DownloadOne(String fileUrl) {
-			this.fileUrl= fileUrl;
+		public DownloadOne(FileToUploadVo fvo) {
+			this.fvo= fvo;
 		}
 
 		@Override
 		public Boolean call() throws Exception {
-			String fn = null;
-			int idx = fileUrl.lastIndexOf('/');
+			String fn = fvo.getRelative();
+			int idx = fn.lastIndexOf('/');
 			if (idx != -1) {
-				fn = fileUrl.substring(idx);
+				fn = fn.substring(idx);
 			}
 			if (fn == null) {
 				return false;
@@ -143,7 +141,7 @@ public class SoftwareDownloader {
 				CloseableHttpResponse response = null;
 				try {
 					Path tmpFile = Files.createTempFile(HttpPageGetter.class.getName(), "");
-					HttpGet httpget = new HttpGet(fileUrl);
+					HttpGet httpget = new HttpGet(fvo.getOrignValue());
 					response = httpclient.execute(httpget);
 					HttpEntity entity = response.getEntity();
 					if (entity != null) {

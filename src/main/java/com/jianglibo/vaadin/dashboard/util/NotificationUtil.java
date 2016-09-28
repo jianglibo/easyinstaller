@@ -7,7 +7,7 @@ import com.vaadin.ui.Notification.Type;
 
 public class NotificationUtil {
 
-	public static void humanized(MessageSource messageSource, String msg) {
-		Notification.show(MsgUtil.getMsgFallbackToSelf(messageSource, "nofitication.humanized.", msg), "", Type.HUMANIZED_MESSAGE);
+	public static void humanized(MessageSource messageSource, String msg, String...subs) {
+		Notification.show(MsgUtil.getMsgWithSubs(messageSource, "nofitication.humanized." + msg, subs), "", Type.HUMANIZED_MESSAGE);
 	}
 }

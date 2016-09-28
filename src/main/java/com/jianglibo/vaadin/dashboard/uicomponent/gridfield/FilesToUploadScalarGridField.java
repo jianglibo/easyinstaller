@@ -75,6 +75,7 @@ public class FilesToUploadScalarGridField extends AddableScalarGridField<Set<Str
 		if (Strings.isNullOrEmpty(v)) {
 			return;
 		}
+		
 		Set<String> newValue = Sets.newHashSet(getValue());
 		newValue.add(property.getValue());
 		setValue(newValue);
