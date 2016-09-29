@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.context.MessageSource;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
@@ -12,6 +13,7 @@ import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.GridFieldDescriptio
 import com.jianglibo.vaadin.dashboard.data.container.AllowEmptySortListContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.event.ItemClickEvent;
@@ -35,13 +37,16 @@ public abstract class BaseGridField<C extends Collection<B>, B extends BaseEntit
 	private VaadinFormFieldWrapper vffw;
 
 	private Class<B> clazz;
+	
+	private TypeToken<C> ttc;
 
 	private MyValueChangeListener vc;
 
-	public BaseGridField(Domains domains, Class<B> clazz, MessageSource messageSource, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+	public BaseGridField(Domains domains,TypeToken<C> ttc, Class<B> clazz, MessageSource messageSource, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		this.domains = domains;
 		this.messageSource = messageSource;
 		this.clazz = clazz;
+		this.ttc = ttc;
 		vc = new MyValueChangeListener();
 		this.vtw = vtw;
 		this.vffw = vffw;
@@ -90,7 +95,7 @@ public abstract class BaseGridField<C extends Collection<B>, B extends BaseEntit
 		grid = new Grid();
 		
 		grid.setWidth(100.0f, Unit.PERCENTAGE);
-		grid.setColumns(columns);
+		grid.setColumns(ColumnUtil.toObjectArray(columns));
 		grid.setSelectionMode(SelectionMode.NONE);
 		grid.setContainerDataSource(gpcontainer);
 
@@ -125,7 +130,7 @@ public abstract class BaseGridField<C extends Collection<B>, B extends BaseEntit
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<C> getType() {
-		return (Class<C>) Collection.class;
+		return (Class<C>) ttc.getClass();
 	}
 
 	public Domains getDomains() {

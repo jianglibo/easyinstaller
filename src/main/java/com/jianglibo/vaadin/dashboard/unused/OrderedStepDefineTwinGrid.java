@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.MessageSource;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
@@ -32,7 +33,7 @@ public class OrderedStepDefineTwinGrid
 
 	public OrderedStepDefineTwinGrid(Domains domains, MessageSource messageSource,
 			OrderedStepDefineRepository orderedStepDefineRepository,VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		super(OrderedStepDefine.class, StepDefine.class, domains, messageSource, vtw,  vffw);
+		super(new TypeToken<List<OrderedStepDefine>>() {}, OrderedStepDefine.class, StepDefine.class, domains, messageSource, vtw,  vffw);
 		this.orderedStepDefineRepository = orderedStepDefineRepository;
 		StyleUtil.setBtnLinkStyleContainer(this);
 		StyleUtil.setDisableCellFocus(this);

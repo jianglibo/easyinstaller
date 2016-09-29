@@ -1,10 +1,10 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.gridfield;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.context.MessageSource;
 
+import com.google.common.reflect.TypeToken;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -19,7 +19,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickListener;
 
-public class StepRunGridField extends BaseGridField<Collection<StepRun>, StepRun> {
+public class StepRunGridField extends BaseGridField<List<StepRun>, StepRun> {
 
 	/**
 	 * 
@@ -27,7 +27,7 @@ public class StepRunGridField extends BaseGridField<Collection<StepRun>, StepRun
 	private static final long serialVersionUID = 1L;
 
 	public StepRunGridField(Domains domains, MessageSource messageSource, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		super(domains, StepRun.class, messageSource, vtw, vffw);
+		super(domains,new TypeToken<List<StepRun>>() {}, StepRun.class, messageSource, vtw, vffw);
 		StyleUtil.setBtnLinkStyleContainer(this);
 		StyleUtil.setDisableCellFocus(this);
 	}

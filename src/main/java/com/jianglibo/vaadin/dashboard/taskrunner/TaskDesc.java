@@ -36,15 +36,6 @@ public class TaskDesc {
 	
 	private String action;
 
-	// public TaskDesc(PersonVo person, Box box, Software software,
-	// OneTaskFinishListener tfl) {
-	// this.box = box;
-	// this.tfl = tfl;
-	// this.software = software;
-	// this.person = person;
-	// this.taskId = UUID.randomUUID().toString();
-	// }
-
 	/**
 	 * create a task inherit property from previously run task.
 	 * @param person

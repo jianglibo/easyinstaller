@@ -4,10 +4,12 @@ import java.util.Collection;
 
 import org.springframework.context.MessageSource;
 
+import com.google.common.reflect.TypeToken;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ScalarGridFieldDescription;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
@@ -32,13 +34,16 @@ public abstract class ScalarGridField<C extends Collection<B>, B extends Object>
 	private VaadinFormFieldWrapper vffw;
 
 	private Class<B> clazz;
+	
+	private TypeToken<C> ttc;
 
 	private MyValueChangeListener vc;
 
-	public ScalarGridField(Domains domains, Class<B> clazz, MessageSource messageSource, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+	public ScalarGridField(Domains domains,TypeToken<C> ttc, Class<B> clazz, MessageSource messageSource, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		this.domains = domains;
 		this.messageSource = messageSource;
 		this.clazz = clazz;
+		this.ttc = ttc;
 		vc = new MyValueChangeListener();
 		this.vtw = vtw;
 		this.vffw = vffw;
@@ -92,7 +97,7 @@ public abstract class ScalarGridField<C extends Collection<B>, B extends Object>
 			}
 			
 			localGrid.setWidth(100.0f, Unit.PERCENTAGE);
-			localGrid.setColumns(columns);
+			localGrid.setColumns(ColumnUtil.toObjectArray(columns));
 			localGrid.setSelectionMode(SelectionMode.NONE);
 			localGrid.setContainerDataSource(gpcontainer);
 
@@ -119,7 +124,7 @@ public abstract class ScalarGridField<C extends Collection<B>, B extends Object>
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<C> getType() {
-		return (Class<C>) Collection.class;
+		return (Class<C>) ttc.getClass();
 	}
 
 	public Domains getDomains() {

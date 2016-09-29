@@ -1,8 +1,10 @@
 package com.jianglibo.vaadin.dashboard.util;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.IntStream;
 
 import org.springframework.context.MessageSource;
 
@@ -31,6 +33,10 @@ public class ColumnUtil {
 	
 	public static final String getFullIconPath(String iconFn) {
 		return "/icon-images/" + iconFn;
+	}
+	
+	public static Object[] toObjectArray(String[] stringArray) {
+		return IntStream.range(0, stringArray.length).mapToObj(i -> stringArray[i]).toArray();
 	}
 
 	@SuppressWarnings("serial")

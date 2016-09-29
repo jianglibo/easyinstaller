@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.springframework.context.MessageSource;
 
+import com.google.common.reflect.TypeToken;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -21,9 +22,9 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public abstract class AddableScalarGridField<C extends Collection<B>, B extends Object>  extends ScalarGridField<C, B>{
 
-	public AddableScalarGridField(Domains domains, Class<B> clazz, MessageSource messageSource, VaadinTableWrapper vtw,
+	public AddableScalarGridField(Domains domains, TypeToken<C> ttc, Class<B> clazz, MessageSource messageSource, VaadinTableWrapper vtw,
 			VaadinFormFieldWrapper vffw) {
-		super(domains, clazz, messageSource, vtw, vffw);
+		super(domains,ttc, clazz, messageSource, vtw, vffw);
 	}
 
 	@Override

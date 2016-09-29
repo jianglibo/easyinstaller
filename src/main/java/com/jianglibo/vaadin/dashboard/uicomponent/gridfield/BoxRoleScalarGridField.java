@@ -6,6 +6,7 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.google.common.reflect.TypeToken;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -22,7 +23,7 @@ public class BoxRoleScalarGridField extends AddableScalarGridField<Set<String>, 
 
 	public BoxRoleScalarGridField(Domains domains, Class<String> clazz, MessageSource messageSource,
 			VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		super(domains, clazz, messageSource, vtw, vffw);
+		super(domains,new TypeToken<Set<String>>() {}, clazz, messageSource, vtw, vffw);
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 name: software1
 ostype: centos7
+sversion: 5
+runner: tcl
 filesToUpload:
   - a.txt
   - b.txt

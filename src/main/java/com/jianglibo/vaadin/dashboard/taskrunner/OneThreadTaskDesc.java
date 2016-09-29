@@ -17,7 +17,7 @@ public class OneThreadTaskDesc {
 
 	private final Software software;
 	
-	private final OneTaskFinishListener tfl;
+	private final OneTaskFinishListener otfl;
 	
 	private final BoxHistory boxHistory;
 	
@@ -29,13 +29,13 @@ public class OneThreadTaskDesc {
 	
 	private final String action;
 
-	public OneThreadTaskDesc(TaskDesc td,BoxGroup boxGroup, Box box, Software software, String action, OneTaskFinishListener tfl) {
+	public OneThreadTaskDesc(TaskDesc td,BoxGroup boxGroup, Box box, Software software, String action, OneTaskFinishListener otfl) {
 		super();
 		this.td = td;
 		this.action = action;
 		this.box = box;
 		this.software = software;
-		this.tfl = tfl;
+		this.otfl = otfl;
 		this.taskId = td.getTaskId();
 		this.boxGroup = boxGroup;
 		this.boxHistory = new BoxHistory.BoxHistoryBuilder(td.getTaskId(),boxGroup, software, box, "", true).build();
@@ -58,7 +58,7 @@ public class OneThreadTaskDesc {
 	}
 
 	public OneTaskFinishListener getTfl() {
-		return tfl;
+		return otfl;
 	}
 
 	public BoxHistory getBoxHistory() {

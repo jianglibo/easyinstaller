@@ -16,14 +16,14 @@ import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
  * @author jianglibo@gmail.com
  *
  */
-public class EvnForCodeExec {
+public class EnvForCodeExec {
 	
 	private final String remoteFolder;
 	private final BoxDescription box;
 	private final BoxGroupDescription boxGroup;
 	private final SoftwareDescription software;
 	
-	public EvnForCodeExec(OneThreadTaskDesc oneThreadTaskDesc, String remoteFolder) {
+	public EnvForCodeExec(OneThreadTaskDesc oneThreadTaskDesc, String remoteFolder) {
 		this.remoteFolder = remoteFolder;
 		this.box = new BoxDescription(oneThreadTaskDesc.getBox());
 		this.boxGroup = new BoxGroupDescription(oneThreadTaskDesc.getTd().getBoxGroup());
@@ -52,8 +52,8 @@ public class EvnForCodeExec {
 		private String hostname;
 		private String roles;
 		private String dnsServer;
-		private String commaSepIps;
-		private String commaSepPorts;
+		private String ips;
+		private String ports;
 
 		public BoxDescription(Box box) {
 			this.ip = box.getIp();
@@ -61,8 +61,8 @@ public class EvnForCodeExec {
 			this.hostname = box.getHostname();
 			this.roles = box.getRoles();
 			this.dnsServer = box.getDnsServer();
-			this.commaSepIps = box.getCommaSepIps();
-			this.commaSepPorts = box.getCommaSepPorts();
+			this.ips= box.getIps();
+			this.ports= box.getPorts();
 		}
 		
 		public String getRoles() {
@@ -107,20 +107,20 @@ public class EvnForCodeExec {
 			this.dnsServer = dnsServer;
 		}
 
-		public String getCommaSepIps() {
-			return commaSepIps;
+		public String getIps() {
+			return ips;
 		}
 
-		public void setCommaSepIps(String commaSepIps) {
-			this.commaSepIps = commaSepIps;
+		public void setIps(String ips) {
+			this.ips = ips;
 		}
 
-		public String getCommaSepPorts() {
-			return commaSepPorts;
+		public String getPorts() {
+			return ports;
 		}
 
-		public void setCommaSepPorts(String commaSepPorts) {
-			this.commaSepPorts = commaSepPorts;
+		public void setPorts(String ports) {
+			this.ports = ports;
 		}
 	}
 	

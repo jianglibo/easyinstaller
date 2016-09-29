@@ -7,6 +7,7 @@ import org.springframework.context.MessageSource;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.Container.Filterable;
@@ -58,7 +59,7 @@ public abstract class BaseGridFree<T extends BaseEntity, C extends FreeContainer
 		}
 		setSizeFull();
 
-		setColumns(columns);
+		setColumns(ColumnUtil.toObjectArray(columns));
 		setContainerDataSource(gpcontainer);
 
 		String messagePrefix = domains.getGrids().get(clazz.getSimpleName()).getVg().messagePrefix();

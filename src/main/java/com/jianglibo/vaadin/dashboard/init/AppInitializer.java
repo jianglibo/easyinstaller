@@ -81,9 +81,9 @@ public class AppInitializer implements InitializingBean {
 		if (box == null) {
 			box = new Box();
 			box.setArchived(false);
-			box.setCommaSepPorts("80,8080");
+			box.setPorts("80,8080");
 			box.setCreator(person);
-			box.setOsType("centos7");
+			box.setOstype("centos7");
 			box.setDnsServer("8.8.8.8");
 			box.setHostname("s1.example.com");
 			box.setIp(demoIp);

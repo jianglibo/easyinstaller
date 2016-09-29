@@ -11,6 +11,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.Container.Filterable;
@@ -67,7 +68,7 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 		}
 		setSizeFull();
 
-		setColumns(columns);
+		setColumns(ColumnUtil.toObjectArray(columns));
 		setSelectionMode(vgw.getVg().selectMode());
 		setContainerDataSource(gpcontainer);
 

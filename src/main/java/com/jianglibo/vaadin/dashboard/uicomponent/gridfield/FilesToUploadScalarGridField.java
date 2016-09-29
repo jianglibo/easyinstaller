@@ -1,11 +1,14 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.gridfield;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.context.MessageSource;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.google.common.reflect.TypeToken;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -22,7 +25,7 @@ public class FilesToUploadScalarGridField extends AddableScalarGridField<Set<Str
 
 	public FilesToUploadScalarGridField(Domains domains, Class<String> clazz, MessageSource messageSource,
 			VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		super(domains, clazz, messageSource, vtw, vffw);
+		super(domains,new TypeToken<Set<String>>() {}, clazz, messageSource, vtw, vffw);
 	}
 
 	@Override

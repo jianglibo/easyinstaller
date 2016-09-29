@@ -75,7 +75,7 @@ public class SshExecRunner implements BaseRunner {
 	}
 
 	private String uplocadEnv(JschSession jsession, OneThreadTaskDesc taskDesc, String uuid) {
-		EvnForCodeExec env = new EvnForCodeExec(taskDesc, applicationConfig.getRemoteFolder());
+		EnvForCodeExec env = new EnvForCodeExec(taskDesc, applicationConfig.getRemoteFolder());
 		String envstr = null;
 		try {
 			switch (taskDesc.getSoftware().getPreferredFormat()) {

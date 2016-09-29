@@ -70,7 +70,7 @@ public class Box extends BaseEntity {
 	@VaadinFormField(order = 20, fieldType=Ft.COMBO_BOX)
 	@NotNull
 	@NotEmpty
-	private String osType;
+	private String ostype;
 	
 	@VaadinFormField(order = 3000, fieldType=Ft.TEXT_AREA)
 	private String description;
@@ -91,10 +91,10 @@ public class Box extends BaseEntity {
 	private String dnsServer;
 	
 	@VaadinFormField(order = 70)
-	private String commaSepIps;
+	private String ips;
 	
 	@VaadinFormField(order = 70)
-	private String commaSepPorts;
+	private String ports;
 
 	public String getIp() {
 		return ip;
@@ -128,12 +128,12 @@ public class Box extends BaseEntity {
 		this.name = name;
 	}
 
-	public String getOsType() {
-		return osType;
+	public String getOstype() {
+		return ostype;
 	}
 
-	public void setOsType(String osType) {
-		this.osType = osType;
+	public void setOstype(String ostype) {
+		this.ostype = ostype;
 	}
 
 	public List<BoxHistory> getBoxHistories() {
@@ -190,20 +190,20 @@ public class Box extends BaseEntity {
 		this.dnsServer = dnsServer;
 	}
 
-	public String getCommaSepIps() {
-		return commaSepIps;
+	public String getIps() {
+		return ips;
 	}
 
-	public void setCommaSepIps(String commaSepIps) {
-		this.commaSepIps = commaSepIps;
+	public void setIps(String ips) {
+		this.ips = ips;
 	}
 
-	public String getCommaSepPorts() {
-		return commaSepPorts;
+	public String getPorts() {
+		return ports;
 	}
 
-	public void setCommaSepPorts(String commaSepPorts) {
-		this.commaSepPorts = commaSepPorts;
+	public void setPorts(String ports) {
+		this.ports = ports;
 	}
 
 	public Set<BoxGroup> getBoxGroups() {

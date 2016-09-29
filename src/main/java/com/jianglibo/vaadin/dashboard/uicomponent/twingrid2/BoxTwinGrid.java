@@ -5,6 +5,7 @@ import java.util.Set;
 import org.springframework.context.MessageSource;
 
 import com.google.common.collect.Sets;
+import com.google.common.reflect.TypeToken;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.domain.Box;
@@ -29,7 +30,7 @@ public class BoxTwinGrid extends BaseTwinGridField<Set<Box>, Box, Box> {
 
 	public BoxTwinGrid(Domains domains, MessageSource messageSource, BoxRepository repository, VaadinTableWrapper vtw,
 			VaadinFormFieldWrapper vffw) {
-		super(Box.class, Box.class, domains, messageSource, vtw, vffw);
+		super(new TypeToken<Set<Box>>() {}, Box.class, Box.class, domains, messageSource, vtw, vffw);
 		StyleUtil.setBtnLinkStyleContainer(this);
 		StyleUtil.setDisableCellFocus(this);
 	}

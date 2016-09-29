@@ -12,6 +12,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.JpaContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.SortUtil;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
@@ -76,7 +77,7 @@ public abstract class TableBase<E> extends Table {
 			setColumnAlignment(tcw.getName(), tcw.getVtc().alignment());
 		}
 		
-		setVisibleColumns(vtw.getVisibleColumns());
+		setVisibleColumns(ColumnUtil.toObjectArray(vtw.getVisibleColumns()));
 		setColumnHeaders(vtw.getColumnHeaders(vtw, messageSource));
 		
 	}

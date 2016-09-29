@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 
+import com.google.common.reflect.TypeToken;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
@@ -13,6 +14,7 @@ import com.jianglibo.vaadin.dashboard.data.container.AllowEmptySortListContainer
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.filter.SimpleStringFilter;
@@ -71,9 +73,12 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 	
 	private MyValueChangeListener vc;
 	
-	public BaseTwinGridField(Class<L> leftClazz, Class<R> rightClazz, Domains domains, MessageSource messageSource,VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
+	private TypeToken<LC> ttlc;
+	
+	public BaseTwinGridField(TypeToken<LC> ttlc, Class<L> leftClazz, Class<R> rightClazz, Domains domains, MessageSource messageSource,VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		this.leftClazz = leftClazz;
 		this.rightClazz = rightClazz;
+		this.ttlc = ttlc;
 		this.domains = domains;
 		this.messageSource = messageSource;
 		vc = new MyValueChangeListener();
@@ -159,7 +164,7 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 			grid.setHeightMode(HeightMode.ROW);
 			grid.setHeightByRows(tgfd.rowNumber());
 		}
-		grid.setColumns(columns);
+		grid.setColumns(ColumnUtil.toObjectArray(columns));
 		grid.setSelectionMode(SelectionMode.NONE);
 		grid.setContainerDataSource(gpcontainer);
 		
@@ -185,7 +190,7 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 
 		HeaderRow groupingHeader = grid.appendHeaderRow();
 
-		HeaderCell namesCell = groupingHeader.join(columns);
+		HeaderCell namesCell = groupingHeader.join(ColumnUtil.toObjectArray(columns));
 		namesCell.setComponent(filterField);
 		setupLeftGrid(grid);
 		return grid;
@@ -211,7 +216,7 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 		setWidth(100.0f, Unit.PERCENTAGE);
 		Grid grid = new Grid();
 		grid.setWidth(100.0f, Unit.PERCENTAGE);
-		grid.setColumns(columns);
+		grid.setColumns(ColumnUtil.toObjectArray(columns));
 		grid.setSelectionMode(SelectionMode.NONE);
 		grid.setContainerDataSource(gpcontainer);
 		
@@ -240,7 +245,7 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 
 		HeaderRow groupingHeader = grid.appendHeaderRow();
 
-		HeaderCell namesCell = groupingHeader.join(columns);
+		HeaderCell namesCell = groupingHeader.join(ColumnUtil.toObjectArray(columns));
 		namesCell.setComponent(filterField);
 		
 		filterField.addTextChangeListener(change -> {
@@ -260,7 +265,7 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<LC> getType() {
-		return (Class<LC>) Collection.class;
+		return (Class<LC>) ttlc.getClass();
 	}
 
 	public MessageSource getMessageSource() {

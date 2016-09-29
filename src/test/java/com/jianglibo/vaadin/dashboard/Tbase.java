@@ -32,6 +32,7 @@ import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.RoleRepository;
+import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.security.PersonVo;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.vo.RoleNames;
@@ -55,13 +56,16 @@ public abstract class Tbase {
     protected WebApplicationContext context;
 
     @Autowired
-    protected PersonRepository userRepo;
+    protected PersonRepository personRepository;
+    
+    @Autowired
+    protected SoftwareRepository softwareRepository;
 
     @Autowired
     protected RoleRepository roleRepo;
     
     @Autowired
-    private ObjectMapper ymlObjectMapper;
+    protected ObjectMapper ymlObjectMapper;
     
     @Autowired
     protected ApplicationConfig applicationConfig;
@@ -73,9 +77,13 @@ public abstract class Tbase {
     @Before
     public void before() {
         mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-        if (userRepo.findByEmail(AppInitializer.firstEmail) == null) {
+        if (personRepository.findByEmail(AppInitializer.firstEmail) == null) {
             createAuser();
         }
+    }
+    
+    public Person getFirstPerson() {
+    	return personRepository.findByEmail(AppInitializer.firstEmail);
     }
     
     public List<Software> getSoftwareFixtures() {
@@ -113,7 +121,7 @@ public abstract class Tbase {
         Set<Role> roles = new HashSet<>(Stream.of(roleNames).map(rn -> roleRepo.findByName(rn)).collect(Collectors.toList()));
         PersonVo pvo = new PersonVo.PersonVoBuilder(UUID.randomUUID().toString(), email, UUID.randomUUID().toString(), UUID.randomUUID().toString()).setAuthorities(roles).build();
         Person shUser =  new Person(pvo, UUID.randomUUID().toString());
-        return userRepo.save(shUser);
+        return personRepository.save(shUser);
         
     }
 

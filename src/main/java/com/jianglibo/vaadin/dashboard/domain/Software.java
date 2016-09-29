@@ -57,6 +57,7 @@ public class Software extends BaseEntity {
 	
 	@VaadinFormField(order = 15)
 	@VaadinGridColumn
+	@NotNull
 	private String sversion;
 
 	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.OS_TYPES)
@@ -94,7 +95,7 @@ public class Software extends BaseEntity {
 	private Person creator;
 	
 	@VaadinFormField(order = 200)
-	private String actions;
+	private String actions = "";
 
 	public Software() {
 
