@@ -6,7 +6,7 @@ box:
   roles: quorum,dnsserver
   dnsServer: 192.168.33.66
   commaSepIps:
-  commaSepPorts: 2888,3888
+  commaSepPorts: "2888,3888"
 boxGroup:
   name: aboxgroup
   configContent: xxxxx
@@ -17,7 +17,7 @@ boxGroup:
       roles: quorum,dnsserver
       dnsServer: 192.168.33.66
       commaSepIps:
-      commaSepPorts: 2888,3888
+      commaSepPorts: "2888,3888"
 software:
   name: asoftware,
   sversion: 1.7

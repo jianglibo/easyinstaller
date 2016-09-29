@@ -1,37 +1,6 @@
-tickTime=2000
-dataDir=/var/lib/zookeeper/
-clientPort=2181
-initLimit=5
-syncLimit=2
-server.1=zoo1:2888:3888
-server.2=zoo2:2888:3888
-server.3=zoo3:2888:3888
-
-
-/var/lib/zookeeper/myid  => 1 - 255
-
-
-1. Install the Java JDK. You can use the native packaging system for your system, or download the JDK from:
-http://java.sun.com/javase/downloads/index.jsp
-2. Set the Java heap size. This is very important to avoid swapping, which will seriously degrade ZooKeeper performance. To determine the correct value, use load tests, and make sure you are well below the usage limit that would cause you to swap. Be conservative - use a maximum heap size of 3GB for a 4GB machine.
-3. Install the ZooKeeper Server Package. It can be downloaded from:
-http://zookeeper.apache.org/releases.html
-4. Create a configuration file. This file can be called anything. Use the following settings as a starting point:
-tickTime=2000
-dataDir=/var/lib/zookeeper/
-clientPort=2181
-initLimit=5
-syncLimit=2
-server.1=zoo1:2888:3888
-server.2=zoo2:2888:3888
-server.3=zoo3:2888:3888
-You can find the meanings of these and other configuration settings in the section Configuration Parameters. A word though about a few here:
-Every machine that is part of the ZooKeeper ensemble should know about every other machine in the ensemble. You accomplish this with the series of lines of the form server.id=host:port:port. The parameters host and port are straightforward. You attribute the server id to each machine by creating a file named myid, one for each server, which resides in that server's data directory, as specified by the configuration file parameter dataDir.
-5. The myid file consists of a single line containing only the text of that machine's id. So myid of server 1 would contain the text "1" and nothing else. The id must be unique within the ensemble and should have a value between 1 and 255.
-6. If your configuration file is set up, you can start a ZooKeeper server:
-$ java -cp zookeeper.jar:lib/slf4j-api-1.7.5.jar:lib/slf4j-log4j12-1.7.5.jar:lib/log4j-1.2.17.jar:conf \ org.apache.zookeeper.server.quorum.QuorumPeerMain zoo.cfg
-QuorumPeerMain starts a ZooKeeper server, JMX management beans are also registered which allows management through a JMX management console. The ZooKeeper JMX document contains details on managing ZooKeeper with JMX.
-See the script bin/zkServer.sh, which is included in the release, for an example of starting server instances.
-7. Test your deployment by connecting to the hosts:
-In Java, you can run the following command to execute simple operations:
-$ bin/zkCli.sh -server 127.0.0.1:2181
+ports: "2888,3888"
+tickTime: 1999
+dataDir: /var/lib/zookeeper/
+clientPort: 2181
+initLimit: 5
+syncLimit: 2

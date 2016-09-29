@@ -25,8 +25,7 @@ import com.jianglibo.vaadin.dashboard.vo.JschExecuteResult;
  * is envfile.
  * 
  * Uuid as a parameter to code. For example, bash(tcl|perl|python)
- * 123e4567-e89b-12d3-a456-426655440000 --envfile 
- * /root/easyinstaller/123e4567-e89b-12d3-a456-426655440000_env install. 
+ * 123e4567-e89b-12d3-a456-426655440000 --envfile /root/easyinstaller/123e4567-e89b-12d3-a456-426655440000_env install. 
  * 
  * What about uploaded files? You had known the file names. They are put in
  * configuration item "remoteFolder".
