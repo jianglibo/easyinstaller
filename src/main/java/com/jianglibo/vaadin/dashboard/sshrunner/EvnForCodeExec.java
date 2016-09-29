@@ -50,6 +50,7 @@ public class EvnForCodeExec {
 		private String ip;
 		private String name;
 		private String hostname;
+		private String roles;
 		private String dnsServer;
 		private String commaSepIps;
 		private String commaSepPorts;
@@ -58,10 +59,21 @@ public class EvnForCodeExec {
 			this.ip = box.getIp();
 			this.name = box.getName();
 			this.hostname = box.getHostname();
+			this.roles = box.getRoles();
 			this.dnsServer = box.getDnsServer();
 			this.commaSepIps = box.getCommaSepIps();
 			this.commaSepPorts = box.getCommaSepPorts();
 		}
+		
+		public String getRoles() {
+			return roles;
+		}
+
+
+		public void setRoles(String roles) {
+			this.roles = roles;
+		}
+
 
 		public String getIp() {
 			return ip;
@@ -113,13 +125,23 @@ public class EvnForCodeExec {
 	}
 	
 	public static class SoftwareDescription {
+		private String name;
+		private String sversion;
+		private String ostype;
 		
 		private Set<String> filesToUpload;
 		private String configContent;
+		private String actions;
+		private String preferredFormat;
 		
 		public SoftwareDescription(Software software) {
+			this.name = software.getName();
+			this.sversion = software.getSversion();
+			this.ostype = software.getOstype();
 			this.filesToUpload = software.getFilesToUpload();
 			this.configContent = software.getConfigContent();
+			this.actions = software.getActions();
+			this.preferredFormat = software.getPreferredFormat();
 		}
 
 		public Set<String> getFilesToUpload() {
@@ -136,6 +158,46 @@ public class EvnForCodeExec {
 
 		public void setConfigContent(String configContent) {
 			this.configContent = configContent;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getSversion() {
+			return sversion;
+		}
+
+		public void setSversion(String sversion) {
+			this.sversion = sversion;
+		}
+
+		public String getOstype() {
+			return ostype;
+		}
+
+		public void setOstype(String ostype) {
+			this.ostype = ostype;
+		}
+
+		public String getActions() {
+			return actions;
+		}
+
+		public void setActions(String actions) {
+			this.actions = actions;
+		}
+
+		public String getPreferredFormat() {
+			return preferredFormat;
+		}
+
+		public void setPreferredFormat(String preferredFormat) {
+			this.preferredFormat = preferredFormat;
 		}
 	}
 

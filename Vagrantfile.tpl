@@ -89,11 +89,32 @@ Vagrant.configure("2") do |config|
     	centos.vm.network "private_network", ip: "192.168.33.10"
   	end
 
+    config.vm.define "centos1" do |centos|
+      centos.vm.provider "virtualbox" do |v|
+#    	  v.gui = true
+#      	  v.memory = 8192
+#      	  v.customize ['createmedium', '--filename',  'f:/vms/desktop', '--size', 100000]
+      end
+      centos.vm.box = "geerlingguy/centos7"
+      centos.vm.network "private_network", ip: "192.168.33.11"
+    end
+
+    config.vm.define "centos2" do |centos|
+      centos.vm.provider "virtualbox" do |v|
+#    	  v.gui = true
+#      	  v.memory = 8192
+#      	  v.customize ['createmedium', '--filename',  'f:/vms/desktop', '--size', 100000]
+      end
+      centos.vm.box = "geerlingguy/centos7"
+      centos.vm.network "private_network", ip: "192.168.33.12"
+    end
+
+
     config.vm.define "ubuntu" do |ubuntu|
 	    ubuntu.vm.provider "virtualbox" do |v|
     	end
     	ubuntu.vm.box = "ubuntu/trusty64"
-    	ubuntu.vm.network "private_network", ip: "192.168.33.11"
+    	ubuntu.vm.network "private_network", ip: "192.168.33.21"
   	end
 
 end

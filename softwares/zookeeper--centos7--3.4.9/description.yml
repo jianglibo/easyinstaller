@@ -1,0 +1,7 @@
+runner: bash
+preferredFormat: YAML
+codeToExecute: code.sh
+configContent: config.yml
+actions: install,upgrade
+filesToUpload:
+  - https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.4.9/zookeeper-3.4.9.tar.gz
