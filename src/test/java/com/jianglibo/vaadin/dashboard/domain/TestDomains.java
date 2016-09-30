@@ -3,6 +3,9 @@ package com.jianglibo.vaadin.dashboard.domain;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,6 +23,7 @@ import com.jianglibo.vaadin.dashboard.security.PersonVo;
 import com.jianglibo.vaadin.dashboard.sshrunner.EnvForCodeExec;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
+import com.jianglibo.vaadin.dashboard.util.SoftwareFolder;
 
 public class TestDomains extends Tbase {
 	
@@ -28,6 +32,8 @@ public class TestDomains extends Tbase {
 	
 	@Autowired
 	private BoxRepository boxRepository;
+	
+	private Path softwarePath = Paths.get("softwares");
 	
 	@Test
 	public void testBoxGroup() {
@@ -59,7 +65,7 @@ public class TestDomains extends Tbase {
 			
 			bg = boxGroupRepository.save(bg);
 			
-			final BoxGroup finalBg = bg;
+			final Set<BoxGroup> bgs = Sets.newHashSet(bg);
 			
 			Set<Box> boxes = bgOp.get().getBoxes().stream().map(box -> {
 				Box boxInDb = boxRepository.findByIp(box.getIp());
@@ -67,30 +73,42 @@ public class TestDomains extends Tbase {
 					boxRepository.delete(boxInDb);
 				}
 				box.setCreator(root);
-				box.setBoxGroups(Sets.newHashSet(finalBg));
+				box.setBoxGroups(bgs);
 				return boxRepository.save(box);
 			}).collect(Collectors.toSet());
 			
 			bg.setBoxes(boxes);
-			boxGroupRepository.save(bg);
+			bgs.add(boxGroupRepository.save(bg));
 			
-			Software sf = getSoftwareFixtures().get(0);
-			Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sf.getName(), sf.getOstype(), sf.getSversion());
-			if (sfInDb != null) {
-				softwareRepository.delete(sfInDb);
+			try (Stream<Path> folders = Files.list(softwarePath)) {
+				folders.filter(Files::isDirectory).map(SoftwareFolder::new).filter(SoftwareFolder::isValid).forEach(sfolder -> {
+					try {
+						Software sf = ymlObjectMapper.readValue(sfolder.readDescriptionyml(), Software.class);
+						sf.setName(sfolder.getName());
+						sf.setOstype(sfolder.getOstype());
+						sf.setSversion(sfolder.getSversion());
+						sf.setConfigContent(sfolder.getConfigContent(sf.getConfigContent()));
+						
+						Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sf.getName(), sf.getOstype(), sf.getSversion());
+						if (sfInDb != null) {
+							softwareRepository.delete(sfInDb);
+						}
+						sf.setCreator(root);
+						softwareRepository.save(sf);
+						TaskDesc td = new TaskDesc(new PersonVo.PersonVoBuilder(getFirstPerson()).build(), bgs.iterator().next(), sf, "install", null);
+						
+						OneThreadTaskDesc ottd = td.createOneThreadTaskDescs().get(0);
+						
+						EnvForCodeExec efce = new EnvForCodeExec(ottd, "/opt/easyinstaller");
+						
+						String yml = ymlObjectMapper.writeValueAsString(efce);
+						Path testFolder =  sfolder.getTestPath();
+						Files.write(testFolder.resolve("envforcodeexec.yaml"), yml.getBytes());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
 			}
-			sf.setCreator(root);
-			softwareRepository.save(sf);
-			
-			TaskDesc td = new TaskDesc(new PersonVo.PersonVoBuilder(getFirstPerson()).build(), bg, sf, "install", null);
-			
-			OneThreadTaskDesc ottd = td.createOneThreadTaskDescs().get(0);
-			
-			EnvForCodeExec efce = new EnvForCodeExec(ottd, "/opt/easyinstaller");
-			
-			String yml = ymlObjectMapper.writeValueAsString(efce);
-			printme(yml);
-			assertTrue(bgOp.isPresent());
 		} catch (IOException e) {
 			assertTrue("testBoxGroup", false);
 		}

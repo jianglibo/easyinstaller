@@ -20,9 +20,21 @@ boxes:
     keyFilePath: kfp.ira
     port: 222
     sshUser: root
-    hostname: a.host.name
+    hostname: a1.host.name
     dnsServer: 192.168.2.60
     ips: 192.168.2.12,192.168.2.13
+    ports: 80,8080
+  - ip: 192.168.2.14
+    name: box2
+    roles: r1,r2,r3
+    ostype: centos7
+    description: a description
+    keyFilePath: kfp.ira
+    port: 222
+    sshUser: root
+    hostname: a2.host.name
+    dnsServer: 192.168.2.60
+    ips: 192.168.2.15,192.168.2.16
     ports: 80,8080
 dnsServer: 192.168.2.60
 configContent: abc.yaml

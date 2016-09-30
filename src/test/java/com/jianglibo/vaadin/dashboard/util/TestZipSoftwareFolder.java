@@ -4,12 +4,13 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Iterator;
 import java.util.stream.Stream;
 
 import org.junit.Test;
@@ -23,18 +24,13 @@ public class TestZipSoftwareFolder {
 		Path listPath = baseFolder.resolve("softwarelist.txt");
 		
 		try (Stream<Path> pathes = Files.list(baseFolder)) {
-			List<String> lines = pathes.filter(sf -> Files.isDirectory(sf)).map(sf -> {
-				try {
-					String fn = sf.getFileName().toString() + ".zip";
-					SoftwarePackUtil.pack(sf, baseFolder.resolve(fn));
-					return fn;
-				} catch (Exception e) {
-					return null;
-				}
-			}).filter(fn -> fn != null).collect(Collectors.toList());
+			Iterator<String> lineit = pathes.map(SoftwareFolder::new).filter(SoftwareFolder::isValid).map(SoftwareFolder::getZipFileName).iterator();
 			
-			//.reduce("", (r, e) -> r.concat(e).concat("\n"));
-			Files.write(listPath, lines);
+			PrintWriter pw = new PrintWriter(new FileWriter(listPath.toFile()));
+			while (lineit.hasNext()) {
+				pw.println(lineit.next());
+			}
+			pw.close();
 		} catch (Exception e) {
 		}
 	}

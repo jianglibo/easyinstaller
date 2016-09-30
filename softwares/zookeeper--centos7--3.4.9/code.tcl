@@ -4,8 +4,11 @@ exec tclsh "$0" ${1+"$@"}
 
 package require yaml
 
+puts $argv
+puts "xxxxxuu"
 proc loadYaml {fileName} {
   if {[catch {set dt [::yaml::yaml2dict -file $fileName]} msg o]} {
+    puts xxxxxxxxxxxxxxxxxxxxx
     puts $msg
     exit 1
   } else {
