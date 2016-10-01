@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -9,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -96,6 +99,12 @@ public class Software extends BaseEntity {
 	
 	@VaadinFormField(order = 200)
 	private String actions = "";
+	
+	@PrePersist
+	public void createCreatedAt() {
+		setCreatedAt(Date.from(Instant.now()));
+		setConfigContent(getConfigContent().replaceAll("\r", ""));
+	}
 
 	public Software() {
 

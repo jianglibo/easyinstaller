@@ -9,11 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.support.RequestContextUtils;
+
+import com.google.common.base.Charsets;
 
 
 @Controller()
@@ -35,7 +40,10 @@ public class ControllerFort implements ApplicationContextAware {
     public ResponseEntity<String> msg(HttpServletRequest req, @RequestParam String mid, @RequestParam String lo) {
     	Locale l = new Locale(lo);
     	String msg = messageSource.getMessage(mid, new Object[]{}, l);
-        return ResponseEntity.ok(msg);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        MediaType mt = new MediaType("text", "html", Charsets.UTF_8);
+        responseHeaders.add("Content-Type", mt.toString());
+    	return new ResponseEntity<String>(msg, responseHeaders, HttpStatus.OK);
     }
 
 	@Override

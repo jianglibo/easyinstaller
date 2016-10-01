@@ -5,15 +5,14 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-import java.util.Locale;
 
 import org.junit.Test;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultHandler;
 
+import com.google.common.base.Charsets;
 import com.jianglibo.vaadin.dashboard.Tbase;
 import com.jianglibo.vaadin.dashboard.Tutil;
-import com.vaadin.server.Constants;
 
 public class TestResourceMessage extends Tbase {
 	
@@ -29,6 +28,7 @@ public class TestResourceMessage extends Tbase {
 			
 			@Override
 			public void handle(MvcResult result) throws Exception {
+				assertThat(result.getResponse().getContentType(), equalTo("text/html;charset=UTF-8"));
 				String s = result.getResponse().getContentAsString();
 				Tutil.printme(result.getResponse().getContentType());
 				assertThat(s, equalTo("密码"));

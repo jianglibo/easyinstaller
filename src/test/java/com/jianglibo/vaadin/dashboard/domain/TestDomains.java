@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.Tbase;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
@@ -104,6 +105,11 @@ public class TestDomains extends Tbase {
 						String yml = ymlObjectMapper.writeValueAsString(efce);
 						Path testFolder =  sfolder.getTestPath();
 						Files.write(testFolder.resolve("envforcodeexec.yaml"), yml.getBytes());
+						
+						String[] ss = yml.split("\r?\n");
+						String[] cc = Stream.of(ss).filter(s -> s.contains("configContent:")).collect(Collectors.toList()).toArray(new String[]{});
+						int i = ss.length;
+						
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

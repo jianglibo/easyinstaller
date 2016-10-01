@@ -26,6 +26,10 @@ public class SoftwareFolder {
 	public String getZipFileName() {
 		return getPath().getFileName().toString() + ".zip";
 	}
+
+	public Path getZipFilePath() {
+		return getPath().getParent().resolve(getZipFileName());
+	}
 	
 	public boolean isValid() {
 		if (Files.exists(getPath().resolve(descriptionyml))) {
@@ -45,7 +49,7 @@ public class SoftwareFolder {
 	}
 	
 	public String getConfigContent(String fn) throws IOException {
-		return new String(Files.readAllBytes(getPath().resolve(fn)));
+		return new String(Files.readAllBytes(getPath().resolve(fn))).replaceAll("\r", "");
 	}
 	
 	public Path getTestPath() throws IOException {

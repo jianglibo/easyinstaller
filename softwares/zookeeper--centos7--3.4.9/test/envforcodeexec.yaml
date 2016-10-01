@@ -1,13 +1,13 @@
 ---
 remoteFolder: "/opt/easyinstaller"
 box:
-  ip: "192.168.2.10"
-  name: "box1"
-  hostname: ""
+  ip: "192.168.2.11"
+  name: "box2"
+  hostname: "a1.host.name"
   roles: "r1,r2,r3"
-  dnsServer: ""
-  ips: ""
-  ports: ""
+  dnsServer: "192.168.2.60"
+  ips: "192.168.2.12,192.168.2.13"
+  ports: "80,8080"
 boxGroup:
   name: "boxgroup1"
   configContent: "abc.yaml"
@@ -19,13 +19,6 @@ boxGroup:
     dnsServer: "192.168.2.60"
     ips: ""
     ports: ""
-  - ip: "192.168.2.11"
-    name: "box2"
-    hostname: "a1.host.name"
-    roles: "r1,r2,r3"
-    dnsServer: "192.168.2.60"
-    ips: "192.168.2.12,192.168.2.13"
-    ports: "80,8080"
   - ip: "192.168.2.14"
     name: "box2"
     hostname: "a2.host.name"
@@ -33,13 +26,22 @@ boxGroup:
     dnsServer: "192.168.2.60"
     ips: "192.168.2.15,192.168.2.16"
     ports: "80,8080"
+  - ip: "192.168.2.11"
+    name: "box2"
+    hostname: "a1.host.name"
+    roles: "r1,r2,r3"
+    dnsServer: "192.168.2.60"
+    ips: "192.168.2.12,192.168.2.13"
+    ports: "80,8080"
 software:
   name: "zookeeper"
   sversion: "3.4.9"
   ostype: "centos7"
   filesToUpload:
   - "https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.4.9/zookeeper-3.4.9.tar.gz"
-  configContent: "ports: \"2888,3888\"\r\ntickTime: 1999\r\ndataDir: /var/lib/zookeeper/\r\
-    \nclientPort: 2181\r\ninitLimit: 5\r\nsyncLimit: 2\r\n"
+  configContent: "# tcl not very master on yaml process, so double quota value please.\n\
+    zkports: \"2888,3888\"\nconfigFile: \"/var/zoo.cfg\"\nzkconfig:\n  tickTime: \"\
+    1999\"\n  dataDir: \"/var/lib/zookeeper/\"\n  clientPort: \"2181\"\n  initLimit:\
+    \ \"5\"\n  syncLimit: \"2\"\n"
   actions: "install,upgrade"
   preferredFormat: "YAML"
