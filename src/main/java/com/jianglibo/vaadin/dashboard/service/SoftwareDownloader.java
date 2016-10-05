@@ -158,6 +158,7 @@ public class SoftwareDownloader {
 						}
 					}
 				} catch (IOException e) {
+					e.printStackTrace();
 				} finally {
 					if (response != null) {
 						try {

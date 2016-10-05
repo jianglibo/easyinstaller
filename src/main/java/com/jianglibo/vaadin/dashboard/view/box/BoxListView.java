@@ -73,10 +73,6 @@ public class BoxListView extends BaseListView<Box, BoxTable, BoxRepository> {
 		case CommonMenuItemIds.ADD:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
 			break;
-		case "manageBoxSoftware":
-			UI.getCurrent().getNavigator().navigateTo(BoxSoftwareView.VIEW_NAME + "/?boxid="
-					+ selected.iterator().next().getId() + "&pv=" + getLvfb().toNavigateString());
-			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
 		}
@@ -88,8 +84,8 @@ public class BoxListView extends BaseListView<Box, BoxTable, BoxRepository> {
 				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
 						new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)), //
 				new ButtonGroup(
-						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)), //
-				new ButtonGroup(new ButtonDescription("manageBoxSoftware", null, ButtonEnableType.ONE)) };
+						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)) //
+				};
 	}
 	
 	public void notifySort(Sort sort) {

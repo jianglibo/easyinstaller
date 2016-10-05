@@ -6,9 +6,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -143,10 +146,11 @@ public class HttpPageGetter {
 		int idx = sn.lastIndexOf('.');
 		String snnoext = sn.substring(0, idx);
 		String[] ss = snnoext.split("--");
+		Path unpackedFolder = null;
 		if (ss.length == 3) {
 			Software sf = softwareRepository.findByNameAndOstypeAndSversion(ss[0], ss[1], ss[2]);
 			if (sf == null) {
-				Path unpackedFolder = SoftwarePackUtil.unpack(sfFolder.resolve(sn));
+				unpackedFolder = SoftwarePackUtil.unpack(sfFolder.resolve(sn));
 				try {
 					sf = ymlObjectMapper.readValue(Files.newInputStream(unpackedFolder.resolve("description.yml")),
 							Software.class);
@@ -175,6 +179,28 @@ public class HttpPageGetter {
 					return true;
 				} catch (Exception e) {
 					e.printStackTrace();
+				} finally {
+					if (unpackedFolder != null) {
+						try {
+							Files.walkFileTree(unpackedFolder, new SimpleFileVisitor<Path>(){
+								@Override
+								public FileVisitResult visitFile(Path curFile, BasicFileAttributes bfa)
+										throws IOException {
+									Files.deleteIfExists(curFile);
+									return FileVisitResult.CONTINUE;
+								}
+								
+								@Override
+								public FileVisitResult postVisitDirectory(Path curPath, IOException arg1)
+										throws IOException {
+									Files.deleteIfExists(curPath);
+									return FileVisitResult.CONTINUE;
+								}
+							});
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
 				}
 			}
 		}
@@ -268,6 +294,9 @@ public class HttpPageGetter {
 		}
 	}
 
+	/**
+	 * fetch once for every 10 minutes.
+	 */
 	@Scheduled(initialDelay=1000, fixedDelay=600000)
 	public void fetchNews() {
 		String s = getPage("https://raw.githubusercontent.com/jianglibo/first-vaadin/master/wiki/news/newslist.txt");

@@ -128,7 +128,7 @@ dependencies {
     compile("javax.inject:javax.inject:1")
 	
 	// https://mvnrepository.com/artifact/net.sourceforge.htmlunit/htmlunit
-	compile group: 'net.sourceforge.htmlunit', name: 'htmlunit', version: '2.23'
+	// compile group: 'net.sourceforge.htmlunit', name: 'htmlunit', version: '2.23'
 	
     
     testCompile("org.springframework.boot:spring-boot-starter-test")

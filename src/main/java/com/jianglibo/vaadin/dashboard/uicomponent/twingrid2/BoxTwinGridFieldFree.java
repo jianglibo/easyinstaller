@@ -1,38 +1,38 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.twingrid2;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.context.MessageSource;
 
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickListener;
 
-public class BoxTwinGrid extends BaseTwinGridField<Set<Box>, Box, Box> {
+public class BoxTwinGridFieldFree extends BaseTwinGridFieldFree<Set<Box>, Box, Box, BoxContainerInRc> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public BoxTwinGrid(Domains domains, MessageSource messageSource, BoxRepository repository, VaadinTableWrapper vtw,
-			VaadinFormFieldWrapper vffw) {
-		super(new TypeToken<Set<Box>>() {}, Box.class, Box.class, domains, messageSource, vtw, vffw);
+	@SuppressWarnings("serial")
+	public BoxTwinGridFieldFree(Domains domains, MessageSource messageSource, BoxRepository repository, int leftRowNumber, int rightRowNumber) {
+		super(new TypeToken<Set<Box>>() {}, Box.class, Box.class, domains, messageSource,leftRowNumber, rightRowNumber);
 		StyleUtil.setBtnLinkStyleContainer(this);
 		StyleUtil.setDisableCellFocus(this);
+		setValue(Sets.newHashSet());
 	}
 
 	@Override
@@ -95,15 +95,7 @@ public class BoxTwinGrid extends BaseTwinGridField<Set<Box>, Box, Box> {
 			break;
 		}
 	}
-
-	@Override
-	public void whenLeftItemClicked(ItemClickEvent event) {
-	}
-
-	@Override
-	public void whenRightItemClicked(ItemClickEvent event) {
-	}
-
+	
 	@Override
 	public void setupLeftGrid(Grid grid) {
 
@@ -111,5 +103,30 @@ public class BoxTwinGrid extends BaseTwinGridField<Set<Box>, Box, Box> {
 
 	@Override
 	public void setupRightGrid(Grid grid) {
+	}
+
+	@Override
+	protected String[] getLeftSortableColumns() {
+		return new String[]{};
+	}
+
+	@Override
+	protected String[] getLeftColumns() {
+		return new String[]{"name", "ip", "!remove" };
+	}
+
+	@Override
+	protected String[] getRightColumns() {
+		return new String[]{"!addtoleft","name", "ip"};
+	}
+
+	@Override
+	protected List<String> getRightSortableColumns() {
+		return Lists.newArrayList();
+	}
+
+	@Override
+	protected BoxContainerInRc getRc() {
+		return new BoxContainerInRc(getDomains(), 10 , Lists.newArrayList());
 	}
 }

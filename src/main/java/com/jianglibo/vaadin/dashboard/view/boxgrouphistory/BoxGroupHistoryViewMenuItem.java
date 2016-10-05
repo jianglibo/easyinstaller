@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.boxhistory;
+package com.jianglibo.vaadin.dashboard.view.boxgrouphistory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -15,7 +15,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 @MainMenu(menuOrder = 700)
-public class BoxHistoryViewMenuItem implements MenuItemWrapper {
+public class BoxGroupHistoryViewMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;
 
@@ -25,10 +25,10 @@ public class BoxHistoryViewMenuItem implements MenuItemWrapper {
 	
 	
 	@Autowired
-	public BoxHistoryViewMenuItem(MessageSource messageSource) {
+	public BoxGroupHistoryViewMenuItem(MessageSource messageSource) {
 		this.messageSource = messageSource;
         this.notificationsBadge = new Label();
-        this.menuItem = DboardViewUtil.buildBadgeWrapper(new ValoMenuItemButton(BoxHistoryListView.VIEW_NAME, BoxHistoryListView.ICON_VALUE, messageSource),
+        this.menuItem = DboardViewUtil.buildBadgeWrapper(new ValoMenuItemButton(BoxGroupHistoryListView.VIEW_NAME, BoxGroupHistoryListView.ICON_VALUE, messageSource),
                 notificationsBadge);
         DashboardEventBus.register(this);
 	}

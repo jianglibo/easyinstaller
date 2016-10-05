@@ -42,7 +42,7 @@ public class OneThreadTaskDesc {
 	}
 	
 	public void notifyOneTaskFinished() {
-		getTfl().OneTaskFinished(this);
+		getTfl().oneTaskFinished(this, false);
 	}
 
 	public TaskDesc getTd() {

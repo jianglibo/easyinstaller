@@ -124,7 +124,7 @@ public abstract class ScalarGridField<C extends Collection<B>, B extends Object>
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<C> getType() {
-		return (Class<C>) ttc.getClass();
+		return (Class<C>) ttc.getRawType();
 	}
 
 	public Domains getDomains() {

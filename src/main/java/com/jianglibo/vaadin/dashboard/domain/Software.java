@@ -16,7 +16,9 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
+import com.google.common.base.Splitter;
 import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
@@ -51,6 +53,9 @@ import com.vaadin.ui.themes.ValoTheme;
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
 public class Software extends BaseEntity {
+	
+	public static Splitter commaSplitter = Splitter.on(',').trimResults().omitEmptyStrings();
+	public static Joiner commaJoiner = Joiner.on(',').skipNulls();
 
 	@VaadinFormField(order = 10)
 	@VaadinTableColumn(alignment = Align.LEFT)
@@ -98,12 +103,21 @@ public class Software extends BaseEntity {
 	private Person creator;
 	
 	@VaadinFormField(order = 200)
-	private String actions = "";
+	private String actions = "install";
 	
 	@PrePersist
 	public void createCreatedAt() {
 		setCreatedAt(Date.from(Instant.now()));
 		setConfigContent(getConfigContent().replaceAll("\r", ""));
+		if (getActions() == null) {
+			setActions("install");
+		} else {
+			if (getActions().trim().isEmpty()) {
+				setActions("install");
+			} else {
+				setActions(commaJoiner.join(commaSplitter.split(getActions())));
+			}
+		}
 	}
 
 	public Software() {
@@ -150,7 +164,7 @@ public class Software extends BaseEntity {
 
 	@Override
 	public String getDisplayName() {
-		return name;
+		return String.format("%s--%s--%s", getName(), getOstype(), getSversion());
 	}
 
 	public String getCodeToExecute() {
@@ -208,6 +222,4 @@ public class Software extends BaseEntity {
 	public void setSversion(String sversion) {
 		this.sversion = sversion;
 	}
-	
-	
 }

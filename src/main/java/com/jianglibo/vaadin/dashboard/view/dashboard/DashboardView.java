@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
+import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
@@ -14,6 +15,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.tile.HtmlContentTile;
 import com.jianglibo.vaadin.dashboard.uicomponent.tile.NotesTile;
 import com.jianglibo.vaadin.dashboard.uicomponent.tile.TileContainer;
 import com.jianglibo.vaadin.dashboard.uicomponent.tile.TopTenTile;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -30,6 +32,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -53,6 +56,8 @@ public final class DashboardView extends Panel implements View,
     
     private final VerticalLayout root;
     
+    private final MessageSource messageSource;
+    
     private TileContainer tc = new TileContainer();
 
     @Autowired
@@ -60,6 +65,7 @@ public final class DashboardView extends Panel implements View,
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
         DashboardEventBus.register(this);
+        this.messageSource = messageSource;
 
         root = new VerticalLayout();
         root.setSizeFull();
@@ -74,8 +80,10 @@ public final class DashboardView extends Panel implements View,
         	toggleMaximized(panel, b);
         });
         
+        DashboardUI dui = (DashboardUI) UI.getCurrent();
+        
         tc.addTile(new HtmlContentTile(messageSource, "about").setupAndReturnSelf());
-        tc.addTile(new NewNewsTile(messageSource, "newnews").setupAndReturnSelf());
+        tc.addTile(new NewNewsTile(dui.getNews(), messageSource, "newnews").setupAndReturnSelf());
         
 //        dashboardPanels = content;
         root.addComponent(tc);
@@ -98,7 +106,7 @@ public final class DashboardView extends Panel implements View,
         header.addStyleName("viewheader");
         header.setSpacing(true);
 
-        titleLabel = new Label("Dashboard");
+        titleLabel = new Label(MsgUtil.getMsgFallbackToSelf(messageSource, "view.dashboard.", "title"));
         titleLabel.setId(TITLE_ID);
         titleLabel.setSizeUndefined();
         titleLabel.addStyleName(ValoTheme.LABEL_H1);

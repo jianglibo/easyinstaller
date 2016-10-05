@@ -1,10 +1,13 @@
 package com.jianglibo.vaadin.dashboard.util;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 
+import com.google.common.base.Splitter;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
@@ -14,6 +17,8 @@ import com.vaadin.ui.UI;
 public class MsgUtil {
 	
 	public static final Logger LOGGER = LoggerFactory.getLogger(MsgUtil.class); 
+	
+	public static Splitter dotSplitter = Splitter.on('.').trimResults();
 	
 	public static String getDynaMenuMsg(MessageSource messageSource, String menuid) {
 		return getMsgFallbackToSelf(messageSource,"dynmenu.", menuid);
@@ -157,13 +162,23 @@ public class MsgUtil {
 		return name;
 	}
 	
-	public static String getMsgWithSubs(MessageSource messageSource, String key, String...substitudes) {
+	public static String getMsgWithSubsReturnKeyOnAbsent(MessageSource messageSource, String key, String...substitudes) {
 		try {
 			return messageSource.getMessage(key, substitudes, UI.getCurrent().getLocale());
 		} catch (NoSuchMessageException e) {
 			LOGGER.info("field {} has no localized message", key);
 		}
 		return key;
+	}
+
+	public static String getMsgWithSubsReturnLastKeyPartOnAbsent(MessageSource messageSource, String key, String...substitudes) {
+		try {
+			return messageSource.getMessage(key, substitudes, UI.getCurrent().getLocale());
+		} catch (NoSuchMessageException e) {
+			LOGGER.info("field {} has no localized message", key);
+		}
+		List<String> kps = dotSplitter.splitToList(key); 
+		return kps.get(kps.size() - 1);
 	}
 
 }

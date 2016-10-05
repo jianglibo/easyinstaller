@@ -2,11 +2,13 @@ package com.jianglibo.vaadin.dashboard.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
@@ -28,32 +30,21 @@ public class BoxHistory extends BaseEntity {
 	@VaadinGridColumn(order = 10)
 	private Software software;
 	
-	/**
-	 * unique TaskId, usually is uuid.
-	 */
-	@VaadinGridColumn(order = 40)
-	private String taskId;
-	
 	@ManyToOne
 	@VaadinGridColumn(order = 30)
 	private Box box;
 	
-	@ManyToOne
-	@VaadinGridColumn(order = 20)
-	private BoxGroup boxGroup;
-	
-	@ManyToOne
-	@NotNull
-	private Person runner;
+	@ManyToOne(fetch=FetchType.EAGER)
+	private BoxGroupHistory boxGroupHistory;
 	
 	@VaadinTableColumn
 	@VaadinGridColumn(order = 50)
+	@VaadinFormField(fieldType=Ft.TEXT_FIELD, readOnly=true, enabled = false)
 	private boolean success;
-	
-	private boolean readed = false;
 	
 	@Lob
 	@Column(length = 131072)
+	@VaadinFormField(fieldType = Ft.TEXT_AREA, rowNumber = 10)
 	private String log = "";
 	
 	public void appendLogAndSetFailure(String onelog) {
@@ -90,48 +81,18 @@ public class BoxHistory extends BaseEntity {
 		return success;
 	}
 
-	public Person getRunner() {
-		return runner;
-	}
-
-	public void setRunner(Person runner) {
-		this.runner = runner;
-	}
 
 	public void setSuccess(boolean success) {
 		this.success = success;
 	}
 
-	public boolean isReaded() {
-		return readed;
-	}
-
-	public void setReaded(boolean readed) {
-		this.readed = readed;
-	}
 
 	public String getLog() {
 		return log;
 	}
 
-	public BoxGroup getBoxGroup() {
-		return boxGroup;
-	}
-
-	public void setBoxGroup(BoxGroup boxGroup) {
-		this.boxGroup = boxGroup;
-	}
-
 	private void setLog(String log) {
 		this.log = log;
-	}
-
-	public String getTaskId() {
-		return taskId;
-	}
-
-	public void setTaskId(String taskId) {
-		this.taskId = taskId;
 	}
 
 	public static class BoxHistoryBuilder {
@@ -140,11 +101,7 @@ public class BoxHistory extends BaseEntity {
 		
 		private final Box box;
 		
-		private final BoxGroup boxGroup;
-		
 		private final boolean success;
-		
-		private final String taskId;
 		
 		private final String log;
 		
@@ -152,8 +109,6 @@ public class BoxHistory extends BaseEntity {
 			this.software = software;
 			this.box = box;
 			this.log = log;
-			this.taskId = taskId;
-			this.boxGroup = boxGroup;
 			this.success = success;
 		}
 		
@@ -162,9 +117,7 @@ public class BoxHistory extends BaseEntity {
 			bh.setSoftware(software);
 			bh.setBox(box);
 			bh.setLog(log);
-			bh.setBoxGroup(boxGroup);
 			bh.setSuccess(success);
-			bh.setTaskId(taskId);
 			return bh;
 		}
 	}

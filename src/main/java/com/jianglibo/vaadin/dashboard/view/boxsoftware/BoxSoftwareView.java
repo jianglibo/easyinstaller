@@ -54,7 +54,7 @@ public class BoxSoftwareView extends VerticalLayout implements View {
 		vl.setSpacing(true);
 		vl.setSizeFull();
 
-		Label label = new Label(MsgUtil.getMsgWithSubs(messageSource, "view.boxsoftware.intro"));
+		Label label = new Label(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.boxsoftware.intro"));
 		StyleUtil.setMarginTwenty(label);
 		Component c = createInstallForm();
 		vl.addComponents(label, c);
@@ -82,7 +82,7 @@ public class BoxSoftwareView extends VerticalLayout implements View {
 		if (getLvfb().getLong("boxid") > 0) {
 			Box box = boxRepository.findOne(getLvfb().getLong("boxid"));
 			if (box != null) {
-				title.setValue(MsgUtil.getMsgWithSubs(messageSource, "view.boxsoftware.title", box.getDisplayName()));
+				title.setValue(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.boxsoftware.title", box.getDisplayName()));
 			}
 		}
 	}

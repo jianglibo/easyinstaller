@@ -3,8 +3,8 @@ package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 import org.springframework.context.MessageSource;
 
 import com.google.common.collect.Lists;
+import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridFree;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
@@ -14,11 +14,12 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
 @SuppressWarnings("serial")
-public class ClusterInstalledSoftwareGrid  extends BaseGridFree<Software, ClusterSoftwareInstalledContainer>{
+public class BoxGroupHistoryGrid  extends BaseGridFree<BoxGroupHistory, BoxGroupHistoryContainer>{
 
 
-	public ClusterInstalledSoftwareGrid(MessageSource messageSource, Domains domains) {
-		super(messageSource, domains, Software.class, new String[]{"name", "ostype"});
+	public BoxGroupHistoryGrid(MessageSource messageSource, Domains domains) {
+		super(messageSource, domains, BoxGroupHistory.class, new String[]{"software", "success", "createdAt"});
+		delayCreateContent();
 	}
 
 	@Override
@@ -42,8 +43,8 @@ public class ClusterInstalledSoftwareGrid  extends BaseGridFree<Software, Cluste
 	}
 
 	@Override
-	protected ClusterSoftwareInstalledContainer createContainer() {
-		return new ClusterSoftwareInstalledContainer(getDomains(), getClazz(), 10, Lists.newArrayList());
+	protected BoxGroupHistoryContainer createContainer() {
+		return new BoxGroupHistoryContainer(getDomains(), 10, Lists.newArrayList());
 	}
 
 	@Override
@@ -55,16 +56,22 @@ public class ClusterInstalledSoftwareGrid  extends BaseGridFree<Software, Cluste
 	protected void setupGrid() {
 		HeaderRow groupingHeader = prependHeaderRow();
 		HeaderCell namesCell = groupingHeader.join(
-			    groupingHeader.getCell("name"),
-			    groupingHeader.getCell("ostype"));
+			    groupingHeader.getCell("software"),
+			    groupingHeader.getCell("success"),
+			    groupingHeader.getCell("createdAt"));
 		HorizontalLayout hl = new HorizontalLayout();
-		Label lb = new Label(MsgUtil.getMsgWithSubs(getMessageSource(), "view.boxsoftware.gridtitleinstalled"));
+		hl.setSizeFull();
+		Label lb = new Label(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(getMessageSource(), "view.clustersoftware.history.redo"));
+		lb.setWidthUndefined();
+		StyleUtil.setMarginRightTwenty(lb);
 		ComboBox cb = new ComboBox();
+		cb.setSizeFull();
 		cb.setEnabled(false);
 		hl.addComponents(lb, cb);
 		StyleUtil.setMarginBottomTwenty(hl);
 		namesCell.setComponent(hl);
-		
+		hl.setExpandRatio(cb, 1);
+
 		setSelectionMode(SelectionMode.SINGLE);
 		
 		cb.addValueChangeListener(event -> {

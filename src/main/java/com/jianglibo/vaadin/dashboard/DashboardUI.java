@@ -26,20 +26,25 @@ import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessage;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
+import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.SoftwareNumberChangeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
 import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
+import com.jianglibo.vaadin.dashboard.security.PersonAuthenticationToken;
+import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNew;
 import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNewsMessage;
 import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewSoftwareMessage;
 import com.jianglibo.vaadin.dashboard.service.SoftwareDownloader.DownloadMessage;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
+import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc.OneTaskFinishListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.tile.TileBase;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
 import com.jianglibo.vaadin.dashboard.view.LoginView;
@@ -84,6 +89,8 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 	private int newSoftwareCountAfterLastStart = 0;
 	
 	private int fetchNewsCount = 0;
+	
+	private List<NewNew> news = Lists.newArrayList();
 
 	@Autowired
 	private SpringViewProvider viewProvider;
@@ -102,6 +109,9 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 	
 	@Autowired
 	private PersonRepository personRepository;
+	
+	@Autowired
+	private TaskRunner taskRunner;
 
 	private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
@@ -130,21 +140,10 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 
 		if (!M3958SecurityUtil.isLogined()) {
 			if (applicationConfig.isAutoLogin()) {
-				// UI.getCurrent().getPage().setLocation("/autologin");
-				// return;
-				UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("root",
-						"root");
-				WebAuthenticationDetails wd = new WebAuthenticationDetailsSource()
-						.buildDetails(vsr.getHttpServletRequest());
-				authRequest.setDetails(wd);
-				Authentication an = am.authenticate(authRequest);
-				SecurityContextHolder.getContext().setAuthentication(an);
-				// M3958SecurityUtil.doLogin(personRepository.findByEmail(AppInitializer.firstEmail));
-				// after login, spring security change the sessionid, so must
-				// reload it.
+				Person rootp = personRepository.findByEmail(AppInitializer.firstEmail);
+				M3958SecurityUtil.doLogin(rootp);
 				UI.getCurrent().getPage().reload();
 				return;
-				// showMainView = true;
 			} else {
 				LoginView lv = new LoginView(messageSource, localeResolver, (username, password) -> {
 					UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username,
@@ -162,7 +161,7 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 				addStyleName("loginview");
 			}
 		} else {
-			VaadinSession.getCurrent().setAttribute(Authentication.class,
+			VaadinSession.getCurrent().setAttribute(PersonAuthenticationToken.class,
 					M3958SecurityUtil.getLoginAuthentication());
 			showMainView = true;
 		}
@@ -270,11 +269,20 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 	}
 
 	@Override
-	public void OneTaskFinished(OneThreadTaskDesc ottd) {
+	public void oneTaskFinished(OneThreadTaskDesc ottd, boolean groupFinished) {
 		access(new Runnable() {
 			@Override
 			public void run() {
-				// setContent(new Label("Done!"));
+				if (groupFinished) {
+//					BoxHistoryViewMenuItem svmi = (BoxHistoryViewMenuItem)getDm().getMmis().getMenuMap().get(BoxHistoryViewMenuItem.class.getName());
+//					if (taskRunner.getBgHistoriesSofar() > clusterhistorymenuitem.getBgHistoriesSofar) {
+//						svmi.updateNotificationsCount(nsm.getNewSoftwareCountAfterLastStart() - getNewSoftwareCountAfterLastStart());						
+//					}
+					push();
+				} else {
+					NotificationUtil.tray(messageSource, "onetaskfinished", ottd.getBox().getHostname(), ottd.getAction(), ottd.getBoxHistory().isSuccess() ? "success" : "fail");
+					push();
+				}
 			}
 		});
 	}
@@ -301,8 +309,11 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 					break;
 				case NEW_NEWS:
 					// Must sure view interested is current view.
+//					LOGGER.info("broadcaster received");
 					if (getNavigator().getCurrentView() instanceof DashboardView) {
+//						LOGGER.info("broadcaster received and in DashboardView.");
 						NewNewsMessage nnm = (NewNewsMessage) message.getBody();
+						setNews(nnm.getNewNews());
 						if (nnm.getFetchCount() > fetchNewsCount) {
 							fetchNewsCount = nnm.getFetchCount();
 							Optional<TileBase> tbOp = ((DashboardView)getNavigator().getCurrentView()).getTc().findTile(NewNewsTile.class);
@@ -310,7 +321,7 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 							if (tbOp.isPresent()) {
 								((NewNewsTile)tbOp.get()).getNewNewTable().addNews(nnm.getNewNews());
 							} else {
-								nnt = new NewNewsTile(messageSource, "newnews");
+								nnt = new NewNewsTile(getNews(), messageSource, "newnews");
 								((DashboardView)getNavigator().getCurrentView()).getTc().addTile(nnt);
 								nnt.getNewNewTable().addNews(nnm.getNewNews());
 							}
@@ -345,6 +356,14 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 
 	public void setNewSoftwareCountAfterLastStart(int newSoftwareCountAfterLastStart) {
 		this.newSoftwareCountAfterLastStart = newSoftwareCountAfterLastStart;
+	}
+
+	public List<NewNew> getNews() {
+		return news;
+	}
+
+	public void setNews(List<NewNew> news) {
+		this.news = news;
 	}
 
 	public void newSoftwareAdded() {

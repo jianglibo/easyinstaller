@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view.boxhistory;
+package com.jianglibo.vaadin.dashboard.view.boxgrouphistory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,13 +10,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
-import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
-import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
+import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
-import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent;
@@ -26,6 +24,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
+import com.jianglibo.vaadin.dashboard.view.boxhistory.BoxHistoryListView;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
@@ -34,32 +33,29 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 
-@SpringView(name = BoxHistoryListView.VIEW_NAME)
-public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid, BoxHistoryContainer> {
+@SpringView(name = BoxGroupHistoryListView.VIEW_NAME)
+public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGroupHistoryGrid, BoxGroupHistoryContainer> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(BoxHistoryListView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BoxGroupHistoryListView.class);
 
-	public static final String VIEW_NAME = "boxhistory";
+	public static final String VIEW_NAME = "clusterhistory";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.HISTORY;
 
-	private final BoxRepository boxRepository;
-	
-	private final BoxGroupRepository boxGroupRepository;
+	private BoxGroupRepository boxGroupRepository;
 	
 	private BoxGroup boxGroup;
 
 	@Autowired
-	public BoxHistoryListView(BoxRepository repository,BoxGroupRepository boxGroupRepository, Domains domains, MessageSource messageSource,
+	public BoxGroupHistoryListView(BoxGroupRepository repository, Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		super(applicationContext, messageSource, domains, BoxHistory.class, BoxHistoryGrid.class);
-		this.boxRepository = repository;
-		this.boxGroupRepository = boxGroupRepository;
+		super(applicationContext, messageSource, domains, BoxGroupHistory.class, BoxGroupHistoryGrid.class);
+		this.boxGroupRepository = repository;
 		delayCreateContent();
 	}
 
@@ -70,8 +66,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 						new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
 						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)), //
 				new ButtonGroup( //
-						new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH,
-								ButtonEnableType.ALWAYS)) };
+						new ButtonDescription("boxhistories", null, ButtonEnableType.ONE)) };
 	}
 
 	@Override
@@ -165,15 +160,17 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 		if (boxGroupId > 0) {
 			boxGroup = boxGroupRepository.findOne(boxGroupId);
 			title = boxGroup.getDisplayName() + "'s " + title;
+		} else {
+			
 		}
 		((TopBlock) getTopBlock()).alterState(getLvfb(), title);
 		((MyMiddleBlock) getMiddleBlock()).alterState(getLvfb());
-		((BoxHistoryContainer) (getGrid().getOriginDataSource())).whenUriFragmentChange(getLvfb());
+		((BoxGroupHistoryContainer) (getGrid().getOriginDataSource())).whenUriFragmentChange(getLvfb());
 	}
 
 	@Override
 	public void onDynButtonClicked(ButtonDescription btnDesc) {
-		List<BoxHistory> selected = getGrid().getSelectedRows().stream().map(o -> (BoxHistory) o).collect(Collectors.toList());
+		List<BoxGroupHistory> selected = getGrid().getSelectedRows().stream().map(o -> (BoxGroupHistory) o).collect(Collectors.toList());
 		switch (btnDesc.getItemId()) {
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
@@ -197,13 +194,16 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 		case CommonMenuItemIds.ADD:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/?pv=" + getLvfb().toNavigateString());
 			break;
+		case "boxhistories":
+			UI.getCurrent().getNavigator().navigateTo(BoxHistoryListView.VIEW_NAME + "/?boxGroupId=" + selected.get(0).getId() + "&pv=" + getLvfb().toNavigateString());
+			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
 		}
 	}
 
 	@Override
-	protected BoxHistoryGrid createGrid(MessageSource messageSource, Domains domains, Class<BoxHistory> clazz) {
-		return new BoxHistoryGrid(messageSource, domains, clazz);
+	protected BoxGroupHistoryGrid createGrid(MessageSource messageSource, Domains domains, Class<BoxGroupHistory> clazz) {
+		return new BoxGroupHistoryGrid(messageSource, domains, clazz);
 	}
 }

@@ -3,7 +3,6 @@ package com.jianglibo.vaadin.dashboard.security;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +27,7 @@ public class M3958SecurityUtil {
 			return false;
 		}
 
-		if (au instanceof UsernamePasswordAuthenticationToken) {
+		if (au instanceof PersonAuthenticationToken) {
 			return true;
 		}
 
@@ -37,7 +36,7 @@ public class M3958SecurityUtil {
 
 	public static Optional<PersonVo> getLoginPersonVo() {
 		Authentication au = SecurityContextHolder.getContext().getAuthentication();
-		if (au != null && au instanceof UsernamePasswordAuthenticationToken) {
+		if (au != null && au instanceof PersonAuthenticationToken) {
 			return Optional.of((PersonVo) au.getPrincipal());
 		} else {
 			return Optional.empty();
@@ -52,8 +51,8 @@ public class M3958SecurityUtil {
 		}
 	}
 
-	public static Authentication getLoginAuthentication() {
-		return SecurityContextHolder.getContext().getAuthentication();
+	public static PersonAuthenticationToken getLoginAuthentication() {
+		return (PersonAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 	}
 
 	public static void doLogin(Person person) {

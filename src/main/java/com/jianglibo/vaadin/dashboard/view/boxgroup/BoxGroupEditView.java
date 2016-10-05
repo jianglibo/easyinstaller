@@ -14,10 +14,9 @@ import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
-import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.HandMakeFieldsListener;
-import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.BoxTwinGrid;
+import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.BoxTwinGridField;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.view.BaseEditView;
 import com.vaadin.spring.annotation.SpringView;
@@ -53,7 +52,7 @@ public class BoxGroupEditView  extends BaseEditView<BoxGroup, FormBase<BoxGroup>
 	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
 		switch (vffw.getName()) {
 		case "boxes":
-			return new BoxTwinGrid(getDomains(),getMessageSource(), boxRepository, vtw, vffw);
+			return new BoxTwinGridField(getDomains(),getMessageSource(), boxRepository, vtw, vffw);
 		default:
 			break;
 		}

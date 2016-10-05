@@ -61,7 +61,7 @@ public class BoxSoftwareViewSoftwareGrid  extends BaseGridFree<Software, BoxSoft
 			    groupingHeader.getCell("name"),
 			    groupingHeader.getCell("ostype"));
 		HorizontalLayout hl = new HorizontalLayout();
-		Label lb = new Label(MsgUtil.getMsgWithSubs(getMessageSource(), "view.boxsoftware.gridtitleinstalled"));
+		Label lb = new Label(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(getMessageSource(), "view.boxsoftware.gridtitleinstalled"));
 		ComboBox cb = new ComboBox();
 		cb.setEnabled(false);
 		hl.addComponents(lb, cb);

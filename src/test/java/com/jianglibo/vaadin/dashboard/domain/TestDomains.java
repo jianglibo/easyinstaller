@@ -96,7 +96,7 @@ public class TestDomains extends Tbase {
 						}
 						sf.setCreator(root);
 						softwareRepository.save(sf);
-						TaskDesc td = new TaskDesc(new PersonVo.PersonVoBuilder(getFirstPerson()).build(), bgs.iterator().next(), sf, "install", null);
+						TaskDesc td = new TaskDesc(new PersonVo.PersonVoBuilder(getFirstPerson()).build(), bgs.iterator().next(),Sets.newHashSet(), sf, "install", null);
 						
 						OneThreadTaskDesc ottd = td.createOneThreadTaskDescs().get(0);
 						

@@ -1,15 +1,11 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -18,13 +14,13 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.google.common.collect.Sets;
 import com.google.gwt.thirdparty.guava.common.base.Objects;
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
-import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
+import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
@@ -57,13 +53,6 @@ public class Box extends BaseEntity {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@NotNull
 	private Person creator;
-	
-	/**
-	 * Owning side is which has no mappedBy property. So this IS NOT owning side.
-	 */
-	@OneToMany(mappedBy = "box", cascade=CascadeType.REMOVE)
-	@OrderBy("createdAt DESC")
-	private List<BoxHistory> boxHistories = Lists.newArrayList();
 	
 	@VaadinTableColumn(order=2)
 	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.OS_TYPES)
@@ -136,14 +125,6 @@ public class Box extends BaseEntity {
 		this.ostype = ostype;
 	}
 
-	public List<BoxHistory> getBoxHistories() {
-		return boxHistories;
-	}
-
-	public void setBoxHistories(List<BoxHistory> boxHistories) {
-		this.boxHistories = boxHistories;
-	}
-
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -175,7 +156,15 @@ public class Box extends BaseEntity {
 	}
 
 	public String getHostname() {
-		return hostname;
+		if (Strings.isNullOrEmpty(hostname)) {
+			return getIp();
+		} else {
+			if (hostname.trim().isEmpty()) {
+				return getIp();
+			} else {
+				return hostname;
+			}
+		}
 	}
 
 	public void setHostname(String hostname) {
@@ -229,4 +218,5 @@ public class Box extends BaseEntity {
 	public void setRoles(String roles) {
 		this.roles = roles;
 	}
+
 }

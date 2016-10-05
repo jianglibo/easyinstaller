@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Objects;
 import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
@@ -50,8 +51,8 @@ public class BoxGroup extends BaseEntity {
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 30)
 	private Set<Box> boxes = Sets.newHashSet();
 	
-	@OneToMany(mappedBy="boxGroup")
-	private List<BoxHistory> histories;
+	@OneToMany(mappedBy="boxGroup", fetch=FetchType.EAGER)
+	private List<BoxGroupHistory> histories;
 	
 	@ManyToOne
 	@NotNull
@@ -68,10 +69,14 @@ public class BoxGroup extends BaseEntity {
 	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 30, rowNumber=6)
 	private String configContent;
 	
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("name", getName()).add("boxnumber", getBoxes().size()).toString();
+	}
+	
 	public String getName() {
 		return name;
 	}
-
 
 	public void setName(String name) {
 		this.name = name;
@@ -105,14 +110,6 @@ public class BoxGroup extends BaseEntity {
 		this.configContent = configContent;
 	}
 
-	public List<BoxHistory> getHistories() {
-		return histories;
-	}
-
-	public void setHistories(List<BoxHistory> histories) {
-		this.histories = histories;
-	}
-
 	@Override
 	public String getDisplayName() {
 		return getName();
@@ -123,8 +120,15 @@ public class BoxGroup extends BaseEntity {
 		return creator;
 	}
 
-
 	public void setCreator(Person creator) {
 		this.creator = creator;
+	}
+
+	public List<BoxGroupHistory> getHistories() {
+		return histories;
+	}
+
+	public void setHistories(List<BoxGroupHistory> histories) {
+		this.histories = histories;
 	}
 }

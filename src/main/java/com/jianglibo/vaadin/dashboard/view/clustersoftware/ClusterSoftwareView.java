@@ -1,35 +1,56 @@
 package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
+import com.google.gwt.thirdparty.guava.common.base.Strings;
+import com.jianglibo.vaadin.dashboard.DashboardUI;
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
+import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
+import com.jianglibo.vaadin.dashboard.security.PersonAuthenticationToken;
+import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
+import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner;
+import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.BoxTwinGridFieldFree;
+import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
+import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
+import com.jianglibo.vaadin.dashboard.view.boxgroup.BoxGroupListView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
+
 
 @SuppressWarnings("serial")
 @SpringView(name = ClusterSoftwareView.VIEW_NAME)
 public class ClusterSoftwareView extends VerticalLayout implements View {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClusterSoftwareView.class); 
 	
 	private final MessageSource messageSource;
 	
@@ -43,13 +64,30 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 	
 	private final BoxGroupRepository boxGroupRepository;
 	
+	private final BoxRepository boxRepository;
+	
+	private final PersonRepository personRepository;
+	
+	private final FieldFactories fieldFactories;
+	
+	private final TaskRunner taskRunner;
+	
+	private final ApplicationConfig applicationConfig;
+	
+	private BoxGroup boxGroup;
+	
 	private final Domains domains;
 	
 	@Autowired
-	public ClusterSoftwareView(MessageSource messageSource,BoxGroupRepository boxGroupRepository, Domains domains) {
+	public ClusterSoftwareView(MessageSource messageSource,ApplicationConfig applicationConfig, BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, Domains domains, PersonRepository personRepository, FieldFactories fieldFactories, TaskRunner taskRunner) {
 		this.messageSource = messageSource;
 		this.boxGroupRepository = boxGroupRepository;
+		this.personRepository = personRepository;
+		this.boxRepository = boxRepository;
+		this.fieldFactories = fieldFactories;
+		this.applicationConfig = applicationConfig;
 		this.domains = domains;
+		this.taskRunner = taskRunner;
 		setSizeFull();
 		addStyleName("transactions");
 		addComponent(createTop());
@@ -57,26 +95,64 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		VerticalLayout vl = new VerticalLayout();
 		vl.setSpacing(true);
 		vl.setSizeFull();
-
-		vl.addComponent(createInstalledBlock());
-		vl.addComponent(createAllBlock());
-		
+		Component tb = toolbars();
+		vl.addComponent(tb);
+		Component cib = new BoxGroupHistoryGrid(messageSource, domains);
+		vl.addComponent(cib);
+		vl.setExpandRatio(tb, 1);
+		vl.setExpandRatio(cib, 2);
 		addComponent(vl);
 		setExpandRatio(vl, 1);
 	}
 	
 
-	private Component createAllBlock() {
-		AllSoftwareGrid g = new AllSoftwareGrid(messageSource, domains);
-		g.delayCreateContent();
-		return g;
-	}
-
-
-	private Component createInstalledBlock() {
-		ClusterInstalledSoftwareGrid g = new ClusterInstalledSoftwareGrid(messageSource, domains);
-		g.delayCreateContent();
-		return g;
+	private Component toolbars() {
+		GridLayout gl = new GridLayout(10, 1);
+		gl.setSizeFull();
+		Responsive.makeResponsive(gl);
+		
+		InstallNewSoftwareForm insf =  new InstallNewSoftwareForm(personRepository, messageSource, domains, fieldFactories);
+		
+		BoxTwinGridFieldFree boxesToRun = new BoxTwinGridFieldFree(domains, messageSource, boxRepository, 3 , 3);
+		
+		boxesToRun.setCaption(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.selectboxes"));
+		boxesToRun.setSizeFull();
+		Button ok = new Button(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "shared.btn.execute"));
+		ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		ok.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				PersonAuthenticationToken ac = VaadinSession.getCurrent().getAttribute(PersonAuthenticationToken.class);
+				if (insf.getSelectedSoftware().isPresent() && insf.getSelectedAction().isPresent()) {
+					// start to submit tasks;
+					LOGGER.info("{}, {}", ac.getClass().getName(), ac.getName());
+					DashboardUI dui = (DashboardUI) UI.getCurrent();
+					TaskDesc td = new TaskDesc(ac.getPrincipal(), boxGroup,boxesToRun.getValue(), insf.getSelectedSoftware().get(), insf.getSelectedAction().get(), dui);
+					for(Box box : td.getBoxes()) {
+						if (Strings.isNullOrEmpty(box.getKeyFilePath())) {
+							NotificationUtil.error(messageSource, "noKeyFilePath", box.getHostname());
+							return;
+						}
+					}
+					
+					for(Box box : td.getBoxes()) {
+						Path kp = applicationConfig.getSshKeyFolderPath().resolve(box.getKeyFilePath()); 
+						if (!Files.exists(kp)) {
+							NotificationUtil.error(messageSource, "keyFilePathNotExists", box.getHostname(), kp.toAbsolutePath().toString());
+							return;
+						}
+					}
+					taskRunner.submitTasks(td);
+				} else {
+					NotificationUtil.humanized(messageSource, "actionabsent");
+				}
+			}
+		});
+		gl.addComponent(insf, 0, 0, 1, 0);
+		gl.addComponent(boxesToRun, 2, 0, 8, 0);
+		gl.addComponent(ok, 9, 0);
+		gl.setComponentAlignment(ok, Alignment.MIDDLE_CENTER);
+		return gl;
 	}
 
 
@@ -88,10 +164,12 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		}
 		
 		if (getLvfb().getLong("boxgroup") > 0) {
-			BoxGroup boxGroup = boxGroupRepository.findOne(getLvfb().getLong("boxgroup"));
+			boxGroup = boxGroupRepository.findOne(getLvfb().getLong("boxgroup"));
 			if (boxGroup != null) {
-				title.setValue(MsgUtil.getMsgWithSubs(messageSource, "view.clustersoftware.title", boxGroup.getDisplayName()));
+				title.setValue(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.title", boxGroup.getDisplayName()));
 			}
+		} else {
+			UI.getCurrent().getNavigator().navigateTo(BoxGroupListView.VIEW_NAME);
 		}
 	}
 	
@@ -116,13 +194,24 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		backBtn = new Button(FontAwesome.MAIL_REPLY);
 		StyleUtil.hide(backBtn);
 
-		backBtn.setDescription(messageSource.getMessage("shared.btn.return", null, UI.getCurrent().getLocale()));
+		backBtn.setDescription(MsgUtil.getMsgWithSubsReturnKeyOnAbsent( messageSource ,"shared.btn.return"));
+		
+		backBtn.addClickListener(event -> {
+			this.backward();
+		});
+
 
 		tools.addComponent(backBtn);
+		
+		Button helpBtn = new Button(FontAwesome.QUESTION);
+		tools.addComponent(helpBtn);
 		return hl;
 	}
 
-
+	public void backward() {
+		UI.getCurrent().getNavigator().navigateTo(getLvfb().getPreviousView().get());
+	}
+	
 	public ListViewFragmentBuilder getLvfb() {
 		return lvfb;
 	}

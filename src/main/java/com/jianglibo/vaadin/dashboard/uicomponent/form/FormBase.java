@@ -127,17 +127,6 @@ public abstract class FormBase<T> extends FormLayout {
 			}
 		});
 	}
-	
-	
-
-//	protected void addEscapeListener() {
-//		addShortcutListener(new ShortcutListener("submit", null, KeyCode.ESCAPE) {
-//			@Override
-//			public void handleAction(Object sender, Object target) {
-//				eventBus.post(new HistoryBackEvent());
-//			}
-//		});
-//	}
 
 	public PersonRepository getPersonRepository() {
 		return personRepository;
@@ -167,6 +156,8 @@ public abstract class FormBase<T> extends FormLayout {
 				addStyleName(vffw, cb);
 				cb.setDescription(MsgUtil.getFieldDescription(messageSource, vtw.getVt().messagePrefix(), vffw));
 				fields.add(new PropertyIdAndField(vffw, cb));
+				cb.setEnabled(vffw.getVff().enabled());
+				cb.setReadOnly(vffw.getVff().readOnly());
 				break;
 			case HAND_MAKER:
 				if (handMakeFieldsListener != null) {
@@ -183,6 +174,8 @@ public abstract class FormBase<T> extends FormLayout {
 				ta.setNullRepresentation("");
 				addStyleName(vffw, ta);
 				ta.setDescription(MsgUtil.getFieldDescription(messageSource, vtw.getVt().messagePrefix(), vffw));
+				ta.setEnabled(vffw.getVff().enabled());
+				ta.setReadOnly(vffw.getVff().readOnly());
 				fields.add(new PropertyIdAndField(vffw, ta));
 				break;
 			case TWIN_COL_SELECT:
@@ -190,6 +183,8 @@ public abstract class FormBase<T> extends FormLayout {
 				addStyleName(vffw, tcs);
 				tcs.setDescription(MsgUtil.getFieldDescription(messageSource, vtw.getVt().messagePrefix(), vffw));
 				fields.add(new PropertyIdAndField(vffw, tcs));
+				tcs.setEnabled(vffw.getVff().enabled());
+				tcs.setReadOnly(vffw.getVff().readOnly());
 				break;
 			case FILE_CONTENT_STRING:
 				FileContentField fcf = new FileContentField(messageSource);
@@ -197,6 +192,8 @@ public abstract class FormBase<T> extends FormLayout {
 				fcf.setDescription(MsgUtil.getFieldDescription(messageSource, vtw.getVt().messagePrefix(), vffw));
 				addStyleName(vffw, fcf);
 				fields.add(new PropertyIdAndField(vffw, fcf));
+				fcf.setEnabled(vffw.getVff().enabled());
+				fcf.setReadOnly(vffw.getVff().readOnly());
 				break;
 			default:
 				String caption = MsgUtil.getFieldMsg(messageSource, vtw.getVt().messagePrefix(), vffw);
@@ -205,6 +202,8 @@ public abstract class FormBase<T> extends FormLayout {
 				tf.setNullRepresentation("");
 				addStyleName(vffw, tf);
 				fields.add(new PropertyIdAndField(vffw, tf));
+				tf.setEnabled(vffw.getVff().enabled());
+				tf.setReadOnly(vffw.getVff().readOnly());
 				break;
 			}
 		}
@@ -246,6 +245,13 @@ public abstract class FormBase<T> extends FormLayout {
 	public static class PropertyIdAndField {
 		private String propertyId;
 		private Field<?> field;
+		
+		
+		public PropertyIdAndField(String propertyId, Field<?> field) {
+			super();
+			this.propertyId = propertyId;
+			this.field = field;
+		}
 
 		public PropertyIdAndField(VaadinFormFieldWrapper vfw, Field<?> field) {
 			super();

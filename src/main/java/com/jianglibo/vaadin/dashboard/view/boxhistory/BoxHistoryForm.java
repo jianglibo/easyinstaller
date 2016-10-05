@@ -22,11 +22,8 @@ public class BoxHistoryForm extends FormBase<BoxHistory> {
 
 	@Override
 	public boolean saveToRepo() {
-		BoxHistory bean = getWrappedBean();
-		if (bean.getRunner() == null) {
-			bean.setRunner(getCurrentUser());
-		}
-		repository.save(bean);
+//		BoxHistory bean = getWrappedBean();
+//		repository.save(bean);
 		return true;
 	}
 }

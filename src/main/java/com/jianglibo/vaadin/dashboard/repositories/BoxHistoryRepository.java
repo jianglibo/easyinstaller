@@ -9,7 +9,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 
-@RepositoryRestResource(collectionResourceRel = "BoxHistorys", path = "BoxHistorys")
+@RepositoryRestResource(collectionResourceRel = "BoxHistories", path = "BoxHistories")
 public interface BoxHistoryRepository extends JpaRepository<BoxHistory, Long>,BoxHistoryRepositoryCustom<BoxHistory>, JpaSpecificationExecutor<BoxHistory> ,RepositoryCommonMethod<BoxHistory> {
 
 	Page<BoxHistory> findByArchivedEquals(boolean trashed, Pageable pageable);

@@ -1,6 +1,8 @@
-## What possible steps will a installation involves?
+## 关于命令的目标
 
-1. upload files
-2. execute commands with information provided.
+* 不存在单机执行的情况，所有的执行都是面向整个群集。
+* 除了install命令，其它命令都不执行上传文件环节。
 
-Every execute will accept three parameters which are three file names, clusterInfo, selfInfo, customInfo. 
+## 群集的軟件界面
+
+* 衹需顯示安裝歷史中涉及的軟件即可，同時提供未安裝軟件的界面。
