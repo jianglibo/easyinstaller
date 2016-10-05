@@ -1,8 +1,11 @@
 package com.jianglibo.vaadin.dashboard.ssh;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Charsets;
@@ -33,5 +36,10 @@ public class SshBaset extends Tbase {
 				.setKeyFile(configForTt.getSshKeyfile()) //
 				.setKnownHosts(configForTt.getSshKnownhostsFile())//
 				.setSshUser("root").build();
+	}
+	
+	@Test
+	public void placeholder() {
+		assertTrue(true);
 	}
 }

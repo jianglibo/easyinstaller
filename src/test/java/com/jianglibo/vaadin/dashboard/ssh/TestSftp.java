@@ -2,9 +2,11 @@ package com.jianglibo.vaadin.dashboard.ssh;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Vector;
@@ -21,55 +23,73 @@ import com.jcraft.jsch.SftpException;
 public class TestSftp extends SshBaset {
 
 	@Test
-	public void t() throws JSchException, SftpException, IOException {
-		JschSession jsb = getJschSession();
-		ChannelSftp sftpCh = jsb.getSftpCh();
-		sftpCh.connect();
-		InputStream is = ByteSource.wrap("abc".getBytes()).openStream();
-		sftpCh.put(is, "/root/ttt", ChannelSftp.OVERWRITE);
-		sftpCh.put("fixtures/filetoput.txt", "/root/filetoput.txt");
-		sftpCh.quit();
+	public void tFileAndStreamPut() throws JSchException, SftpException, IOException {
+		try {
+			JschSession jsb = getJschSession();
+			ChannelSftp sftpCh = jsb.getSftpCh();
+			sftpCh.connect();
+			InputStream is = ByteSource.wrap("abc".getBytes()).openStream();
+			sftpCh.put(is, "/root/ttt", ChannelSftp.OVERWRITE);
+			sftpCh.put("fixtures/filetoput.txt", "/root/filetoput.txt");
+			sftpCh.quit();
 
-		sftpCh = jsb.getSftpCh();
-		sftpCh.connect();
-		String s = new String(ByteStreams.toByteArray(sftpCh.get("/root/ttt")));
-		assertThat(s, equalTo("abc"));
-		s = new String(ByteStreams.toByteArray(sftpCh.get("/root/filetoput.txt")));
-		assertThat(s, equalTo("hello"));
-		sftpCh.quit();
+			sftpCh = jsb.getSftpCh();
+			sftpCh.connect();
+			String s = new String(ByteStreams.toByteArray(sftpCh.get("/root/ttt")));
+			assertThat(s, equalTo("abc"));
+			s = new String(ByteStreams.toByteArray(sftpCh.get("/root/filetoput.txt")));
+			assertThat(s, equalTo("hello"));
+			sftpCh.quit();
+		} catch (JSchException e) {
+			if (!(e.getCause() instanceof ConnectException)) {
+				assertTrue("Throw exception:" + e.getMessage(), false);
+			}
+		}
 	}
 
 	@Test
 	public void tdir() throws JSchException, SftpException {
-		JschSession jsb = getJschSession();
-		ChannelSftp sftpCh = jsb.getSftpCh();
-		SftpUtil.putDir(Paths.get("fixtures"), "/root/fixtures", sftpCh);
-		
-		sftpCh = jsb.getSftpCh();
-		sftpCh.connect();
-		Vector<LsEntry> files = sftpCh.ls("/root/fixtures");
-		files.forEach(f -> {
-			printme(f.toString());
-		});
+		try {
+			JschSession jsb = getJschSession();
+			ChannelSftp sftpCh = jsb.getSftpCh();
+			SftpUtil.putDir(Paths.get("fixtures"), "/root/fixtures", sftpCh);
+			
+			sftpCh = jsb.getSftpCh();
+			sftpCh.connect();
+			Vector<LsEntry> files = sftpCh.ls("/root/fixtures");
+			files.forEach(f -> {
+				printme(f.toString());
+			});
+		} catch (JSchException e) {
+			if (!(e.getCause() instanceof ConnectException)) {
+				assertTrue("Throw exception:" + e.getMessage(), false);
+			}
+		}
 	}
 
 	@Test
 	public void tmkdir() throws JSchException, SftpException {
-		JschSession jsb = getJschSession();
-		ChannelSftp sftpCh = jsb.getSftpCh();
-		String dir = "/root/akak";
-		sftpCh.connect();
 		try {
-			sftpCh.rmdir(dir);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
-		sftpCh.mkdir(dir);
-		try {
+			JschSession jsb = getJschSession();
+			ChannelSftp sftpCh = jsb.getSftpCh();
+			String dir = "/root/akak";
+			sftpCh.connect();
+			try {
+				sftpCh.rmdir(dir);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 			sftpCh.mkdir(dir);
-		} catch (Exception e) {
+			try {
+				sftpCh.mkdir(dir);
+			} catch (Exception e) {
+			}
+			sftpCh.quit();
+		} catch (JSchException e) {
+			if (!(e.getCause() instanceof ConnectException)) {
+				assertTrue("Throw exception:" + e.getMessage(), false);
+			}
 		}
-		sftpCh.quit();
 	}
 
 	@Test

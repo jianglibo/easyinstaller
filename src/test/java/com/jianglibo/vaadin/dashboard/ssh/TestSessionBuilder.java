@@ -13,6 +13,11 @@ import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.vo.JschExecuteResult;
 
 public class TestSessionBuilder extends SshBaset {
+	
+	@Test
+	public void placeholder() {
+		assertTrue(true);
+	}
 
 //	@Test
 //	public void t() throws JSchException, IOException {
