@@ -35,7 +35,7 @@ import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.security.PersonAuthenticationToken;
 import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNew;
 import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNewsMessage;
-import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewSoftwareMessage;
+import com.jianglibo.vaadin.dashboard.service.PreDefinedSoftwareProcessor.NewSoftwareMessage;
 import com.jianglibo.vaadin.dashboard.service.SoftwareDownloader.DownloadMessage;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;

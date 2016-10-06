@@ -6,12 +6,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,51 +19,26 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.Broadcaster;
 import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessage;
-import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
-import com.jianglibo.vaadin.dashboard.domain.Person;
-import com.jianglibo.vaadin.dashboard.domain.Software;
-import com.jianglibo.vaadin.dashboard.init.AppInitializer;
-import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
-import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
-import com.jianglibo.vaadin.dashboard.util.SoftwarePackUtil;
-import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
 @Component
 public class HttpPageGetter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpPageGetter.class);
 	
-	private int newSoftwareCountAfterLastStart = 0;
+
 	
 	private int fetchNewsCount = 0;
 	
 	private List<NewNew> allNews = Lists.newArrayList();
-
-	@Autowired
-	private ApplicationConfig applicationConfig;
-
-	@Autowired
-	private SoftwareRepository softwareRepository;
-	
-	@Autowired
-	private SoftwareDownloader softwareDownloader;
-	
-	@Autowired
-	private PersonRepository personRepository;
-
-	@Autowired
-	private ObjectMapper ymlObjectMapper;
 
 	public String getPage(String url) {
 		return getPage(url, Charsets.UTF_8);
@@ -141,88 +113,8 @@ public class HttpPageGetter {
 		return "";
 	}
 
-	protected boolean processOneSoftware(final Path sfFolder, String sn) {
-		// tcl--centos7--1.zip
-		int idx = sn.lastIndexOf('.');
-		String snnoext = sn.substring(0, idx);
-		String[] ss = snnoext.split("--");
-		Path unpackedFolder = null;
-		if (ss.length == 3) {
-			Software sf = softwareRepository.findByNameAndOstypeAndSversion(ss[0], ss[1], ss[2]);
-			if (sf == null) {
-				unpackedFolder = SoftwarePackUtil.unpack(sfFolder.resolve(sn));
-				try {
-					sf = ymlObjectMapper.readValue(Files.newInputStream(unpackedFolder.resolve("description.yml")),
-							Software.class);
-					sf.setName(ss[0]);
-					sf.setOstype(ss[1]);
-					sf.setSversion(ss[2]);
-					StringBuffer bf = new StringBuffer();
-					com.google.common.io.Files
-							.asCharSource(unpackedFolder.resolve(sf.getCodeToExecute()).toFile(), Charsets.UTF_8)
-							.copyTo(bf);
-					sf.setCodeToExecute(bf.toString());
-
-					bf = new StringBuffer();
-					com.google.common.io.Files
-							.asCharSource(unpackedFolder.resolve(sf.getConfigContent()).toFile(), Charsets.UTF_8)
-							.copyTo(bf);
-					sf.setConfigContent(bf.toString());
-					
-					sf.getFileToUploadVos().stream().filter(FileToUploadVo::isRemoteFile).forEach(vo -> {
-						softwareDownloader.submitTasks(vo);
-					});
-					
-					Person root = personRepository.findByEmail(AppInitializer.firstEmail);
-					sf.setCreator(root);
-					softwareRepository.save(sf);
-					return true;
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					if (unpackedFolder != null) {
-						try {
-							Files.walkFileTree(unpackedFolder, new SimpleFileVisitor<Path>(){
-								@Override
-								public FileVisitResult visitFile(Path curFile, BasicFileAttributes bfa)
-										throws IOException {
-									Files.deleteIfExists(curFile);
-									return FileVisitResult.CONTINUE;
-								}
-								
-								@Override
-								public FileVisitResult postVisitDirectory(Path curPath, IOException arg1)
-										throws IOException {
-									Files.deleteIfExists(curPath);
-									return FileVisitResult.CONTINUE;
-								}
-							});
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
 	
-	public static class NewSoftwareMessage {
-		private int newSoftwareCountAfterLastStart;
 
-		public NewSoftwareMessage(int newSoftwareCountAfterLastStart) {
-			super();
-			this.newSoftwareCountAfterLastStart = newSoftwareCountAfterLastStart;
-		}
-
-		public int getNewSoftwareCountAfterLastStart() {
-			return newSoftwareCountAfterLastStart;
-		}
-
-		public void setNewSoftwareCountAfterLastStart(int newSoftwareCountAfterLastStart) {
-			this.newSoftwareCountAfterLastStart = newSoftwareCountAfterLastStart;
-		}
-	}
 	
 	public static class NewNewsMessage {
 		private List<NewNew> newNews;
@@ -257,42 +149,10 @@ public class HttpPageGetter {
 	 */
 	@Scheduled(fixedRate = 10000)
 	public void broadcastNewSoftware() {
-		Broadcaster.broadcast(new BroadCasterMessage(new NewSoftwareMessage(newSoftwareCountAfterLastStart), Broadcaster.BroadCasterMessageType.NEW_SOFTWARE));
 		Broadcaster.broadcast(new BroadCasterMessage(new NewNewsMessage(getAllNews(), fetchNewsCount), Broadcaster.BroadCasterMessageType.NEW_NEWS));
 	}
 
-	// ten minutes.
-	@Scheduled(initialDelay=1000, fixedDelay=600000)
-	public void fetchSoftwareLists() {
-		String urlBase = "https://raw.githubusercontent.com/jianglibo/easyinstaller/master/softwares/";
-		String listfn = "softwarelist.txt";
-		final Path sfFolder = applicationConfig.getSoftwareFolderPath();
-		if (!Files.exists(sfFolder)) {
-			try {
-				Files.createDirectories(applicationConfig.getSoftwareFolderPath());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		try {
-			LOGGER.info("start fetching from {}", urlBase + listfn);
-			String snLines = getPage(urlBase + listfn);
-			Files.write(applicationConfig.getSoftwareFolderPath().resolve(listfn), snLines.getBytes(Charsets.UTF_8));
-			newSoftwareCountAfterLastStart += CharStreams.readLines(new StringReader(snLines)).stream().map(sn -> {
-				Path targetZipFile = sfFolder.resolve(sn); 
-				if (!Files.exists(targetZipFile)) {
-					getFile(urlBase + sn, targetZipFile);
-				}
-				if (Files.exists(targetZipFile)) {
-					return processOneSoftware(sfFolder, sn);
-				} else {
-					return false;
-				}
-			}).mapToInt(b -> b ? 1 : 0).sum();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+
 
 	/**
 	 * fetch once for every 10 minutes.
@@ -311,13 +171,6 @@ public class HttpPageGetter {
 		}
 	}
 
-	public void setNewSoftwareCountAfterLastStart(int newSoftwareCountAfterLastStart) {
-		this.newSoftwareCountAfterLastStart = newSoftwareCountAfterLastStart;
-	}
-
-	public int getNewSoftwareCountAfterLastStart() {
-		return newSoftwareCountAfterLastStart;
-	}
 
 	public List<NewNew> getAllNews() {
 		return allNews;

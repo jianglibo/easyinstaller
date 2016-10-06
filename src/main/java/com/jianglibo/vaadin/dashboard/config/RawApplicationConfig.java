@@ -19,12 +19,12 @@ public class RawApplicationConfig {
 	private String uploadDst;
 
 	/**
-	 * where application read custom install steps.
+	 * where application save zipped software files.
 	 */
 	private String softwareFolder;
 	
 	/**
-	 * where upload runner to find files.
+	 * where filesToUpload saved.
 	 */
 	private String localFolder;
 	

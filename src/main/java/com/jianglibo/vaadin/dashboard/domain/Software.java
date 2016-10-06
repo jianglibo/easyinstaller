@@ -222,4 +222,12 @@ public class Software extends BaseEntity {
 	public void setSversion(String sversion) {
 		this.sversion = sversion;
 	}
+
+	public void copyFrom(Software vo) {
+		setActions(vo.getActions());
+		setArchived(vo.isArchived());
+		setCodeToExecute(vo.getCodeToExecute());
+		setFilesToUpload(vo.getFilesToUpload());
+		setRunner(vo.getRunner());
+	}
 }

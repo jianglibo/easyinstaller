@@ -137,6 +137,10 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.hamcrest/hamcrest-all
 	testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 	
+	// https://mvnrepository.com/artifact/org.mockito/mockito-all
+	testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+	
+	
 }
 
 task listJars << {

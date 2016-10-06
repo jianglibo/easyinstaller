@@ -35,6 +35,9 @@ public class ApplicationConfig {
 
 	private Path uploadDstPath;
 
+	/**
+	 * where application save zipped software files.
+	 */
 	private Path softwareFolderPath;
 
 	private Path localFolderPath;

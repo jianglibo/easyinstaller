@@ -10,7 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
-import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -67,8 +66,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[] { //
 				new ButtonGroup( //
-						new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)), //
+						new ButtonDescription(CommonMenuItemIds.DETAIL, FontAwesome.EDIT, ButtonEnableType.ONE)), //
 				new ButtonGroup( //
 						new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH,
 								ButtonEnableType.ALWAYS)) };
@@ -190,9 +188,9 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 		case CommonMenuItemIds.REFRESH:
 			// ((BoxContainer)getTable().getContainerDataSource()).refresh();
 			break;
-		case CommonMenuItemIds.EDIT:
+		case CommonMenuItemIds.DETAIL:
 			UI.getCurrent().getNavigator().navigateTo(
-					VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
+					VIEW_NAME + "/detail/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/?pv=" + getLvfb().toNavigateString());

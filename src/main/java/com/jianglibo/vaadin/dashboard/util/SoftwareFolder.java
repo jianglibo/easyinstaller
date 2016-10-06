@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 
 public class SoftwareFolder {
 	
@@ -25,6 +26,16 @@ public class SoftwareFolder {
 	
 	public String getZipFileName() {
 		return getPath().getFileName().toString() + ".zip";
+	}
+	
+	public String fnAndMd5() {
+		String md5Value = "";
+		try {
+			md5Value = com.google.common.io.Files.hash(getZipFilePath().toFile(), Hashing.md5()).toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return getZipFileName() + "," + md5Value;
 	}
 
 	public Path getZipFilePath() {

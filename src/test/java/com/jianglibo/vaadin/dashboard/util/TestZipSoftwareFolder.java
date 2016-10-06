@@ -28,7 +28,7 @@ public class TestZipSoftwareFolder {
 				} catch (Exception e) {
 					return null;
 				}
-			}).filter(java.util.Objects::nonNull).map(SoftwareFolder::getZipFileName).iterator();
+			}).filter(java.util.Objects::nonNull).map(SoftwareFolder::fnAndMd5).iterator();
 			
 			PrintWriter pw = new PrintWriter(new FileWriter(listPath.toFile()));
 			while (lineit.hasNext()) {
