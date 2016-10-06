@@ -67,6 +67,7 @@ public class HttpPageGetter {
 
 				}
 			} catch (IOException e) {
+				e.printStackTrace();
 			} finally {
 				if (response != null) {
 					try {

@@ -99,6 +99,7 @@ public class PreDefinedSoftwareProcessor {
 
 		public SoftwarelistLine(String baseUrl, Path softwareFolderPath, String line) {
 			this.softwareFolderPath = softwareFolderPath;
+			this.baseUrl = baseUrl;
 			int idx = line.lastIndexOf(',');
 			this.fn = line.substring(0, idx);
 			this.md5 = line.substring(idx + 1);

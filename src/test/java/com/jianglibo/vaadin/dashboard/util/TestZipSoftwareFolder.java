@@ -20,7 +20,9 @@ public class TestZipSoftwareFolder {
 	@Test
 	public void packall() throws IOException {
 		Path listPath = baseFolder.resolve("softwarelist.txt");
+		
 		try (Stream<Path> pathes = Files.list(baseFolder)) {
+			
 			Iterator<String> lineit = pathes.map(SoftwareFolder::new).filter(SoftwareFolder::isValid).map(sfolder -> {
 				try {
 					SoftwarePackUtil.pack(sfolder.getPath(), sfolder.getZipFilePath());
