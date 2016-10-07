@@ -96,7 +96,9 @@ public class JschSession {
 		public JschSession build() throws JSchException {
 			JSch jsch = new JSch();
 			jsch.addIdentity(keyFile);
-			jsch.setKnownHosts(knownHosts);
+			if (knownHosts != null) {
+				jsch.setKnownHosts(knownHosts);
+			}
 			Session session = jsch.getSession(sshUser, host, port);
 			session.setConfig("StrictHostKeyChecking", "no");
 			session.connect();

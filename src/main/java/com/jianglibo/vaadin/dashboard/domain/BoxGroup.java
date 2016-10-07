@@ -3,6 +3,7 @@ package com.jianglibo.vaadin.dashboard.domain;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
@@ -51,7 +52,7 @@ public class BoxGroup extends BaseEntity {
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 30)
 	private Set<Box> boxes = Sets.newHashSet();
 	
-	@OneToMany(mappedBy="boxGroup", fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="boxGroup", fetch=FetchType.EAGER, cascade=CascadeType.REMOVE)
 	private List<BoxGroupHistory> histories;
 	
 	@ManyToOne

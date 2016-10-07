@@ -1,11 +1,14 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -15,6 +18,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.google.common.collect.Sets;
 import com.google.gwt.thirdparty.guava.common.base.Objects;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
@@ -61,6 +65,9 @@ public class Box extends BaseEntity {
 	@NotEmpty
 	private String ostype;
 	
+	@OneToMany(mappedBy="box", fetch = FetchType.EAGER, cascade=CascadeType.REMOVE)
+	private List<BoxHistory> histories = Lists.newArrayList();
+	
 	@VaadinFormField(order = 3000, fieldType=Ft.TEXT_AREA)
 	private String description;
 	
@@ -84,6 +91,15 @@ public class Box extends BaseEntity {
 	
 	@VaadinFormField(order = 70)
 	private String ports;
+	
+
+	public List<BoxHistory> getHistories() {
+		return histories;
+	}
+
+	public void setHistories(List<BoxHistory> histories) {
+		this.histories = histories;
+	}
 
 	public String getIp() {
 		return ip;

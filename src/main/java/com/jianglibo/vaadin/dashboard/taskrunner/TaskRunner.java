@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard.taskrunner;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -11,12 +12,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.jianglibo.vaadin.dashboard.Broadcaster;
+import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessage;
+import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageBody;
+import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageType;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
@@ -25,6 +30,7 @@ import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
+import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession.JschSessionBuilder;
@@ -50,6 +56,9 @@ public class TaskRunner {
 	
 	@Autowired
 	private BoxGroupRepository boxGroupRepository;
+	
+	@Autowired
+	private BoxRepository boxRepository;
 	
 	@Autowired
 	private PersonRepository personRepository;
@@ -84,10 +93,12 @@ public class TaskRunner {
 		Futures.addCallback(lf, new FutureCallback<List<OneThreadTaskDesc>>() {
 			@Override
 			public void onSuccess(List<OneThreadTaskDesc> result) {
-					List<BoxHistory> bhs = Lists.newArrayList();
+					Set<BoxHistory> bhs = Sets.newHashSet();
 					long successes = result.stream().filter(Objects::nonNull).map(td -> {
 						BoxHistory bh = boxHistoryRepository.save(td.getBoxHistory());
+						bh.getBox().getHistories().add(bh);
 						bhs.add(bh);
+						boxRepository.save(bh.getBox());
 						return bh;
 					}).filter(BoxHistory::isSuccess).count();
 					
@@ -99,12 +110,16 @@ public class TaskRunner {
 					}
 					bgh = boxGroupHistoryRepository.save(bgh);
 					
-					setBgHistoriesSofar(getBgHistoriesSofar() + 1);
+					for(BoxHistory bh: bhs) {
+						bh.setBoxGroupHistory(bgh);
+						boxHistoryRepository.save(bh);
+					}
+					bgHistoriesSofar++;
 					
 					BoxGroup bg = taskDesc.getBoxGroup();
 					bg.getHistories().add(bgh);
 					boxGroupRepository.save(bg);
-					taskDesc.getTfl().oneTaskFinished(null, true);
+					Broadcaster.broadcast(new BroadCasterMessage(new GroupTaskFinishMessage(bgHistoriesSofar, taskDesc.getUniqueUiId())));
 					
 			}
 
@@ -122,6 +137,55 @@ public class TaskRunner {
 	public void setBgHistoriesSofar(int bgHistoriesSofar) {
 		this.bgHistoriesSofar = bgHistoriesSofar;
 	}
+	
+	public static class GroupTaskFinishMessage implements BroadCasterMessageBody {
+		
+		private final int bgHistoriesSofar;
+		
+		private final String uniqueUiId;
+		
+		public GroupTaskFinishMessage(int bgHistoriesSofar, String uniqueUiId) {
+			super();
+			this.bgHistoriesSofar = bgHistoriesSofar;
+			this.uniqueUiId = uniqueUiId;
+			
+		}
+		
+		public BroadCasterMessageType getBroadCasterMessageType() {
+			return BroadCasterMessageType.GROUP_TASK_FINISH;
+		}
+
+		public int getBgHistoriesSofar() {
+			return bgHistoriesSofar;
+		}
+
+		public String getUniqueUiId() {
+			return uniqueUiId;
+		}
+	}
+
+	public static class OneTaskFinishMessage implements BroadCasterMessageBody {
+		
+		private OneThreadTaskDesc ottd;
+		
+		public OneTaskFinishMessage(OneThreadTaskDesc ottd) {
+			super();
+			this.setOttd(ottd);
+		}
+		
+		public BroadCasterMessageType getBroadCasterMessageType() {
+			return BroadCasterMessageType.ONE_TASK_FINISH;
+		}
+
+		public OneThreadTaskDesc getOttd() {
+			return ottd;
+		}
+
+		public void setOttd(OneThreadTaskDesc ottd) {
+			this.ottd = ottd;
+		}
+
+	}
 
 	private class OneTaskCallable implements Callable<OneThreadTaskDesc> {
 
@@ -137,16 +201,23 @@ public class TaskRunner {
 			try {
 				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(box.getKeyFilePath())
 						.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
-				sshUploadRunner.run(jsession, oneThreadtaskDesc);
-				if (oneThreadtaskDesc.getBoxHistory().isSuccess()) {
+				
+				boolean needUploadFile = "install".equals(oneThreadtaskDesc.getAction());
+				
+				if (needUploadFile) {
+					sshUploadRunner.run(jsession, oneThreadtaskDesc);
+				}
+				
+				if (oneThreadtaskDesc.getBoxHistory().isSuccess() || !needUploadFile) {
 					sshExecRunner.run(jsession, oneThreadtaskDesc);
 				}
-				oneThreadtaskDesc.notifyOneTaskFinished();
 				if (jsession.getSession().isConnected()) {
 					jsession.getSession().disconnect();
 				}
+			Broadcaster.broadcast(new BroadCasterMessage(new OneTaskFinishMessage(oneThreadtaskDesc)));
 			} catch (Exception e) {
-				oneThreadtaskDesc.getBoxHistory().appendLogAndSetFailure(e.getMessage());
+				String emsg = e.getMessage();
+				oneThreadtaskDesc.getBoxHistory().appendLogAndSetFailure(emsg);
 			}
 			return oneThreadtaskDesc;
 		}

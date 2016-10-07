@@ -16,32 +16,35 @@ public class SoftwareViewMenuItem implements MenuItemWrapper {
 
 	private Component menuItem;
 
-	private final MessageSource messageSource;
-	
 	private Label notificationsBadge;
-	
-	private int unreadNotificationsCount = 0;
-	
+
+	private int count1;
+
+	private int count2;
+
 	@Autowired
 	public SoftwareViewMenuItem(MessageSource messageSource) {
-		this.messageSource = messageSource;
-		
-        this.notificationsBadge = new Label();
-        this.menuItem = DboardViewUtil.buildBadgeWrapper(new ValoMenuItemButton(SoftwareListView.VIEW_NAME, SoftwareListView.ICON_VALUE, messageSource),
-                notificationsBadge);
-        DashboardEventBus.register(this);
+		this.notificationsBadge = new Label();
+		this.menuItem = DboardViewUtil.buildBadgeWrapper(
+				new ValoMenuItemButton(SoftwareListView.VIEW_NAME, SoftwareListView.ICON_VALUE, messageSource),
+				notificationsBadge);
+		DashboardEventBus.register(this);
 	}
-	
+
 	public Component getMenuItem() {
 		return menuItem;
 	}
-	
-	public void updateNotificationsCount(int count) {
-		unreadNotificationsCount = count;
-		notificationsBadge.setValue(String.valueOf(unreadNotificationsCount));
-		notificationsBadge.setVisible(unreadNotificationsCount > 0);
+
+	public void updateNotificationsCount(int newCount) {
+		if (newCount == 0) {
+			count1 = count2;
+		} else {
+			count2 = newCount;
+		}
+		notificationsBadge.setValue(String.valueOf(count2 - count1));
+		notificationsBadge.setVisible((count2 - count1) > 0);
 	}
-	
+
 	@Override
 	public void onAttach() {
 		updateNotificationsCount(0);

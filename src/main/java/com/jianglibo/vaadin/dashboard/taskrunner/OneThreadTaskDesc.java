@@ -4,7 +4,6 @@ import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.domain.Software;
-import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc.OneTaskFinishListener;
 
 /**
  * 
@@ -17,32 +16,25 @@ public class OneThreadTaskDesc {
 
 	private final Software software;
 	
-	private final OneTaskFinishListener otfl;
-	
 	private final BoxHistory boxHistory;
 	
 	private final TaskDesc td;
 	
-	private final String taskId;
-	
 	private final BoxGroup boxGroup;
 	
 	private final String action;
+	
+	private final String uniqueUiId;
 
-	public OneThreadTaskDesc(TaskDesc td,BoxGroup boxGroup, Box box, Software software, String action, OneTaskFinishListener otfl) {
+	public OneThreadTaskDesc(TaskDesc td,BoxGroup boxGroup, Box box, Software software, String action) {
 		super();
 		this.td = td;
 		this.action = action;
 		this.box = box;
 		this.software = software;
-		this.otfl = otfl;
-		this.taskId = td.getTaskId();
+		this.uniqueUiId = td.getUniqueUiId();
 		this.boxGroup = boxGroup;
-		this.boxHistory = new BoxHistory.BoxHistoryBuilder(td.getTaskId(),boxGroup, software, box, "", true).build();
-	}
-	
-	public void notifyOneTaskFinished() {
-		getTfl().oneTaskFinished(this, false);
+		this.boxHistory = new BoxHistory.BoxHistoryBuilder(boxGroup, software, box, "", true).build();
 	}
 
 	public TaskDesc getTd() {
@@ -57,16 +49,8 @@ public class OneThreadTaskDesc {
 		return software;
 	}
 
-	public OneTaskFinishListener getTfl() {
-		return otfl;
-	}
-
 	public BoxHistory getBoxHistory() {
 		return boxHistory;
-	}
-
-	public String getTaskId() {
-		return taskId;
 	}
 
 	public BoxGroup getBoxGroup() {
@@ -76,6 +60,8 @@ public class OneThreadTaskDesc {
 	public String getAction() {
 		return action;
 	}
-	
-	
+
+	public String getUniqueUiId() {
+		return uniqueUiId;
+	}
 }

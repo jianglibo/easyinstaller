@@ -3,6 +3,7 @@ package com.jianglibo.vaadin.dashboard;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,6 @@ import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.CloseOpenWindowsEvent;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.SoftwareNumberChangeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.UserLoggedOutEvent;
 import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.security.PersonAuthenticationToken;
@@ -37,10 +37,9 @@ import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNew;
 import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNewsMessage;
 import com.jianglibo.vaadin.dashboard.service.PreDefinedSoftwareProcessor.NewSoftwareMessage;
 import com.jianglibo.vaadin.dashboard.service.SoftwareDownloader.DownloadMessage;
-import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner;
-import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc.OneTaskFinishListener;
+import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner.GroupTaskFinishMessage;
 import com.jianglibo.vaadin.dashboard.uicomponent.tile.TileBase;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
@@ -49,6 +48,7 @@ import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
 import com.jianglibo.vaadin.dashboard.view.LoginView;
 import com.jianglibo.vaadin.dashboard.view.MainMenuItems;
+import com.jianglibo.vaadin.dashboard.view.boxgrouphistory.BoxGroupHistoryViewMenuItem;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
 import com.jianglibo.vaadin.dashboard.view.dashboard.NewNewsTile;
 import com.jianglibo.vaadin.dashboard.view.software.SoftwareViewMenuItem;
@@ -80,13 +80,11 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 @SpringUI(path = "/")
 @Push(PushMode.MANUAL)
-public final class DashboardUI extends UI implements ApplicationContextAware, OneTaskFinishListener, Broadcaster.BroadcastListener {
+public final class DashboardUI extends UI implements ApplicationContextAware,  Broadcaster.BroadcastListener {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(DashboardUI.class);
 
 	private ApplicationContext applicationContext;
-	
-	private int newSoftwareCountAfterLastStart = 0;
 	
 	private int fetchNewsCount = 0;
 	
@@ -112,6 +110,8 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 	
 	@Autowired
 	private TaskRunner taskRunner;
+	
+	private String uniqueUiID;
 
 	private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
@@ -119,6 +119,7 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 
 	@Override
 	protected void init(final VaadinRequest request) {
+		this.setUniqueUiID(UUID.randomUUID().toString());
 		VaadinServletRequest vsr = (VaadinServletRequest) request;
 		Locale lo = LocaleSelector.getLocaleSupported(RequestContextUtils.getLocale(vsr.getHttpServletRequest()));
 
@@ -268,26 +269,6 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 		}
 	}
 
-	@Override
-	public void oneTaskFinished(OneThreadTaskDesc ottd, boolean groupFinished) {
-		access(new Runnable() {
-			@Override
-			public void run() {
-				if (groupFinished) {
-//					BoxHistoryViewMenuItem svmi = (BoxHistoryViewMenuItem)getDm().getMmis().getMenuMap().get(BoxHistoryViewMenuItem.class.getName());
-//					if (taskRunner.getBgHistoriesSofar() > clusterhistorymenuitem.getBgHistoriesSofar) {
-//						svmi.updateNotificationsCount(nsm.getNewSoftwareCountAfterLastStart() - getNewSoftwareCountAfterLastStart());						
-//					}
-					push();
-				} else {
-					NotificationUtil.tray(messageSource, "onetaskfinished", ottd.getBox().getHostname(), ottd.getAction(), ottd.getBoxHistory().isSuccess() ? "success" : "fail");
-					push();
-				}
-			}
-		});
-	}
-	
-	
 	/**
 	 * 
 	 */
@@ -300,12 +281,9 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
             	switch (message.getBcmt()) {
 				case NEW_SOFTWARE:
 					NewSoftwareMessage nsm = (NewSoftwareMessage) message.getBody();
-					if (nsm.getNewSoftwareCountAfterLastStart() > getNewSoftwareCountAfterLastStart()) {
-						SoftwareViewMenuItem svmi = (SoftwareViewMenuItem)getDm().getMmis().getMenuMap().get(SoftwareViewMenuItem.class.getName());
-						svmi.updateNotificationsCount(nsm.getNewSoftwareCountAfterLastStart() - getNewSoftwareCountAfterLastStart());
-						setNewSoftwareCountAfterLastStart(nsm.getNewSoftwareCountAfterLastStart());
-						push();
-					}
+					SoftwareViewMenuItem svmi = (SoftwareViewMenuItem)getDm().getMmis().getMenuMap().get(SoftwareViewMenuItem.class.getName());
+					svmi.updateNotificationsCount(nsm.getNewSoftwareCountAfterLastStart());
+					push();
 					break;
 				case NEW_NEWS:
 					// Must sure view interested is current view.
@@ -342,6 +320,16 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 					}
 					push();
 					break;
+				case GROUP_TASK_FINISH:
+					GroupTaskFinishMessage gtfm = (GroupTaskFinishMessage) message.getBody();
+					if (getUniqueUiID().equals(gtfm.getUniqueUiId())) {
+						BoxGroupHistoryViewMenuItem bghvmi = (BoxGroupHistoryViewMenuItem)getDm().getMmis().getMenuMap().get(BoxGroupHistoryViewMenuItem.class.getName());
+						bghvmi.updateNotificationsCount(gtfm.getBgHistoriesSofar());
+						push();
+					}
+					break;
+				case ONE_TASK_FINISH:
+					break;
 				default:
 					break;
 				}
@@ -350,13 +338,6 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
         });
 	}
 
-	public int getNewSoftwareCountAfterLastStart() {
-		return newSoftwareCountAfterLastStart;
-	}
-
-	public void setNewSoftwareCountAfterLastStart(int newSoftwareCountAfterLastStart) {
-		this.newSoftwareCountAfterLastStart = newSoftwareCountAfterLastStart;
-	}
 
 	public List<NewNew> getNews() {
 		return news;
@@ -366,16 +347,16 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 		this.news = news;
 	}
 
-	public void newSoftwareAdded() {
-        access(new Runnable() {
-            @Override
-            public void run() {
-            	LOGGER.info("fetch software event posted.");
-            	DashboardEventBus.post(new SoftwareNumberChangeEvent());
-            	push();
-            }
-        });
-	}
+//	public void newSoftwareAdded() {
+//        access(new Runnable() {
+//            @Override
+//            public void run() {
+//            	LOGGER.info("fetch software event posted.");
+//            	DashboardEventBus.post(new SoftwareNumberChangeEvent());
+//            	push();
+//            }
+//        });
+//	}
 
 	public DashboardMenu getDm() {
 		return dm;
@@ -383,5 +364,13 @@ public final class DashboardUI extends UI implements ApplicationContextAware, On
 
 	public void setDm(DashboardMenu dm) {
 		this.dm = dm;
+	}
+
+	public String getUniqueUiID() {
+		return uniqueUiID;
+	}
+
+	public void setUniqueUiID(String uniqueUiID) {
+		this.uniqueUiID = uniqueUiID;
 	}
 }

@@ -6,16 +6,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.Tbase;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
@@ -35,6 +36,22 @@ public class TestDomains extends Tbase {
 	private BoxRepository boxRepository;
 	
 	private Path softwarePath = Paths.get("softwares");
+	
+	@After
+	public void after() {
+		List<BoxGroup> bgs = boxGroupRepository.findAll();
+		bgs.forEach(bg -> {
+			bg.getBoxes().stream().forEach(b -> {
+				b.getBoxGroups().remove(bg);
+				boxRepository.save(b);
+			});
+			bg.setBoxes(Sets.newHashSet());
+			boxGroupRepository.delete(bg);
+		});
+		
+		boxRepository.deleteAll();
+		softwareRepository.deleteAll();
+	}
 	
 	@Test
 	public void testBoxGroup() {
@@ -96,7 +113,7 @@ public class TestDomains extends Tbase {
 						}
 						sf.setCreator(root);
 						softwareRepository.save(sf);
-						TaskDesc td = new TaskDesc(new PersonVo.PersonVoBuilder(getFirstPerson()).build(), bgs.iterator().next(),Sets.newHashSet(), sf, "install", null);
+						TaskDesc td = new TaskDesc("", new PersonVo.PersonVoBuilder(getFirstPerson()).build(), bgs.iterator().next(),Sets.newHashSet(), sf, "install");
 						
 						OneThreadTaskDesc ottd = td.createOneThreadTaskDescs().get(0);
 						
@@ -119,5 +136,4 @@ public class TestDomains extends Tbase {
 			assertTrue("testBoxGroup", false);
 		}
 	}
-
 }

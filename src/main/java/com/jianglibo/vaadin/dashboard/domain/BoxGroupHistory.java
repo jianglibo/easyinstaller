@@ -1,7 +1,9 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
@@ -10,6 +12,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
@@ -43,15 +46,15 @@ public class BoxGroupHistory extends BaseEntity {
 	@VaadinGridColumn(order = 50)
 	private boolean success;
 	
-	@OneToMany(mappedBy="boxGroupHistory", fetch=FetchType.EAGER)
-	private List<BoxHistory> boxHistories = Lists.newArrayList();
+	@OneToMany(mappedBy="boxGroupHistory", fetch=FetchType.EAGER, cascade=CascadeType.REMOVE)
+	private Set<BoxHistory> boxHistories = Sets.newHashSet();
 	
 	private boolean readed = false;
 	
 	public BoxGroupHistory() {
 	}
 	
-	public BoxGroupHistory(Software software, BoxGroup boxGroup, List<BoxHistory> boxHistories) {
+	public BoxGroupHistory(Software software, BoxGroup boxGroup, Set<BoxHistory> boxHistories) {
 		this.software = software;
 		this.boxGroup = boxGroup;
 		this.boxHistories = boxHistories;
@@ -102,11 +105,11 @@ public class BoxGroupHistory extends BaseEntity {
 		this.boxGroup = boxGroup;
 	}
 
-	public List<BoxHistory> getBoxHistories() {
+	public Set<BoxHistory> getBoxHistories() {
 		return boxHistories;
 	}
 
-	public void setBoxHistories(List<BoxHistory> boxHistories) {
+	public void setBoxHistories(Set<BoxHistory> boxHistories) {
 		this.boxHistories = boxHistories;
 	}
 }

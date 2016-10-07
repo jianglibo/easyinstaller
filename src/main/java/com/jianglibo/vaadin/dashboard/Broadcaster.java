@@ -34,23 +34,27 @@ public class Broadcaster implements Serializable {
 			});
 	}
 	
+	public static interface BroadCasterMessageBody {
+		BroadCasterMessageType getBroadCasterMessageType();
+	}
+	
 	public static enum BroadCasterMessageType {
-		NEW_SOFTWARE, NEW_NEWS, DOWNLOAD
+		NEW_SOFTWARE, NEW_NEWS, DOWNLOAD, ONE_TASK_FINISH, GROUP_TASK_FINISH
 	}
 	
 	public static class BroadCasterMessage {
-		private Object body;
+		private BroadCasterMessageBody body;
 		private BroadCasterMessageType bcmt;
 		
-		public BroadCasterMessage(Object body, BroadCasterMessageType bcmt) {
+		public BroadCasterMessage(BroadCasterMessageBody body) {
 			super();
 			this.body = body;
-			this.bcmt = bcmt;
+			this.bcmt = body.getBroadCasterMessageType();
 		}
-		public Object getBody() {
+		public BroadCasterMessageBody getBody() {
 			return body;
 		}
-		public void setBody(Object body) {
+		public void setBody(BroadCasterMessageBody body) {
 			this.body = body;
 		}
 		public BroadCasterMessageType getBcmt() {

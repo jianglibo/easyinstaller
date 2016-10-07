@@ -28,6 +28,8 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.Broadcaster;
 import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessage;
+import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageBody;
+import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageType;
 
 @Component
 public class HttpPageGetter {
@@ -117,7 +119,7 @@ public class HttpPageGetter {
 	
 
 	
-	public static class NewNewsMessage {
+	public static class NewNewsMessage implements BroadCasterMessageBody {
 		private List<NewNew> newNews;
 		
 		private int fetchCount;
@@ -143,6 +145,11 @@ public class HttpPageGetter {
 		public void setNewNews(List<NewNew> newNews) {
 			this.newNews = newNews;
 		}
+
+		@Override
+		public BroadCasterMessageType getBroadCasterMessageType() {
+			return BroadCasterMessageType.NEW_NEWS;
+		}
 	}
 	
 	/**
@@ -150,7 +157,7 @@ public class HttpPageGetter {
 	 */
 	@Scheduled(fixedRate = 10000)
 	public void broadcastNewSoftware() {
-		Broadcaster.broadcast(new BroadCasterMessage(new NewNewsMessage(getAllNews(), fetchNewsCount), Broadcaster.BroadCasterMessageType.NEW_NEWS));
+		Broadcaster.broadcast(new BroadCasterMessage(new NewNewsMessage(getAllNews(), fetchNewsCount)));
 	}
 
 

@@ -58,8 +58,19 @@ public class SshUploadRunner implements BaseRunner {
 				sftp = jsession.getSftpCh();
 				try {
 					for(FileToUploadVo fvo : taskDesc.getSoftware().getFileToUploadVos()) {
-						String fileToUpload = applicationConfig.getLocalFolderPath().resolve(fvo.getRelative()).toAbsolutePath().toString();
+						String fileToUpload = applicationConfig.getLocalFolderPath().resolve(fvo.getRelative()).toAbsolutePath().toString().replace("\\\\", "/");
 						String targetFile = applicationConfig.getRemoteFolder() + fvo.getRelative().replaceAll("\\\\", "/");
+						
+						sftp.connect();
+						int idx = targetFile.lastIndexOf('/');
+						String targetFolder = targetFile.substring(0, idx);
+						
+						try {
+							sftp.mkdir(targetFolder);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
 						sftp.put(fileToUpload, targetFile, ChannelSftp.OVERWRITE);
 					}
 				} catch (Exception e) {

@@ -22,6 +22,8 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.Broadcaster;
 import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessage;
+import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageBody;
+import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageType;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.domain.Software;
@@ -81,7 +83,12 @@ public class PreDefinedSoftwareProcessor {
 			Files.write(sfFolder.resolve(listfn), lines);
 
 			newSoftwareCountAfterLastStart += lines.stream().map(line -> new SoftwarelistLine(urlBase, sfFolder, line))
-					.filter(SoftwarelistLine::changed).map(sl -> {
+					.filter(sl -> {
+						String[] ss = sl.getFnSegs();
+						boolean indb = softwareRepository.findByNameAndOstypeAndSversion(ss[0], ss[1], ss[2]) != null;
+						boolean changed = sl.changed();
+						return !indb || changed;
+					}).map(sl -> {
 						return processOneSoftware(httpPageGetter, sl);
 					}).mapToInt(b -> b ? 1 : 0).sum();
 		} catch (IOException e) {
@@ -150,11 +157,10 @@ public class PreDefinedSoftwareProcessor {
 
 	@Scheduled(fixedRate = 10000)
 	public void broadcastNewSoftware() {
-		Broadcaster.broadcast(new BroadCasterMessage(new NewSoftwareMessage(newSoftwareCountAfterLastStart),
-				Broadcaster.BroadCasterMessageType.NEW_SOFTWARE));
+		Broadcaster.broadcast(new BroadCasterMessage(new NewSoftwareMessage(newSoftwareCountAfterLastStart)));
 	}
 
-	public static class NewSoftwareMessage {
+	public static class NewSoftwareMessage implements BroadCasterMessageBody {
 		private int newSoftwareCountAfterLastStart;
 
 		public NewSoftwareMessage(int newSoftwareCountAfterLastStart) {
@@ -168,6 +174,11 @@ public class PreDefinedSoftwareProcessor {
 
 		public void setNewSoftwareCountAfterLastStart(int newSoftwareCountAfterLastStart) {
 			this.newSoftwareCountAfterLastStart = newSoftwareCountAfterLastStart;
+		}
+
+		@Override
+		public BroadCasterMessageType getBroadCasterMessageType() {
+			return BroadCasterMessageType.NEW_SOFTWARE;
 		}
 	}
 
@@ -197,9 +208,7 @@ public class PreDefinedSoftwareProcessor {
 	}
 
 	protected boolean processOneSoftware(HttpPageGetter httpPageGetter, SoftwarelistLine sl) {
-		if (sl.zipFileExistsAndMd5Right()) {
-			return false;
-		} else {
+		if (!sl.zipFileExistsAndMd5Right()) {
 			httpPageGetter.getFile(sl.getUrl(), sl.getZipFilePath());
 		}
 
@@ -211,15 +220,14 @@ public class PreDefinedSoftwareProcessor {
 			Software sf = softwareRepository.findByNameAndOstypeAndSversion(ss[0], ss[1], ss[2]);
 			try {
 				Software vo = decodeFromYaml(unpackedFolder, ss);
-				
+
 				if (sf == null) {
 					softwareRepository.save(vo);
 				} else {
 					sf.copyFrom(vo);
 					softwareRepository.save(sf);
 				}
-				
-				
+
 				return true;
 			} catch (Exception e) {
 				e.printStackTrace();

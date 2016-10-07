@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.security.core.Authentication;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
@@ -14,6 +13,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
+import com.jianglibo.vaadin.dashboard.security.PersonAuthenticationToken;
 import com.jianglibo.vaadin.dashboard.security.PersonVo;
 import com.jianglibo.vaadin.dashboard.uicomponent.filecontentfield.FileContentField;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
@@ -100,7 +100,7 @@ public abstract class FormBase<T> extends FormLayout {
 		if (M3958SecurityUtil.isLogined()) {
 			return getPersonRepository().findOne(M3958SecurityUtil.getLoginPersonId());
 		} else {
-			return getPersonRepository().findOne(((PersonVo) VaadinSession.getCurrent().getAttribute(Authentication.class).getPrincipal()).getId());
+			return getPersonRepository().findOne(((PersonVo) VaadinSession.getCurrent().getAttribute(PersonAuthenticationToken.class).getPrincipal()).getId());
 		}
 		
 	}

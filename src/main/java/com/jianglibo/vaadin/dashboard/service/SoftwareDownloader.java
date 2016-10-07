@@ -27,6 +27,8 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.jianglibo.vaadin.dashboard.Broadcaster;
 import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessage;
+import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageBody;
+import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageType;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
@@ -50,7 +52,7 @@ public class SoftwareDownloader {
 		this.localFolder = applicationConfig.getLocalFolderPath();
 	}
 	
-	public static class DownloadMessage {
+	public static class DownloadMessage implements BroadCasterMessageBody {
 		private String fileUrl;
 		private String stage = "start";
 		private boolean success;
@@ -92,6 +94,11 @@ public class SoftwareDownloader {
 		public void setSuccess(boolean success) {
 			this.success = success;
 		}
+
+		@Override
+		public BroadCasterMessageType getBroadCasterMessageType() {
+			return BroadCasterMessageType.DOWNLOAD;
+		}
 	}
 
 	public void submitTasks(FileToUploadVo fvo) {
@@ -100,19 +107,19 @@ public class SoftwareDownloader {
 		}
 		
 		if (fvo.isRemoteFile()) {
-			Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue()), Broadcaster.BroadCasterMessageType.DOWNLOAD));
+			Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue())));
 			
 			ListenableFuture<Boolean> lf = service.submit(new DownloadOne(fvo));
 
 			Futures.addCallback(lf, new FutureCallback<Boolean>() {
 				@Override
 				public void onSuccess(Boolean result) {
-					Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue(), result), Broadcaster.BroadCasterMessageType.DOWNLOAD));
+					Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue(), result)));
 				}
 
 				@Override
 				public void onFailure(Throwable t) {
-					Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue(), false), Broadcaster.BroadCasterMessageType.DOWNLOAD));	
+					Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue(), false)));	
 				}
 			} );
 		}

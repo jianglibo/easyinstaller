@@ -36,17 +36,25 @@ public class TestHttpPageGetter extends Tbase {
 		
 		Software sf = softwareRepository.findByNameAndOstypeAndSversion("tcl", "centos7", "1");
 		boolean exists = sf != null;
-		String zn = "tcl--centos7--1.zip";
 		
-		if (java.nio.file.Files.exists(applicationConfig.getSoftwareFolderPath().resolve(zn))) {
-			java.nio.file.Files.delete(applicationConfig.getSoftwareFolderPath().resolve(zn));
+		if (!exists) {
+			return;
 		}
 		
+		String zn = "tcl--centos7--1.zip";
+		
+		Path zpath = applicationConfig.getSoftwareFolderPath().resolve(zn);
 		Path tf = Paths.get("softwares", zn);
+		
+		if (!java.nio.file.Files.exists(zpath)) {
+			java.nio.file.Files.copy(tf, zpath);
+		}
+		
 		String md5 = Files.hash(tf.toFile(), Hashing.md5()).toString();
 		SoftwarelistLine sl = new SoftwarelistLine("", applicationConfig.getSoftwareFolderPath(), zn + "," + "aaaaaa");
+		// event software exists in db, because of md5 changed, software should get updated.
 		boolean success = preDefinedSoftwareProcessor.processOneSoftware(mockGetter, sl);
-		assertThat(success, equalTo(!exists));
+		assertThat(success, equalTo(exists));
 	}
 
 }

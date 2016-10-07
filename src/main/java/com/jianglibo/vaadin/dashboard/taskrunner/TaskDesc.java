@@ -2,7 +2,6 @@ package com.jianglibo.vaadin.dashboard.taskrunner;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.jianglibo.vaadin.dashboard.domain.Box;
@@ -25,26 +24,18 @@ public class TaskDesc {
 
 	private BoxGroup boxGroup;
 
-	private final String taskId;
-
-	private final OneTaskFinishListener tfl;
-
 	private Set<Box> boxes;
 
 	private String action;
 	
-//	public TaskDesc(PersonVo person, BoxGroup boxGroup, Software software, String action, OneTaskFinishListener tfl) {
-//		this.boxGroup = boxGroup;
-//		this.boxes = boxGroup.getBoxes();
-//		this.software = software;
-//		this.action = action;
-//		this.tfl = tfl;
-//		this.person = person;
-//		this.taskId = UUID.randomUUID().toString();
-//	}
+	/**
+	 * use broadcast instead of reference, because of when task finished, UI maybe not exists any more. 
+	 */
+	private final String uniqueUiId;
 
-	public TaskDesc(PersonVo person, BoxGroup boxGroup, Set<Box> boxes, Software software, String action, OneTaskFinishListener tfl) {
+	public TaskDesc(String uniqueUiId, PersonVo person, BoxGroup boxGroup, Set<Box> boxes, Software software, String action) {
 		this.boxGroup = boxGroup;
+		this.uniqueUiId = uniqueUiId;
 		if (boxes == null || boxes.isEmpty()) {
 			this.boxes = boxGroup.getBoxes();
 		} else {
@@ -52,19 +43,13 @@ public class TaskDesc {
 		}
 		this.software = software;
 		this.action = action;
-		this.tfl = tfl;
 		this.person = person;
-		this.taskId = UUID.randomUUID().toString();
 	}
 
 	public List<OneThreadTaskDesc> createOneThreadTaskDescs() {
 		return getBoxes().stream()
-				.map(b -> new OneThreadTaskDesc(this, boxGroup, b, getSoftware(), getAction(), getTfl()))
+				.map(b -> new OneThreadTaskDesc(this, boxGroup, b, getSoftware(), getAction()))
 				.collect(Collectors.toList());
-	}
-
-	public String getTaskId() {
-		return taskId;
 	}
 
 	public BoxGroup getBoxGroup() {
@@ -79,16 +64,8 @@ public class TaskDesc {
 		return software;
 	}
 
-	public OneTaskFinishListener getTfl() {
-		return tfl;
-	}
-
 	public PersonVo getPerson() {
 		return person;
-	}
-
-	public static interface OneTaskFinishListener {
-		void oneTaskFinished(OneThreadTaskDesc ottd, boolean groupFinished);
 	}
 
 	public String getAction() {
@@ -105,5 +82,9 @@ public class TaskDesc {
 
 	public void setBoxes(Set<Box> boxes) {
 		this.boxes = boxes;
+	}
+
+	public String getUniqueUiId() {
+		return uniqueUiId;
 	}
 }

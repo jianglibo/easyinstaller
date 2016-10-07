@@ -14,6 +14,7 @@ import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -49,13 +50,16 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 
 	private BoxGroupRepository boxGroupRepository;
 	
+	private final BoxGroupHistoryRepository boxGroupHistoryRepository;
+	
 	private BoxGroup boxGroup;
 
 	@Autowired
-	public BoxGroupHistoryListView(BoxGroupRepository repository, Domains domains, MessageSource messageSource,
+	public BoxGroupHistoryListView(BoxGroupHistoryRepository boxGroupHistoryRepository, BoxGroupRepository repository, Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, BoxGroupHistory.class, BoxGroupHistoryGrid.class);
 		this.boxGroupRepository = repository;
+		this.boxGroupHistoryRepository = boxGroupHistoryRepository;
 		delayCreateContent();
 	}
 
@@ -144,10 +148,6 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 		public void alterState(int selectNumber) {
 			this.menu.onSelectionChange(selectNumber);
 		}
-
-		public DynButtonComponent getMenu() {
-			return menu;
-		}
 	}
 
 	@Override
@@ -195,7 +195,7 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/?pv=" + getLvfb().toNavigateString());
 			break;
 		case "boxhistories":
-			UI.getCurrent().getNavigator().navigateTo(BoxHistoryListView.VIEW_NAME + "/?boxGroupId=" + selected.get(0).getId() + "&pv=" + getLvfb().toNavigateString());
+			UI.getCurrent().getNavigator().navigateTo(BoxHistoryListView.VIEW_NAME + "/?boxGroupHistoryId=" + selected.get(0).getId() + "&pv=" + getLvfb().toNavigateString());
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
@@ -204,6 +204,6 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 
 	@Override
 	protected BoxGroupHistoryGrid createGrid(MessageSource messageSource, Domains domains, Class<BoxGroupHistory> clazz) {
-		return new BoxGroupHistoryGrid(messageSource, domains, clazz);
+		return new BoxGroupHistoryGrid(boxGroupHistoryRepository, messageSource, domains, clazz);
 	}
 }

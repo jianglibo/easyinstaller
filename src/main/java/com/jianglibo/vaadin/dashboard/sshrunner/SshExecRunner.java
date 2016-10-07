@@ -105,8 +105,10 @@ public class SshExecRunner implements BaseRunner {
 		ChannelSftp sftp = null;
 		try {
 			sftp = jsession.getSftpCh();
+			sftp.connect();
 			try {
 				OutputStream os = sftp.put(targetFile, ChannelSftp.OVERWRITE);
+				content = content.replaceAll("\r", "");
 				os.write(content.getBytes(Charsets.UTF_8));
 				os.flush();
 				os.close();

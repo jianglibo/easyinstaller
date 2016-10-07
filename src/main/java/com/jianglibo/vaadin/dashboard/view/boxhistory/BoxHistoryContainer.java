@@ -1,17 +1,27 @@
 package com.jianglibo.vaadin.dashboard.view.boxhistory;
 
 import java.util.List;
+import java.util.Set;
 
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
+import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 
 @SuppressWarnings("serial")
 public class BoxHistoryContainer extends FreeContainer<BoxHistory> {
+	
+	private final BoxHistoryRepository boxHistoryRepository;
+	
+	private final BoxGroupHistoryRepository boxGroupHistoryRepository;
 
-	public BoxHistoryContainer(Domains domains, int perPage, List<?> sortableContainerPropertyIds) {
+	public BoxHistoryContainer(BoxGroupHistoryRepository boxGroupHistoryRepository, BoxHistoryRepository boxHistoryRepository, Domains domains, int perPage, List<?> sortableContainerPropertyIds) {
 		super(domains, BoxHistory.class, perPage, sortableContainerPropertyIds);
+		this.boxHistoryRepository = boxHistoryRepository;
+		this.boxGroupHistoryRepository = boxGroupHistoryRepository;
 	}
 	
 	@Override
@@ -22,18 +32,21 @@ public class BoxHistoryContainer extends FreeContainer<BoxHistory> {
 
 	@Override
 	public int size() {
-		if (getLvfb() == null) {
-			return 0;
+		Long bghid = getLvfb().getLong("boxGroupHistoryId");
+		if (bghid > 0) {
+			return boxGroupHistoryRepository.findOne(bghid).getBoxHistories().size();
 		} else {
-			int i = new Long(getDomains().getRepositoryCommonCustom(getSimpleClassName())
-					.getFilteredNumberWithOnePhrase(getFilterString(), isTrashed())).intValue();
-			return i;
+			return 0;
 		}
 	}
 
-	@Override
-	public List<?> getItemIds(int startIndex, int numberOfItems) {
-		return super.getItemIds(startIndex, numberOfItems);
+	public void fetchPage() {
+		Long bghid = getLvfb().getLong("boxGroupHistoryId");
+		if (bghid > 0) {
+			Set<BoxHistory> bhs = boxGroupHistoryRepository.findOne(bghid).getBoxHistories();
+			setCurrentWindow(Lists.newArrayList(bhs));
+		} else {
+			setCurrentWindow(Lists.newArrayList());
+		}
 	}
-
 }

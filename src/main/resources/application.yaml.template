@@ -69,7 +69,7 @@ vaadin:
 application:
   upload-dst: ~/easyinstaller-uploaded
   local-folder: ~/easyinstaller-toupload
-  remote-folder: ~/easy-installer
+  remote-folder: /easy-installer
   software-folder: ~/easyinstaller-softwares
   ssh-key-folder: ~/easyinstaller-sshs
   auto-login: true

@@ -83,6 +83,12 @@ public class ApplicationConfig {
 		setAutoLogin(autoLogin);
 
 		remoteFolder = remoteFolder.replaceAll("\\\\", "/");
+		if (remoteFolder.startsWith("~")) {
+			remoteFolder = remoteFolder.substring(1);
+		}
+		if (!remoteFolder.startsWith("/")) {
+			remoteFolder = "/" + remoteFolder;
+		}
 		if (!remoteFolder.endsWith("/")) {
 			remoteFolder = remoteFolder + "/";
 		}
@@ -129,6 +135,7 @@ public class ApplicationConfig {
 	public String getRemoteFolder() {
 		return remoteFolder;
 	}
+	
 
 	public Map<String, List<ComboItem>> getComboDatas() {
 		return comboDatas;

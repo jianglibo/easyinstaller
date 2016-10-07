@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.data.ManualPagable;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
@@ -44,6 +46,10 @@ import com.vaadin.data.util.filter.UnsupportedFilterException;
 
 public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, ItemSetChangeNotifier,
 		PropertySetChangeNotifier, Buffered, Container.Filterable, Serializable {
+	
+	private Cache<Integer, T> idxCache = CacheBuilder.newBuilder().maximumSize(1000L).build();
+	private Cache<Long, T> idCache = CacheBuilder.newBuilder().maximumSize(1000L).build();
+	
 
 	/**
 	 * 
@@ -306,7 +312,9 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	@Override
 	public boolean containsId(Object itemId) {
 		LOGGER.info("{} called with parameter {} {}", "containsId", itemId);
-		return currentWindow.contains(itemId);
+		T to = (T) itemId;
+		T o = idCache.getIfPresent(to.getId());
+		return o != null;
 	}
 
 	@Override
@@ -446,6 +454,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		} else {
 			this.sort = defaultSort;
 		}
+		notifyItemSetChanged();
 	}
 
 	@Override
@@ -463,13 +472,22 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	 */
 	@Override
 	public Object getIdByIndex(int index) {
-		int inPage = index/perPage;
-		if (inPage != this.currentPage) {
-			this.currentPage = inPage;
-			fetchPage();
+		T o =  idxCache.getIfPresent(index);
+		
+		if (o != null) {
+			return o;
+		} else {
+			int inPage = index/perPage;
+			if (inPage != this.currentPage) {
+				this.currentPage = inPage;
+				fetchPage();
+			}
+			int inIdx = index % this.perPage;
+			o = currentWindow.get(inIdx);
+			idxCache.put(index, o);
+			idCache.put(o.getId(), o);
+			return o;
 		}
-		int inIdx = index % this.perPage;
-		return currentWindow.get(inIdx);
 	}
 
 	/**
@@ -505,6 +523,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@SuppressWarnings("serial")
 	protected void notifyItemSetChanged() {
+		idxCache.invalidateAll();
 		ItemSetChangeEvent event = new ItemSetChangeEvent() {
 			@Override
 			public Container getContainer() {

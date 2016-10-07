@@ -40,13 +40,21 @@ public class BoxHistory extends BaseEntity {
 	@VaadinTableColumn
 	@VaadinGridColumn(order = 50)
 	@VaadinFormField(fieldType=Ft.TEXT_FIELD, readOnly=true, enabled = false)
-	private boolean success;
+	private boolean success = true;
 	
 	@Lob
 	@Column(length = 131072)
 	@VaadinFormField(fieldType = Ft.TEXT_AREA, rowNumber = 10)
 	private String log = "";
 	
+	public BoxGroupHistory getBoxGroupHistory() {
+		return boxGroupHistory;
+	}
+
+	public void setBoxGroupHistory(BoxGroupHistory boxGroupHistory) {
+		this.boxGroupHistory = boxGroupHistory;
+	}
+
 	public void appendLogAndSetFailure(String onelog) {
 		setLog(getLog() + "\n" + onelog);
 		setSuccess(false);
@@ -105,7 +113,7 @@ public class BoxHistory extends BaseEntity {
 		
 		private final String log;
 		
-		public BoxHistoryBuilder(String taskId,BoxGroup boxGroup, Software software, Box box, String log, boolean success) {
+		public BoxHistoryBuilder(BoxGroup boxGroup, Software software, Box box, String log, boolean success) {
 			this.software = software;
 			this.box = box;
 			this.log = log;

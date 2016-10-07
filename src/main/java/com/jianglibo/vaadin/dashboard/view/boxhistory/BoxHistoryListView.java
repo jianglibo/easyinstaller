@@ -10,11 +10,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
-import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
+import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
+import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -47,18 +49,19 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.HISTORY;
 
-	private final BoxRepository boxRepository;
+	private final BoxHistoryRepository boxHistoryRepository;
 	
-	private final BoxGroupRepository boxGroupRepository;
 	
-	private BoxGroup boxGroup;
+	private final BoxGroupHistoryRepository boxGroupHistoryRepository;
+	
+	private BoxGroupHistory boxGroupHistory;
 
 	@Autowired
-	public BoxHistoryListView(BoxRepository repository,BoxGroupRepository boxGroupRepository, Domains domains, MessageSource messageSource,
+	public BoxHistoryListView(BoxGroupHistoryRepository boxGroupHistoryRepository,BoxHistoryRepository boxHistoryRepository, BoxRepository repository,BoxGroupRepository boxGroupRepository, Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, BoxHistory.class, BoxHistoryGrid.class);
-		this.boxRepository = repository;
-		this.boxGroupRepository = boxGroupRepository;
+		this.boxGroupHistoryRepository = boxGroupHistoryRepository;
+		this.boxHistoryRepository = boxHistoryRepository;
 		delayCreateContent();
 	}
 
@@ -158,11 +161,11 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 		DashboardEventBus.register(getUel());
 		setLvfb(new ListViewFragmentBuilder(event));
 		// start alter state.
-		long boxGroupId = getLvfb().getLong("boxGroupId");
+		long boxGroupHistoryId = getLvfb().getLong("boxGroupHistoryId");
 		String title = MsgUtil.getListViewTitle(getMessageSource(), getClazz().getSimpleName());
-		if (boxGroupId > 0) {
-			boxGroup = boxGroupRepository.findOne(boxGroupId);
-			title = boxGroup.getDisplayName() + "'s " + title;
+		if (boxGroupHistoryId > 0) {
+			boxGroupHistory = boxGroupHistoryRepository.findOne(boxGroupHistoryId);
+			title = boxGroupHistory.getDisplayName() + "'s " + title;
 		}
 		((TopBlock) getTopBlock()).alterState(getLvfb(), title);
 		((MyMiddleBlock) getMiddleBlock()).alterState(getLvfb());
@@ -202,6 +205,6 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 
 	@Override
 	protected BoxHistoryGrid createGrid(MessageSource messageSource, Domains domains, Class<BoxHistory> clazz) {
-		return new BoxHistoryGrid(messageSource, domains, clazz);
+		return new BoxHistoryGrid(boxHistoryRepository,boxGroupHistoryRepository,  messageSource, domains, clazz);
 	}
 }
