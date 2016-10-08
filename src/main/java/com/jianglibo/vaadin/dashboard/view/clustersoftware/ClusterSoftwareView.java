@@ -2,18 +2,21 @@ package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
@@ -76,10 +79,12 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 	
 	private BoxGroup boxGroup;
 	
+	private OneBoxGroupHistoriesDc obghdc;
+	
 	private final Domains domains;
 	
 	@Autowired
-	public ClusterSoftwareView(MessageSource messageSource,ApplicationConfig applicationConfig, BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, Domains domains, PersonRepository personRepository, FieldFactories fieldFactories, TaskRunner taskRunner) {
+	public ClusterSoftwareView(BoxGroupHistoryRepository boxGroupHistoryRepository, MessageSource messageSource,ApplicationConfig applicationConfig, BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, Domains domains, PersonRepository personRepository, FieldFactories fieldFactories, TaskRunner taskRunner) {
 		this.messageSource = messageSource;
 		this.boxGroupRepository = boxGroupRepository;
 		this.personRepository = personRepository;
@@ -97,7 +102,9 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		vl.setSizeFull();
 		Component tb = toolbars();
 		vl.addComponent(tb);
-		Component cib = new BoxGroupHistoryGrid(messageSource, domains);
+		List<String> sortableContainerPropertyIds = Lists.newArrayList("createdAt");
+		obghdc  = new OneBoxGroupHistoriesDc(null, domains, 10, sortableContainerPropertyIds);
+		Component cib = new OneBoxGroupHistoriesGrid(obghdc, messageSource, domains, sortableContainerPropertyIds);
 		vl.addComponent(cib);
 		vl.setExpandRatio(tb, 1);
 		vl.setExpandRatio(cib, 2);
@@ -162,11 +169,12 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		if (getLvfb().getPreviousView().isPresent()) {
 			StyleUtil.show(backBtn);
 		}
-		
-		if (getLvfb().getLong("boxgroup") > 0) {
-			boxGroup = boxGroupRepository.findOne(getLvfb().getLong("boxgroup"));
+		Long bgid = getLvfb().getLong("boxgroup"); 
+		if ( bgid > 0) {
+			boxGroup = boxGroupRepository.findOne(bgid);
 			if (boxGroup != null) {
 				title.setValue(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.title", boxGroup.getDisplayName()));
+				obghdc.setBoxGroup(boxGroup);
 			}
 		} else {
 			UI.getCurrent().getNavigator().navigateTo(BoxGroupListView.VIEW_NAME);

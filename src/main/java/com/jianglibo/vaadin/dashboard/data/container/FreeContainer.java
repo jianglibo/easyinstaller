@@ -516,8 +516,8 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	}
 
 	public void refresh() {
-		this.currentPage = 0;
-		this.filter = null;
+		setCurrentPage(-1);
+		setFilter(null);
 		notifyItemSetChanged();
 	}
 

@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.boxgrouphistory;
 
+import java.util.List;
+
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
@@ -15,17 +17,11 @@ public class BoxGroupHistoryGrid extends BaseGrid<BoxGroupHistory, BoxGroupHisto
 	
 	private final BoxGroupHistoryRepository boxGroupHistoryRepository;
 
-	public BoxGroupHistoryGrid(BoxGroupHistoryRepository boxGroupHistoryRepository, MessageSource messageSource, Domains domains, Class<BoxGroupHistory> clazz) {
-		super(messageSource, domains, clazz);
+	public BoxGroupHistoryGrid(BoxGroupHistoryContainer dContainer, BoxGroupHistoryRepository boxGroupHistoryRepository, MessageSource messageSource, Domains domains, List<?> sortableContainerPropertyIds) {
+		super(dContainer, messageSource, domains, BoxGroupHistory.class, sortableContainerPropertyIds);
 		this.boxGroupHistoryRepository = boxGroupHistoryRepository;
 		delayCreateContent();
 		
-	}
-	
-	@Override
-	protected BoxGroupHistoryContainer createContainer() {
-		VaadinGridWrapper vgw = getDomains().getGrids().get(BoxGroupHistory.class.getSimpleName());
-		return new BoxGroupHistoryContainer(boxGroupHistoryRepository, getDomains(), vgw.getVg().defaultPerPage(), vgw.getSortableColumnNames());
 	}
 
 	@Override

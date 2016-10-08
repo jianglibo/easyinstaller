@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
@@ -90,7 +91,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 
 	@Override
 	protected Component createBottomBlock() {
-		setGrid(createGrid(getMessageSource(), getDomains(), getClazz()));
+		setGrid(createGrid(getMessageSource(), getDomains()));
 		MyBottomBlock bottomBlock = new MyBottomBlock();
 
 		getGrid().addSelectionListener(event -> {
@@ -169,7 +170,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 		}
 		((TopBlock) getTopBlock()).alterState(getLvfb(), title);
 		((MyMiddleBlock) getMiddleBlock()).alterState(getLvfb());
-		((BoxHistoryContainer) (getGrid().getOriginDataSource())).whenUriFragmentChange(getLvfb());
+		((BoxHistoryContainer) (getGrid().getdContainer())).whenUriFragmentChange(getLvfb());
 	}
 
 	@Override
@@ -204,7 +205,10 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 	}
 
 	@Override
-	protected BoxHistoryGrid createGrid(MessageSource messageSource, Domains domains, Class<BoxHistory> clazz) {
-		return new BoxHistoryGrid(boxHistoryRepository,boxGroupHistoryRepository,  messageSource, domains, clazz);
+	protected BoxHistoryGrid createGrid(MessageSource messageSource, Domains domains) {
+		VaadinGridWrapper vgw = getDomains().getGrids().get(BoxHistory.class.getSimpleName());
+		BoxHistoryContainer dContainer =  new BoxHistoryContainer(boxGroupHistoryRepository, boxHistoryRepository, getDomains(), vgw.getVg().defaultPerPage(), vgw.getSortableColumnNames());
+		List<String> sortableContainerPropertyIds = domains.getTables().get(BoxHistory.class.getSimpleName()).getSortableContainerPropertyIds();
+		return new BoxHistoryGrid(dContainer, boxHistoryRepository,boxGroupHistoryRepository,  messageSource, domains, sortableContainerPropertyIds);
 	}
 }

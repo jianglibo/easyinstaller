@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.boxgroup;
 
+import java.util.List;
+
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
@@ -12,8 +14,8 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 @SuppressWarnings("serial")
 public class BoxGroupGrid extends BaseGrid<BoxGroup, FreeContainer<BoxGroup>> {
 
-	public BoxGroupGrid(MessageSource messageSource, Domains domains, Class<BoxGroup> clazz) {
-		super(messageSource, domains, clazz);
+	public BoxGroupGrid(FreeContainer<BoxGroup> dContainer, MessageSource messageSource, Domains domains, List<?> sortableContainerPropertyIds) {
+		super(dContainer, messageSource, domains, BoxGroup.class, sortableContainerPropertyIds);
 		delayCreateContent();
 	}
 
@@ -23,7 +25,8 @@ public class BoxGroupGrid extends BaseGrid<BoxGroup, FreeContainer<BoxGroup>> {
 
 	@Override
 	protected void setSummaryFooterCells(FooterRow footer) {
-		
+		FooterCell fc = footer.getCell("createdAt");
+		fc.setText("100");
 	}
 
 	@Override

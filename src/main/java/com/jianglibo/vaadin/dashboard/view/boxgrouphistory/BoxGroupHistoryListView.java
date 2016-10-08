@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
+import com.jianglibo.vaadin.dashboard.DashboardUI;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
@@ -88,7 +90,7 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 
 	@Override
 	protected Component createBottomBlock() {
-		setGrid(createGrid(getMessageSource(), getDomains(), getClazz()));
+		setGrid(createGrid(getMessageSource(), getDomains()));
 		MyBottomBlock bottomBlock = new MyBottomBlock();
 
 		getGrid().addSelectionListener(event -> {
@@ -165,7 +167,9 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 		}
 		((TopBlock) getTopBlock()).alterState(getLvfb(), title);
 		((MyMiddleBlock) getMiddleBlock()).alterState(getLvfb());
-		((BoxGroupHistoryContainer) (getGrid().getOriginDataSource())).whenUriFragmentChange(getLvfb());
+		((BoxGroupHistoryContainer) (getGrid().getdContainer())).whenUriFragmentChange(getLvfb());
+		BoxGroupHistoryViewMenuItem svmi = (BoxGroupHistoryViewMenuItem)((DashboardUI)UI.getCurrent()).getDm().getMmis().getMenuMap().get(BoxGroupHistoryViewMenuItem.class.getName());
+		svmi.updateNotificationsCount(0);
 	}
 
 	@Override
@@ -203,7 +207,10 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 	}
 
 	@Override
-	protected BoxGroupHistoryGrid createGrid(MessageSource messageSource, Domains domains, Class<BoxGroupHistory> clazz) {
-		return new BoxGroupHistoryGrid(boxGroupHistoryRepository, messageSource, domains, clazz);
+	protected BoxGroupHistoryGrid createGrid(MessageSource messageSource, Domains domains) {
+		VaadinGridWrapper vgw = getDomains().getGrids().get(BoxGroupHistory.class.getSimpleName());
+		BoxGroupHistoryContainer dContainer =  new BoxGroupHistoryContainer(boxGroupHistoryRepository, getDomains(), vgw.getVg().defaultPerPage(), vgw.getSortableColumnNames());
+		List<String> sortableContainerPropertyIds = domains.getTables().get(BoxGroupHistory.class.getSimpleName()).getSortableContainerPropertyIds();
+		return new BoxGroupHistoryGrid(dContainer, boxGroupHistoryRepository, messageSource, domains, sortableContainerPropertyIds);
 	}
 }

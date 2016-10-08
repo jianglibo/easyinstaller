@@ -81,7 +81,8 @@ public class PersonListView extends BaseGridView<Person, PersonGrid, FreeContain
 	}
 
 	@Override
-	protected PersonGrid createGrid(MessageSource messageSource, Domains domains, Class<Person> clazz) {
-		return new PersonGrid(messageSource, domains, clazz);
+	protected PersonGrid createGrid(MessageSource messageSource, Domains domains) {
+		List<String> sortableContainerPropertyIds = domains.getTables().get(Person.class.getSimpleName()).getSortableContainerPropertyIds();
+		return new PersonGrid(null, messageSource, domains, sortableContainerPropertyIds);
 	}
 }

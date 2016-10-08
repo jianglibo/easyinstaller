@@ -33,28 +33,26 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 
 	private final MessageSource messageSource;
 	
-	private C originDataSource;
+	private C dContainer;
+	
+	private final List<?> sortableContainerPropertyIds;
 
-	public BaseGrid(MessageSource messageSource, Domains domains, Class<T> clazz) {
+	public BaseGrid(C dContainer, MessageSource messageSource, Domains domains, Class<T> clazz, List<?> sortableContainerPropertyIds) {
 		this.messageSource = messageSource;
+		this.dContainer = dContainer;
 		this.clazz = clazz;
 		this.domains = domains;
 		this.vgw = domains.getGrids().get(clazz.getSimpleName());
-	}
-
-	public C getOriginDataSource() {
-		return originDataSource;
-	}
-
-	public void setOriginDataSource(C originDataSource) {
-		this.originDataSource = originDataSource;
+		this.sortableContainerPropertyIds = sortableContainerPropertyIds;
 	}
 
 	public void delayCreateContent() {
-
 		StyleUtil.setDisableCellFocus(this);
-		originDataSource = createContainer();
-		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(originDataSource);
+		
+		if (dContainer == null) {
+			dContainer = (C) new FreeContainer(domains, clazz, vgw.getVg().defaultPerPage(), getSortableContainerPropertyIds());
+		}
+		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(dContainer);
 
 		List<VaadinGridColumnWrapper> columnWrappers = vgw.getColumns();
 
@@ -76,7 +74,9 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 
 		columnWrappers.stream().forEach(vgcw -> {
 			Grid.Column col = getColumn(vgcw.getName());
-			col.setSortable(vgcw.getVgc().sortable());
+			if (getSortableContainerPropertyIds().contains(vgcw.getName())) {
+				col.setSortable(vgcw.getVgc().sortable());
+			}
 			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, messagePrefix, vgcw.getName()));
 			col.setHidable(vgcw.getVgc().hidable());
 			col.setHidden(vgcw.getVgc().initHidden());
@@ -94,10 +94,10 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 		setColumnReorderingAllowed(true);
 	}
 
-	protected C createContainer() {
-		return (C) new FreeContainer(domains, clazz, vgw.getVg().defaultPerPage(), vgw.getSortableColumnNames());
-	}
-
+	/**
+	 * can setup whole grid here. Because this is extend from grid.
+	 * @param footer
+	 */
 	protected abstract void setSummaryFooterCells(FooterRow footer);
 
 	private void setColumnFiltering(Collection<VaadinGridColumnWrapper> columns) {
@@ -180,5 +180,17 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 		return messageSource;
 	}
 
+	public C getdContainer() {
+		return dContainer;
+	}
+
+	public void setdContainer(C dContainer) {
+		this.dContainer = dContainer;
+	}
+
 	protected abstract void addGeneratedProperty(GeneratedPropertyContainer gpcontainer, String name);
+
+	public List<?> getSortableContainerPropertyIds() {
+		return sortableContainerPropertyIds;
+	}
 }

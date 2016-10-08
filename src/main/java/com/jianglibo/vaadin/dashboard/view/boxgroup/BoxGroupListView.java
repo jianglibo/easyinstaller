@@ -88,7 +88,8 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 	}
 
 	@Override
-	protected BoxGroupGrid createGrid(MessageSource messageSource, Domains domains, Class<BoxGroup> clazz) {
-		return new BoxGroupGrid(messageSource, domains, clazz);
+	protected BoxGroupGrid createGrid(MessageSource messageSource, Domains domains) {
+		List<String> sortableContainerPropertyIds = domains.getTables().get(BoxGroup.class.getSimpleName()).getSortableContainerPropertyIds();
+		return new BoxGroupGrid(null, messageSource, domains, sortableContainerPropertyIds);
 	}
 }

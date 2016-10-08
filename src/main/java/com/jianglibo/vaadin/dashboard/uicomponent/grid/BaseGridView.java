@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.grid;
 
+import java.util.List;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
@@ -149,7 +151,7 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 	}
 	
 	protected Component createBottomBlock() {
-		setGrid(createGrid(messageSource, domains, clazz));
+		setGrid(createGrid(messageSource, domains));
 		BottomBlock bottomBlock = new BottomBlock();
 		
 		getGrid().addSelectionListener(event -> {
@@ -163,7 +165,7 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		this.grid = grid;
 	}
 
-	protected abstract G createGrid(MessageSource messageSource, Domains domains, Class<E> clazz);
+	protected abstract G createGrid(MessageSource messageSource, Domains domains);
 
 
 	protected abstract void onDynButtonClicked(ButtonDescription btnDsc);

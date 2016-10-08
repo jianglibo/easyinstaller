@@ -78,7 +78,8 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> 
 	}
 
 	@Override
-	protected KkvGrid createGrid(MessageSource messageSource, Domains domains, Class<Kkv> clazz) {
-		return new KkvGrid(messageSource, domains, clazz);
+	protected KkvGrid createGrid(MessageSource messageSource, Domains domains) {
+		List<String> sortableContainerPropertyIds = domains.getTables().get(Kkv.class.getSimpleName()).getSortableContainerPropertyIds();
+		return new KkvGrid(null, messageSource, domains, sortableContainerPropertyIds);
 	}
 }

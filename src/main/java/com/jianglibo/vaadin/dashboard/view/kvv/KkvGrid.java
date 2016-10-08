@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.kvv;
 
+import java.util.List;
+
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
@@ -12,8 +14,8 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 @SuppressWarnings("serial")
 public class KkvGrid extends BaseGrid<Kkv, FreeContainer<Kkv>> {
 
-	public KkvGrid(MessageSource messageSource, Domains domains, Class<Kkv> clazz) {
-		super(messageSource, domains, clazz);
+	public KkvGrid(FreeContainer<Kkv> dContainer, MessageSource messageSource, Domains domains, List<?> sortableContainerPropertyIds) {
+		super(dContainer, messageSource, domains, Kkv.class, sortableContainerPropertyIds);
 		delayCreateContent();
 	}
 
