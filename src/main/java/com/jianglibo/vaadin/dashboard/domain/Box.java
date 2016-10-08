@@ -22,6 +22,7 @@ import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
@@ -29,6 +30,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
 @VaadinTable(multiSelect=true, messagePrefix="domain.box.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
+@VaadinGrid(multiSelect=true, messagePrefix="domain.box.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true)
 @Table(name = "box", uniqueConstraints = { @UniqueConstraint(columnNames = "ip") })
 public class Box extends BaseEntity {
 

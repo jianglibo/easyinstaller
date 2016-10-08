@@ -8,16 +8,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Sort;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
+import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
@@ -97,7 +97,10 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
 		
 		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
-		FreeContainer<BoxGroup> fc = new FreeContainer<>(domains, BoxGroup.class, vgw.getVg().defaultPerPage(), sortableContainerPropertyIds);
-		return new BoxGroupGrid(fc, vgw , messageSource, domains, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
+
+		RepositoryCommonCustom<BoxGroup> rcc = domains.getRepositoryCommonCustom(BoxGroup.class.getSimpleName());
+		Sort defaultSort = domains.getDefaultSort(BoxGroup.class);
+		FreeContainer<BoxGroup> fc = new FreeContainer<>(rcc, defaultSort, BoxGroup.class, vgw.getVg().defaultPerPage(), sortableContainerPropertyIds);
+		return new BoxGroupGrid(fc, vgw , messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 	}
 }

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
@@ -26,6 +27,7 @@ import com.jianglibo.vaadin.dashboard.config.ComboItem;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
@@ -126,7 +128,9 @@ public class ComboBoxFieldFactory {
 	}
 	
 	private ComboBox buildContainerCombox(ComboBoxBackByContainer cbbbc, VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw, ComboBox cb) {
-		FreeContainer<? extends BaseEntity> fc = new FreeContainer<>(domains, cbbbc.entityClass(),cbbbc.pageLength(), vtw.getSortableContainerPropertyIds());
+		RepositoryCommonCustom rcc = domains.getRepositoryCommonCustom(cbbbc.entityClass().getSimpleName());
+		Sort defaultSort = domains.getDefaultSort(cbbbc.entityClass());
+		FreeContainer<? extends BaseEntity> fc = new FreeContainer<>(rcc, defaultSort, cbbbc.entityClass(),cbbbc.pageLength(), vtw.getSortableContainerPropertyIds());
 		cb.setItemCaptionMode(ItemCaptionMode.PROPERTY);
 		cb.setItemCaptionPropertyId(cbbbc.itemCaptionPropertyId());
 		cb.setContainerDataSource(fc);

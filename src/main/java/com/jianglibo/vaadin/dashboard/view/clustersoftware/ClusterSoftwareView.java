@@ -27,6 +27,7 @@ import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.security.PersonAuthenticationToken;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner;
+import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.BoxContainerInRc;
 import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.BoxTwinGridFieldFree;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
@@ -85,6 +86,8 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 	
 	private OneBoxGroupHistoriesDc obghdc;
 	
+	private BoxContainerInRc bcInRc;
+	
 	private final Domains domains;
 	
 	@Autowired
@@ -113,7 +116,7 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		VaadinGridWrapper vgw = domains.getGrids().get(BoxGroupHistory.class.getSimpleName());
 		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
 		
-		Component cib = new OneBoxGroupHistoriesGrid(obghdc,vgw, messageSource, domains, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
+		Component cib = new OneBoxGroupHistoriesGrid(obghdc,vgw, messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 		vl.addComponent(cib);
 		vl.setExpandRatio(tb, 1);
 		vl.setExpandRatio(cib, 2);
@@ -128,8 +131,11 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		Responsive.makeResponsive(gl);
 		
 		InstallNewSoftwareForm insf =  new InstallNewSoftwareForm(personRepository, messageSource, domains, fieldFactories);
+		bcInRc = new BoxContainerInRc(null, domains, 10 , Lists.newArrayList());
 		
-		BoxTwinGridFieldFree boxesToRun = new BoxTwinGridFieldFree(domains, messageSource, boxRepository, 3 , 3);
+		VaadinGridWrapper vgw = domains.getGrids().get(Box.class.getSimpleName());
+		String mpx = vgw.getVg().messagePrefix();
+		BoxTwinGridFieldFree boxesToRun = new BoxTwinGridFieldFree(bcInRc, domains, messageSource, boxRepository, 3 , 3, mpx, mpx);
 		
 		boxesToRun.setCaption(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.selectboxes"));
 		boxesToRun.setSizeFull();
@@ -184,6 +190,7 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 			if (boxGroup != null) {
 				title.setValue(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.title", boxGroup.getDisplayName()));
 				obghdc.setBoxGroup(boxGroup);
+				bcInRc.setBoxGroup(boxGroup);
 			}
 		} else {
 			UI.getCurrent().getNavigator().navigateTo(BoxGroupListView.VIEW_NAME);

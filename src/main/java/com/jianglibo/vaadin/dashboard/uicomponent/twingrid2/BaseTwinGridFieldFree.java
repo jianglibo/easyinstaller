@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 
+import static com.google.common.base.Preconditions.*;
 import com.google.common.reflect.TypeToken;
 import com.jianglibo.vaadin.dashboard.data.container.AllowEmptySortListContainer;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
@@ -45,13 +46,9 @@ public abstract class BaseTwinGridFieldFree<LC extends Collection<L>, L extends 
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(BaseTwinGridFieldFree.class);
 
-	private final Domains domains;
-
 	private final MessageSource messageSource;
 
 	private final Class<L> leftClazz;
-
-	private final Class<R> rightClazz;
 
 	private Component fieldContentToReturn;
 	
@@ -67,14 +64,22 @@ public abstract class BaseTwinGridFieldFree<LC extends Collection<L>, L extends 
 	
 	private final int rightRowNumber;
 	
-	public BaseTwinGridFieldFree(TypeToken<LC> ttlc, Class<L> leftClazz, Class<R> rightClazz, Domains domains, MessageSource messageSource,int leftRowNumber, int rightRowNumber) {
+	private final RC dContainer;
+	
+	private String leftMessagePrefix;
+	
+	private String rightMessagePrefix;
+	
+	public BaseTwinGridFieldFree(RC dContainer, TypeToken<LC> ttlc, Class<L> leftClazz, MessageSource messageSource,int leftRowNumber, int rightRowNumber, String leftMessagePrefix, String rightMessagePrefix) {
 		this.leftClazz = leftClazz;
-		this.rightClazz = rightClazz;
 		this.ttlc = ttlc;
-		this.domains = domains;
+		this.dContainer = checkNotNull(dContainer, "dContainer should not be null");
 		this.leftRowNumber = leftRowNumber;
 		this.rightRowNumber = rightRowNumber;
 		this.messageSource = messageSource;
+		this.leftMessagePrefix = leftMessagePrefix;
+		this.rightMessagePrefix = rightMessagePrefix;
+		
 		
 		setSizeFull();
 		
@@ -105,6 +110,10 @@ public abstract class BaseTwinGridFieldFree<LC extends Collection<L>, L extends 
 		return false;
 	}
 	
+	public RC getdContainer() {
+		return dContainer;
+	}
+
 	
 	@Override
 	protected Component initContent() {
@@ -156,12 +165,11 @@ public abstract class BaseTwinGridFieldFree<LC extends Collection<L>, L extends 
 		grid.setSelectionMode(SelectionMode.NONE);
 		grid.setContainerDataSource(gpcontainer);
 		
-		String messagePrefix = domains.getTables().get(leftClazz.getSimpleName()).getVt().messagePrefix();
 		
 		for(String cn : columns){
 			Grid.Column col = grid.getColumn(cn);
 			col.setSortable(foundColumn(sortableColumns, cn));
-			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, messagePrefix, (String)cn));
+			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, leftMessagePrefix, (String)cn));
 			setupLeftColumn(col, cn);
 		}
 
@@ -184,10 +192,8 @@ public abstract class BaseTwinGridFieldFree<LC extends Collection<L>, L extends 
 
 	public abstract void setupLeftGrid(Grid grid);
 	
-	protected abstract RC getRc();
-
 	public Grid createRightGrid() {
-		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(getRc());
+		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(dContainer);
 		String[] columns = getRightColumns();
 		String[] sortableColumns = getRightSortableColumns().toArray(new String[]{});
 		
@@ -209,12 +215,10 @@ public abstract class BaseTwinGridFieldFree<LC extends Collection<L>, L extends 
 			grid.setHeightByRows(rightRowNumber);
 		}
 		
-		String messagePrefix = domains.getTables().get(rightClazz.getSimpleName()).getVt().messagePrefix();
-		
 		for(String cn : columns){
 			Grid.Column col = grid.getColumn(cn);
 			col.setSortable(foundColumn(sortableColumns, cn));
-			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, messagePrefix, (String)cn));
+			col.setHeaderCaption(MsgUtil.getFieldMsg(messageSource, rightMessagePrefix, (String)cn));
 			setupRightColumn(col, cn);
 		}
 
@@ -257,12 +261,6 @@ public abstract class BaseTwinGridFieldFree<LC extends Collection<L>, L extends 
 	public void refreshValue() {
 	}
 
-
-
-	public Domains getDomains() {
-		return domains;
-	}
-	
 	@SuppressWarnings("serial")
 	protected class MyValueChangeListener implements ValueChangeListener {
 		@Override

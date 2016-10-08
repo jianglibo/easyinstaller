@@ -12,7 +12,7 @@ public class OneBoxGroupHistoriesDc  extends FreeContainer<BoxGroupHistory>{
 	private BoxGroup boxGroup;
 	
 	public OneBoxGroupHistoriesDc(BoxGroup boxGroup, Domains domains, int perPage, List<?> sortableContainerPropertyIds) {
-		super(domains, BoxGroupHistory.class, perPage, sortableContainerPropertyIds);
+		super(domains.getRepositoryCommonCustom(BoxGroupHistory.class.getSimpleName()),domains.getDefaultSort(BoxGroupHistory.class), BoxGroupHistory.class, perPage, sortableContainerPropertyIds);
 		this.boxGroup = boxGroup;
 	}
 	

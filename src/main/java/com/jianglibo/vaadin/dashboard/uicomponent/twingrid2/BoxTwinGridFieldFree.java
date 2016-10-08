@@ -28,8 +28,8 @@ public class BoxTwinGridFieldFree extends BaseTwinGridFieldFree<Set<Box>, Box, B
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("serial")
-	public BoxTwinGridFieldFree(Domains domains, MessageSource messageSource, BoxRepository repository, int leftRowNumber, int rightRowNumber) {
-		super(new TypeToken<Set<Box>>() {}, Box.class, Box.class, domains, messageSource,leftRowNumber, rightRowNumber);
+	public BoxTwinGridFieldFree(BoxContainerInRc dContainer, Domains domains, MessageSource messageSource, BoxRepository repository, int leftRowNumber, int rightRowNumber, String leftMessagePrefix, String rightMessagePrefix) {
+		super(dContainer, new TypeToken<Set<Box>>() {}, Box.class, messageSource,leftRowNumber, rightRowNumber, leftMessagePrefix, rightMessagePrefix);
 		StyleUtil.setBtnLinkStyleContainer(this);
 		StyleUtil.setDisableCellFocus(this);
 		setValue(Sets.newHashSet());
@@ -123,10 +123,5 @@ public class BoxTwinGridFieldFree extends BaseTwinGridFieldFree<Set<Box>, Box, B
 	@Override
 	protected List<String> getRightSortableColumns() {
 		return Lists.newArrayList();
-	}
-
-	@Override
-	protected BoxContainerInRc getRc() {
-		return new BoxContainerInRc(getDomains(), 10 , Lists.newArrayList());
 	}
 }

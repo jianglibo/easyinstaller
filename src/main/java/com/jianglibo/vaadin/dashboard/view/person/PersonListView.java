@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Sort;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
@@ -17,6 +18,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Kkv;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
+import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.uicomponent.button.NotificationBuilder;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
@@ -87,7 +89,10 @@ public class PersonListView extends BaseGridView<Person, PersonGrid, FreeContain
 		VaadinGridWrapper vgw = domains.getGrids().get(Person.class.getSimpleName());
 		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
 		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
-		FreeContainer<Person> fc = new FreeContainer<>(domains, Person.class, vgw.getVg().defaultPerPage(), sortableContainerPropertyIds);
-		return new PersonGrid(fc, vgw, messageSource, domains, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
+
+		RepositoryCommonCustom<Person> rcc = domains.getRepositoryCommonCustom(Person.class.getSimpleName());
+		Sort defaultSort = domains.getDefaultSort(Person.class);
+		FreeContainer<Person> fc = new FreeContainer<>(rcc, defaultSort, Person.class, vgw.getVg().defaultPerPage(), sortableContainerPropertyIds);
+		return new PersonGrid(fc, vgw, messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 	}
 }

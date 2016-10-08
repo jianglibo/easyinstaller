@@ -1,10 +1,12 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.twingrid2;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Sort;
 
 import com.google.common.reflect.TypeToken;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
@@ -14,6 +16,7 @@ import com.jianglibo.vaadin.dashboard.data.container.AllowEmptySortListContainer
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
@@ -199,7 +202,11 @@ public abstract class BaseTwinGridField<LC extends Collection<L>, L extends Base
 	public abstract void setupLeftGrid(Grid grid);
 
 	public Grid createRightGrid(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-		FreeContainer<R> lcc = new FreeContainer<>(domains, rightClazz, vffw.getExtraAnotation(TwinGridFieldDescription.class).rightPageLength(), vtw.getSortableContainerPropertyIds());
+//		public FreeContainer(RepositoryCommonCustom<T> rcc, Sort defaultSort, Class<T> clazz, int perPage, List<?> sortableContainerPropertyIds) {
+		RepositoryCommonCustom<R> rcc = domains.getRepositoryCommonCustom(rightClazz.getSimpleName());
+		Sort defaultSort = domains.getDefaultSort(rightClazz);
+		FreeContainer<R> lcc = new FreeContainer<>(rcc, defaultSort, rightClazz, vffw.getExtraAnotation(TwinGridFieldDescription.class).rightPageLength(), vtw.getSortableContainerPropertyIds());
+		
 		GeneratedPropertyContainer gpcontainer = new GeneratedPropertyContainer(lcc);
 		
 		TwinGridFieldDescription tgfd = vffw.getExtraAnotation(TwinGridFieldDescription.class);

@@ -20,7 +20,7 @@ public class BoxGroupHistoryContainer extends FreeContainer<BoxGroupHistory> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BoxGroupHistoryContainer.class);
 
 	public BoxGroupHistoryContainer(BoxGroupHistoryRepository boxGroupHistoryRepository, Domains domains, int perPage, List<?> sortableContainerPropertyIds) {
-		super(domains, BoxGroupHistory.class, perPage, sortableContainerPropertyIds);
+		super(domains.getRepositoryCommonCustom(BoxGroupHistory.class.getSimpleName()), domains.getDefaultSort(BoxGroupHistory.class), BoxGroupHistory.class, perPage, sortableContainerPropertyIds);
 		this.boxGroupHistoryRepository = boxGroupHistoryRepository;
 	}
 	
@@ -35,9 +35,7 @@ public class BoxGroupHistoryContainer extends FreeContainer<BoxGroupHistory> {
 		if (getLvfb() == null) {
 			return 0;
 		} else {
-			int i = new Long(getDomains().getRepositoryCommonCustom(getSimpleClassName())
-					.getFilteredNumberWithOnePhrase(getFilterString(), isTrashed())).intValue();
-			return i;
+			return super.size();
 		}
 	}
 	

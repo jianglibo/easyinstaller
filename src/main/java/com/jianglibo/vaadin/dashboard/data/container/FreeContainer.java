@@ -21,6 +21,7 @@ import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.data.ManualPagable;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.vaadin.data.Buffered;
 import com.vaadin.data.Container;
@@ -82,9 +83,9 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	private Filter filter;
 
-	private final Domains domains;
-	
 	private final List<?> sortableContainerPropertyIds;
+	
+	private RepositoryCommonCustom<T> rcc;
 	
 	private ListViewFragmentBuilder lvfb;
 	/**
@@ -95,12 +96,13 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		this.lvfb = lvfb;
 	}
 
-	public FreeContainer(Domains domains, Class<T> clazz, int perPage, List<?> sortableContainerPropertyIds) {
-		this.domains = domains;
+	public FreeContainer(RepositoryCommonCustom<T> rcc, Sort defaultSort, Class<T> clazz, int perPage, List<?> sortableContainerPropertyIds) {
 		this.sortableContainerPropertyIds = sortableContainerPropertyIds;
 		this.clazz = clazz;
+		this.rcc = rcc;
 		this.simpleClassName = clazz.getSimpleName();
-		this.defaultSort = domains.getDefaultSort(clazz);
+//		this.defaultSort = domains.getDefaultSort(clazz);
+		this.defaultSort = defaultSort;
 		this.sort = this.defaultSort;
 		this.perPage = perPage;
 	}
@@ -303,7 +305,9 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public int size() {
-		int i = new Long(domains.getRepositoryCommonCustom(simpleClassName).getFilteredNumberWithOnePhrase(filterString, trashed))
+//		int i = new Long(domains.getRepositoryCommonCustom(simpleClassName).getFilteredNumberWithOnePhrase(filterString, trashed))
+//				.intValue();
+		int i = new Long(rcc.getFilteredNumberWithOnePhrase(filterString, trashed))
 				.intValue();
 		LOGGER.info("{} called with filterString {}, and return {}", "size", filterString, i);
 		return i;
@@ -508,11 +512,11 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void fetchPage() {
 		ManualPagable pageable = new ManualPagable(currentPage, perPage, sort);
-		currentWindow = (List<T>) domains.getRepositoryCommonCustom(simpleClassName).getFilteredPageWithOnePhrase(pageable,
-				filterString, trashed);
+//		currentWindow = (List<T>) domains.getRepositoryCommonCustom(simpleClassName).getFilteredPageWithOnePhrase(pageable,
+//				filterString, trashed);
+		currentWindow = rcc.getFilteredPageWithOnePhrase(pageable,filterString, trashed);
 	}
 
 	public void refresh() {
@@ -567,10 +571,6 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	
 	public Class<T> getClazz() {
 		return clazz;
-	}
-
-	public Domains getDomains() {
-		return domains;
 	}
 
 	public ListViewFragmentBuilder getLvfb() {

@@ -11,7 +11,7 @@ public class AllSoftwareContainer extends FreeContainer<Software> {
 
 	public AllSoftwareContainer(Domains domains, int perPage,
 			List<?> sortableContainerPropertyIds) {
-		super(domains, Software.class, perPage, sortableContainerPropertyIds);
+		super(domains.getRepositoryCommonCustom(Software.class.getSimpleName()),domains.getDefaultSort(Software.class), Software.class, perPage, sortableContainerPropertyIds);
 	}
 
 }

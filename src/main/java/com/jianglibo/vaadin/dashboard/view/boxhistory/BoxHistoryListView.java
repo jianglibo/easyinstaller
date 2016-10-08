@@ -214,6 +214,6 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 		VaadinTableWrapper vtw = domains.getTables().get(BoxHistory.class.getSimpleName());
 		List<String> sortableContainerPropertyIds = vtw.getSortableContainerPropertyIds();
 		List<String> columnNames = vtw.getColumns().stream().map(VaadinTableColumnWrapper::getName).collect(Collectors.toList());
-		return new BoxHistoryGrid(dContainer,vgw, boxHistoryRepository,boxGroupHistoryRepository,  messageSource, domains, sortableContainerPropertyIds, columnNames, vtw.getVt().messagePrefix());
+		return new BoxHistoryGrid(dContainer,vgw, boxHistoryRepository,boxGroupHistoryRepository,  messageSource, sortableContainerPropertyIds, columnNames, vtw.getVt().messagePrefix());
 	}
 }

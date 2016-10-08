@@ -19,7 +19,7 @@ public class BoxHistoryContainer extends FreeContainer<BoxHistory> {
 	private final BoxGroupHistoryRepository boxGroupHistoryRepository;
 
 	public BoxHistoryContainer(BoxGroupHistoryRepository boxGroupHistoryRepository, BoxHistoryRepository boxHistoryRepository, Domains domains, int perPage, List<?> sortableContainerPropertyIds) {
-		super(domains, BoxHistory.class, perPage, sortableContainerPropertyIds);
+		super(domains.getRepositoryCommonCustom(BoxHistory.class.getSimpleName()),domains.getDefaultSort(BoxHistory.class), BoxHistory.class, perPage, sortableContainerPropertyIds);
 		this.boxHistoryRepository = boxHistoryRepository;
 		this.boxGroupHistoryRepository = boxGroupHistoryRepository;
 	}

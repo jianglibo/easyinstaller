@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.context.MessageSource;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.*;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
@@ -42,12 +42,11 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 
 	public BaseGrid(VaadinGridWrapper vgw, C dContainer, MessageSource messageSource, List<String> sortableContainerPropertyIds, List<String> columnNames, String messagePrefix) {
 		this.messageSource = messageSource;
-		this.dContainer = dContainer;
+		this.dContainer = checkNotNull(dContainer, "dataContainer should not be null");
 		this.messagePrefix = messagePrefix;
 		this.sortableContainerPropertyIds = sortableContainerPropertyIds;
 		this.columnNames = columnNames;
 		this.vgw = vgw;
-		Preconditions.checkNotNull(dContainer);
 	}
 
 	public void delayCreateContent() {
@@ -72,18 +71,19 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 		});
 
 		setColumnFiltering(getColumnNames());
-
-		// Add a summary footer row to the Grid
-		FooterRow footer = addFooterRowAt(0);
-
-		setSummaryFooterCells(footer);
-
+		setupGrid();
 		// Allow column reordering
 		setColumnReorderingAllowed(true);
 	}
 	
+	// Add a summary footer row to the Grid
+	//	FooterRow footer = addFooterRowAt(0);
+	//	setSummaryFooterCells(footer);
+	
+	protected abstract void setupGrid();
+
 	protected void setupColumn(Column col, String cn) {
-		Preconditions.checkNotNull(getVgw());
+		checkNotNull(getVgw(), "if vgw is null, you must override setupColumn(Column col, String cn).");
 		Optional<VaadinGridColumnWrapper> vgcw = getVgw().getColumns().stream().filter(one -> cn.equals(one.getName())).findAny();
 		if (vgcw.isPresent()) {
 			setupColumn(vgcw.get(), col);
@@ -103,7 +103,7 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 	 * can setup whole grid here. Because this is extend from grid.
 	 * @param footer
 	 */
-	protected abstract void setSummaryFooterCells(FooterRow footer);
+//	protected abstract void setSummaryFooterCells(FooterRow footer);
 
 	
 	private void setColumnFiltering(List<String> columnNames) {
@@ -136,7 +136,7 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 //	}
 
 	protected boolean showFilterRow(String cn) {
-		Preconditions.checkNotNull(getVgw());
+		checkNotNull(getVgw(), "if vgw is null, you must override showFilterRow(String cn).");
 		Optional<VaadinGridColumnWrapper> vgcw = getVgw().getColumns().stream().filter(one -> cn.equals(one.getName())).findAny();
 		if (vgcw.isPresent()) {
 			return vgcw.get().getVgc().filterable();
@@ -147,7 +147,7 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 	}
 
 	protected boolean showFilterRow() {
-		Preconditions.checkNotNull(getVgw());
+		checkNotNull(getVgw(), "if vgw is null, you must override showFilterRow().");
 		return getVgw().getColumns().stream().filter(vgcw -> vgcw.getVgc().filterable()).findAny().isPresent();
 	}
 

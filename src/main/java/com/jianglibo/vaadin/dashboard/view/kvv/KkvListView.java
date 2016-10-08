@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Sort;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
@@ -16,6 +17,7 @@ import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Kkv;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
+import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
 import com.vaadin.server.FontAwesome;
@@ -85,8 +87,11 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> 
 		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
 		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
 		
-		FreeContainer<Kkv> fc = new FreeContainer<>(domains, Kkv.class, vgw.getVg().defaultPerPage(), sortableContainerPropertyIds);
+		RepositoryCommonCustom<Kkv> rcc = domains.getRepositoryCommonCustom(Kkv.class.getSimpleName());
+		Sort defaultSort = domains.getDefaultSort(Kkv.class);
+
+		FreeContainer<Kkv> fc = new FreeContainer<>(rcc, defaultSort, Kkv.class, vgw.getVg().defaultPerPage(), sortableContainerPropertyIds);
 		
-		return new KkvGrid(fc, vgw, messageSource, domains, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
+		return new KkvGrid(fc, vgw, messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 	}
 }

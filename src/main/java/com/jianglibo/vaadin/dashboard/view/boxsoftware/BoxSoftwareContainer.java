@@ -11,7 +11,7 @@ public class BoxSoftwareContainer extends FreeContainer<Software> {
 
 	public BoxSoftwareContainer(Domains domains, Class<Software> clazz, int perPage,
 			List<?> sortableContainerPropertyIds) {
-		super(domains, clazz, perPage, sortableContainerPropertyIds);
+		super(domains.getRepositoryCommonCustom(Software.class.getSimpleName()),domains.getDefaultSort(Software.class), clazz, perPage, sortableContainerPropertyIds);
 	}
 
 }
