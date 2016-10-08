@@ -3,6 +3,7 @@ package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +13,12 @@ import org.springframework.context.MessageSource;
 import com.google.common.collect.Lists;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
+import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
@@ -103,8 +107,13 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		Component tb = toolbars();
 		vl.addComponent(tb);
 		List<String> sortableContainerPropertyIds = Lists.newArrayList("createdAt");
+		
 		obghdc  = new OneBoxGroupHistoriesDc(null, domains, 10, sortableContainerPropertyIds);
-		Component cib = new OneBoxGroupHistoriesGrid(obghdc, messageSource, domains, sortableContainerPropertyIds);
+
+		VaadinGridWrapper vgw = domains.getGrids().get(BoxGroupHistory.class.getSimpleName());
+		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
+		
+		Component cib = new OneBoxGroupHistoriesGrid(obghdc,vgw, messageSource, domains, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 		vl.addComponent(cib);
 		vl.setExpandRatio(tb, 1);
 		vl.setExpandRatio(cib, 2);

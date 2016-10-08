@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -89,7 +93,11 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 
 	@Override
 	protected BoxGroupGrid createGrid(MessageSource messageSource, Domains domains) {
-		List<String> sortableContainerPropertyIds = domains.getTables().get(BoxGroup.class.getSimpleName()).getSortableContainerPropertyIds();
-		return new BoxGroupGrid(null, messageSource, domains, sortableContainerPropertyIds);
+		VaadinGridWrapper vgw = domains.getGrids().get(BoxGroup.class.getSimpleName());
+		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
+		
+		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
+		FreeContainer<BoxGroup> fc = new FreeContainer<>(domains, BoxGroup.class, vgw.getVg().defaultPerPage(), sortableContainerPropertyIds);
+		return new BoxGroupGrid(fc, vgw , messageSource, domains, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 	}
 }

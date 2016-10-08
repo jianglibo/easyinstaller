@@ -10,6 +10,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
@@ -208,7 +210,10 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 	protected BoxHistoryGrid createGrid(MessageSource messageSource, Domains domains) {
 		VaadinGridWrapper vgw = getDomains().getGrids().get(BoxHistory.class.getSimpleName());
 		BoxHistoryContainer dContainer =  new BoxHistoryContainer(boxGroupHistoryRepository, boxHistoryRepository, getDomains(), vgw.getVg().defaultPerPage(), vgw.getSortableColumnNames());
-		List<String> sortableContainerPropertyIds = domains.getTables().get(BoxHistory.class.getSimpleName()).getSortableContainerPropertyIds();
-		return new BoxHistoryGrid(dContainer, boxHistoryRepository,boxGroupHistoryRepository,  messageSource, domains, sortableContainerPropertyIds);
+
+		VaadinTableWrapper vtw = domains.getTables().get(BoxHistory.class.getSimpleName());
+		List<String> sortableContainerPropertyIds = vtw.getSortableContainerPropertyIds();
+		List<String> columnNames = vtw.getColumns().stream().map(VaadinTableColumnWrapper::getName).collect(Collectors.toList());
+		return new BoxHistoryGrid(dContainer,vgw, boxHistoryRepository,boxGroupHistoryRepository,  messageSource, domains, sortableContainerPropertyIds, columnNames, vtw.getVt().messagePrefix());
 	}
 }

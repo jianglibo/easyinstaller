@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.context.MessageSource;
 
-import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
@@ -19,8 +19,8 @@ public class BoxHistoryGrid extends BaseGrid<BoxHistory, BoxHistoryContainer> {
 	
 	private final BoxGroupHistoryRepository boxGroupHistoryRepository;
 
-	public BoxHistoryGrid(BoxHistoryContainer dContainer, BoxHistoryRepository boxHistoryRepository,BoxGroupHistoryRepository boxGroupHistoryRepository, MessageSource messageSource, Domains domains, List<?> sortableContainerPropertyIds) {
-		super(dContainer, messageSource, domains, BoxHistory.class, sortableContainerPropertyIds);
+	public BoxHistoryGrid(BoxHistoryContainer dContainer,VaadinGridWrapper vgw, BoxHistoryRepository boxHistoryRepository,BoxGroupHistoryRepository boxGroupHistoryRepository, MessageSource messageSource, Domains domains, List<String> sortableContainerPropertyIds, List<String> columnNames, String messagePrefix) {
+		super(vgw, dContainer, messageSource, sortableContainerPropertyIds, columnNames, messagePrefix);
 		this.boxGroupHistoryRepository = boxGroupHistoryRepository;
 		this.boxHistoryRepository = boxHistoryRepository;
 		delayCreateContent();
@@ -34,10 +34,4 @@ public class BoxHistoryGrid extends BaseGrid<BoxHistory, BoxHistoryContainer> {
 	protected void setSummaryFooterCells(FooterRow footer) {
 		
 	}
-
-	@Override
-	protected void setupColumn(Column col, VaadinGridColumnWrapper vgcw) {
-		
-	}
-
 }

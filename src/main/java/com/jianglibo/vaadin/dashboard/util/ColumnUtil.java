@@ -1,6 +1,5 @@
 package com.jianglibo.vaadin.dashboard.util;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +36,10 @@ public class ColumnUtil {
 	
 	public static Object[] toObjectArray(String[] stringArray) {
 		return IntStream.range(0, stringArray.length).mapToObj(i -> stringArray[i]).toArray();
+	}
+	
+	public static Object[] toObjectArray(List<String> stringList) {
+		return IntStream.range(0, stringList.size()).mapToObj(i -> stringList.get(i)).toArray();
 	}
 
 	@SuppressWarnings("serial")

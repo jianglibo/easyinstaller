@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -82,7 +84,10 @@ public class PersonListView extends BaseGridView<Person, PersonGrid, FreeContain
 
 	@Override
 	protected PersonGrid createGrid(MessageSource messageSource, Domains domains) {
-		List<String> sortableContainerPropertyIds = domains.getTables().get(Person.class.getSimpleName()).getSortableContainerPropertyIds();
-		return new PersonGrid(null, messageSource, domains, sortableContainerPropertyIds);
+		VaadinGridWrapper vgw = domains.getGrids().get(Person.class.getSimpleName());
+		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
+		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
+		FreeContainer<Person> fc = new FreeContainer<>(domains, Person.class, vgw.getVg().defaultPerPage(), sortableContainerPropertyIds);
+		return new PersonGrid(fc, vgw, messageSource, domains, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 	}
 }

@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
@@ -79,7 +81,12 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> 
 
 	@Override
 	protected KkvGrid createGrid(MessageSource messageSource, Domains domains) {
-		List<String> sortableContainerPropertyIds = domains.getTables().get(Kkv.class.getSimpleName()).getSortableContainerPropertyIds();
-		return new KkvGrid(null, messageSource, domains, sortableContainerPropertyIds);
+		VaadinGridWrapper vgw = domains.getGrids().get(Kkv.class.getSimpleName());
+		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
+		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
+		
+		FreeContainer<Kkv> fc = new FreeContainer<>(domains, Kkv.class, vgw.getVg().defaultPerPage(), sortableContainerPropertyIds);
+		
+		return new KkvGrid(fc, vgw, messageSource, domains, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 	}
 }
