@@ -1,30 +1,28 @@
 package com.jianglibo.vaadin.dashboard.controller;
 
+import java.util.Locale;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
-import com.jianglibo.vaadin.dashboard.init.AppInitializer;
-import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
-import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.LocaleResolver;
 
 @Controller
-@RequestMapping("/autologin")
+@RequestMapping("/localeswitch")
 public class HomeController {
-
-    @Autowired
-    private ApplicationConfig applicationConfig;
     
     @Autowired
-    private PersonRepository personRepository;
+	private LocaleResolver localeResolver;
     
-    
-	@RequestMapping
-	public String redirectToVaadin() {
-		if (applicationConfig.isAutoLogin()) {
-			M3958SecurityUtil.doLogin(personRepository.findByEmail(AppInitializer.firstEmail));
-		}
+	@RequestMapping(value = "", method = RequestMethod.GET)
+	public String redirectToVaadin(HttpServletRequest req, HttpServletResponse res, @RequestParam String lo) {
+		Locale newLocale = new Locale(lo);
+		localeResolver.setLocale(req, res, newLocale);
 		return "redirect:/";
 	}
 }

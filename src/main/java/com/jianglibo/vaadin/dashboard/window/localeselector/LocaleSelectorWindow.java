@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -28,10 +25,6 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.server.VaadinServletResponse;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -42,6 +35,12 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
+/**
+ * If you are using Vaadin with Push you can only update cookies while executing UI.init() method. There is currently no workaround for this problem.
+ * @author jianglibo@gmail.com
+ *
+ */
 
 @SuppressWarnings("serial")
 public class LocaleSelectorWindow extends Window {
@@ -194,13 +193,15 @@ public class LocaleSelectorWindow extends Window {
 				} else {
 					LOGGER.info("change language from {} to {}", curLan, lan.getCode());
 				}
-				Locale newLocale = new Locale(lan.getCode());
-				VaadinSession.getCurrent().setLocale(newLocale);
-
-				HttpServletRequest originRequest = (VaadinServletRequest) VaadinService.getCurrentRequest();
-				HttpServletResponse originResponse = (VaadinServletResponse) VaadinService.getCurrentResponse();
-				localeResolver.setLocale(originRequest, originResponse, newLocale);
-				UI.getCurrent().getPage().reload();
+//				Locale newLocale = new Locale(lan.getCode());
+//				VaadinSession.getCurrent().setLocale(newLocale);
+//
+//				HttpServletRequest originRequest = (VaadinServletRequest) VaadinService.getCurrentRequest();
+//				LOGGER.info("origin request: {}", originRequest);
+//				HttpServletResponse originResponse = (VaadinServletResponse) VaadinService.getCurrentResponse();
+//				LOGGER.info("origin response: {}", originResponse);
+//				localeResolver.setLocale(originRequest, originResponse, newLocale);
+				UI.getCurrent().getPage().setLocation("/localeswitch?lo=" + lan.getCode());
 			}
 		});
 		return table;
