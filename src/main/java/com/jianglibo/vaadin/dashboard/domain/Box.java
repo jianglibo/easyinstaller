@@ -116,8 +116,8 @@ public class Box extends BaseEntity {
 		return keyFilePath;
 	}
 
-	public String getKeyFilePath(Path sshsBase) {
-		return sshsBase.resolve(getKeyFilePath()).toAbsolutePath().toString();
+	public Path getKeyFilePath(Path sshsBase) {
+		return sshsBase.resolve(getKeyFilePath());
 	}
 
 	public void setKeyFilePath(String keyFilePath) {

@@ -116,7 +116,7 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		
 		obghdc  = new OneBoxGroupHistoriesDc(boxGroupHistoryRepository, null, domains, 10, sortableContainerPropertyIds);
 		
-		Component cib = new OneBoxGroupHistoriesGrid(applicationConfig, taskRunner, obghdc,vgw, messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
+		Component cib = new OneBoxGroupHistoriesGrid(taskRunner, obghdc,vgw, messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 		vl.addComponent(cib);
 		vl.setExpandRatio(tb, 1);
 		vl.setExpandRatio(cib, 2);
@@ -150,20 +150,6 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 					LOGGER.info("{}, {}", ac.getClass().getName(), ac.getName());
 					DashboardUI dui = (DashboardUI) UI.getCurrent();
 					TaskDesc td = new TaskDesc(dui.getUniqueUiID(), ac.getPrincipal(), boxGroup,boxesToRun.getValue(), insf.getSelectedSoftware().get(), insf.getSelectedAction().get());
-					for(Box box : td.getBoxes()) {
-						if (Strings.isNullOrEmpty(box.getKeyFilePath())) {
-							NotificationUtil.error(messageSource, "noKeyFilePath", box.getHostname());
-							return;
-						}
-					}
-					
-					for(Box box : td.getBoxes()) {
-						Path kp = applicationConfig.getSshKeyFolderPath().resolve(box.getKeyFilePath()); 
-						if (!Files.exists(kp)) {
-							NotificationUtil.error(messageSource, "keyFilePathNotExists", box.getHostname(), kp.toAbsolutePath().toString());
-							return;
-						}
-					}
 					taskRunner.submitTasks(td);
 				} else {
 					NotificationUtil.humanized(messageSource, "actionabsent");

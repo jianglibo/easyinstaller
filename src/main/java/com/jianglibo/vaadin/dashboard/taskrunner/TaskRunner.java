@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
@@ -37,6 +38,7 @@ import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession.JschSessionBuilder;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshExecRunner;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshUploadRunner;
+import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 
 /**
  * Give a list of box and software pair.
@@ -76,6 +78,9 @@ public class TaskRunner {
 	@Autowired
 	private ApplicationConfig applicationConfig;
 	
+	@Autowired
+	private MessageSource messageSource;
+	
 	private int bgHistoriesSofar = 0;
 
 	public TaskRunner() {
@@ -83,6 +88,13 @@ public class TaskRunner {
 	}
 
 	public void submitTasks(TaskDesc taskDesc) {
+		for(Box box : taskDesc.getBoxes()) {
+			if (applicationConfig.getSshKeyFile(box).isEmpty()) {
+				NotificationUtil.error(messageSource, "noKeyFilePath", applicationConfig.getDefaultSshKeyFile());
+				return;
+			}
+		}
+		
 		List<OneThreadTaskDesc> onetds = taskDesc.createOneThreadTaskDescs();
 
 		List<ListenableFuture<OneThreadTaskDesc>> llfs = onetds.stream().map(td -> service.submit(new OneTaskCallable(td)))
@@ -203,7 +215,7 @@ public class TaskRunner {
 		public OneThreadTaskDesc call() throws Exception {
 			Box box = oneThreadtaskDesc.getBox();
 			try {
-				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(box.getKeyFilePath(applicationConfig.getSshKeyFolderPath()))
+				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(applicationConfig.getSshKeyFile(box))
 						.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
 				
 				boolean needUploadFile = "install".equals(oneThreadtaskDesc.getAction());

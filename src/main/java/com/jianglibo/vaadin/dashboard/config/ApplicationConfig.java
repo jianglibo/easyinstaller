@@ -1,6 +1,5 @@
 package com.jianglibo.vaadin.dashboard.config;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
+import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Kkv;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
@@ -50,6 +50,10 @@ public class ApplicationConfig {
 	private boolean autoLogin;
 	
 	private Map<String, List<ComboItem>> comboDatas;
+	
+	private String defaultSshKeyFile;
+	
+	private boolean defaultSshKeyFileExists;
 
 	@Autowired
 	public ApplicationConfig(RawApplicationConfig racfig, PersonRepository personRepository,
@@ -96,21 +100,31 @@ public class ApplicationConfig {
 		setRemoteFolder(remoteFolder);
 		
 		setComboDatas(racfig.getComboDatas());
-		initDemoSshKeys();
+		defaultSshKeyFile = getSshKeyFolderPath().resolve("ssh_id").toAbsolutePath().toString();
+		defaultSshKeyFileExists = Files.exists(getSshKeyFolderPath().resolve("ssh_id"));
 	}
 	
-	private void initDemoSshKeys() {
-		Path demoSsh = getSshKeyFolderPath().resolve("demo_id_rsa.txt");
-		if (!Files.exists(demoSsh)) {
-			try {
-				Files.write(demoSsh, "demo_id_rsa".getBytes());
-			} catch (IOException e) {
-				e.printStackTrace();
+	public String getSshKeyFile(Box box) {
+		if (!Strings.isNullOrEmpty(box.getKeyFilePath())) {
+			if(Files.exists(box.getKeyFilePath(getSshKeyFolderPath()))) {
+				return box.getKeyFilePath(getSshKeyFolderPath()).toAbsolutePath().toString();
 			}
 		}
-		
+		if (isDefaultSshKeyFileExists()) {
+			return getDefaultSshKeyFile();
+		}
+		return "";
 	}
 	
+	
+	public String getDefaultSshKeyFile() {
+		return defaultSshKeyFile;
+	}
+
+	public boolean isDefaultSshKeyFileExists() {
+		return defaultSshKeyFileExists;
+	}
+
 	private String processOneItem(Map<String, String> applicationMap,Person root, String fname, String fvalue) {
 		String v = applicationMap.get(fname);
 		if (Strings.isNullOrEmpty(v)) {
