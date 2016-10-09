@@ -14,7 +14,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormFieldWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;

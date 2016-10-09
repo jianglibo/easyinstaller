@@ -12,7 +12,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.vaadin.maddon.FilterableListContainer;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.thirdparty.guava.common.collect.Sets;
+import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;

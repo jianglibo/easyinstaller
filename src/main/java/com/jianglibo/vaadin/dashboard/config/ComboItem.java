@@ -1,6 +1,6 @@
 package com.jianglibo.vaadin.dashboard.config;
 
-import com.google.gwt.thirdparty.guava.common.base.Strings;
+import com.google.common.base.Strings;
 
 public class ComboItem {
 

@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Joiner.MapJoiner;
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
+import com.google.common.collect.Maps;
 
 public class TestJoinerSplitter {
 	

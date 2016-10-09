@@ -9,7 +9,7 @@ import java.util.SortedMap;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableSortedMap;
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
+import com.google.common.collect.Maps;
 
 public class TestTreeMap {
 

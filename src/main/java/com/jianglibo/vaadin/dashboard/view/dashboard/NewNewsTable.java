@@ -5,7 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNew;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Link;

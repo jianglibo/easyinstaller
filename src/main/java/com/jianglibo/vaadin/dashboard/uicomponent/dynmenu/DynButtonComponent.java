@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.springframework.context.MessageSource;
 
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
+import com.google.common.collect.Maps;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.shared.ui.MarginInfo;

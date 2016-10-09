@@ -15,6 +15,10 @@ buildscript {
     }
 }
 
+ext {
+	vaadinv = '7.7.3'
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'spring-boot'
@@ -73,7 +77,7 @@ dependencies {
 	compile("de.fatalix:codmirror-addon:1.2.2")
 
 	// http://mvnrepository.com/artifact/com.vaadin/vaadin-themes
-	compile group: 'com.vaadin', name: 'vaadin-themes', version: '7.6.8'
+	compile group: 'com.vaadin', name: 'vaadin-themes', version: "${vaadinv}"
 	
 	// https://mvnrepository.com/artifact/com.google.code.gson/gson
 	compile group: 'com.google.code.gson', name: 'gson', version: '2.6.2'
@@ -81,16 +85,16 @@ dependencies {
 	compile group: 'org.peimari', name: 'maddon', version: '1.15'
 	
 	// http://mvnrepository.com/artifact/com.vaadin/vaadin-server
-	compile group: 'com.vaadin', name: 'vaadin-server', version: '7.6.8'
+	compile group: 'com.vaadin', name: 'vaadin-server', version: "${vaadinv}"
 	
 	// http://mvnrepository.com/artifact/com.vaadin/vaadin-widgets
-	compile group: 'com.vaadin', name: 'vaadin-widgets', version: '7.6.8'
+	compile group: 'com.vaadin', name: 'vaadin-widgets', version: "${vaadinv}"
 	
 	// http://mvnrepository.com/artifact/com.vaadin/vaadin-client-compiled
-	compile group: 'com.vaadin', name: 'vaadin-client-compiled', version: '7.6.8'
+	compile group: 'com.vaadin', name: 'vaadin-client-compiled', version: "${vaadinv}"
 	
 	// https://mvnrepository.com/artifact/com.vaadin/vaadin-push
-	compile group: 'com.vaadin', name: 'vaadin-push', version: '7.6.8'
+	compile group: 'com.vaadin', name: 'vaadin-push', version: "${vaadinv}"
 
 	// http://mvnrepository.com/artifact/commons-beanutils/commons-beanutils
 	compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.2'

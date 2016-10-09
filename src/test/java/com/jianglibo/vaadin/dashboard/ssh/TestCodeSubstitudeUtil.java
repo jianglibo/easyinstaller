@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
+import com.google.common.collect.Maps;
 
 public class TestCodeSubstitudeUtil {
 	

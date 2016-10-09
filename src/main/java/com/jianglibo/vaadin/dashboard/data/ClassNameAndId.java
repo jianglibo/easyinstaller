@@ -1,6 +1,6 @@
 package com.jianglibo.vaadin.dashboard.data;
 
-import com.google.gwt.thirdparty.guava.common.base.Objects;
+import com.google.common.base.Objects;
 
 public class ClassNameAndId {
 

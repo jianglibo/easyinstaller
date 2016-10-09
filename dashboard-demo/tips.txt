@@ -7,3 +7,5 @@ mvn vaadin:compile-theme
 mvn vaadin:update-theme
 mvn  -Dmaven.test.skip=true -Pproduction-mode install
 
+
+删除target目录，更新pom里面项目的版本，都是尝试去除先前版本影响的可行方法。

@@ -5,8 +5,9 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
-import com.google.gwt.thirdparty.guava.common.collect.Sets;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 
 @Component
 public class GlobalComboOptions {

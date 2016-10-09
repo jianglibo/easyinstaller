@@ -2,7 +2,8 @@ package com.jianglibo.vaadin.dashboard.uicomponent.dynmenu;
 
 import java.util.List;
 
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.google.common.collect.Lists;
+
 
 public class ButtonGroup {
 

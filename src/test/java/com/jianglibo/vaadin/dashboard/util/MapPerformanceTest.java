@@ -6,8 +6,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 
 public class MapPerformanceTest {
 

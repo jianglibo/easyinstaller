@@ -1,2 +1,2 @@
-tcl--centos7--1.zip,7e58428fb6cd95d99e40b83645648726
-zookeeper--centos7--3.4.9.zip,46c53f6b810ae1a85f4b74f7acb4a812
+tcl--centos7--1.zip,3363b1987f346b0793511d25f642afe9
+zookeeper--centos7--3.4.9.zip,b0fb549046cc91cc04ec4908a97cdc4f
