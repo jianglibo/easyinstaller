@@ -20,7 +20,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.data.ManualPagable;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
-import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.vaadin.data.Buffered;
@@ -35,6 +34,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.data.util.filter.UnsupportedFilterException;
+import com.vaadin.shared.data.sort.SortDirection;
 
 /**
  * Maybe use a window is more convenient. This class has some code copy and
@@ -70,7 +70,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	private int currentPage = -1;
 
 	private Sort sort;
-
+	
 	private boolean enableSort = false;
 
 	private final Class<T> clazz;
@@ -101,13 +101,15 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		this.clazz = clazz;
 		this.rcc = rcc;
 		this.simpleClassName = clazz.getSimpleName();
-//		this.defaultSort = domains.getDefaultSort(clazz);
 		this.defaultSort = defaultSort;
 		this.sort = this.defaultSort;
 		this.perPage = perPage;
 	}
 	
-	
+	public com.vaadin.data.sort.Sort getVaadinSort() {
+		Sort.Order od = getSort().iterator().next();
+		return com.vaadin.data.sort.Sort.by(od.getProperty(), od.isAscending() ? SortDirection.ASCENDING : SortDirection.DESCENDING);
+	}
 
 	public List<ItemSetChangeListener> getItemSetChangeListeners() {
 		return itemSetChangeListeners;
@@ -458,7 +460,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		} else {
 			this.sort = defaultSort;
 		}
-		notifyItemSetChanged();
+		refresh();
 	}
 
 	@Override

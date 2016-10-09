@@ -1,10 +1,14 @@
 package com.jianglibo.vaadin.dashboard.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Optional;
 
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
 public class ViewFragmentBuilder {
@@ -27,7 +31,7 @@ public class ViewFragmentBuilder {
 	}
 	
 	public Optional<String> getPreviousView() {
-		return getParameterValue(PREVIOUS_VIEW_PARAMETER_NAME);
+		return getParameterValue(PREVIOUS_VIEW_PARAMETER_NAME, true);
 	}
 	
 	public ViewFragmentBuilder setString(String pname, String value) {
@@ -94,13 +98,34 @@ public class ViewFragmentBuilder {
 	}
 	
 	public String toNavigateString() {
-		return getViewName() + "/" + build().toUriString();
+		String s = getViewName() + "/" + build().toUriString();
+		try {
+			s = URLEncoder.encode(s, Charsets.UTF_8.name());
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return s;
 	}
 	
 	protected Optional<String> getParameterValue(String pname) {
 		String v = null;
 		if (getUriComs().getQueryParams().containsKey(pname)) {
 			v =  getUriComs().getQueryParams().getFirst(pname);
+		}
+		return Optional.ofNullable(v);
+	}
+	
+	protected Optional<String> getParameterValue(String pname, boolean decode) {
+		String v = null;
+		if (getUriComs().getQueryParams().containsKey(pname)) {
+			v =  getUriComs().getQueryParams().getFirst(pname);
+		}
+		if (v != null) {
+			try {
+				v = URLDecoder.decode(v, Charsets.UTF_8.name());
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 		}
 		return Optional.ofNullable(v);
 	}

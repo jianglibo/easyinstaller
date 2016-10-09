@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
@@ -113,6 +114,10 @@ public class Box extends BaseEntity {
 
 	public String getKeyFilePath() {
 		return keyFilePath;
+	}
+
+	public String getKeyFilePath(Path sshsBase) {
+		return sshsBase.resolve(getKeyFilePath()).toAbsolutePath().toString();
 	}
 
 	public void setKeyFilePath(String keyFilePath) {

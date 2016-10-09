@@ -49,6 +49,7 @@ import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
 import com.jianglibo.vaadin.dashboard.view.LoginView;
 import com.jianglibo.vaadin.dashboard.view.MainMenuItems;
 import com.jianglibo.vaadin.dashboard.view.boxgrouphistory.BoxGroupHistoryViewMenuItem;
+import com.jianglibo.vaadin.dashboard.view.clustersoftware.ClusterSoftwareView;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
 import com.jianglibo.vaadin.dashboard.view.dashboard.NewNewsTile;
 import com.jianglibo.vaadin.dashboard.view.software.SoftwareViewMenuItem;
@@ -325,6 +326,11 @@ public final class DashboardUI extends UI implements ApplicationContextAware,  B
 					if (getUniqueUiID().equals(gtfm.getUniqueUiId())) {
 						BoxGroupHistoryViewMenuItem bghvmi = (BoxGroupHistoryViewMenuItem)getDm().getMmis().getMenuMap().get(BoxGroupHistoryViewMenuItem.class.getName());
 						bghvmi.updateNotificationsCount(gtfm.getBgHistoriesSofar());
+						
+					if (getNavigator().getCurrentView() instanceof ClusterSoftwareView) {
+						ClusterSoftwareView csv = (ClusterSoftwareView) getNavigator().getCurrentView();
+						csv.getObghdc().refresh();
+					}
 						push();
 					}
 					break;

@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.config;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -95,6 +96,19 @@ public class ApplicationConfig {
 		setRemoteFolder(remoteFolder);
 		
 		setComboDatas(racfig.getComboDatas());
+		initDemoSshKeys();
+	}
+	
+	private void initDemoSshKeys() {
+		Path demoSsh = getSshKeyFolderPath().resolve("demo_id_rsa.txt");
+		if (!Files.exists(demoSsh)) {
+			try {
+				Files.write(demoSsh, "demo_id_rsa".getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 	private String processOneItem(Map<String, String> applicationMap,Person root, String fname, String fvalue) {

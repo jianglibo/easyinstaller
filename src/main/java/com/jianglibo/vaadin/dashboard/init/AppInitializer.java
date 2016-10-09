@@ -43,7 +43,7 @@ public class AppInitializer implements InitializingBean {
 	
 	@Autowired
 	private BoxGroupRepository boxGroupRepository;
-
+	
 	@Autowired
 	public AppInitializer(PersonRepository userRepo, RoleRepository roleRepo) {
 		this.userRepo = userRepo;
@@ -61,6 +61,8 @@ public class AppInitializer implements InitializingBean {
 			initFirstCluster();
 		}
 	}
+
+
 
 	private void initFirstCluster() {
 		Person person = userRepo.findByEmail(firstEmail);
@@ -80,6 +82,7 @@ public class AppInitializer implements InitializingBean {
 		Box box = boxRepository.findByIp("192.168.33.10");
 		if (box == null) {
 			box = new Box();
+			box.setKeyFilePath("demo_id_rsa.txt");
 			box.setArchived(false);
 			box.setPorts("80,8080");
 			box.setCreator(person);

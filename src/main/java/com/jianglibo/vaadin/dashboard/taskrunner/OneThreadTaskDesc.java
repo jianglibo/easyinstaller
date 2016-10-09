@@ -34,7 +34,7 @@ public class OneThreadTaskDesc {
 		this.software = software;
 		this.uniqueUiId = td.getUniqueUiId();
 		this.boxGroup = boxGroup;
-		this.boxHistory = new BoxHistory.BoxHistoryBuilder(boxGroup, software, box, "", true).build();
+		this.boxHistory = new BoxHistory.BoxHistoryBuilder(boxGroup, software, box, "", action, true).build();
 	}
 
 	public TaskDesc getTd() {

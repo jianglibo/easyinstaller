@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.context.MessageSource;
 
 import static com.google.common.base.Preconditions.*;
+
+import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
@@ -72,6 +74,8 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 
 		setColumnFiltering(getColumnNames());
 		setupGrid();
+//		setSortOrder(Lists.newArrayList(getdContainer().getVaadinSort()));
+		sort(getdContainer().getVaadinSort());
 		// Allow column reordering
 		setColumnReorderingAllowed(true);
 	}

@@ -22,6 +22,7 @@ import com.jianglibo.vaadin.dashboard.Broadcaster;
 import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessage;
 import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageBody;
 import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageType;
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
@@ -72,6 +73,9 @@ public class TaskRunner {
 	@Autowired
 	private SshExecRunner sshExecRunner;
 	
+	@Autowired
+	private ApplicationConfig applicationConfig;
+	
 	private int bgHistoriesSofar = 0;
 
 	public TaskRunner() {
@@ -102,7 +106,7 @@ public class TaskRunner {
 						return bh;
 					}).filter(BoxHistory::isSuccess).count();
 					
-					BoxGroupHistory bgh = new BoxGroupHistory(taskDesc.getSoftware(), taskDesc.getBoxGroup(), bhs);
+					BoxGroupHistory bgh = new BoxGroupHistory(taskDesc.getSoftware(), taskDesc.getBoxGroup(), taskDesc.getAction(), bhs);
 					bgh.setRunner(personRepository.findByEmail(AppInitializer.firstEmail));
 					
 					if (successes == result.size()) {
@@ -199,7 +203,7 @@ public class TaskRunner {
 		public OneThreadTaskDesc call() throws Exception {
 			Box box = oneThreadtaskDesc.getBox();
 			try {
-				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(box.getKeyFilePath())
+				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(box.getKeyFilePath(applicationConfig.getSshKeyFolderPath()))
 						.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
 				
 				boolean needUploadFile = "install".equals(oneThreadtaskDesc.getAction());

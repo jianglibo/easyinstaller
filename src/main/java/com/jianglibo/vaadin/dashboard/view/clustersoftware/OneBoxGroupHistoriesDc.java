@@ -2,17 +2,23 @@ package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
 import java.util.List;
 
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.jianglibo.vaadin.dashboard.data.ManualPagable;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 
 @SuppressWarnings("serial")
 public class OneBoxGroupHistoriesDc  extends FreeContainer<BoxGroupHistory>{
 	private BoxGroup boxGroup;
 	
-	public OneBoxGroupHistoriesDc(BoxGroup boxGroup, Domains domains, int perPage, List<?> sortableContainerPropertyIds) {
+	private final BoxGroupHistoryRepository boxGroupHistoryRepository;
+	
+	public OneBoxGroupHistoriesDc(BoxGroupHistoryRepository boxGroupHistoryRepository, BoxGroup boxGroup, Domains domains, int perPage, List<?> sortableContainerPropertyIds) {
 		super(domains.getRepositoryCommonCustom(BoxGroupHistory.class.getSimpleName()),domains.getDefaultSort(BoxGroupHistory.class), BoxGroupHistory.class, perPage, sortableContainerPropertyIds);
+		this.boxGroupHistoryRepository = boxGroupHistoryRepository;
 		this.boxGroup = boxGroup;
 	}
 	
@@ -21,19 +27,14 @@ public class OneBoxGroupHistoriesDc  extends FreeContainer<BoxGroupHistory>{
 		if (boxGroup == null) {
 			return 0;
 		} else {
-			return boxGroup.getHistories().size();
+			return new Long(boxGroupHistoryRepository.countByBoxGroupEquals(boxGroup)).intValue();
 		}
 	}
 	
 	@Override
 	public void fetchPage() {
-		int start = getCurrentPage() * getPerPage();
-		int end = (getCurrentPage() + 1) * getPerPage();
-		int total = size();
-		
-		start = start > total  ? total : start;
-		end = end > total ? total : end;
-		List<BoxGroupHistory> bghs = boxGroup.getHistories().subList(start, end); 
+		ManualPagable mp = new ManualPagable(getCurrentPage(), getPerPage(), getSort());
+		List<BoxGroupHistory> bghs = Lists.newArrayList(boxGroupHistoryRepository.findByBoxGroupEquals(boxGroup, mp)); 
 		setCurrentWindow(bghs);
 	}
 

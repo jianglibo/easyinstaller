@@ -109,14 +109,14 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		vl.setSizeFull();
 		Component tb = toolbars();
 		vl.addComponent(tb);
-		List<String> sortableContainerPropertyIds = Lists.newArrayList("createdAt");
 		
-		obghdc  = new OneBoxGroupHistoriesDc(null, domains, 10, sortableContainerPropertyIds);
-
 		VaadinGridWrapper vgw = domains.getGrids().get(BoxGroupHistory.class.getSimpleName());
 		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
+		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
 		
-		Component cib = new OneBoxGroupHistoriesGrid(obghdc,vgw, messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
+		obghdc  = new OneBoxGroupHistoriesDc(boxGroupHistoryRepository, null, domains, 10, sortableContainerPropertyIds);
+		
+		Component cib = new OneBoxGroupHistoriesGrid(applicationConfig, taskRunner, obghdc,vgw, messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 		vl.addComponent(cib);
 		vl.setExpandRatio(tb, 1);
 		vl.setExpandRatio(cib, 2);
@@ -231,6 +231,11 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		tools.addComponent(helpBtn);
 		return hl;
 	}
+	
+	public OneBoxGroupHistoriesDc getObghdc() {
+		return obghdc;
+	}
+
 
 	public void backward() {
 		UI.getCurrent().getNavigator().navigateTo(getLvfb().getPreviousView().get());

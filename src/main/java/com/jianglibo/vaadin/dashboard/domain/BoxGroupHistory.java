@@ -1,6 +1,5 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -11,7 +10,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
@@ -38,12 +36,18 @@ public class BoxGroupHistory extends BaseEntity {
 	@VaadinGridColumn(order = 30)
 	private BoxGroup boxGroup;
 	
+	@VaadinGridColumn(order = 35, sortable=true)
+	private String action;
+	
+	@VaadinGridColumn(order = 40)
+	private boolean forAllBox;
+	
 	@ManyToOne
 	@NotNull
 	private Person runner;
 	
 	@VaadinTableColumn
-	@VaadinGridColumn(order = 50)
+	@VaadinGridColumn(order = 50, sortable=true)
 	private boolean success;
 	
 	@OneToMany(mappedBy="boxGroupHistory", fetch=FetchType.EAGER, cascade=CascadeType.REMOVE)
@@ -54,15 +58,16 @@ public class BoxGroupHistory extends BaseEntity {
 	public BoxGroupHistory() {
 	}
 	
-	public BoxGroupHistory(Software software, BoxGroup boxGroup, Set<BoxHistory> boxHistories) {
+	public BoxGroupHistory(Software software, BoxGroup boxGroup, String action, Set<BoxHistory> boxHistories) {
 		this.software = software;
 		this.boxGroup = boxGroup;
+		this.action = action;
 		this.boxHistories = boxHistories;
 	}
 	
 	@Override
 	public String getDisplayName() {
-		return String.format("[%s, %s, %s]", boxGroup.getName(), software.getName(), isSuccess());
+		return String.format("[%s, %s, %s, %s]", boxGroup.getName(), software.getName(), getAction(), isSuccess());
 	}
 	
 	public Software getSoftware() {
@@ -111,5 +116,21 @@ public class BoxGroupHistory extends BaseEntity {
 
 	public void setBoxHistories(Set<BoxHistory> boxHistories) {
 		this.boxHistories = boxHistories;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public boolean isForAllBox() {
+		return forAllBox;
+	}
+
+	public void setForAllBox(boolean forAllBox) {
+		this.forAllBox = forAllBox;
 	}
 }
