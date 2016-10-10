@@ -1,7 +1,6 @@
 package com.jianglibo.vaadin.dashboard.view.software;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,64 +9,66 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 
+import com.google.common.eventbus.SubscriberExceptionContext;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
-import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
-import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
-import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
+import com.jianglibo.vaadin.dashboard.view.BaseListView;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 
-@SpringView(name = SoftwareListView.VIEW_NAME)
-public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeContainer<Software>>{
+@SpringView(name = SoftwareListView2.VIEW_NAME)
+public class SoftwareListView2 extends BaseListView<Software, SoftwareTable, SoftwareRepository>{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SoftwareListView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SoftwareListView2.class);
 	
 
-	public static final String VIEW_NAME = "software";
+	public static final String VIEW_NAME = "software2";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.COGS;
 	
 	
 	@Autowired
-	public SoftwareListView(SoftwareRepository repository,Domains domains, MessageSource messageSource,
+	public SoftwareListView2(SoftwareRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
-		super(applicationContext, messageSource, domains, Software.class, SoftwareGrid.class);
+		super(applicationContext, messageSource, domains,repository, Software.class, SoftwareTable.class);
 		delayCreateContent();
 	}
 
 	@Override
+	public void handleException(Throwable exception, SubscriberExceptionContext context) {
+		exception.printStackTrace();
+	}
+
+	@Override
 	public void onDynButtonClicked(ButtonDescription btnDesc) {
-		List<Software> selected = getGrid().getSelectedRows().stream().map(o -> (Software)o).collect(Collectors.toList());
+		Collection<Software> selected = (Collection<Software>) getTable().getValue();
 		switch (btnDesc.getItemId()) {
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-//					getRepository().delete(b);
+					getRepository().delete(b);
 				} else {
 					b.setArchived(true);
-//					getRepository().save(b);
+					getRepository().save(b);
 				}
 			});
-//			((SoftwareContainer)getTable().getContainerDataSource()).refresh();
+			((SoftwareContainer)getTable().getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.REFRESH:
-//			((SoftwareContainer)getTable().getContainerDataSource()).refresh();
+			((SoftwareContainer)getTable().getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
@@ -88,6 +89,15 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 		svmi.updateNotificationsCount(0);
 	}
 
+	public void notifySort(Sort sort) {
+	}
+
+	@Override
+	public SoftwareTable createTable() {
+		SoftwareContainer sfc = new SoftwareContainer(getRepository(), getDomains());
+		return new SoftwareTable(getMessageSource(), getDomains(),sfc, getRepository());
+	}
+
 	@Override
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[]{ //
@@ -98,15 +108,7 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 	}
 
 	@Override
-	protected SoftwareGrid createGrid(MessageSource messageSource, Domains domains) {
-		VaadinGridWrapper vgw = domains.getGrids().get(Software.class.getSimpleName());
-		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
-		
-		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
-
-		RepositoryCommonCustom<Software> rcc = domains.getRepositoryCommonCustom(Software.class.getSimpleName());
-		Sort defaultSort = domains.getDefaultSort(Software.class);
-		FreeContainer<Software> fc = new FreeContainer<>(rcc, defaultSort, Software.class, vgw.getVg().defaultPerPage(), sortableContainerPropertyIds);
-		return new SoftwareGrid(fc, vgw , messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
+	public String getListViewName() {
+		return VIEW_NAME;
 	}
 }

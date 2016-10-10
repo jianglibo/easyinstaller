@@ -101,5 +101,12 @@ public class OneBoxGroupHistoriesGrid extends BaseGrid<BoxGroupHistory, FreeCont
 				dspBt.setEnabled(false);
 			}
 		});
+		
+		FooterRow footer = addFooterRowAt(0);
+		FooterCell fc = footer.getCell("createdAt");
+		fc.setText("0");
+		getdContainer().addItemSetChangeListener(event -> {
+			fc.setText("" + event.getContainer().size());
+		});
 	}
 }

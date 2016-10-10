@@ -88,6 +88,11 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	private RepositoryCommonCustom<T> rcc;
 	
 	private ListViewFragmentBuilder lvfb;
+	
+	private int cachedSize;
+	
+	private boolean dirty;
+	
 	/**
 	 * The change is from url change.
 	 * @param lvfb
@@ -307,12 +312,13 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public int size() {
-//		int i = new Long(domains.getRepositoryCommonCustom(simpleClassName).getFilteredNumberWithOnePhrase(filterString, trashed))
-//				.intValue();
-		int i = new Long(rcc.getFilteredNumberWithOnePhrase(filterString, trashed))
-				.intValue();
-		LOGGER.info("{} called with filterString {}, and return {}", "size", filterString, i);
-		return i;
+		if (isDirty()) {
+			int i = new Long(rcc.getFilteredNumberWithOnePhrase(filterString, trashed))
+					.intValue();
+			setDirty(false);
+			setCachedSize(i);
+		}
+		return getCachedSize();
 	}
 
 	@Override
@@ -516,12 +522,11 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	public void fetchPage() {
 		ManualPagable pageable = new ManualPagable(currentPage, perPage, sort);
-//		currentWindow = (List<T>) domains.getRepositoryCommonCustom(simpleClassName).getFilteredPageWithOnePhrase(pageable,
-//				filterString, trashed);
 		currentWindow = rcc.getFilteredPageWithOnePhrase(pageable,filterString, trashed);
 	}
 
 	public void refresh() {
+		setDirty(true);
 		setCurrentPage(-1);
 		setFilter(null);
 		notifyItemSetChanged();
@@ -596,6 +601,25 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	private WrapDynaClass getDynaClass() {
 		return WrapDynaClass.createDynaClass(clazz);
 	}
+
+
+	public int getCachedSize() {
+		return cachedSize;
+	}
+
+	public void setCachedSize(int cachedSize) {
+		this.cachedSize = cachedSize;
+	}
+
+
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
+	}
+
 
 	@SuppressWarnings("serial")
 	public class DynaBeanItem implements Item {

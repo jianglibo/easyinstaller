@@ -10,6 +10,8 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGrid;
 import com.vaadin.data.util.GeneratedPropertyContainer;
+import com.vaadin.ui.Grid.FooterCell;
+import com.vaadin.ui.Grid.FooterRow;
 
 @SuppressWarnings("serial")
 public class BoxHistoryGrid extends BaseGrid<BoxHistory, BoxHistoryContainer> {
@@ -31,6 +33,12 @@ public class BoxHistoryGrid extends BaseGrid<BoxHistory, BoxHistoryContainer> {
 
 	@Override
 	protected void setupGrid() {
+		FooterRow footer = addFooterRowAt(0);
+		FooterCell fc = footer.getCell("createdAt");
+		fc.setText("0");
+		getdContainer().addItemSetChangeListener(event -> {
+			fc.setText("" + event.getContainer().size());
+		});
 	}
 
 }

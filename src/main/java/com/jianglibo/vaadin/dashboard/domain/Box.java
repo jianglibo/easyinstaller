@@ -24,6 +24,7 @@ import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
@@ -43,11 +44,13 @@ public class Box extends BaseEntity {
 	@NotNull
 	@NotEmpty
 	@VaadinTableColumn(order = 0)
+	@VaadinGridColumn(order = 0)
 	@VaadinFormField(order = 0)
 	private String ip;
 	
 	@VaadinTableColumn(order = 1)
 	@VaadinFormField(order = 10)
+	@VaadinGridColumn(order = 10)
 	@NotNull
 	private String name;
 	
@@ -62,6 +65,7 @@ public class Box extends BaseEntity {
 	private Person creator;
 	
 	@VaadinTableColumn(order=2)
+	@VaadinGridColumn(order = 2)
 	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.OS_TYPES)
 	@VaadinFormField(order = 20, fieldType=Ft.COMBO_BOX)
 	@NotNull

@@ -7,7 +7,6 @@ import org.springframework.context.MessageSource;
 
 import static com.google.common.base.Preconditions.*;
 
-import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;

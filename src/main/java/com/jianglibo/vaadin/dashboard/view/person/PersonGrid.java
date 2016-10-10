@@ -24,6 +24,12 @@ public class PersonGrid extends BaseGrid<Person, FreeContainer<Person>> {
 
 	@Override
 	protected void setupGrid() {
+		FooterRow footer = addFooterRowAt(0);
+		FooterCell fc = footer.getCell("createdAt");
+		fc.setText("0");
+		getdContainer().addItemSetChangeListener(event -> {
+			fc.setText("" + event.getContainer().size());
+		});
 	}
 
 }
