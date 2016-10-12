@@ -1,7 +1,5 @@
 package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -111,6 +109,8 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		
 		VaadinGridWrapper vgw = domains.getGrids().get(BoxGroupHistory.class.getSimpleName());
 		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
+		
+		columnNames.add("!boxRuned");
 		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
 		
 		obghdc  = new OneBoxGroupHistoriesDc(boxGroupHistoryRepository, null, domains, 10, sortableContainerPropertyIds);

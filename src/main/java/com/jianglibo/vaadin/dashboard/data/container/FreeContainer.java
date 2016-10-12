@@ -89,16 +89,22 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	
 	private ListViewFragmentBuilder lvfb;
 	
+	public void setLvfb(ListViewFragmentBuilder lvfb) {
+		this.lvfb = lvfb;
+	}
+
+
 	private int cachedSize;
 	
-	private boolean dirty;
+	private boolean dirty = true;
 	
 	/**
 	 * The change is from url change.
 	 * @param lvfb
 	 */
 	public void whenUriFragmentChange(ListViewFragmentBuilder lvfb) {
-		this.lvfb = lvfb;
+		setLvfb(lvfb);
+		setDirty(true);
 	}
 
 	public FreeContainer(RepositoryCommonCustom<T> rcc, Sort defaultSort, Class<T> clazz, int perPage, List<?> sortableContainerPropertyIds) {
@@ -313,12 +319,16 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	@Override
 	public int size() {
 		if (isDirty()) {
-			int i = new Long(rcc.getFilteredNumberWithOnePhrase(filterString, trashed))
-					.intValue();
+			int i = getSizeFromBackEnd();
 			setDirty(false);
 			setCachedSize(i);
 		}
 		return getCachedSize();
+	}
+
+	protected int getSizeFromBackEnd() {
+		return new Long(rcc.getFilteredNumberWithOnePhrase(filterString, trashed))
+				.intValue();
 	}
 
 	@Override

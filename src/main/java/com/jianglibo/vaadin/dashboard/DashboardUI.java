@@ -38,8 +38,8 @@ import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNewsMessage;
 import com.jianglibo.vaadin.dashboard.service.PreDefinedSoftwareProcessor.NewSoftwareMessage;
 import com.jianglibo.vaadin.dashboard.service.SoftwareDownloader.DownloadMessage;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
-import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner.GroupTaskFinishMessage;
+import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner.OneTaskFinishMessage;
 import com.jianglibo.vaadin.dashboard.uicomponent.tile.TileBase;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
@@ -108,9 +108,6 @@ public final class DashboardUI extends UI implements ApplicationContextAware,  B
 	
 	@Autowired
 	private PersonRepository personRepository;
-	
-	@Autowired
-	private TaskRunner taskRunner;
 	
 	private String uniqueUiID;
 
@@ -335,6 +332,9 @@ public final class DashboardUI extends UI implements ApplicationContextAware,  B
 					}
 					break;
 				case ONE_TASK_FINISH:
+					OneTaskFinishMessage otfm = (OneTaskFinishMessage) message.getBody();
+					NotificationUtil.humanized(messageSource, "onetaskfinished", otfm.getOttd().getBox().getHostname(), otfm.getOttd().getAction(), otfm.getOttd().getBoxHistory().isSuccess() ? "Success" : "Failed");
+					push();
 					break;
 				default:
 					break;

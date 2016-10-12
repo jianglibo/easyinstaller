@@ -2,6 +2,6 @@ runner: bash
 preferredFormat: YAML
 codeToExecute: code.sh
 configContent: config.yml
-actions: install,upgrade
+actions: install
 filesToUpload:
   - https://github.com/jianglibo/easyinstaller/blob/master/Vagrantfile.tpl

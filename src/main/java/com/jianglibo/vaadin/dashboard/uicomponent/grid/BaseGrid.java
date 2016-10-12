@@ -123,20 +123,6 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 			});
 		}
 	}
-	
-	
-	
-//	private void setColumnFiltering(Collection<VaadinGridColumnWrapper> columns) {
-//		if (columns.stream().filter(vgcw -> vgcw.getVgc().filterable()).count() > 0) {
-//			HeaderRow hr = appendHeaderRow();
-//			columns.stream().filter(vgcw -> vgcw.getVgc().filterable()).forEach(vgcw -> {
-//				TextField filter = getColumnFilter(vgcw.getName());
-//				HeaderCell hc = hr.getCell(vgcw.getName());
-//				hc.setComponent(filter);
-//				hc.setStyleName("filter-header");
-//			});
-//		}
-//	}
 
 	protected boolean showFilterRow(String cn) {
 		checkNotNull(getVgw(), "if vgw is null, you must override showFilterRow(String cn).");

@@ -31,13 +31,14 @@ public class BoxHistoryContainer extends FreeContainer<BoxHistory> {
 	}
 
 	@Override
-	public int size() {
-		Long bghid = getLvfb().getLong("boxGroupHistoryId");
-		if (bghid > 0) {
-			return boxGroupHistoryRepository.findOne(bghid).getBoxHistories().size();
-		} else {
-			return 0;
+	protected int getSizeFromBackEnd() {
+		if (getLvfb() != null) {
+			Long bghid = getLvfb().getLong("boxGroupHistoryId");
+			if (bghid > 0) {
+				return boxGroupHistoryRepository.findOne(bghid).getBoxHistories().size();
+			}
 		}
+		return 0;
 	}
 
 	public void fetchPage() {

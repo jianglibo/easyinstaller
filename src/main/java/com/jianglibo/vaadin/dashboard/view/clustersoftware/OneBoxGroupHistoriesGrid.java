@@ -16,7 +16,9 @@ import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGrid;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.view.boxhistory.BoxHistoryListView;
+import com.vaadin.data.Item;
 import com.vaadin.data.util.GeneratedPropertyContainer;
+import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -36,6 +38,22 @@ public class OneBoxGroupHistoriesGrid extends BaseGrid<BoxGroupHistory, FreeCont
 
 	@Override
 	protected void addGeneratedProperty(GeneratedPropertyContainer gpcontainer, String name) {
+		switch (name) {
+		default:
+			gpcontainer.addGeneratedProperty(name, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				BoxGroupHistory bgh = (BoxGroupHistory) itemId;
+				return String.valueOf(bgh.getBoxHistories().size());
+			}
+
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
+			break;
+		}
 	}
 	
 	private Button redoBt;
