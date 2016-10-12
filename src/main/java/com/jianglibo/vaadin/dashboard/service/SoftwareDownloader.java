@@ -107,6 +107,7 @@ public class SoftwareDownloader {
 		}
 		
 		if (fvo.isRemoteFile()) {
+			LOGGER.info("start download file from {}", fvo.getOrignValue());
 			Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue())));
 			
 			ListenableFuture<Boolean> lf = service.submit(new DownloadOne(fvo));

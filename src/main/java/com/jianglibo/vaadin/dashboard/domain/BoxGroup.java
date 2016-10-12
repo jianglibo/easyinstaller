@@ -132,4 +132,67 @@ public class BoxGroup extends BaseEntity {
 	public void setHistories(List<BoxGroupHistory> histories) {
 		this.histories = histories;
 	}
+	
+	
+	public static class BoxGroupBuilder {
+		private final String name;
+		private final Person creator;
+		
+		private Set<Box> boxes = Sets.newHashSet();
+		
+		private String dnsServer;
+		
+		private String configContent;
+		
+		public BoxGroupBuilder(String name, Person creator) {
+			super();
+			this.name = name;
+			this.creator = creator;
+		}
+		
+		public BoxGroup build() {
+			BoxGroup bg = new BoxGroup();
+			bg.setName(getName());
+			bg.setCreator(getCreator());
+			bg.setBoxes(getBoxes());
+			bg.setDnsServer(getDnsServer());
+			bg.setConfigContent(getConfigContent());
+			return bg;
+		}
+		
+		public Set<Box> getBoxes() {
+			return boxes;
+		}
+
+		public BoxGroupBuilder setBoxes(Set<Box> boxes) {
+			this.boxes = boxes;
+			return this;
+		}
+
+		public String getDnsServer() {
+			return dnsServer;
+		}
+		public BoxGroupBuilder setDnsServer(String dnsServer) {
+			this.dnsServer = dnsServer;
+			return this;
+		}
+
+		public String getConfigContent() {
+			return configContent;
+		}
+
+		public BoxGroupBuilder setConfigContent(String configContent) {
+			this.configContent = configContent;
+			return this;
+		}
+
+		public String getName() {
+			return name;
+		}
+		public Person getCreator() {
+			return creator;
+		}
+		
+		
+	}
 }

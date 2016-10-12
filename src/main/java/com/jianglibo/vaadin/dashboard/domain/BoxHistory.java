@@ -1,5 +1,9 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -7,6 +11,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.google.common.collect.Lists;
+import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
@@ -100,6 +106,14 @@ public class BoxHistory extends BaseEntity {
 
 	public String getLog() {
 		return log;
+	}
+	
+	public List<String> getLogLines() throws IOException {
+		if (getLog() == null) {
+			return Lists.newArrayList();
+		} else {
+			return  CharStreams.readLines(new StringReader(getLog()));
+		}
 	}
 
 	private void setLog(String log) {

@@ -47,11 +47,24 @@ proc openFirewall {prot args} {
   }
   catch {exec firewall-cmd --reload} msg o
 }
+
+proc isInstalled {execName} {
+  catch {exec which $execName} msg o
+  if {[dict get $o -code] == 0} {
+    return 1
+  }
+  return 0
+}
 # ---------- common utils --------------------------
 
+set tarFile zookeeper-3.4.9.tar.gz
 set envfile [lindex $argv 1]
 set action [lindex $argv 2]
 set envdict [loadYaml $envfile]
+set remoteFolder [dict get $envdict remoteFolder]
+
+set software [dict get $envdict software]
+set configContent [dict get $software configContent]
 
 # self box
 set selfbox [dict get $envdict box]
@@ -79,8 +92,6 @@ foreach box [dict get $envdict boxGroup boxes] {
   lappend boxes $box
 }
 
-set software [dict get $envdict software]
-set configContent [dict get $software configContent]
 # regsub -all {\n} $configContent {} configContent
 # puts --------------------
 set configContentDict [::yaml::yaml2dict -stream $configContent]
@@ -126,6 +137,19 @@ if {[catch {open [file join $dataDir myid] w} fid o]} {
   puts $fid [dict get $selfbox serverid]
   close $fid
 }
+
+set binDir [dict get $configContentDict binDir]
+
+# create dataDir if not exists.
+if {! [file exists $binDir]} {
+  file mkdir $binDir
+}
+
+cd $binDir
+exec cp "${remoteFolder}$tarFile" ./
+exec tar -zxvf ./$tarFile
+
+# /opt/zookeeper/zookeeper-3.4.9/
 
 # setup nameserver
 setupResolver [dict get $selfbox dnsServer]

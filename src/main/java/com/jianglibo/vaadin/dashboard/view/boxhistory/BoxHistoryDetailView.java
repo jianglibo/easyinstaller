@@ -1,6 +1,8 @@
 package com.jianglibo.vaadin.dashboard.view.boxhistory;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.view.BaseDetailView;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Label;
 
@@ -56,7 +59,16 @@ public class BoxHistoryDetailView
 		List<DisplayFieldPair> dfps = Lists.newArrayList();
 		if (getBean() != null) {
 			dfps.add(new DisplayFieldPair("success", getBean().isSuccess() ? new Label("yes") : new Label("no")));
-			dfps.add(new DisplayFieldPair("log", new Label(getBean().getLog())));
+			Label l = new Label();
+			l.setContentMode(ContentMode.HTML);
+			try {
+				List<String> lines = getBean().getLogLines();
+				l.setValue(lines.stream().collect(Collectors.joining("<br/>")));
+			} catch (IOException e) {
+				l.setValue(getBean().getLog());
+			}
+			
+			dfps.add(new DisplayFieldPair("log", l));
 		}
 		return dfps;
 	}

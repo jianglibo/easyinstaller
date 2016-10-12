@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.taskrunner;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -28,6 +30,7 @@ import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
+import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
@@ -39,6 +42,7 @@ import com.jianglibo.vaadin.dashboard.ssh.JschSession.JschSessionBuilder;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshExecRunner;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshUploadRunner;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
+import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
 /**
  * Give a list of box and software pair.
@@ -91,6 +95,14 @@ public class TaskRunner {
 		for(Box box : taskDesc.getBoxes()) {
 			if (applicationConfig.getSshKeyFile(box).isEmpty()) {
 				NotificationUtil.error(messageSource, "noKeyFilePath", applicationConfig.getDefaultSshKeyFile());
+				return;
+			}
+		}
+		
+		for(FileToUploadVo ftuv : taskDesc.getSoftware().getFileToUploadVos()) {
+			Path p = applicationConfig.getLocalFolderPath().resolve(ftuv.getRelative());
+			if (!Files.exists(p)) {
+				NotificationUtil.error(messageSource, "filesToUploadNotExists", p.toAbsolutePath().toString());
 				return;
 			}
 		}

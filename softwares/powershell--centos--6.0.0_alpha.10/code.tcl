@@ -47,6 +47,15 @@ proc openFirewall {prot args} {
   }
   catch {exec firewall-cmd --reload} msg o
 }
+
+proc isInstalled {execName} {
+  catch {exec which $execName} msg o
+  if {[dict get $o -code] == 0} {
+    return 1
+  }
+  return 0
+}
+
 # ---------- common utils --------------------------
 
 set envfile [lindex $argv 1]
@@ -54,4 +63,16 @@ set action [lindex $argv 2]
 set envdict [loadYaml $envfile]
 set remoteFolder [dict get $envdict remoteFolder]
 
-exec yum install -y "${remoteFolder}powershell-6.0.0_alpha.10-1.el7.centos.x86_64.rpm"
+if {[isInstalled powershell]} {
+    puts "powershell already installed."
+} else {
+  if { [catch {exec yum install -y "${remoteFolder}powershell-6.0.0_alpha.10-1.el7.centos.x86_64.rpm"} msg o] } {
+      if {[string match -nocase "*Nothing to do*" $msg]} {
+          puts "already installed"
+          exit 0
+      } else {
+          puts $msg
+          exit 1
+      }
+  }
+}

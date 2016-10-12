@@ -85,15 +85,30 @@ public class PreDefinedSoftwareProcessor {
 			newSoftwareCountAfterLastStart += lines.stream().map(line -> new SoftwarelistLine(urlBase, sfFolder, line))
 					.filter(sl -> {
 						String[] ss = sl.getFnSegs();
-						boolean indb = softwareRepository.findByNameAndOstypeAndSversion(ss[0], ss[1], ss[2]) != null;
+						if (ss.length != 3) {
+							return false;
+						}
+						Software sw = softwareRepository.findByNameAndOstypeAndSversion(ss[0], ss[1], ss[2]);
+						boolean indb = false;
+						if (sw != null) {
+							makeSureRemoteFileDownloaded(sw);
+							indb = true;
+						}
 						boolean changed = sl.changed();
-						return !indb || changed;
+						return !indb || changed; // indb and not changed, but
+													// file not downloaded.
 					}).map(sl -> {
 						return processOneSoftware(httpPageGetter, sl);
 					}).mapToInt(b -> b ? 1 : 0).sum();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void makeSureRemoteFileDownloaded(Software sw) {
+		sw.getFileToUploadVos().forEach(vo -> {
+			softwareDownloader.submitTasks(vo);
+		});
 	}
 
 	protected static class SoftwarelistLine {
@@ -215,42 +230,39 @@ public class PreDefinedSoftwareProcessor {
 		String[] ss = sl.getFnSegs();
 		Path unpackedFolder = null;
 
-		if (ss.length == 3) {
-			unpackedFolder = SoftwarePackUtil.unpack(sl.getZipFilePath());
-			Software sf = softwareRepository.findByNameAndOstypeAndSversion(ss[0], ss[1], ss[2]);
-			try {
-				Software vo = decodeFromYaml(unpackedFolder, ss);
+		unpackedFolder = SoftwarePackUtil.unpack(sl.getZipFilePath());
+		Software sf = softwareRepository.findByNameAndOstypeAndSversion(ss[0], ss[1], ss[2]);
+		try {
+			Software vo = decodeFromYaml(unpackedFolder, ss);
 
-				if (sf == null) {
-					softwareRepository.save(vo);
-				} else {
-					sf.copyFrom(vo);
-					softwareRepository.save(sf);
-				}
+			if (sf == null) {
+				softwareRepository.save(vo);
+			} else {
+				sf.copyFrom(vo);
+				softwareRepository.save(sf);
+			}
 
-				return true;
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (unpackedFolder != null) {
-					try {
-						Files.walkFileTree(unpackedFolder, new SimpleFileVisitor<Path>() {
-							@Override
-							public FileVisitResult visitFile(Path curFile, BasicFileAttributes bfa) throws IOException {
-								Files.deleteIfExists(curFile);
-								return FileVisitResult.CONTINUE;
-							}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (unpackedFolder != null) {
+				try {
+					Files.walkFileTree(unpackedFolder, new SimpleFileVisitor<Path>() {
+						@Override
+						public FileVisitResult visitFile(Path curFile, BasicFileAttributes bfa) throws IOException {
+							Files.deleteIfExists(curFile);
+							return FileVisitResult.CONTINUE;
+						}
 
-							@Override
-							public FileVisitResult postVisitDirectory(Path curPath, IOException arg1)
-									throws IOException {
-								Files.deleteIfExists(curPath);
-								return FileVisitResult.CONTINUE;
-							}
-						});
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+						@Override
+						public FileVisitResult postVisitDirectory(Path curPath, IOException arg1) throws IOException {
+							Files.deleteIfExists(curPath);
+							return FileVisitResult.CONTINUE;
+						}
+					});
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}

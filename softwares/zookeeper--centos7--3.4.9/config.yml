@@ -1,6 +1,7 @@
 # tcl not very master on yaml process, so double quota value please.
 zkports: "2888,3888"
 configFile: "/var/zoo.cfg"
+binDir: "/opt/zookeeper"
 zkconfig:
   tickTime: "1999"
   dataDir: "/var/lib/zookeeper/"
