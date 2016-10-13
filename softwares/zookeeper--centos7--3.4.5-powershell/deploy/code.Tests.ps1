@@ -22,4 +22,30 @@ Describe "code" {
         "$($ht.str)xxx" | Should Be "abcxxx"
     }
 
+    It "should create custom object" {
+        $obj = [PSCustomObject]@{
+            Property1 = 'one'
+            Property2 = 'two'
+            Property3 = 'three'
+        }
+
+        $obj | Get-Member | select -ExpandProperty TypeName|  Should Be "System.Management.Automation.PSCustomObject"
+
+        $obj = New-Object PSObject
+        Add-Member -InputObject $obj -MemberType NoteProperty -Name customproperty -Value ""
+
+        $obj | Get-Member | select -ExpandProperty TypeName|  Should Be "System.Management.Automation.PSCustomObject"
+    }
+
+    It "should has custom type for custom object" {
+        $obj = "" | select prop1, prop2
+        $obj.pstypenames.insert(0,'Custom.ObjectExample')
+
+        $obj | get-member | select -ExpandProperty TypeName|  Should Be "Custom.ObjectExample"
+    }
+
+    It "is an alias of foreach %" {
+        ((Get-Alias -Definition ForEach-Object) | Where-Object {$_.Name -Match "^%.*"}  | Measure-Object).Count | Should Be 1
+    }
+
 }
