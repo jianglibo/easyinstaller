@@ -9,13 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
+import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.vo.JschExecuteResult;
@@ -41,14 +41,17 @@ public class SshExecRunner implements BaseRunner {
 	@Autowired
 	private ApplicationConfig applicationConfig;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+//	@Autowired
+//	private ObjectMapper objectMapper;
+//	
+//	@Autowired
+//	private ObjectMapper ymlObjectMapper;
+//	
+//	@Autowired
+//	private ObjectMapper xmlObjectMapper;
 	
 	@Autowired
-	private ObjectMapper ymlObjectMapper;
-	
-	@Autowired
-	private ObjectMapper xmlObjectMapper;
+	private AppObjectMappers appObjectmappers;
 
 	@Override
 	public void run(JschSession jsession, OneThreadTaskDesc taskDesc) {
@@ -75,18 +78,18 @@ public class SshExecRunner implements BaseRunner {
 	}
 
 	private String uplocadEnv(JschSession jsession, OneThreadTaskDesc taskDesc, String uuid) {
-		EnvForCodeExec env = new EnvForCodeExec(taskDesc, applicationConfig.getRemoteFolder());
+		EnvForCodeExec env = new EnvForCodeExec.EnvForCodeExecBuilder(appObjectmappers, taskDesc, applicationConfig.getRemoteFolder()).build();
 		String envstr = null;
 		try {
 			switch (taskDesc.getSoftware().getPreferredFormat()) {
 			case "XML":
-				envstr = xmlObjectMapper.writeValueAsString(env);
+				envstr = appObjectmappers.getXmlObjectMapper().writeValueAsString(env);
 				break;
 			case "JSON":
-				envstr = objectMapper.writeValueAsString(env);
+				envstr = appObjectmappers.getObjectMapper().writeValueAsString(env);
 				break;
 			case "YAML":
-				envstr = ymlObjectMapper.writeValueAsString(env);
+				envstr = appObjectmappers.getYmlObjectMapper().writeValueAsString(env);
 				break;
 			default:
 				LOGGER.error("unsupported format: {}", taskDesc.getSoftware().getPreferredFormat());

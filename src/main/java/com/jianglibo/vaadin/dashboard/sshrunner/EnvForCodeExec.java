@@ -7,7 +7,9 @@ import com.google.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
+import com.jianglibo.vaadin.dashboard.vo.ConfigContent;
 
 /**
  * This Object will be encoded to user preferred format and upload to target
@@ -23,11 +25,11 @@ public class EnvForCodeExec {
 	private final BoxGroupDescription boxGroup;
 	private final SoftwareDescription software;
 	
-	public EnvForCodeExec(OneThreadTaskDesc oneThreadTaskDesc, String remoteFolder) {
+	private EnvForCodeExec(BoxDescription box, BoxGroupDescription boxGroup, SoftwareDescription software, String remoteFolder) {
 		this.remoteFolder = remoteFolder;
-		this.box = new BoxDescription(oneThreadTaskDesc.getBox());
-		this.boxGroup = new BoxGroupDescription(oneThreadTaskDesc.getTd().getBoxGroup());
-		this.software = new SoftwareDescription(oneThreadTaskDesc.getSoftware());
+		this.box = box;
+		this.boxGroup = boxGroup;
+		this.software = software;
 	}
 
 	public String getRemoteFolder() {
@@ -244,5 +246,30 @@ public class EnvForCodeExec {
 		public void setBoxes(Set<BoxDescription> boxes) {
 			this.boxes = boxes;
 		}
+	}
+	
+	public static class EnvForCodeExecBuilder {
+		private final String remoteFolder;
+		private final BoxDescription box;
+		private final BoxGroupDescription boxGroup;
+		private final SoftwareDescription software;
+		
+		private final AppObjectMappers appObjectMappers;
+		
+		public EnvForCodeExecBuilder(AppObjectMappers appObjectMappers, OneThreadTaskDesc oneThreadTaskDesc, String remoteFolder) {
+			this.remoteFolder = remoteFolder;
+			this.appObjectMappers = appObjectMappers;
+			this.box = new BoxDescription(oneThreadTaskDesc.getBox());
+			this.boxGroup = new BoxGroupDescription(oneThreadTaskDesc.getTd().getBoxGroup());
+			this.software = new SoftwareDescription(oneThreadTaskDesc.getSoftware());
+		}
+		
+		public EnvForCodeExec build() {
+			software.setConfigContent(new ConfigContent(software.getConfigContent()).getConverted(appObjectMappers)); 
+			boxGroup.setConfigContent(new ConfigContent(boxGroup.getConfigContent()).getConverted(appObjectMappers));
+			
+			return new EnvForCodeExec(box, boxGroup, software, remoteFolder);
+		}
+		
 	}
 }

@@ -22,6 +22,7 @@ import com.jianglibo.vaadin.dashboard.Tbase;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.security.PersonVo;
+import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.sshrunner.EnvForCodeExec;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
@@ -34,6 +35,9 @@ public class TestDomains extends Tbase {
 	
 	@Autowired
 	private BoxRepository boxRepository;
+	
+	@Autowired
+	private AppObjectMappers appObjectMappers;
 	
 	private Path softwarePath = Paths.get("softwares");
 	
@@ -117,11 +121,17 @@ public class TestDomains extends Tbase {
 						
 						OneThreadTaskDesc ottd = td.createOneThreadTaskDescs().get(0);
 						
-						EnvForCodeExec efce = new EnvForCodeExec(ottd, "/opt/easyinstaller");
+						EnvForCodeExec efce = new EnvForCodeExec.EnvForCodeExecBuilder(appObjectMappers, ottd, "/opt/easyinstaller").build();
 						
-						String yml = ymlObjectMapper.writeValueAsString(efce);
+						String yml = appObjectMappers.getYmlObjectMapper().writeValueAsString(efce);
 						Path testFolder =  sfolder.getTestPath();
 						Files.write(testFolder.resolve("envforcodeexec.yaml"), yml.getBytes());
+						
+						String xml = appObjectMappers.getXmlObjectMapper().writeValueAsString(efce);
+						Files.write(testFolder.resolve("envforcodeexec.xml"), xml.getBytes());
+						
+						String json = appObjectMappers.getObjectMapper().writeValueAsString(efce);
+						Files.write(testFolder.resolve("envforcodeexec.json"), json.getBytes());
 						
 						String[] ss = yml.split("\r?\n");
 						String[] cc = Stream.of(ss).filter(s -> s.contains("configContent:")).collect(Collectors.toList()).toArray(new String[]{});
