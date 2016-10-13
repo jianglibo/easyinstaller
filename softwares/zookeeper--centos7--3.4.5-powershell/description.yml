@@ -1,6 +1,6 @@
 runner: bash
 preferredFormat: YAML
-codeToExecute: code.ps1
+codeToExecute: deploy/code.ps1
 configContent: config.yml # content of this file will insert into software configContent field.
 actions: install
 filesToUpload:
