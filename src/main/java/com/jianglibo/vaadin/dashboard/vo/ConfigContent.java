@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
@@ -21,8 +22,14 @@ import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 public class ConfigContent {
 	
 	protected static Pattern convertPth = Pattern.compile("\\s*<!--\\s*(\\w+)\\s*->\\s*(\\w+)\\s*-->\\s*");
+	
+	protected static Joiner lineJoiner = Joiner.on('\n');
 
 	private final String origin;
+	
+	private String from;
+	private String to;
+	
 	
 	public ConfigContent(String origin) {
 		this.origin = origin;
@@ -40,11 +47,9 @@ public class ConfigContent {
 					String firstLine = lines.get(0);
 					Matcher m = convertPth.matcher(firstLine);
 					if (m.matches()) {
-						
-						String content = IntStream.range(1, lines.size()).mapToObj(lines::get).collect(Collectors.joining());
-						
-						String from = m.group(1).toUpperCase();
-						String to = m.group(2).toUpperCase();
+						String content = lineJoiner.join(lines.subList(1, lines.size()));
+						from = m.group(1).toUpperCase();
+						to = m.group(2).toUpperCase();
 						
 						if ("YML".equals(from)) {
 							from = "YAML";
@@ -71,6 +76,7 @@ public class ConfigContent {
 						}
 						
 						if ("XML".equals(to)) {
+							
 							return appObjectMappers.getXmlObjectMapper().writeValueAsString(vm);
 						} else if ("YAML".equals(to)) {
 							return appObjectMappers.getYmlObjectMapper().writeValueAsString(vm);
@@ -89,7 +95,24 @@ public class ConfigContent {
 		}
 	}
 
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public String getTo() {
+		return to;
+	}
+
+	public void setTo(String to) {
+		this.to = to;
+	}
+
 	public String getOrigin() {
 		return origin;
 	}
+
 }

@@ -30,7 +30,6 @@ import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
-import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;

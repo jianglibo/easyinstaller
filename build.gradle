@@ -36,6 +36,8 @@ sourceSets {
     }
 }
 
+//https://docs.gradle.org/current/userguide/signing_plugin.html
+
 signing { sign configurations.archives }
 
 test { filter { includeTestsMatching "*Test*" } }
@@ -44,12 +46,12 @@ def fileToPath(file) {
     java.nio.file.Paths.get(file.getAbsolutePath())
 }
 
-group = "com.m3958"
-archivesBaseName = "first-vaddin"
+group = "com.jianglibo"
+archivesBaseName = "easyinstaller"
 version = "0.0.1-SNAPSHOT"
 
 jar {
-    baseName = 'first-vaddin'
+    baseName = 'easyinstaller'
     version = '0.0.1-SNAPSHOT'
 }
 

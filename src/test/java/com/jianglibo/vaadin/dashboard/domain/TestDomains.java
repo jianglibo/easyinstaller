@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -17,6 +18,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.Tbase;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
@@ -27,7 +30,14 @@ import com.jianglibo.vaadin.dashboard.sshrunner.EnvForCodeExec;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.util.SoftwareFolder;
+import com.jianglibo.vaadin.dashboard.vo.ConfigContent;
 
+/**
+ * Create boxGroup and boxes from fixtures/domain/boxgroup.yaml,
+ * Create all software EnvForCodeExec.
+ * @author jianglibo@gmail.com
+ *
+ */
 public class TestDomains extends Tbase {
 	
 	@Autowired
@@ -40,6 +50,8 @@ public class TestDomains extends Tbase {
 	private AppObjectMappers appObjectMappers;
 	
 	private Path softwarePath = Paths.get("softwares");
+	
+	private String tbasename = "envforcodeexec.";
 	
 	@After
 	public void after() {
@@ -57,9 +69,7 @@ public class TestDomains extends Tbase {
 		softwareRepository.deleteAll();
 	}
 	
-	@Test
-	public void testBoxGroup() {
-		try {
+	private void testBoxGroup() throws IOException {
 			Resource[] resources = context.getResources("classpath:fixtures/domain/boxgroup.yaml");
 			Optional<BoxGroup> bgOp = Stream.of(resources).map(r -> {
 				try {
@@ -110,6 +120,8 @@ public class TestDomains extends Tbase {
 						sf.setOstype(sfolder.getOstype());
 						sf.setSversion(sfolder.getSversion());
 						sf.setConfigContent(sfolder.getConfigContent(sf.getConfigContent()));
+						ConfigContent cconfig = new ConfigContent(sf.getConfigContent());
+						cconfig.getConverted(appObjectMappers);
 						
 						Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sf.getName(), sf.getOstype(), sf.getSversion());
 						if (sfInDb != null) {
@@ -133,17 +145,41 @@ public class TestDomains extends Tbase {
 						String json = appObjectMappers.getObjectMapper().writeValueAsString(efce);
 						Files.write(testFolder.resolve("envforcodeexec.json"), json.getBytes());
 						
-						String[] ss = yml.split("\r?\n");
-						String[] cc = Stream.of(ss).filter(s -> s.contains("configContent:")).collect(Collectors.toList()).toArray(new String[]{});
-						int i = ss.length;
-						
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				});
 			}
-		} catch (IOException e) {
-			assertTrue("testBoxGroup", false);
-		}
+	}
+	
+	@Test
+	public void verify() throws IOException {
+		testBoxGroup();
+		try (Stream<Path> folders = Files.list(softwarePath)) {
+			folders.filter(Files::isDirectory).map(SoftwareFolder::new).filter(SoftwareFolder::isValid).forEach(sfolder -> {
+				try {
+					Software sf = ymlObjectMapper.readValue(sfolder.readDescriptionyml(), Software.class);
+					sf.setName(sfolder.getName());
+					sf.setOstype(sfolder.getOstype());
+					sf.setSversion(sfolder.getSversion());
+					sf.setConfigContent(sfolder.getConfigContent(sf.getConfigContent()));
+					ConfigContent cconfig = new ConfigContent(sf.getConfigContent());
+					cconfig.getConverted(appObjectMappers);
+					
+					EnvForCodeExec efce = null;
+					// do convert.
+					if (!(Strings.isNullOrEmpty(cconfig.getFrom()) || Strings.isNullOrEmpty(cconfig.getTo()))) {
+						if ("XML".equals(cconfig.getTo())) {
+							String xml = com.google.common.io.Files.asCharSource(sfolder.getTestPath().resolve(tbasename + "xml").toFile(), Charsets.UTF_8).read();
+							efce = appObjectMappers.getXmlObjectMapper().readValue(xml, EnvForCodeExec.class);
+							assertTrue("should be xml content.", efce.getSoftware().getConfigContent().startsWith("<LinkedHashMap>"));
+						}
+					}
+				
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+		} 
 	}
 }

@@ -40,15 +40,6 @@ public class SshExecRunner implements BaseRunner {
 
 	@Autowired
 	private ApplicationConfig applicationConfig;
-
-//	@Autowired
-//	private ObjectMapper objectMapper;
-//	
-//	@Autowired
-//	private ObjectMapper ymlObjectMapper;
-//	
-//	@Autowired
-//	private ObjectMapper xmlObjectMapper;
 	
 	@Autowired
 	private AppObjectMappers appObjectmappers;
@@ -66,7 +57,7 @@ public class SshExecRunner implements BaseRunner {
 		if (taskDesc.getBoxHistory().isSuccess()) {
 			codeFile = uploadCode(jsession, taskDesc, uuid);
 			if (taskDesc.getBoxHistory().isSuccess()) {
-				tpl = "%s %s --envfile %s %s";
+				tpl = "%s %s -envfile %s %s";
 				JschExecuteResult jer = jsession.exec(String.format(tpl, taskDesc.getSoftware().getRunner(), codeFile, envFile, taskDesc.getAction()));
 				
 				if (jer.getExitValue() != 0) { //success
