@@ -1,17 +1,17 @@
 {
   "remoteFolder" : "/opt/easyinstaller",
   "box" : {
-    "ip" : "192.168.2.11",
-    "name" : "box2",
-    "hostname" : "a1.host.name",
+    "ip" : "192.168.2.14",
+    "name" : "box3",
+    "hostname" : "a2.host.name",
     "roles" : "r1,r2,r3",
     "dnsServer" : "192.168.2.60",
-    "ips" : "192.168.2.12,192.168.2.13",
+    "ips" : "192.168.2.15,192.168.2.16",
     "ports" : "80,8080"
   },
   "boxGroup" : {
     "name" : "boxgroup1",
-    "configContent" : "abc.yaml",
+    "configContent" : "{\r\n  \"zkports\" : \"2888,3888\",\r\n  \"configFile\" : \"/var/zoo.cfg\",\r\n  \"binDir\" : \"/opt/zookeeper\",\r\n  \"zkconfig\" : {\r\n    \"tickTime\" : 1999,\r\n    \"dataDir\" : \"/var/lib/zookeeper/\",\r\n    \"clientPort\" : 2181,\r\n    \"initLimit\" : 5,\r\n    \"syncLimit\" : 2\r\n  }\r\n}",
     "boxes" : [ {
       "ip" : "192.168.2.11",
       "name" : "box2",

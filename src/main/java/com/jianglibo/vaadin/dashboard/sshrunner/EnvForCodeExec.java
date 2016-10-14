@@ -206,6 +206,7 @@ public class EnvForCodeExec {
 	public static class BoxGroupDescription {
 
 		private String name;
+		
 		private String configContent;
 
 		private Set<BoxDescription> boxes;

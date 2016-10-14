@@ -2,8 +2,6 @@
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 . "$here\$sut" -envfile (Join-Path -Path (Split-Path -Path $here -Parent) -ChildPath test\envforcodeexec.xml)
 
-[xml]$clusterCfg = Get-Content (Join-Path -Path (Split-Path -Path $here -Parent) -ChildPath test\envforcodeexec.xml)
-
 function Get-NewPix
   {
 #     $start = Get-Date -Month 1 -Day 1 -Year 2010
@@ -36,18 +34,35 @@ function Get-NewPix
               else { "Switch off" }
           }
 Describe "code" {
+    It "should all be false" {
+        $(if ("") {"space"} else {"True"}) | Should Be "True"
+        0 -eq $false | Should Be $True
+        -not 0 | Should Be $True
+        -not 1 | Should Be $False
+        $true -eq 2 | Should Be $True
+        2 -eq $true | Should Be $False
+        -not "" | Should Be $True
+        "" -eq $false | Should Be $False
+        $false -eq "" | Should Be $True
+
+    }
+    It "envForExec not be empty." {
+        $envForExec | Should Be $True
+    }
+<#
     It "should be XmlElement" {
-        $clusterCfg.EnvForCodeExec.boxGroup.boxes | select ip | Get-Member | select -ExpandProperty TypeName|  Should Be "Selected.System.Xml.XmlElement"
+        $envForExec.boxGroup.boxes | select ip | Get-Member | select -ExpandProperty TypeName|  Should Be "Selected.System.Xml.XmlElement"
     }
     It "should be HashTable" {
-        $clusterCfg.EnvForCodeExec.boxGroup.boxes | foreach {@{ip=$_.ip; hostname=$_.hostname}} | Get-Member | select -ExpandProperty TypeName|  Should Be "System.Collections.Hashtable"
+        $envForExec.boxGroup.boxes | foreach {@{ip=$_.ip; hostname=$_.hostname}} | Get-Member | select -ExpandProperty TypeName|  Should Be "System.Collections.Hashtable"
     }
     It "should still be XmlElement" {
-        $clusterCfg.EnvForCodeExec.boxGroup.boxes | Select-Object ip, hostname, @{name="serverId"; expression={$_.ip.split(".")[-1]}} | Get-Member | select -ExpandProperty TypeName|  Should Be "Selected.System.Xml.XmlElement"
+        $envForExec.boxGroup.boxes | Select-Object ip, hostname, @{name="serverId"; expression={$_.ip.split(".")[-1]}} | Get-Member | select -ExpandProperty TypeName|  Should Be "Selected.System.Xml.XmlElement"
     }
     It "should get scalar value" {
-        $clusterCfg.EnvForCodeExec.boxGroup.boxes | Select-Object ip, hostname, @{name="serverId"; expression={$_.ip.split(".")[-1]}} | Select-Object -First 1 -ExpandProperty serverId | Should Be "14"
+        $envForExec.boxGroup.boxes | Select-Object ip, hostname, @{name="serverId"; expression={$_.ip.split(".")[-1]}} | Select-Object -First 1 -ExpandProperty serverId | Should Be "14"
     }
+#>
     It "should format string" {
         $ht = @{str="abc"; int=55}
         "$($ht.str)xxx" | Should Be "abcxxx"
@@ -85,6 +100,10 @@ Describe "code" {
 
     It "is a simple function" {
         (Get-NewPix | select -First 2 | measure).Count -gt 0 | Should Be $True
+    }
+
+    It "should be configCongtent object." {
+        $softwareConfig.zkports | Should Be "2888,3888"
     }
 
 }

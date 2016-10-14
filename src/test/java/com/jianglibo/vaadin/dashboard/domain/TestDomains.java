@@ -1,14 +1,13 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,6 +20,7 @@ import org.springframework.core.io.Resource;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.Tbase;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
@@ -70,18 +70,14 @@ public class TestDomains extends Tbase {
 	}
 	
 	private void testBoxGroup() throws IOException {
-			Resource[] resources = context.getResources("classpath:fixtures/domain/boxgroup.yaml");
-			Optional<BoxGroup> bgOp = Stream.of(resources).map(r -> {
-				try {
-					return ymlObjectMapper.readValue(r.getInputStream(), BoxGroup.class);
-				} catch (Exception e) {
-					return null;
-				}
-			}).filter(b -> b != null).findFirst();
-			
+			Resource resource = context.getResource("classpath:fixtures/domain/boxgroup.yaml");
+			BoxGroup bg = ymlObjectMapper.readValue(resource.getInputStream(), BoxGroup.class);
 			Person root = getFirstPerson();
 			
-			BoxGroup bg = bgOp.get();
+			Resource ccResource = context.getResource("classpath:fixtures/domain/" + bg.getConfigContent()); 
+			if (ccResource != null) {
+				bg.setConfigContent(CharStreams.toString(new InputStreamReader(ccResource.getInputStream(), Charsets.UTF_8)));
+			}
 			
 			BoxGroup bgInDb = boxGroupRepository.findByName(bg.getName()); 
 			
@@ -99,7 +95,7 @@ public class TestDomains extends Tbase {
 			
 			final Set<BoxGroup> bgs = Sets.newHashSet(bg);
 			
-			Set<Box> boxes = bgOp.get().getBoxes().stream().map(box -> {
+			Set<Box> boxes = bg.getBoxes().stream().map(box -> {
 				Box boxInDb = boxRepository.findByIp(box.getIp());
 				if (boxInDb != null) {
 					boxRepository.delete(boxInDb);

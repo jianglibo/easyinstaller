@@ -1,24 +1,20 @@
 ---
 remoteFolder: "/opt/easyinstaller"
 box:
-  ip: "192.168.2.11"
-  name: "box2"
-  hostname: "a1.host.name"
+  ip: "192.168.2.14"
+  name: "box3"
+  hostname: "a2.host.name"
   roles: "r1,r2,r3"
   dnsServer: "192.168.2.60"
-  ips: "192.168.2.12,192.168.2.13"
+  ips: "192.168.2.15,192.168.2.16"
   ports: "80,8080"
 boxGroup:
   name: "boxgroup1"
-  configContent: "abc.yaml"
+  configContent: "{\r\n  \"zkports\" : \"2888,3888\",\r\n  \"configFile\" : \"/var/zoo.cfg\"\
+    ,\r\n  \"binDir\" : \"/opt/zookeeper\",\r\n  \"zkconfig\" : {\r\n    \"tickTime\"\
+    \ : 1999,\r\n    \"dataDir\" : \"/var/lib/zookeeper/\",\r\n    \"clientPort\"\
+    \ : 2181,\r\n    \"initLimit\" : 5,\r\n    \"syncLimit\" : 2\r\n  }\r\n}"
   boxes:
-  - ip: "192.168.2.14"
-    name: "box3"
-    hostname: "a2.host.name"
-    roles: "r1,r2,r3"
-    dnsServer: "192.168.2.60"
-    ips: "192.168.2.15,192.168.2.16"
-    ports: "80,8080"
   - ip: "192.168.2.11"
     name: "box2"
     hostname: "a1.host.name"
@@ -33,12 +29,23 @@ boxGroup:
     dnsServer: "192.168.2.60"
     ips: ""
     ports: ""
+  - ip: "192.168.2.14"
+    name: "box3"
+    hostname: "a2.host.name"
+    roles: "r1,r2,r3"
+    dnsServer: "192.168.2.60"
+    ips: "192.168.2.15,192.168.2.16"
+    ports: "80,8080"
 software:
   name: "zookeeper"
   sversion: "3.4.5-powershell"
   ostype: "centos7"
   filesToUpload:
   - "https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.4.9/zookeeper-3.4.9.tar.gz"
-  configContent: "<LinkedHashMap xmlns=\"\"><zkports>2888,3888</zkports><configFile>/var/zoo.cfg</configFile><binDir>/opt/zookeeper</binDir><zkconfig><tickTime>1999</tickTime><dataDir>/var/lib/zookeeper/</dataDir><clientPort>2181</clientPort><initLimit>5</initLimit><syncLimit>2</syncLimit></zkconfig></LinkedHashMap>"
+  configContent: "{\r\n  \"zkports\" : \"2888,3888\",\r\n  \"configFile\" : \"/var/zoo.cfg\"\
+    ,\r\n  \"binDir\" : \"/opt/zookeeper\",\r\n  \"zkconfig\" : {\r\n    \"tickTime\"\
+    \ : \"1999\",\r\n    \"dataDir\" : \"/var/lib/zookeeper/\",\r\n    \"clientPort\"\
+    \ : \"2181\",\r\n    \"initLimit\" : \"5\",\r\n    \"syncLimit\" : \"2\"\r\n \
+    \ }\r\n}"
   actions: "install"
   preferredFormat: "YAML"
