@@ -1,6 +1,6 @@
 ﻿$here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
-. "$here\$sut" -envfile (Join-Path -Path (Split-Path -Path $here -Parent) -ChildPath test\envforcodeexec.xml)
+. "$here\$sut" -envfile (Join-Path -Path (Split-Path -Path $here -Parent) -ChildPath test\envforcodeexec.json)
 
 function Get-NewPix
   {
@@ -106,6 +106,19 @@ Describe "code" {
         $softwareConfig.zkports | Should Be "2888,3888"
     }
 
+    It "should catch error" {
+        $w = try { nosenceword}  catch { "ehlo"}
+        $w | Should Be "ehlo"
+    }
+    It "should be run in linux" {
+        $ep = "Variable:isLinux"
+        if (Test-Path $ep) {
+            if (Get-Item $ep) { "yes" }
+        }
+    }
+    It "should be add of two lines" {
+        ($zkconfigLines + $srvlines).Count | Should Be ($zkconfigLines.Count + $srvlines.Count)
+    }
 }
 
 # https://technet.microsoft.com/en-us/library/hh847829.aspx

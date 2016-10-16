@@ -1,0 +1,1 @@
+@{tickTime=1999; dataDir=/var/lib/zookeeper/; clientPort=2181; initLimit=5; syncLimit=2}
