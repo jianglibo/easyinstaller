@@ -1,5 +1,5 @@
 runner: powershell -File {code} -envfile {envfile} -action {action}
-preferredFormat: YAML
+preferredFormat: JSON
 codeToExecute: deploy/code.ps1
 configContent: config.yml # content of this file will insert into software configContent field.
 actions: install

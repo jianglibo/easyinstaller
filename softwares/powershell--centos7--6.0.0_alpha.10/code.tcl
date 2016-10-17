@@ -4,7 +4,7 @@ exec tclsh "$0" ${1+"$@"}
 
 package require yaml
 
-# ---------- common utils --------------------------
+# ---------- common utils start --------------------------
 proc loadYaml {fileName} {
   if {[catch {set dt [::yaml::yaml2dict -file $fileName]} msg o]} {
     puts $msg
@@ -56,19 +56,19 @@ proc isInstalled {execName} {
   return 0
 }
 
-# ---------- common utils --------------------------
+# ---------- common utils end--------------------------
 
 set envfile [lindex $argv 1]
-set action [lindex $argv 2]
+set action [lindex $argv 3]
 set envdict [loadYaml $envfile]
 set remoteFolder [dict get $envdict remoteFolder]
 
 if {[isInstalled powershell]} {
-    puts "powershell already installed."
+    puts "powershell already installed.@@success@@"
 } else {
   if { [catch {exec yum install -y "${remoteFolder}powershell-6.0.0_alpha.10-1.el7.centos.x86_64.rpm"} msg o] } {
       if {[string match -nocase "*Nothing to do*" $msg]} {
-          puts "already installed"
+          puts "already installed @@success@@"
           exit 0
       } else {
           puts $msg
@@ -76,3 +76,5 @@ if {[isInstalled powershell]} {
       }
   }
 }
+
+puts "@@success@@"

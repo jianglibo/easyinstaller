@@ -21,6 +21,8 @@ public class GlobalComboOptions {
 
 	public static final String PREFERED_FORMAT = "preferredFormat";
 	
+	public static final String LINE_SEPERATOR = "lineSeperator";
+	
 	private Map<String, Set<String>> stringOptions = Maps.newHashMap();
 	
 	

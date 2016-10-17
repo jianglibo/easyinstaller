@@ -21,14 +21,7 @@ import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.vo.JschExecuteResult;
 
 /**
- * Beside code this runner will create 2 files total. One is code file, other
- * is envfile.
- * 
- * Uuid as a parameter to code. For example, bash(tcl|perl|python)
- * 123e4567-e89b-12d3-a456-426655440000 --envfile /root/easyinstaller/123e4567-e89b-12d3-a456-426655440000_env install. 
- * 
- * What about uploaded files? You had known the file names. They are put in
- * configuration item "remoteFolder".
+ * Beside code this runner will create 2 files total. One is code file, other is envfile.
  * 
  * @author jianglibo@gmail.com
  *
@@ -50,7 +43,7 @@ public class SshExecRunner implements BaseRunner {
 	}
 
 	private void copyCodeToServerAndRun(JschSession jsession, OneThreadTaskDesc taskDesc) {
-		String uuid = UUID.randomUUID().toString();
+		String uuid = taskDesc.getSoftware().getCodeFileName();
 		String envFile, codeFile, tpl, cmd;
 		
 		envFile = uplocadEnv(jsession, taskDesc, uuid);
@@ -65,9 +58,14 @@ public class SshExecRunner implements BaseRunner {
 					cmd = String.format(tpl, runner , codeFile, envFile, taskDesc.getAction());
 				}
 				JschExecuteResult jer = jsession.exec(cmd);
-				if (jer.getExitValue() != 0) { //success
-					taskDesc.getBoxHistory().appendLogAndSetFailure(jer.getOut());
-					taskDesc.getBoxHistory().appendLogAndSetFailure(jer.getErr());
+				
+				taskDesc.getBoxHistory().appendLog(jer.getOut());
+				taskDesc.getBoxHistory().appendLog(jer.getErr());
+				// must return explicit @@success@@ to indicate success. 
+				if (jer.getOut() != null && jer.getOut().contains("@@success@@")) {
+					taskDesc.getBoxHistory().setSuccess(true);
+				} else {
+					taskDesc.getBoxHistory().setSuccess(false);
 				}
 			}
 		}

@@ -81,6 +81,10 @@ application:
         valueType: String
       - value: CentOs6
       - value: UbuntuOs
+    lineSeperator:
+      - value: MacOS
+      - value: Linux
+      - value: Windows
     preferredFormat:
       - value: JSON
       - value: YAML

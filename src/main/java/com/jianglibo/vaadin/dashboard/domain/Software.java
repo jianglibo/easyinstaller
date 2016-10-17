@@ -12,14 +12,18 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.google.common.hash.Hashing;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
@@ -88,6 +92,17 @@ public class Software extends BaseEntity {
 	@Column(length = 154112)
 	@VaadinFormField(fieldType=Ft.TEXT_AREA, order = 120, rowNumber=10)
 	private String codeToExecute;
+	
+	/**
+	 * some script language need file extension, for example powershell need ps1 extension.
+	 * 
+	 */
+	@VaadinFormField(order= 125)
+	private String codeFileExt;
+	
+	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 130)
+	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.LINE_SEPERATOR)
+	private String codeLineSeperator;
 
 	@Lob
 	@Column(length = 154112)
@@ -108,6 +123,11 @@ public class Software extends BaseEntity {
 	@PrePersist
 	public void createCreatedAt() {
 		setCreatedAt(Date.from(Instant.now()));
+	}
+	
+	@PreUpdate
+	public void createCodeFileName() {
+		// TODO according codeLineSeperator to change line seperator.
 		setConfigContent(getConfigContent().replaceAll("\r", ""));
 		if (getActions() == null) {
 			setActions("install");
@@ -116,6 +136,19 @@ public class Software extends BaseEntity {
 				setActions("install");
 			} else {
 				setActions(commaJoiner.join(commaSplitter.split(getActions())));
+			}
+		}
+	}
+	
+	public String getCodeFileName() {
+		String md5 = Hashing.md5().newHasher().putString(getCodeToExecute(), Charsets.UTF_8).hash().toString();
+		if (Strings.isNullOrEmpty(getCodeFileExt())) {
+			return md5;
+		} else {
+			if (getCodeFileExt().indexOf('.') != 0) {
+				return md5 + "." + getCodeFileExt();
+			} else {
+				return md5 + getCodeFileExt();
 			}
 		}
 	}
@@ -223,11 +256,27 @@ public class Software extends BaseEntity {
 		this.sversion = sversion;
 	}
 
+	public String getCodeLineSeperator() {
+		return codeLineSeperator;
+	}
+
+	public void setCodeLineSeperator(String codeLineSeperator) {
+		this.codeLineSeperator = codeLineSeperator;
+	}
+
 	public void copyFrom(Software vo) {
 		setActions(vo.getActions());
 		setArchived(vo.isArchived());
 		setCodeToExecute(vo.getCodeToExecute());
 		setFilesToUpload(vo.getFilesToUpload());
 		setRunner(vo.getRunner());
+	}
+
+	public String getCodeFileExt() {
+		return codeFileExt;
+	}
+
+	public void setCodeFileExt(String codeFileExt) {
+		this.codeFileExt = codeFileExt;
 	}
 }

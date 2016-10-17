@@ -29,6 +29,7 @@ public class CreateDemoGroup extends Tbase {
 			box.setIp("192.168.33.1" + i);
 			box.setName("box-" + i);
 			box.setCreator(root);
+			box.setOstype("CentOs7");
 			return boxRepository.save(box);
 		}).collect(Collectors.toList());
 		
