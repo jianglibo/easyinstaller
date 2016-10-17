@@ -1,6 +1,6 @@
 ﻿$here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
-. "$here\$sut" -envfile (Join-Path -Path (Split-Path -Path $here -Parent) -ChildPath test\envforcodeexec.json)
+. "$here\$sut" -envfile (Join-Path -Path (Split-Path -Path $here -Parent) -ChildPath test\envforcodeexec.json) -action install
 
 function Get-NewPix
   {
@@ -136,6 +136,32 @@ Describe "code" {
     It "should　keep pipelinevariable" {
         Write-Output "hello" -PipelineVariable pv | Select-Object @{N="n"; E={"{0} world" -f $pv}} | Select-Object -ExpandProperty n | Should Be "hello world"
     }
+
+    It "should swith right" {
+        $v = "start"
+        switch ("fourteen") 
+            {
+                1 {$v = "It is one."; Break}
+                2 {$v = "It is two."; Break}
+                3 {$v = "It is three."; Break}
+                4 {$v = "It is four."; Break}
+                3 {$v = "Three again."; Break}
+                "fo*" {$v = "That's too many."}
+            }
+        $v | Should Be "start"
+
+        switch -Regex ("fourteen") 
+            {
+                1 {$v = "It is one."; Break}
+                2 {$v = "It is two."; Break}
+                3 {$v = "It is three."; Break}
+                4 {$v = "It is four."; Break}
+                3 {$v = "Three again."; Break}
+                "fo*" {$v = "That's too many."}
+            }
+        $v | Should Be "That's too many."
+     }
+
 }
 
 # https://technet.microsoft.com/en-us/library/hh847829.aspx
