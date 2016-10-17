@@ -37,7 +37,7 @@ import com.jianglibo.vaadin.dashboard.vo.JschExecuteResult;
 public class SshExecRunner implements BaseRunner {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SshExecRunner.class);
-
+	
 	@Autowired
 	private ApplicationConfig applicationConfig;
 	
@@ -51,15 +51,20 @@ public class SshExecRunner implements BaseRunner {
 
 	private void copyCodeToServerAndRun(JschSession jsession, OneThreadTaskDesc taskDesc) {
 		String uuid = UUID.randomUUID().toString();
-		String envFile, codeFile, tpl;
+		String envFile, codeFile, tpl, cmd;
 		
 		envFile = uplocadEnv(jsession, taskDesc, uuid);
 		if (taskDesc.getBoxHistory().isSuccess()) {
 			codeFile = uploadCode(jsession, taskDesc, uuid);
 			if (taskDesc.getBoxHistory().isSuccess()) {
-				tpl = "%s %s -envfile %s -action %s";
-				JschExecuteResult jer = jsession.exec(String.format(tpl, taskDesc.getSoftware().getRunner(), codeFile, envFile, taskDesc.getAction()));
-				
+				String runner = taskDesc.getSoftware().getRunner();
+				if (runner.contains("{code}") || runner.contains("{envfile}") || runner.contains("{action}")) {
+					cmd = runner.replace("{code}", codeFile).replace("{envfile}", envFile).replace("{action}", taskDesc.getAction());
+				} else {
+					tpl = "%s %s -envfile %s -action %s";
+					cmd = String.format(tpl, runner , codeFile, envFile, taskDesc.getAction());
+				}
+				JschExecuteResult jer = jsession.exec(cmd);
 				if (jer.getExitValue() != 0) { //success
 					taskDesc.getBoxHistory().appendLogAndSetFailure(jer.getOut());
 					taskDesc.getBoxHistory().appendLogAndSetFailure(jer.getErr());

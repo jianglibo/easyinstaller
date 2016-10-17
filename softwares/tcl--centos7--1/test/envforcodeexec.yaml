@@ -15,6 +15,13 @@ boxGroup:
     \ : 1999,\r\n    \"dataDir\" : \"/var/lib/zookeeper/\",\r\n    \"clientPort\"\
     \ : 2181,\r\n    \"initLimit\" : 5,\r\n    \"syncLimit\" : 2\r\n  }\r\n}"
   boxes:
+  - ip: "192.168.2.10"
+    name: "box1"
+    hostname: "192.168.2.10"
+    roles: "r1,r2,r3"
+    dnsServer: "192.168.2.60"
+    ips: ""
+    ports: ""
   - ip: "192.168.2.11"
     name: "box2"
     hostname: "a1.host.name"
@@ -29,13 +36,6 @@ boxGroup:
     dnsServer: "192.168.2.60"
     ips: "192.168.2.15,192.168.2.16"
     ports: "80,8080"
-  - ip: "192.168.2.10"
-    name: "box1"
-    hostname: "192.168.2.10"
-    roles: "r1,r2,r3"
-    dnsServer: "192.168.2.60"
-    ips: ""
-    ports: ""
 software:
   name: "tcl"
   sversion: "1"

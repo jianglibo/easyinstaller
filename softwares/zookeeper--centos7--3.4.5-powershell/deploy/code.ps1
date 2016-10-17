@@ -47,7 +47,7 @@ function Run-Tar {
        $DestFolder
     )
 
-#     Remove-Item /opt/vvvvv/* -Recurse -Force
+#   Remove-Item /opt/vvvvv/* -Recurse -Force
 
     if ($DestFolder) { # had destFolder parameter
         if (!(Test-Path $DestFolder)) { # if not exists.
@@ -59,29 +59,6 @@ function Run-Tar {
     $r = $command | Invoke-Expression | Where-Object {$_ -cmatch "Cannot open:.*"} | measure
     if ($r.Count -gt 0) {$false} else {$True}
 }
-
-<#
-<!-- yml->json -->
-zkports: "2888,3888"
-configFile: "/var/zoo.cfg"
-binDir: "/opt/zookeeper"
-zkconfig:
-  tickTime: "1999"
-  dataDir: "/var/lib/zookeeper/"
-  clientPort: "2181"
-  initLimit: "5"
-  syncLimit: "2"
-
-  /var/zoo.cfg's content:
-  tickTime=1999
-  dataDir=/var/lib/zookeeper/
-  clientPort=2181
-  initLimit=5
-  syncLimit=2
-  server.1=zoo1:2888:3888
-  server.2=zoo2:2888:3888
-  server.3=zoo3:2888:3888
-#>
 
 $softwareConfig = ConvertFrom-Json $envForExec.software.configContent
 
@@ -108,14 +85,3 @@ switch ($action) {
 # $zkconfig.psobject.Properties | where MemberType -eq "NoteProperty" | foreach -Begin {$h = @{}} -Process {$h.Set_Item($_.Name, $_.Value)} -End {$h} #Get hash table.
 #$softwareConfig | gm -MemberType NoteProperty | Select-Object -Property Name
 #$softwareConfig.psobject.Properties | where MemberType -eq "NoteProperty" | where Name -NE zkconfig|measure
-
-<#
-function positional {
- Param
-     (
-       [parameter(Position=0, Mandatory=$True)]
-       [String[]]
-       $ComputerName
-    ) 
-}
-#>
