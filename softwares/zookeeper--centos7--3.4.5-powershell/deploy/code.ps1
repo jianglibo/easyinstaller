@@ -80,10 +80,15 @@ zkconfig:
   server.2=zoo2:2888:3888
   server.3=zoo3:2888:3888
 #>
+
 $softwareConfig = ConvertFrom-Json $envForExec.software.configContent
 
+$tgzFile = Join-Path  -Path $envForExec.remoteFolder -ChildPath $envForExec.software.filesToUpload[0].Split('/')[-1]
+
 $zkconfigLines = $softwareConfig.zkconfig.psobject.Properties | where MemberType -eq "NoteProperty" | foreach {"$($_.name)=$($_.value)"}
-$srvlines = $envForExec.boxGroup.boxes | Select-Object @{n="serverId"; e={$_.ip -split '.',0,"simplematch" | Select-Object -Last 1}}, hostname| ForEach-Object {"server.$($_.serverId)=$($_.hostname):$($softwareConfig.zkports)"}
+# $srvlines = $envForExec.boxGroup.boxes | Select-Object @{n="serverId"; e={$_.ip -split '.',0,"simplematch" | Select-Object -Last 1}}, hostname| ForEach-Object {"server.$($_.serverId)=$($_.hostname):$($softwareConfig.zkports)"}
+
+$srvlines = $envForExec.boxGroup.boxes | Select-Object @{n="serverId"; e={$_.ip.split('\.')[-1]}}, hostname | ForEach-Object {"server.{0}={1}:{2}:{3}" -f (@($_.serverId, $_.hostname) + $softwareConfig.zkports.Split(','))}
 
 $configFileFolder = Split-Path -Parent $softwareConfig.configFile
 
@@ -98,7 +103,9 @@ if (!(Test-Path $dataDir)) {
 
 $zkconfigLines + $srvlines | Out-File $softwareConfig.configFile
 
-
+if (Test-Path $tgzFile) {
+    Run-Tar $tgzFile -DestFolder $softwareConfig.binDir
+}
 
 # $zkconfig.psobject.Properties | where MemberType -eq "NoteProperty" | foreach -Begin {$h = @{}} -Process {$h.Set_Item($_.Name, $_.Value)} -End {$h} #Get hash table.
 #$softwareConfig | gm -MemberType NoteProperty | Select-Object -Property Name

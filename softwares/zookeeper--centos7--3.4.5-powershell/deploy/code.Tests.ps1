@@ -119,6 +119,23 @@ Describe "code" {
     It "should be add of two lines" {
         ($zkconfigLines + $srvlines).Count | Should Be ($zkconfigLines.Count + $srvlines.Count)
     }
+
+    It "should save outVariable" {
+        Write-Output "hello" -OutVariable ss
+        Write-Output "hello" -OutVariable ss
+        Write-Output "hello" -OutVariable ss
+        $ss | Should Be "hello"
+
+        Write-Output "hello" -OutVariable +ss
+        Write-Output "hello" -OutVariable +ss
+        Write-Output "hello" -OutVariable +ss
+
+        $ss | Should Be @("hello", "hello", "hello", "hello")
+    }
+
+    It "should　keep pipelinevariable" {
+        Write-Output "hello" -PipelineVariable pv | Select-Object @{N="n"; E={"{0} world" -f $pv}} | Select-Object -ExpandProperty n | Should Be "hello world"
+    }
 }
 
 # https://technet.microsoft.com/en-us/library/hh847829.aspx
