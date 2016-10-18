@@ -2,6 +2,9 @@ runner: bash
 preferredFormat: YAML
 codeToExecute: code.tcl
 configContent: config.yml
+codeFileExt: 
+codeLineSeperator: LF
+runAs: 
 actions: install
 filesToUpload:
   - https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-alpha.10/powershell-6.0.0_alpha.10-1.el7.centos.x86_64.rpm

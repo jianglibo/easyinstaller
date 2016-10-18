@@ -106,6 +106,8 @@ public class TaskRunner {
 			}
 		}
 		
+		NotificationUtil.tray(messageSource, "tasksent");
+		
 		List<OneThreadTaskDesc> onetds = taskDesc.createOneThreadTaskDescs();
 
 		List<ListenableFuture<OneThreadTaskDesc>> llfs = onetds.stream().map(td -> service.submit(new OneTaskCallable(td)))

@@ -53,7 +53,7 @@ public class ApplicationConfig {
 	
 	private String defaultSshKeyFile;
 	
-	private boolean defaultSshKeyFileExists;
+//	private boolean defaultSshKeyFileExists;
 
 	@Autowired
 	public ApplicationConfig(RawApplicationConfig racfig, PersonRepository personRepository,
@@ -101,7 +101,6 @@ public class ApplicationConfig {
 		
 		setComboDatas(racfig.getComboDatas());
 		defaultSshKeyFile = getSshKeyFolderPath().resolve("ssh_id").toAbsolutePath().toString();
-		defaultSshKeyFileExists = Files.exists(getSshKeyFolderPath().resolve("ssh_id"));
 	}
 	
 	public String getSshKeyFile(Box box) {
@@ -122,7 +121,7 @@ public class ApplicationConfig {
 	}
 
 	public boolean isDefaultSshKeyFileExists() {
-		return defaultSshKeyFileExists;
+		return Files.exists(getSshKeyFolderPath().resolve("ssh_id"));
 	}
 
 	private String processOneItem(Map<String, String> applicationMap,Person root, String fname, String fvalue) {

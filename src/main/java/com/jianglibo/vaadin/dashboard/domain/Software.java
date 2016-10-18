@@ -124,7 +124,7 @@ public class Software extends BaseEntity {
 
 	@VaadinFormField(fieldType = Ft.COMBO_BOX, order = 130)
 	@ComboBoxBackByYaml(ymlKey = GlobalComboOptions.LINE_SEPERATOR)
-	private String codeLineSeperator = "Linux";
+	private String codeLineSeperator = "LF";
 
 	@Lob
 	@Column(length = 154112)
@@ -335,8 +335,13 @@ public class Software extends BaseEntity {
 	public void copyFrom(Software vo) {
 		setActions(vo.getActions());
 		setArchived(vo.isArchived());
+		setCodeFileExt(vo.getCodeFileExt());
+		setCodeLineSeperator(vo.getCodeLineSeperator());
 		setCodeToExecute(vo.getCodeToExecute());
+		setConfigContent(vo.getConfigContent());
 		setFilesToUpload(vo.getFilesToUpload());
+		setPreferredFormat(vo.getPreferredFormat());
+		setRunas(vo.getRunas());
 		setRunner(vo.getRunner());
 	}
 

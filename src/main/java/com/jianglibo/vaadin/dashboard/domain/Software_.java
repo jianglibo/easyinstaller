@@ -5,9 +5,10 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="Dali", date="2016-10-18T08:45:35.826+0800")
+@Generated(value="Dali", date="2016-10-18T11:09:18.104+0800")
 @StaticMetamodel(Software.class)
 public class Software_ extends BaseEntity_ {
+	public static volatile SingularAttribute<Software, String> name;
 	public static volatile SingularAttribute<Software, String> sversion;
 	public static volatile SingularAttribute<Software, String> ostype;
 	public static volatile SingularAttribute<Software, String> runas;
@@ -20,5 +21,4 @@ public class Software_ extends BaseEntity_ {
 	public static volatile SingularAttribute<Software, String> preferredFormat;
 	public static volatile SingularAttribute<Software, Person> creator;
 	public static volatile SingularAttribute<Software, String> actions;
-	public static volatile SingularAttribute<Software, String> name;
 }

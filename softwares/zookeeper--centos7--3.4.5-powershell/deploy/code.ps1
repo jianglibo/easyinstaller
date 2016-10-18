@@ -33,6 +33,7 @@ function Run-Tar {
        [String]
        $DestFolder
     )
+# insert-common-script-here:classpath:scripts/powershell/PsCommon.ps1
 
 #   Remove-Item /opt/vvvvv/* -Recurse -Force
 
@@ -69,6 +70,7 @@ switch ($action) {
     }
 }
 
+"@@success@@"
 # $zkconfig.psobject.Properties | where MemberType -eq "NoteProperty" | foreach -Begin {$h = @{}} -Process {$h.Set_Item($_.Name, $_.Value)} -End {$h} #Get hash table.
 #$softwareConfig | gm -MemberType NoteProperty | Select-Object -Property Name
 #$softwareConfig.psobject.Properties | where MemberType -eq "NoteProperty" | where Name -NE zkconfig|measure
