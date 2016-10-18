@@ -2,6 +2,8 @@
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 . "$here\$sut" -envfile (Join-Path -Path (Split-Path -Path $here -Parent) -ChildPath test\envforcodeexec.json) -action install
 
+. "$here\..\..\..\src\main\resources\scripts\powershell\PsCommon.Ps1"
+
 function Get-NewPix
   {
 #     $start = Get-Date -Month 1 -Day 1 -Year 2010

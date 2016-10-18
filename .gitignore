@@ -38,3 +38,5 @@ gradle.properties
 /fixtures_out/
 Vagrantfile
 .vagrant/
+
+_site/

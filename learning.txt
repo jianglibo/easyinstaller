@@ -3,3 +3,10 @@ So UI know httprequest and session.
 
 UI can set locale, component can set locale. UI.getCurentPage().reload();
 VaadinSession has a method setLocale.
+
+下载 https://github.com/rubygems/rubygems/
+
+C:\>gem install --local C:\rubygems-update-1.8.30.gem
+C:\>update_rubygems --no-ri --no-rdoc
+
+run "bundle update" some times.
