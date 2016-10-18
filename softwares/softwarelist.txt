@@ -1,4 +1,4 @@
-powershell--centos7--6.0.0_alpha.10.zip,f5421c22dda22467fef936843dae76c3
-tcl--centos7--1.zip,6f4c19ca2e7af5ebf3d84551d550a357
-zookeeper--centos7--3.4.5-powershell.zip,882ce01aea772d6b97db1632082058a1
-zookeeper--centos7--3.4.9.zip,438299f5879b61f203af718020c268d6
+powershell--centos7--6.0.0_alpha.10.zip,6245ab823d2e1d05a3127d34b1d461d4
+tcl--centos7--1.zip,c22c9ea1c8a564a11330b2a55936381a
+zookeeper--centos7--3.4.5-powershell.zip,4ec926280a84e6ccda2af4357e31e6fe
+zookeeper--centos7--3.4.9.zip,27f6d570e2e7f7a41f77a04413ea3d0f

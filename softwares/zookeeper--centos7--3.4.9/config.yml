@@ -1,4 +1,4 @@
-# tcl not very master on yaml process, so double quota value please.
+<!-- yml->json -->
 zkports: "2888,3888"
 configFile: "/var/zoo.cfg"
 binDir: "/opt/zookeeper"

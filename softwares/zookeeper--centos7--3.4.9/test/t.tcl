@@ -4,6 +4,8 @@ eval ::tcltest::configure $::argv
 set ::baseDir [file join [file dirname [info script]] ..]
 lappend auto_path $::baseDir
 
+source [file normalize [file join $::baseDir .. .. src main resources scripts tcl shared.tcl]]
+
 ::tcltest::customMatch mm mmproc
 
 proc mmproc {expectedResult actualResult} {

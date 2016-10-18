@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -140,9 +141,9 @@ public class TestDomains extends Tbase {
 						
 						String json = appObjectMappers.getObjectMapper().writeValueAsString(efce);
 						Files.write(testFolder.resolve("envforcodeexec.json"), json.getBytes());
-						
 					} catch (Exception e) {
 						e.printStackTrace();
+						fail(e.getMessage());
 					}
 				});
 			}

@@ -1,10 +1,10 @@
 runner: bash
-preferredFormat: YAML
+preferredFormat: JSON
 codeToExecute: code.tcl
 configContent: config.yml # content of this file will insert into software configContent field.
-codeFileExt: 
+codeFileExt:
 codeLineSeperator: LF
-runAs: 
+runas:
 actions: install
 filesToUpload:
   - https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.4.9/zookeeper-3.4.9.tar.gz

@@ -8,4 +8,4 @@ filesToUpload:
   - c.txt
 codeToExecute: code
 configContent: config
-preferredFormat: YAML
+preferredFormat: JSON

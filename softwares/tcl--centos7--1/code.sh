@@ -15,5 +15,4 @@ if [ "$?" -ne 0 ]; then
 fi
 
 echo "@@success@@"
-
 exit 0
