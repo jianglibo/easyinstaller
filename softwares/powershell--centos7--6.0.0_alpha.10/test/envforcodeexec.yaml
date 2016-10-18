@@ -1,13 +1,13 @@
 ---
 remoteFolder: "/opt/easyinstaller"
 box:
-  ip: "192.168.2.10"
-  name: "box1"
-  hostname: "192.168.2.10"
+  ip: "192.168.2.11"
+  name: "box2"
+  hostname: "a1.host.name"
   roles: "r1,r2,r3"
-  dnsServer: ""
-  ips: ""
-  ports: ""
+  dnsServer: "192.168.2.60"
+  ips: "192.168.2.12,192.168.2.13"
+  ports: "80,8080"
 boxGroup:
   name: "boxgroup1"
   configContent: "{\r\n  \"zkports\" : \"2888,3888\",\r\n  \"configFile\" : \"/var/zoo.cfg\"\
@@ -40,6 +40,7 @@ software:
   name: "powershell"
   sversion: "6.0.0_alpha.10"
   ostype: "centos7"
+  runas: null
   filesToUpload:
   - "https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-alpha.10/powershell-6.0.0_alpha.10-1.el7.centos.x86_64.rpm"
   configContent: ""

@@ -131,6 +131,8 @@ public class EnvForCodeExec {
 		private String sversion;
 		private String ostype;
 		
+		private String runas;
+		
 		private Set<String> filesToUpload;
 		private String configContent;
 		private String actions;
@@ -144,6 +146,7 @@ public class EnvForCodeExec {
 			this.configContent = software.getConfigContent();
 			this.actions = software.getActions();
 			this.preferredFormat = software.getPreferredFormat();
+			this.runas = software.getRunas();
 		}
 
 		public Set<String> getFilesToUpload() {
@@ -200,6 +203,14 @@ public class EnvForCodeExec {
 
 		public void setPreferredFormat(String preferredFormat) {
 			this.preferredFormat = preferredFormat;
+		}
+
+		public String getRunas() {
+			return runas;
+		}
+
+		public void setRunas(String runas) {
+			this.runas = runas;
 		}
 	}
 

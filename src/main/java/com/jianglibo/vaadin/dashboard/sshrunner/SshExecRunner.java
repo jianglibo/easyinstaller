@@ -2,11 +2,11 @@ package com.jianglibo.vaadin.dashboard.sshrunner;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
@@ -35,6 +35,9 @@ public class SshExecRunner implements BaseRunner {
 	private ApplicationConfig applicationConfig;
 	
 	@Autowired
+	private ApplicationContext applicationContext;
+	
+	@Autowired
 	private AppObjectMappers appObjectmappers;
 
 	@Override
@@ -43,12 +46,13 @@ public class SshExecRunner implements BaseRunner {
 	}
 
 	private void copyCodeToServerAndRun(JschSession jsession, OneThreadTaskDesc taskDesc) {
-		String uuid = taskDesc.getSoftware().getCodeFileName();
+		String codeToExec = taskDesc.getSoftware().getParsedCodeToExecute(applicationContext);
+		String codeFileName = taskDesc.getSoftware().getCodeFileName(codeToExec);
 		String envFile, codeFile, tpl, cmd;
 		
-		envFile = uplocadEnv(jsession, taskDesc, uuid);
+		envFile = uplocadEnv(jsession, taskDesc, codeFileName);
 		if (taskDesc.getBoxHistory().isSuccess()) {
-			codeFile = uploadCode(jsession, taskDesc, uuid);
+			codeFile = uploadCode(jsession, taskDesc,codeToExec, codeFileName);
 			if (taskDesc.getBoxHistory().isSuccess()) {
 				String runner = taskDesc.getSoftware().getRunner();
 				if (runner.contains("{code}") || runner.contains("{envfile}") || runner.contains("{action}")) {
@@ -90,7 +94,7 @@ public class SshExecRunner implements BaseRunner {
 				taskDesc.getBoxHistory().appendLogAndSetFailure("unsupported format: " + taskDesc.getSoftware().getPreferredFormat()) ;
 				return null;
 			}
-			String targetFile = applicationConfig.getRemoteFolder() + uuid + "_env";
+			String targetFile = applicationConfig.getRemoteFolder() + uuid + ".env";
 			return putStream(taskDesc.getBoxHistory(), jsession, targetFile, envstr);
 		} catch (Exception e) {
 			taskDesc.getBoxHistory().appendLogAndSetFailure(e.getMessage());
@@ -105,7 +109,6 @@ public class SshExecRunner implements BaseRunner {
 			sftp.connect();
 			try {
 				OutputStream os = sftp.put(targetFile, ChannelSftp.OVERWRITE);
-				content = content.replaceAll("\r", "");
 				os.write(content.getBytes(Charsets.UTF_8));
 				os.flush();
 				os.close();
@@ -122,9 +125,9 @@ public class SshExecRunner implements BaseRunner {
 		return targetFile;
 	}
 
-	private String uploadCode(JschSession jsession, OneThreadTaskDesc taskDesc, String uuid) {
-		String targetFile = applicationConfig.getRemoteFolder() + uuid;
-		return putStream(taskDesc.getBoxHistory(), jsession, targetFile, taskDesc.getSoftware().getCodeToExecute());
+	private String uploadCode(JschSession jsession, OneThreadTaskDesc taskDesc,String codeToExec, String codeFileName) {
+		String targetFile = applicationConfig.getRemoteFolder() + codeFileName;
+		return putStream(taskDesc.getBoxHistory(), jsession, targetFile, codeToExec);
 	}
 
 }
