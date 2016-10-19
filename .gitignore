@@ -40,3 +40,4 @@ Vagrantfile
 .vagrant/
 
 _site/
+tgzFolder/

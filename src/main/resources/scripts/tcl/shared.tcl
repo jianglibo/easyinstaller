@@ -34,7 +34,7 @@ namespace eval EnvDictNs {
     if {! [file exists $dstFolder]} {
       file mkdir $dstFolder
     }
-    if ([string length $tgzFile] == 0) {
+    if {[string length $tgzFile] == 0} {
       set tgzFile [getUpload]
     }
     exec tar -zxvf $tgzFile -C $dstFolder
@@ -47,8 +47,8 @@ namespace eval EnvDictNs {
       foreach f $total {
         if {[string match $ptn $f]} {
           return $f
-          }
         }
+      }
       return {}
     } else {
       if {[llength $total] > 0} {

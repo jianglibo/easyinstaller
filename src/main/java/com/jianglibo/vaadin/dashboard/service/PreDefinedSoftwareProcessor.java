@@ -76,6 +76,17 @@ public class PreDefinedSoftwareProcessor {
 
 		LOGGER.info("start fetching from {}", urlBase + listfn);
 		String snLines = httpPageGetter.getPage(urlBase + listfn);
+		
+		int retry = 3;
+		
+		while (retry > 0) {
+			if (!snLines.isEmpty()) {
+				break;
+			} else {
+				snLines = httpPageGetter.getPage(urlBase + listfn);
+			}
+			retry--;
+		}
 
 		try {
 			List<String> lines = CharStreams.readLines(new StringReader(snLines));

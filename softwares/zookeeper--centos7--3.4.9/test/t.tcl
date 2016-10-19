@@ -6,35 +6,12 @@ lappend auto_path $::baseDir
 
 source [file normalize [file join $::baseDir .. .. src main resources scripts tcl shared.tcl]]
 
-::tcltest::customMatch mm mmproc
-
-proc mmproc {expectedResult actualResult} {
-  set lines [dict get $actualResult lines]
-  regexp {dataDir=([^ ]+)} $lines whole dataDir
-  set myidFile [file join $dataDir myid]
-  set configFile [dict get $actualResult configFile]
-
-  if {! [file exists $dataDir]} {
-    puts "${dataDir} does not exists."
-    return 0
-  }
-
-  if {! [file exists $myidFile]} {
-    puts "${myidFile} does not exists."
-    return 0
-  }
-
-  if {! [file exists $configFile]} {
-    puts "${configFile} does not exists."
-    return 0
-  }
-  return 1
-}
+set tgzFolder [file normalize [file join $::baseDir .. .. tgzFolder]]
 
 namespace eval ::example::test {
     namespace import ::tcltest::*
     testConstraint X [expr {1}]
-    test zkLines {} -constraints {X win} -setup {
+    test zkLines {} -constraints {} -setup {
       set argv [list -envfile [file join $::baseDir test envforcodeexec.json] -action t]
     } -body {
       source [file join $::baseDir code.tcl]
@@ -42,7 +19,7 @@ namespace eval ::example::test {
     } -cleanup {
     } -result {tickTime=1999 dataDir=/var/lib/zookeeper/ clientPort=2181 initLimit=5 syncLimit=2}
 
-    test serverLines {} -constraints {X win} -setup {
+    test serverLines {} -constraints {} -setup {
       set argv [list -envfile [file join $::baseDir test envforcodeexec.json] -action t]
     } -body {
       source [file join $::baseDir code.tcl]
@@ -50,6 +27,27 @@ namespace eval ::example::test {
       return [getServerLines $boxes]
     } -cleanup {
     } -result {server.10=192.168.2.10:2888:3888 server.11=a1.host.name:2888:3888 server.14=a2.host.name:2888:3888}
+
+    test wholeRun {} -constraints {} -setup {
+    } -body {
+      set argv [list -envfile [file join $::baseDir test envforcodeexec.json] -action t]
+      source [file join $::baseDir code.tcl]
+
+      file mkdir $EnvDictNs::remoteFolder
+
+      if {! [file exists [EnvDictNs::getUpload]]} {
+        exec cp [file join $tgzFolder [lindex [split [EnvDictNs::getUpload] /] end]] $EnvDictNs::remoteFolder
+      }
+
+      set argv [list -envfile [file join $::baseDir test envforcodeexec.json] -action install]
+      source [file join $::baseDir code.tcl]
+
+      
+
+      return 0
+    } -cleanup {
+    } -result {0}
+
     # match regexp, glob, exact
     cleanupTests
 }

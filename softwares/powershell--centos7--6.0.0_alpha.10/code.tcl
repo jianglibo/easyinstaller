@@ -6,11 +6,11 @@ package require yaml
 
 # insert-common-script-here:classpath:scripts/tcl/shared.tcl
 
-set action [lindex $argv 3]
-set envdict [readEnvFileJson [lindex $argv 1]]
-set rpmFile [file join [dict get $envdict remoteFolder] [dict get $envdict software ftou]]
+EnvDictNs::initialize [lindex $argv 1]
 
-if {[isInstalled powershell]} {
+set rpmFile [EnvDictNs::getUpload *rpm*]
+
+if {[EnvDictNs::isInstalled powershell]} {
     puts "powershell already installed.@@success@@"
 } else {
   if { [catch {exec yum install -y $rpmFile msg o] } {

@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -36,6 +38,7 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
+import com.jianglibo.vaadin.dashboard.service.SoftwareDownloader;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession.JschSessionBuilder;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshExecRunner;
@@ -74,6 +77,9 @@ public class TaskRunner {
 	
 	@Autowired
 	private BoxGroupHistoryRepository boxGroupHistoryRepository;
+	
+	@Autowired
+	private SoftwareDownloader softwareDownloader;
 
 	@Autowired
 	private SshExecRunner sshExecRunner;
@@ -97,13 +103,21 @@ public class TaskRunner {
 				return;
 			}
 		}
-		
+		boolean allExists = true;
+		List<String> fns = Lists.newArrayList();
 		for(FileToUploadVo ftuv : taskDesc.getSoftware().getFileToUploadVos()) {
 			Path p = applicationConfig.getLocalFolderPath().resolve(ftuv.getRelative());
 			if (!Files.exists(p)) {
-				NotificationUtil.error(messageSource, "filesToUploadNotExists", p.toAbsolutePath().toString());
-				return;
+				if (ftuv.isRemoteFile()) {
+					softwareDownloader.submitTasks(ftuv);
+				}
+				allExists = false;
+				fns.add(p.toString());
 			}
+		}
+		if (!allExists) {
+			NotificationUtil.error(messageSource, "filesToUploadNotExists", Joiner.on(",").join(fns));
+			return;
 		}
 		
 		NotificationUtil.tray(messageSource, "tasksent");

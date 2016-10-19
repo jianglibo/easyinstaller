@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -109,6 +111,8 @@ public class TestDomains extends Tbase {
 			bg.setBoxes(boxes);
 			bgs.add(boxGroupRepository.save(bg));
 			
+			BoxGroup onebg = bgs.iterator().next();
+			
 			try (Stream<Path> folders = Files.list(softwarePath)) {
 				folders.filter(Files::isDirectory).map(SoftwareFolder::new).filter(SoftwareFolder::isValid).forEach(sfolder -> {
 					try {
@@ -126,11 +130,16 @@ public class TestDomains extends Tbase {
 						}
 						sf.setCreator(root);
 						softwareRepository.save(sf);
-						TaskDesc td = new TaskDesc("", new PersonVo.PersonVoBuilder(getFirstPerson()).build(), bgs.iterator().next(),Sets.newHashSet(), sf, "install");
+						TaskDesc td = new TaskDesc("", new PersonVo.PersonVoBuilder(getFirstPerson()).build(), onebg,Sets.newHashSet(), sf, "install");
 						
 						OneThreadTaskDesc ottd = td.createOneThreadTaskDescs().get(0);
 						
 						EnvForCodeExec efce = new EnvForCodeExec.EnvForCodeExecBuilder(appObjectMappers, ottd, "/opt/easyinstaller").build();
+						
+						assertThat("should have 3 boxes", efce.getBoxGroup().getBoxes().size(), equalTo(3));
+						assertThat("first box should be 10", efce.getBoxGroup().getBoxes().get(0).getIp(), equalTo("192.168.2.10"));
+						assertThat("first box should be 11", efce.getBoxGroup().getBoxes().get(1).getIp(), equalTo("192.168.2.11"));
+						assertThat("first box should be 12", efce.getBoxGroup().getBoxes().get(2).getIp(), equalTo("192.168.2.14"));
 						
 						String yml = appObjectMappers.getYmlObjectMapper().writeValueAsString(efce);
 						Path testFolder =  sfolder.getTestPath();

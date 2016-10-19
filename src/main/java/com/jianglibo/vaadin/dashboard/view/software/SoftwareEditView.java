@@ -47,53 +47,8 @@ public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>
 		super(messageSource, Software.class, domains, fieldFactories, repository);
 		this.personRepository = personRepository;
 		delayCreateContent();
-//		this.messageSource = messageSource;
-//		this.repository= repository;
-//		this.eventBus = new EventBus(this.getClass().getName());
-//		this.applicationContext = applicationContext;
-//		eventBus.register(this);
-//		setSizeFull();
-//		addStyleName("transactions");
-//		StyleUtil.setOverflowAuto(this, true);
-//		setMargin(true);
-//		
-////		header = applicationContext.getBean(HeaderLayout.class).afterInjection(eventBus,false, true, "");
-//		
-//		addComponent(header);
-//		
-////		form = (SoftwareForm) applicationContext.getBean(SoftwareForm.class).afterInjection(eventBus, this);
-//		
-//		addComponent(form);
-//		Component ft = buildFooter();
-//		addComponent(ft);
-//		setComponentAlignment(form, Alignment.TOP_LEFT);
-//		setExpandRatio(form, 1);
 	}
-	
-//	@Override
-//	public Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {
-//		return applicationContext.getBean(OrderedStepDefineTwinGrid.class).afterInjection(vtw, vffw);
-//	}
-//
-//	
-//    @SuppressWarnings("serial")
-//	private Component buildFooter() {
-//        HorizontalLayout footer = new HorizontalLayout();
-//        footer.setWidth(100.0f, Unit.PERCENTAGE);
-//
-//        Button ok = new Button(messageSource.getMessage("shared.btn.save", null, UI.getCurrent().getLocale()));
-//        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-//        ok.addClickListener(new ClickListener() {
-//            @Override
-//            public void buttonClick(ClickEvent event) {
-//            	form.save();
-//            }
-//        });
-//        ok.focus();
-//        footer.addComponent(ok);
-//        footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
-//        return footer;
-//    }
+
     
 
 	@Override
@@ -103,30 +58,7 @@ public class SoftwareEditView  extends BaseEditView<Software, FormBase<Software>
 		// navigated to so we'll need to clean up references to it on detach.
 		// DashboardEventBus.unregister(this);
 	}
-	
-//	@Subscribe
-//	public void onBackBtnClicked(HistoryBackEvent hbe) {
-//		String bu = ifb.getPreviousView();
-//		if (Strings.isNullOrEmpty(bu)) {
-//			bu = SoftwareListView.VIEW_NAME;
-//		}
-//		UI.getCurrent().getNavigator().navigateTo(bu);
-//	}
 
-//	@Override
-//	public void enter(ViewChangeEvent event) {
-//		LOGGER.info("parameter string is: {}", event.getParameters());
-//		ifb = new ItemViewFragmentBuilder(event);
-//		long bid = ifb.getBeanId();
-//		if (bid == 0) {
-//			bean = new Software();
-//			header.setLabelTxt(MsgUtil.getViewMsg(messageSource, Software.class.getSimpleName() + ".newtitle"));
-//		} else {
-//			bean = repository.findOne(bid);
-//			header.setLabelTxt(bean.getName());
-//		}
-//        form.setItemDataSource(bean);
-//	}
 
 	@Override
 	protected Field<?> createField(VaadinTableWrapper vtw, VaadinFormFieldWrapper vffw) {

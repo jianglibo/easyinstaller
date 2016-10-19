@@ -68,7 +68,7 @@ proc install {} {
     EnvDictNs::setupResolver [dict get $EnvDictNs::selfBox dnsServer]
     # set hostname
     EnvDictNs::sethostname [dict get $EnvDictNs::selfBox hostname]
-    EnvDictNs::openFirewall tcp $zkports
+    EnvDictNs::openFirewall tcp [split [dict get $EnvDictNs::softwareConfigContent zkports] ,]
   }
 
 switch -exact -- [lindex $argv 3] {

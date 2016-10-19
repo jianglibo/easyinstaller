@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.sshrunner;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -220,7 +222,7 @@ public class EnvForCodeExec {
 		
 		private String configContent;
 
-		private Set<BoxDescription> boxes;
+		private List<BoxDescription> boxes;
 
 		public BoxGroupDescription(BoxGroup bg) {
 			this.name = bg.getName();
@@ -232,7 +234,15 @@ public class EnvForCodeExec {
 					bd.setDnsServer(bg.getDnsServer());
 				}
 				return bd;
-			}).collect(Collectors.toSet()));
+			}).collect(Collectors.toList()));
+			
+			// return consist result for test.
+			this.getBoxes().sort(new Comparator<BoxDescription>() {
+				@Override
+				public int compare(BoxDescription bd1, BoxDescription bd2) {
+					return bd1.getIp().compareTo(bd2.getIp());
+				}
+			});
 		}
 
 		public String getName() {
@@ -251,11 +261,11 @@ public class EnvForCodeExec {
 			this.configContent = configContent;
 		}
 
-		public Set<BoxDescription> getBoxes() {
+		public List<BoxDescription> getBoxes() {
 			return boxes;
 		}
 
-		public void setBoxes(Set<BoxDescription> boxes) {
+		public void setBoxes(List<BoxDescription> boxes) {
 			this.boxes = boxes;
 		}
 	}
