@@ -73,6 +73,10 @@ application:
   software-folder: ~/easyinstaller-softwares
   ssh-key-folder: ~/easyinstaller-sshs
   auto-login: true
+  script-sources:
+    - classpath:scripts/
+    - file:///~/easyinstaller-scripts
+    - http://placeholder/
   combo-datas:
     ostypes:
       - caption: CentOs7

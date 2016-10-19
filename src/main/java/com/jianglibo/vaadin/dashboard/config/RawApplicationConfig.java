@@ -43,8 +43,7 @@ public class RawApplicationConfig {
 	
 	private Map<String, List<ComboItem>> comboDatas = Maps.newHashMap();
 	
-	
-
+	private List<String> scriptSources;
 	
 	public String getUploadDst() {
 		return uploadDst;
@@ -100,6 +99,14 @@ public class RawApplicationConfig {
 
 	public void setAutoLogin(boolean autoLogin) {
 		this.autoLogin = autoLogin;
+	}
+
+	public List<String> getScriptSources() {
+		return scriptSources;
+	}
+
+	public void setScriptSources(List<String> scriptSources) {
+		this.scriptSources = scriptSources;
 	}
 	
 	

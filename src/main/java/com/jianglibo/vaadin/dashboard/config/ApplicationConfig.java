@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.domain.Box;
@@ -53,8 +54,8 @@ public class ApplicationConfig {
 	
 	private String defaultSshKeyFile;
 	
-//	private boolean defaultSshKeyFileExists;
-
+	private List<String> scriptSources;
+	
 	@Autowired
 	public ApplicationConfig(RawApplicationConfig racfig, PersonRepository personRepository,
 			KkvRepository kkvRepository, AppInitializer appInitializer) {
@@ -101,8 +102,40 @@ public class ApplicationConfig {
 		
 		setComboDatas(racfig.getComboDatas());
 		defaultSshKeyFile = getSshKeyFolderPath().resolve("ssh_id").toAbsolutePath().toString();
+		
+		normalizeScriptSources();
 	}
 	
+	private void normalizeScriptSources() {
+		List<String> ss = Lists.newArrayList();
+		for(String s : racfig.getScriptSources()) {
+			if (s.startsWith("classpath:")) {
+				if (s.endsWith("/")) {
+					ss.add(s);
+				} else {
+					ss.add(s + "/");
+				}
+			} else if (s.startsWith("http://") || s.startsWith("https://")) {
+				if (!s.contains("placeholder")) {
+					if (s.endsWith("/")) {
+						ss.add(s);
+					} else {
+						ss.add(s + "/");
+					}
+				}
+			} else if (s.startsWith("file:///")) {
+				String fn = s.substring(8);
+				fn = convertToPath(fn).toAbsolutePath().toString();
+				fn = fn.replaceAll("\\\\", "/");
+				if (!fn.endsWith("/")) {
+					fn = fn + "/";
+				}
+				ss.add("file:///" + fn);
+			}
+		}
+		setScriptSources(ss);
+	}
+
 	public String getSshKeyFile(Box box) {
 		if (!Strings.isNullOrEmpty(box.getKeyFilePath())) {
 			if(Files.exists(box.getKeyFilePath(getSshKeyFolderPath()))) {
@@ -212,5 +245,13 @@ public class ApplicationConfig {
 
 	public void setComboDatas(Map<String, List<ComboItem>> comboDatas) {
 		this.comboDatas = comboDatas;
+	}
+
+	public List<String> getScriptSources() {
+		return scriptSources;
+	}
+
+	public void setScriptSources(List<String> scriptSources) {
+		this.scriptSources = scriptSources;
 	}
 }
