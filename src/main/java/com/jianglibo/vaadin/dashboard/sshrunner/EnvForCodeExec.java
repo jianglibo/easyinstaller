@@ -287,9 +287,8 @@ public class EnvForCodeExec {
 		}
 		
 		public EnvForCodeExec build() {
-			software.setConfigContent(new ConfigContent(software.getConfigContent()).getConverted(appObjectMappers)); 
-			boxGroup.setConfigContent(new ConfigContent(boxGroup.getConfigContent()).getConverted(appObjectMappers));
-			
+			software.setConfigContent(new ConfigContent(software.getConfigContent()).getConverted(appObjectMappers, this.software.getPreferredFormat())); 
+			boxGroup.setConfigContent(new ConfigContent(boxGroup.getConfigContent()).getConverted(appObjectMappers, this.software.getPreferredFormat()));
 			return new EnvForCodeExec(box, boxGroup, software, remoteFolder);
 		}
 		

@@ -42,7 +42,7 @@ import com.jianglibo.vaadin.dashboard.vo.ConfigContent;
  * @author jianglibo@gmail.com
  *
  */
-public class TestDomains extends Tbase {
+public class TestScriptFixtures extends Tbase {
 
 	@Autowired
 	private BoxGroupRepository boxGroupRepository;
@@ -53,7 +53,7 @@ public class TestDomains extends Tbase {
 	@Autowired
 	private AppObjectMappers appObjectMappers;
 
-	private Path softwarePath = Paths.get("softwares");
+	private Path softwarePath = Paths.get("fixture-softwares");
 
 	private String tbasename = "envforcodeexec.";
 
@@ -105,7 +105,7 @@ public class TestDomains extends Tbase {
 		String xml = appObjectMappers.getXmlObjectMapper().writeValueAsString(efce);
 		Files.write(testFolder.resolve("envforcodeexec.xml"), xml.getBytes());
 
-		String json = appObjectMappers.getObjectMapper().writeValueAsString(efce);
+		String json = appObjectMappers.getObjectMapperNoIdent().writeValueAsString(efce);
 		Files.write(testFolder.resolve("envforcodeexec.json"), json.getBytes());
 
 	}
@@ -121,7 +121,7 @@ public class TestDomains extends Tbase {
 				sf.setSversion(sfolder.getSversion());
 				sf.setConfigContent(sfolder.getConfigContent(sf.getConfigContent()));
 				ConfigContent cconfig = new ConfigContent(sf.getConfigContent());
-				cconfig.getConverted(appObjectMappers);
+				cconfig.getConverted(appObjectMappers, sf.getPreferredFormat());
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -177,9 +177,6 @@ public class TestDomains extends Tbase {
 	@Test
 	public void verify() throws IOException {
 		testBoxGroup();
-		if (!Files.exists(softwarePath)) {
-			return;
-		}
 		try (Stream<Path> folders = Files.list(softwarePath)) {
 			folders.filter(Files::isDirectory).map(SoftwareFolder::new).filter(SoftwareFolder::isValid)
 					.forEach(sfolder -> {
@@ -190,7 +187,7 @@ public class TestDomains extends Tbase {
 							sf.setSversion(sfolder.getSversion());
 							sf.setConfigContent(sfolder.getConfigContent(sf.getConfigContent()));
 							ConfigContent cconfig = new ConfigContent(sf.getConfigContent());
-							cconfig.getConverted(appObjectMappers);
+							cconfig.getConverted(appObjectMappers, sf.getPreferredFormat());
 
 							EnvForCodeExec efce = null;
 							// do convert.

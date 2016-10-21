@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.service;
 
+import javax.inject.Named;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -8,21 +10,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class AppObjectMappers {
 	
-	private final ObjectMapper objectMapper;
+	private final ObjectMapper objectMapperNoIdent;
 	private final ObjectMapper ymlObjectMapper;
 	private final ObjectMapper xmlObjectMapper;
 	
 	@Autowired
-	public AppObjectMappers(ObjectMapper objectMapper, ObjectMapper ymlObjectMapper, ObjectMapper xmlObjectMapper) {
+	public AppObjectMappers(@Named("noIdent") ObjectMapper objectMapperNoIdent, ObjectMapper ymlObjectMapper, ObjectMapper xmlObjectMapper) {
 		super();
-		this.objectMapper = objectMapper;
+		this.objectMapperNoIdent = objectMapperNoIdent;
 		this.ymlObjectMapper = ymlObjectMapper;
 		this.xmlObjectMapper = xmlObjectMapper;
 	}
 
-	public ObjectMapper getObjectMapper() {
-		return objectMapper;
-	}
 
 	public ObjectMapper getYmlObjectMapper() {
 		return ymlObjectMapper;
@@ -30,5 +29,10 @@ public class AppObjectMappers {
 
 	public ObjectMapper getXmlObjectMapper() {
 		return xmlObjectMapper;
+	}
+
+
+	public ObjectMapper getObjectMapperNoIdent() {
+		return objectMapperNoIdent;
 	}
 }

@@ -84,7 +84,7 @@ public class SshExecRunner implements BaseRunner {
 				envstr = appObjectmappers.getXmlObjectMapper().writeValueAsString(env);
 				break;
 			case "JSON":
-				envstr = appObjectmappers.getObjectMapper().writeValueAsString(env);
+				envstr = appObjectmappers.getObjectMapperNoIdent().writeValueAsString(env);
 				break;
 			case "YAML":
 				envstr = appObjectmappers.getYmlObjectMapper().writeValueAsString(env);

@@ -2,31 +2,30 @@ package com.jianglibo.vaadin.dashboard.vo;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.regex.Matcher;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jianglibo.vaadin.dashboard.Tbase;
+import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 
 public class TestConfigCentent extends Tbase {
+	
+	@Autowired
+	private AppObjectMappers appObjectMappers;
 
 	@Test
 	public void tpattern() {
-		Matcher m = ConfigContent.convertPth.matcher("<!--   xml -> yaml -->");
-		assertTrue("meta line shoud match.", m.matches());
-		assertThat("from should be xml", m.group(1), equalTo("xml"));
-		assertThat("to should be xml", m.group(2), equalTo("yaml"));
+		String json = "{a: 1, b: 2}";
+		String converted = null;
+		ConfigContent cc = new ConfigContent(json);
+		converted = cc.getConverted(appObjectMappers, "JSON");
 		
-		m = ConfigContent.convertPth.matcher("<!--   xml->yaml -->");
-		assertTrue("meta line shoud match.", m.matches());
-		assertThat("from should be xml", m.group(1), equalTo("xml"));
-		assertThat("to should be xml", m.group(2), equalTo("yaml"));
+		assertThat("should be normalized json.", converted, equalTo("{\"a\":1,\"b\":2}"));
 		
-		m = ConfigContent.convertPth.matcher("  <!--   xml->yaml -->  ");
-		assertTrue("meta line shoud match.", m.matches());
-		assertThat("from should be xml", m.group(1), equalTo("xml"));
-		assertThat("to should be xml", m.group(2), equalTo("yaml"));
+		String yaml = "a: 1\r\nb: 2";
+		cc = new ConfigContent(yaml);
+		converted = cc.getConverted(appObjectMappers, "JSON");
+		assertThat("should be normalized json.", converted, equalTo("{\"a\":1,\"b\":2}"));
 	}
 }
