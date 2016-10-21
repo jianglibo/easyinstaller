@@ -86,21 +86,6 @@ public abstract class Tbase {
     	return personRepository.findByEmail(AppInitializer.firstEmail);
     }
     
-    public List<Software> getSoftwareFixtures() {
-		try {
-			Resource[] softwareResources = context 
-					.getResources("classpath:fixtures/domain/software-*.yml");
-			List<Software> sfs = Lists.newArrayList();
-			for(Resource r : softwareResources) {
-				sfs.add(ymlObjectMapper.readValue(r.getInputStream(), Software.class));
-			}
-			return sfs;
-		} catch (IOException e) {
-		}
-		return null;
-    }
-
-
     public Person createAuser() {
         return createOneUserWithEmail(AppInitializer.firstEmail, RoleNames.USER);
     }

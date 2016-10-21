@@ -4,103 +4,80 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
+import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
+import com.jianglibo.vaadin.dashboard.domain.Software;
 
 public class SoftwareFolder {
 	
 	public static String descriptionyml = "description.yml";
 	
-	private Path path;
+	private Path descriptionymlPath;
 	
-	private String name;
+	/**
+	 * for stream use.
+	 */
+	private Software software;
 	
-	private String ostype;
-	
-	private String sversion;
+	private BoxGroup boxGroup;
 
-	public SoftwareFolder(Path path) {
+	public SoftwareFolder(Path descriptionymlPath) {
 		super();
-		this.path = path;
-	}
-	
-	public String getZipFileName() {
-		return getPath().getFileName().toString() + ".zip";
-	}
-	
-	public String fnAndMd5() {
-		String md5Value = "";
-		try {
-			md5Value = com.google.common.io.Files.hash(getZipFilePath().toFile(), Hashing.md5()).toString();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return getZipFileName() + "," + md5Value;
+		this.setDescriptionymlPath(descriptionymlPath);
 	}
 
-	public Path getZipFilePath() {
-		return getPath().getParent().resolve(getZipFileName());
-	}
 	
-	public boolean isValid() {
-		if (Files.exists(getPath().resolve(descriptionyml))) {
-			String[] ss = getPath().getFileName().toString().split("--");
-			if (ss.length == 3) {
-				setName(ss[0]);
-				setOstype(ss[1]);
-				setSversion(ss[2]);
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public String readDescriptionyml() throws IOException {
-		return new String(Files.readAllBytes(getPath().resolve(descriptionyml)), Charsets.UTF_8);
-	}
-	
-	public String getConfigContent(String fn) throws IOException {
-		return new String(Files.readAllBytes(getPath().resolve(fn))).replaceAll("\r", "");
+	public String getSoftwareConfigContent(String fn) throws IOException {
+		return new String(Files.readAllBytes(getDescriptionymlPath().getParent().resolve(fn)));
 	}
 	
 	public Path getTestPath() throws IOException {
-		Path tp = getPath().resolve("test");
+		Path tp = getDescriptionymlPath().getParent().getParent().resolve("fixtures");
 		if (!Files.exists(tp)) {
 			Files.createDirectories(tp);
 		}
 		return tp;
 	}
-
-	public String getName() {
-		return name;
+	
+	public String readBoxgroupYaml() throws IOException {
+		return new String(Files.readAllBytes(getDescriptionymlPath().getParent().getParent().resolve("sample-env").resolve("boxgroup.yaml")));
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public String readBoxgroupConfigContent() throws IOException {
+		return new String(Files.readAllBytes(getDescriptionymlPath().getParent().getParent().resolve("sample-env").resolve("configContent.yaml")));
 	}
 
-	public String getOstype() {
-		return ostype;
+	public Path getDescriptionymlPath() {
+		return descriptionymlPath;
 	}
 
-	public void setOstype(String ostype) {
-		this.ostype = ostype;
+
+	public void setDescriptionymlPath(Path descriptionymlPath) {
+		this.descriptionymlPath = descriptionymlPath;
 	}
 
-	public String getSversion() {
-		return sversion;
+
+	public String readDescriptionyml() throws IOException {
+		return new String(Files.readAllBytes(getDescriptionymlPath()));
 	}
 
-	public void setSversion(String sversion) {
-		this.sversion = sversion;
+
+	public Software getSoftware() {
+		return software;
 	}
 
-	public Path getPath() {
-		return path;
+
+	public void setSoftware(Software software) {
+		this.software = software;
 	}
 
-	public void setPath(Path path) {
-		this.path = path;
+
+	public BoxGroup getBoxGroup() {
+		return boxGroup;
+	}
+
+
+	public void setBoxGroup(BoxGroup boxGroup) {
+		this.boxGroup = boxGroup;
 	}
 	
 	
