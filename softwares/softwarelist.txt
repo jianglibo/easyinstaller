@@ -1,4 +1,0 @@
-powershell--centos7--6.0.0_alpha.10.zip,362ac76ad46c22aa90dcb16162b0090a
-tcl--centos7--1.zip,4be744dff942e1736619824e55ddf247
-zookeeper--centos7--3.4.5-powershell.zip,32079aca7a6b7478a4a7a42380533c47
-zookeeper--centos7--3.4.9.zip,d72afc2cfcb0aaa387a478ebd92b57f4

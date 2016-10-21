@@ -31,3 +31,7 @@ What does code_to_exec_uuid_filename_env like? It contains all information about
 [A YAML Example](https://github.com/jianglibo/easyinstaller/blob/master/softwares/zookeeper--centos7--3.4.5-powershell/test/envforcodeexec.yaml),[A XML Example](https://github.com/jianglibo/easyinstaller/blob/master/softwares/zookeeper--centos7--3.4.5-powershell/test/envforcodeexec.xml)
 
 code_to_exec_uuid_filename_env will upload to target server before script is invoked.
+
+### Need Help?
+* email: jianglibo@hotmail.com
+* qq群: 418474680

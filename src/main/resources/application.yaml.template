@@ -74,7 +74,7 @@ application:
   ssh-key-folder: ~/easyinstaller-sshs
   auto-login: true
   script-sources:
-    - classpath:scripts/
+    - classpath:com/jianglibo/easyinstaller/scriptsnippets/
     - file:///~/easyinstaller-scripts
     - http://placeholder/
   combo-datas:

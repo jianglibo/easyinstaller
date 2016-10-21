@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -103,12 +104,28 @@ public class ApplicationConfig {
 		setComboDatas(racfig.getComboDatas());
 		defaultSshKeyFile = getSshKeyFolderPath().resolve("ssh_id").toAbsolutePath().toString();
 		
-		normalizeScriptSources();
+		List<String> ss = normalizeScriptSources(racfig.getScriptSources());
+		
+		String scriptSourceInDb = applicationMap.get("scriptSources");
+		
+		if(Strings.isNullOrEmpty(scriptSourceInDb)) {
+			processOneItem(applicationMap, root, "scriptSources", Joiner.on(';').join(ss));
+		} else {
+			List<String> inDbs = normalizeScriptSources(Lists.newArrayList(scriptSourceInDb.split(";")));
+			for(String s: ss) {
+				if (!inDbs.contains(s)) {
+					inDbs.add(s);
+				}
+			}
+			ss = inDbs;
+		}
+		setScriptSources(ss);
 	}
 	
-	private void normalizeScriptSources() {
+	private List<String> normalizeScriptSources(List<String> raw) {
 		List<String> ss = Lists.newArrayList();
-		for(String s : racfig.getScriptSources()) {
+		for(String s : raw) {
+			s = s.trim();
 			if (s.startsWith("classpath:")) {
 				if (s.endsWith("/")) {
 					ss.add(s);
@@ -133,7 +150,7 @@ public class ApplicationConfig {
 				ss.add("file:///" + fn);
 			}
 		}
-		setScriptSources(ss);
+		return ss;
 	}
 
 	public String getSshKeyFile(Box box) {

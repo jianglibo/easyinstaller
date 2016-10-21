@@ -1,3 +1,6 @@
+name: zookeeper
+ostype: CentOs7
+sversion: 3.4.9
 runner: bash
 preferredFormat: JSON
 codeToExecute: code.tcl

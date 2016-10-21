@@ -33,6 +33,12 @@ import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.util.SoftwarePackUtil;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
+/**
+ * 
+ * 
+ * @author jianglibo@gmail.com
+ *
+ */
 @Component
 public class PreDefinedSoftwareProcessor {
 
@@ -59,7 +65,7 @@ public class PreDefinedSoftwareProcessor {
 	private PersonRepository personRepository;
 
 	// ten minutes.
-	@Scheduled(initialDelay = 1000, fixedDelay = 600000)
+//	@Scheduled(initialDelay = 1000, fixedDelay = 600000)
 	public void fetchSoftwareLists() {
 		final String urlBase = "https://raw.githubusercontent.com/jianglibo/easyinstaller/master/softwares/";
 
@@ -181,7 +187,7 @@ public class PreDefinedSoftwareProcessor {
 		}
 	}
 
-	@Scheduled(fixedRate = 10000)
+//	@Scheduled(fixedRate = 10000)
 	public void broadcastNewSoftware() {
 		Broadcaster.broadcast(new BroadCasterMessage(new NewSoftwareMessage(newSoftwareCountAfterLastStart)));
 	}
