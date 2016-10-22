@@ -23,6 +23,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
+import com.jianglibo.vaadin.dashboard.view.importsoftware.ImportSoftwareView;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
@@ -75,6 +76,9 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 		case CommonMenuItemIds.ADD:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
 			break;
+		case "importSoftware":
+			UI.getCurrent().getNavigator().navigateTo(ImportSoftwareView.VIEW_NAME + "/?pv=" + getLvfb().toNavigateString());
+			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
 		}
@@ -94,7 +98,7 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
 				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
 		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
-		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
+		new ButtonGroup(new ButtonDescription("importSoftware", null, ButtonEnableType.ALWAYS))};
 	}
 
 	@Override

@@ -4,41 +4,32 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
-import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.vaadin.server.Page;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 
 @SuppressWarnings("serial")
-@SpringComponent
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class PkSourceUploadReceiver implements UploadReceiver<PkSourceUploadFinishResult>  {
 	
 	public static final Logger LOGGER = LoggerFactory.getLogger(PkSourceUploadReceiver.class);
 	
-	@Autowired
-	private MessageSource messageSource;
+	private final MessageSource messageSource;
 
-	@Autowired
-	private ApplicationConfig applicationConfig;
+	private Path uploadDstPath;
 	
-	@Autowired
-	private PkSourceRepository pkSourceRepository;
+	private final PkSourceRepository pkSourceRepository;
 
 	public File file;
 	
@@ -48,9 +39,11 @@ public class PkSourceUploadReceiver implements UploadReceiver<PkSourceUploadFini
 	
 	private UploadSuccessEventLinstener<PkSourceUploadFinishResult> ufeListener;
 	
-	public PkSourceUploadReceiver afterInjection(UploadSuccessEventLinstener<PkSourceUploadFinishResult> ufeListener) {
+	public PkSourceUploadReceiver(MessageSource messageSource,Path uploadDstPath, PkSourceRepository pkSourceRepository, UploadSuccessEventLinstener<PkSourceUploadFinishResult> ufeListener) {
+		this.messageSource = messageSource;
+		this.pkSourceRepository = pkSourceRepository;
 		this.ufeListener = ufeListener;
-		return this;
+		this.uploadDstPath = uploadDstPath;
 	}
 
 	public OutputStream receiveUpload(String filename, String mimeType) {
@@ -62,7 +55,7 @@ public class PkSourceUploadReceiver implements UploadReceiver<PkSourceUploadFini
 		try {
 			// Open the file for writing.
 			String uuid = UUID.randomUUID().toString();
-			file = applicationConfig.getUploadDstPath().resolve(uuid).toFile();
+			file = uploadDstPath.resolve(uuid).toFile();
 			fos = new FileOutputStream(file);
 		} catch (final java.io.FileNotFoundException e) {
 			new Notification(messageSource.getMessage("component.upload.cantopenfile", new String[]{file.toString()}, UI.getCurrent().getLocale()), "", Notification.Type.ERROR_MESSAGE)
