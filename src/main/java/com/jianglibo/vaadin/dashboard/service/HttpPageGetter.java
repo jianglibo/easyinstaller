@@ -46,7 +46,7 @@ public class HttpPageGetter {
 		return getPage(url, Charsets.UTF_8);
 	}
 
-	public void getFile(String url, Path target) {
+	public Path getFile(String url, Path target) {
 		try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
 			CloseableHttpResponse response = null;
 			try {
@@ -62,11 +62,15 @@ public class HttpPageGetter {
 						instream.close();
 						outstream.flush();
 						outstream.close();
-						Files.move(tmpFile, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+						if (target == null) {
+							return tmpFile;
+						} else {
+							Files.move(tmpFile, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+							return target;
+						}
 					} finally {
 
 					}
-
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -81,6 +85,7 @@ public class HttpPageGetter {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		return null;
 	}
 
 	public String getPage(String url, Charset cs) {

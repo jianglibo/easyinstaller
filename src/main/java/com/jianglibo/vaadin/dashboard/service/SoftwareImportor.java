@@ -12,7 +12,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,9 +39,9 @@ import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
  *
  */
 @Component
-public class PreDefinedSoftwareProcessor {
+public class SoftwareImportor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PreDefinedSoftwareProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SoftwareImportor.class);
 
 	private int newSoftwareCountAfterLastStart = 0;
 
@@ -237,6 +236,62 @@ public class PreDefinedSoftwareProcessor {
 		Person root = personRepository.findByEmail(AppInitializer.firstEmail);
 		sf.setCreator(root);
 		return sf;
+	}
+	
+	private Software decodeFromYaml(Path unpackedFolder) throws IOException {
+		Software sf = null;
+		sf = ymlObjectMapper.readValue(Files.newInputStream(unpackedFolder.resolve("description.yml")), Software.class);
+		StringBuffer bf = new StringBuffer();
+		com.google.common.io.Files.asCharSource(unpackedFolder.resolve(sf.getCodeToExecute()).toFile(), Charsets.UTF_8)
+				.copyTo(bf);
+		sf.setCodeToExecute(bf.toString());
+
+		bf = new StringBuffer();
+		com.google.common.io.Files.asCharSource(unpackedFolder.resolve(sf.getConfigContent()).toFile(), Charsets.UTF_8)
+				.copyTo(bf);
+		sf.setConfigContent(bf.toString());
+
+		sf.getFileToUploadVos().stream().filter(FileToUploadVo::isRemoteFile).forEach(vo -> {
+			softwareDownloader.submitTasks(vo);
+		});
+
+		Person root = personRepository.findByEmail(AppInitializer.firstEmail);
+		sf.setCreator(root);
+		return sf;
+	}
+	
+	public boolean installOneSoftware(Path zipFilePath) throws IOException {
+		Path unpackedFolder = null;
+		unpackedFolder = SoftwarePackUtil.unpack(zipFilePath);
+		Software sfInZip = decodeFromYaml(unpackedFolder);
+		
+		Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sfInZip.getName(), sfInZip.getOstype(),sfInZip.getSversion());
+			if (sfInDb == null) {
+				softwareRepository.save(sfInZip);
+			} else {
+				sfInDb.copyFrom(sfInZip);
+				softwareRepository.save(sfInDb);
+			}
+			if (unpackedFolder != null) {
+				try {
+					Files.walkFileTree(unpackedFolder, new SimpleFileVisitor<Path>() {
+						@Override
+						public FileVisitResult visitFile(Path curFile, BasicFileAttributes bfa) throws IOException {
+							Files.deleteIfExists(curFile);
+							return FileVisitResult.CONTINUE;
+						}
+
+						@Override
+						public FileVisitResult postVisitDirectory(Path curPath, IOException arg1) throws IOException {
+							Files.deleteIfExists(curPath);
+							return FileVisitResult.CONTINUE;
+						}
+					});
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		return false;
 	}
 
 	protected boolean processOneSoftware(HttpPageGetter httpPageGetter, SoftwarelistLine sl) {

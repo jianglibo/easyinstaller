@@ -17,7 +17,7 @@ import com.google.common.io.Files;
 import com.jianglibo.vaadin.dashboard.Tbase;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
-import com.jianglibo.vaadin.dashboard.service.PreDefinedSoftwareProcessor.SoftwarelistLine;
+import com.jianglibo.vaadin.dashboard.service.SoftwareImportor.SoftwarelistLine;
 
 public class TestHttpPageGetter extends Tbase {
 	
@@ -25,7 +25,7 @@ public class TestHttpPageGetter extends Tbase {
 	private SoftwareRepository softwareRepository;
 	
 	@Autowired
-	private PreDefinedSoftwareProcessor preDefinedSoftwareProcessor;
+	private SoftwareImportor preDefinedSoftwareProcessor;
 
 	@Test
 	public void t() throws IOException {
