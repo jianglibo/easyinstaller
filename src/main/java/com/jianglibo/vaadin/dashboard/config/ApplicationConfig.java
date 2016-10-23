@@ -108,6 +108,7 @@ public class ApplicationConfig {
 		
 		String scriptSourceInDb = applicationMap.get("scriptSources");
 		
+		// configuration item in database has high priority.
 		if(Strings.isNullOrEmpty(scriptSourceInDb)) {
 			processOneItem(applicationMap, root, "scriptSources", Joiner.on(';').join(ss));
 		} else {

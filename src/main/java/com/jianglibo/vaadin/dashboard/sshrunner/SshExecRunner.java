@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
@@ -18,6 +17,7 @@ import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
+import com.jianglibo.vaadin.dashboard.util.SoftwareUtil;
 import com.jianglibo.vaadin.dashboard.vo.JschExecuteResult;
 
 /**
@@ -35,10 +35,10 @@ public class SshExecRunner implements BaseRunner {
 	private ApplicationConfig applicationConfig;
 	
 	@Autowired
-	private ApplicationContext applicationContext;
+	private AppObjectMappers appObjectmappers;
 	
 	@Autowired
-	private AppObjectMappers appObjectmappers;
+	private SoftwareUtil softwareUtil;
 
 	@Override
 	public void run(JschSession jsession, OneThreadTaskDesc taskDesc) {
@@ -46,7 +46,7 @@ public class SshExecRunner implements BaseRunner {
 	}
 
 	private void copyCodeToServerAndRun(JschSession jsession, OneThreadTaskDesc taskDesc) {
-		String codeToExec = taskDesc.getSoftware().getParsedCodeToExecute(applicationContext);
+		String codeToExec = softwareUtil.getParsedCodeToExecute(taskDesc.getSoftware());
 		String codeFileName = taskDesc.getSoftware().getCodeFileName(codeToExec);
 		String envFile, codeFile, tpl, cmd;
 		

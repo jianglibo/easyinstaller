@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
+import com.jianglibo.vaadin.dashboard.util.SoftwareFolder;
 import com.jianglibo.vaadin.dashboard.util.SoftwarePackUtil;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
@@ -215,7 +218,7 @@ public class SoftwareImportor {
 
 	private Software decodeFromYaml(Path unpackedFolder, String[] ss) throws IOException {
 		Software sf = null;
-		sf = ymlObjectMapper.readValue(Files.newInputStream(unpackedFolder.resolve("description.yml")), Software.class);
+		sf = ymlObjectMapper.readValue(Files.newInputStream(unpackedFolder.resolve(SoftwareFolder.descriptionyml)), Software.class);
 		sf.setName(ss[0]);
 		sf.setOstype(ss[1]);
 		sf.setSversion(ss[2]);
@@ -238,39 +241,49 @@ public class SoftwareImportor {
 		return sf;
 	}
 	
-	private Software decodeFromYaml(Path unpackedFolder) throws IOException {
-		Software sf = null;
-		sf = ymlObjectMapper.readValue(Files.newInputStream(unpackedFolder.resolve("description.yml")), Software.class);
-		StringBuffer bf = new StringBuffer();
-		com.google.common.io.Files.asCharSource(unpackedFolder.resolve(sf.getCodeToExecute()).toFile(), Charsets.UTF_8)
-				.copyTo(bf);
-		sf.setCodeToExecute(bf.toString());
+	private List<Software> decodeFromYaml(Path unpackedFolder) throws IOException {
+		try (Stream<Path> fstream = Files.walk(unpackedFolder)) {
+			return fstream.filter(p -> {
+				return Files.isRegularFile(p) && SoftwareFolder.descriptionyml.equals(p.getFileName().toString());
+			}).map(yf -> {
+				try {
+					Path baseFolder = yf.getParent();
+					Software sf = ymlObjectMapper.readValue(Files.newInputStream(yf), Software.class);
+					StringBuffer bf = new StringBuffer();
+					com.google.common.io.Files.asCharSource(baseFolder.resolve(sf.getCodeToExecute()).toFile(), Charsets.UTF_8)
+							.copyTo(bf);
+					sf.setCodeToExecute(bf.toString());
 
-		bf = new StringBuffer();
-		com.google.common.io.Files.asCharSource(unpackedFolder.resolve(sf.getConfigContent()).toFile(), Charsets.UTF_8)
-				.copyTo(bf);
-		sf.setConfigContent(bf.toString());
+					bf = new StringBuffer();
+					com.google.common.io.Files.asCharSource(baseFolder.resolve(sf.getConfigContent()).toFile(), Charsets.UTF_8)
+							.copyTo(bf);
+					sf.setConfigContent(bf.toString());
 
-		sf.getFileToUploadVos().stream().filter(FileToUploadVo::isRemoteFile).forEach(vo -> {
-			softwareDownloader.submitTasks(vo);
-		});
+					sf.getFileToUploadVos().stream().filter(FileToUploadVo::isRemoteFile).forEach(vo -> {
+						softwareDownloader.submitTasks(vo);
+					});
 
-		Person root = personRepository.findByEmail(AppInitializer.firstEmail);
-		sf.setCreator(root);
-		return sf;
+					Person root = personRepository.findByEmail(AppInitializer.firstEmail);
+					sf.setCreator(root);
+					return sf;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return null;
+				}
+			}).filter(java.util.Objects::nonNull).collect(Collectors.toList());
+		}
 	}
 	
-	public boolean installOneSoftware(Path zipFilePath) throws IOException {
-		Path unpackedFolder = null;
-		unpackedFolder = SoftwarePackUtil.unpack(zipFilePath);
-		Software sfInZip = decodeFromYaml(unpackedFolder);
-		
-		Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sfInZip.getName(), sfInZip.getOstype(),sfInZip.getSversion());
+	public List<Software> installOneSoftware(Path zipFilePath) throws IOException {
+		final Path unpackedFolder = SoftwarePackUtil.unpack(zipFilePath);
+		return decodeFromYaml(unpackedFolder).stream().map(sfInZip -> {
+			Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sfInZip.getName(), sfInZip.getOstype(),sfInZip.getSversion());
+			Software newSf;
 			if (sfInDb == null) {
-				softwareRepository.save(sfInZip);
+				newSf = softwareRepository.save(sfInZip);
 			} else {
 				sfInDb.copyFrom(sfInZip);
-				softwareRepository.save(sfInDb);
+				newSf = softwareRepository.save(sfInDb);
 			}
 			if (unpackedFolder != null) {
 				try {
@@ -291,7 +304,8 @@ public class SoftwareImportor {
 					e.printStackTrace();
 				}
 			}
-		return false;
+			return newSf;
+		}).collect(Collectors.toList());
 	}
 
 	protected boolean processOneSoftware(HttpPageGetter httpPageGetter, SoftwarelistLine sl) {
@@ -348,5 +362,4 @@ public class SoftwareImportor {
 	public int getNewSoftwareCountAfterLastStart() {
 		return newSoftwareCountAfterLastStart;
 	}
-
 }

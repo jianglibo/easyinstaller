@@ -73,10 +73,6 @@ public class Software extends BaseEntity {
 
 	public static final Splitter commaSplitter = Splitter.on(',').trimResults().omitEmptyStrings();
 	public static final Joiner commaJoiner = Joiner.on(',').skipNulls();
-	
-	public static final Pattern COMMON_SCRIPT_TAG = Pattern.compile("^.*insert-common-script-here:\\s*(\\S+)\\s*$");
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(Software.class);
 
 	@VaadinFormField(order = 10)
 	@VaadinTableColumn(alignment = Align.LEFT)
@@ -171,7 +167,7 @@ public class Software extends BaseEntity {
 
 	}
 	
-	private String parseLs() {
+	public String parseLs() {
 		String cls = Strings.isNullOrEmpty(getCodeLineSeperator()) ? "LF" : getCodeLineSeperator().toUpperCase();
 		return cls.replace("CR", "\r").replace("LF", "\n");
 	}
@@ -188,37 +184,7 @@ public class Software extends BaseEntity {
 			}
 		}
 	}
-	
-	// allow code snippet to insert. if a line in code contains "insert-common-script-here: spring resource url", then get resource content, and insert here.	
-	public String getParsedCodeToExecute(ApplicationContext context) {
-		try {
-			List<String> lines = CharStreams.readLines(new StringReader(getCodeToExecute()));
-			List<String> newlines = Lists.newArrayList();
-			
-			for(String line : lines) {
-				Matcher m = COMMON_SCRIPT_TAG.matcher(line);
-				if (m.matches()) {
-					String rsptn = m.group(1);
-					try {
-						Resource[] rs = context.getResources(rsptn);
-						for(Resource r : rs) {
-							List<String> rlines = CharStreams.readLines(new InputStreamReader(r.getInputStream(), Charsets.UTF_8));
-							newlines.addAll(rlines);
-						}
-					} catch (Exception e) {
-						LOGGER.warn(e.getMessage());
-						return getCodeToExecute();
-					}
-				} else {
-					newlines.add(line);
-				}
-			}
-			return Joiner.on(parseLs()).join(newlines);
-		} catch (IOException e) {
-			LOGGER.warn(e.getMessage());
-			return getCodeToExecute();
-		}
-	}
+
 
 	public Software() {
 
