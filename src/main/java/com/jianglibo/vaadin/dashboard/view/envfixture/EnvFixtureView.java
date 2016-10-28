@@ -23,7 +23,6 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
-import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.security.PersonVo;
 import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.sshrunner.EnvForCodeExec;
@@ -63,23 +62,25 @@ public class EnvFixtureView extends VerticalLayout implements View {
 	public static final FontAwesome ICON_VALUE = FontAwesome.WRENCH;
 
 	private ListViewFragmentBuilder lvfb;
-	
+
 	private final AppObjectMappers appObjectMappers;
-	
+
 	private final BoxGroupRepository boxGroupRepository;
-	
+
 	private final BoxRepository boxRepository;
-	
+
 	private final PersonRepository personRepository;
-	
+
 	private final SoftwareRepository softwareRepository;
-	
+
 	private Button backBtn;
 
 	private Label title;
 
 	@Autowired
-	public EnvFixtureView(MessageSource messageSource, AppObjectMappers appObjectMappers,SoftwareRepository softwareRepository, BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, PersonRepository personRepository) {
+	public EnvFixtureView(MessageSource messageSource, AppObjectMappers appObjectMappers,
+			SoftwareRepository softwareRepository, BoxGroupRepository boxGroupRepository, BoxRepository boxRepository,
+			PersonRepository personRepository) {
 		this.messageSource = messageSource;
 		this.appObjectMappers = appObjectMappers;
 		this.boxGroupRepository = boxGroupRepository;
@@ -107,124 +108,137 @@ public class EnvFixtureView extends VerticalLayout implements View {
 		StyleUtil.setMarginTwenty(vl);
 
 		TextField filePathField = new TextField();
-
-		Button filePathBtn = new Button(MsgUtil.getMsgFallbackToSelf(messageSource, "view.envfixture.", "filePathBtn"),
-				event -> {
+		filePathField.setWidth("80%");
+		
+		final Button filePathBtn = new Button(MsgUtil.getMsgFallbackToSelf(messageSource, "view.envfixture.", "filePathBtn"));
+		
+		filePathBtn.addClickListener(event -> {
 					if (!Strings.isNullOrEmpty(filePathField.getValue())) {
 						Path scriptPaht = Paths.get(filePathField.getValue());
 						Person person = personRepository.findByEmail(AppInitializer.firstEmail);
-						
-						if (Files.exists(scriptPaht) && Files.isDirectory(scriptPaht) && scriptPaht.isAbsolute()){
+
+						if (Files.exists(scriptPaht) && Files.isDirectory(scriptPaht) && scriptPaht.isAbsolute()) {
+							filePathField.setValue("");
 							try (Stream<Path> pathstream = Files.walk(scriptPaht)) {
-								pathstream.filter(p -> SoftwareFolder.descriptionyml.equals(p.getFileName().toString())).filter(p -> {
-									Path sp = p.getParent().getParent().resolve("sample-env");
-									return Files.exists(sp) && Files.exists(sp.resolve("boxgroup.yaml"));
-								}).map(SoftwareFolder::new).map(sfolder -> {
-									try {
-										BoxGroup bg = appObjectMappers.getYmlObjectMapper().readValue(sfolder.readBoxgroupYaml(), BoxGroup.class);
-										bg.setConfigContent(sfolder.readBoxgroupConfigContent());
-										BoxGroup bgInDb = boxGroupRepository.findByName(bg.getName());
+								pathstream.filter(p -> SoftwareFolder.descriptionyml.equals(p.getFileName().toString()))
+										.filter(p -> {
+											Path sp = p.getParent().getParent().resolve("sample-env");
+											return Files.exists(sp) && Files.exists(sp.resolve("boxgroup.yaml"));
+										}).map(SoftwareFolder::new).map(sfolder -> {
+											try {
+												BoxGroup bg = appObjectMappers.getYmlObjectMapper()
+														.readValue(sfolder.readBoxgroupYaml(), BoxGroup.class);
+												bg.setConfigContent(sfolder.readBoxgroupConfigContent());
+												BoxGroup bgInDb = boxGroupRepository.findByName(bg.getName());
 
-										if (bgInDb != null) {
-											bgInDb.getBoxes().forEach(b -> {
-												b.getBoxGroups().remove(bgInDb);
-												boxRepository.save(b);
-											});
-											boxGroupRepository.delete(bgInDb);
-										}
+												if (bgInDb != null) {
+													bgInDb.getBoxes().forEach(b -> {
+														b.getBoxGroups().remove(bgInDb);
+														boxRepository.save(b);
+													});
+													boxGroupRepository.delete(bgInDb);
+												}
 
-										bg.setCreator(person);
+												bg.setCreator(person);
 
-										bg = boxGroupRepository.save(bg);
+												bg = boxGroupRepository.save(bg);
 
-										final Set<BoxGroup> bgs = Sets.newHashSet(bg);
+												final Set<BoxGroup> bgs = Sets.newHashSet(bg);
 
-										Set<Box> boxes = bg.getBoxes().stream().map(box -> {
-											Box boxInDb = boxRepository.findByIp(box.getIp());
-											if (boxInDb != null) {
-												boxRepository.delete(boxInDb);
+												Set<Box> boxes = bg.getBoxes().stream().map(box -> {
+													Box boxInDb = boxRepository.findByIp(box.getIp());
+													if (boxInDb != null) {
+														boxRepository.delete(boxInDb);
+													}
+													box.setCreator(person);
+													box.setBoxGroups(bgs);
+													return boxRepository.save(box);
+												}).collect(Collectors.toSet());
+
+												bg.setBoxes(boxes);
+												bgs.add(boxGroupRepository.save(bg));
+												sfolder.setBoxGroup(bg);
+												return sfolder;
+											} catch (Exception e) {
+												e.printStackTrace();
 											}
-											box.setCreator(person);
-											box.setBoxGroups(bgs);
-											return boxRepository.save(box);
-										}).collect(Collectors.toSet());
+											return null;
+										}).map(sfolder -> {
+											try {
+												Software sf = appObjectMappers.getYmlObjectMapper()
+														.readValue(sfolder.readDescriptionyml(), Software.class);
+												sf.setConfigContent(
+														sfolder.getSoftwareConfigContent(sf.getConfigContent()));
+												sfolder.setSoftware(sf);
+												return (SoftwareFolder) sfolder;
+											} catch (Exception e) {
+												e.printStackTrace();
+												return null;
+											}
+										}).map(sfolder -> {
+											try {
+												Software sf = sfolder.getSoftware();
+												Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(
+														sf.getName(), sf.getOstype(), sf.getSversion());
+												if (sfInDb != null) {
+													softwareRepository.delete(sfInDb);
+												}
+												sf.setCreator(person);
+												softwareRepository.save(sf);
 
-										bg.setBoxes(boxes);
-										bgs.add(boxGroupRepository.save(bg));
-										sfolder.setBoxGroup(bg);
-										return sfolder;
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-									return null;
-								})
-								.map(sfolder -> {
-									try {
-										Software sf = appObjectMappers.getYmlObjectMapper().readValue(sfolder.readDescriptionyml(), Software.class);
-										sf.setConfigContent(sfolder.getSoftwareConfigContent(sf.getConfigContent()));
-										sfolder.setSoftware(sf);
-										return (SoftwareFolder)sfolder;
-									} catch (Exception e) {
-										e.printStackTrace();
-										return null;
-									}
-								}).map(sfolder -> {
-									try {
-										Software sf = sfolder.getSoftware();
-										Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sf.getName(), sf.getOstype(),
-												sf.getSversion());
-										if (sfInDb != null) {
-											softwareRepository.delete(sfInDb);
-										}
-										sf.setCreator(person);
-										softwareRepository.save(sf);
-										
-										TaskDesc td = new TaskDesc("", new PersonVo.PersonVoBuilder(person).build(), sfolder.getBoxGroup(),
-												Sets.newHashSet(), sf, "install");
+												TaskDesc td = new TaskDesc("",
+														new PersonVo.PersonVoBuilder(person).build(),
+														sfolder.getBoxGroup(), Sets.newHashSet(), sf, "install");
 
-										OneThreadTaskDesc ottd = td.createOneThreadTaskDescs().get(0);
+												OneThreadTaskDesc ottd = td.createOneThreadTaskDescs().get(0);
 
-										EnvForCodeExec efce = new EnvForCodeExec.EnvForCodeExecBuilder(appObjectMappers, ottd,
-												"/opt/easyinstaller").build();
-										
-										Path testFolder = sfolder.getTestPath();
-										
-										switch (sf.getPreferredFormat()) {
-										case "JSON":
-											String json = appObjectMappers.getObjectMapperNoIdent().writeValueAsString(efce);
-											Files.write(testFolder.resolve("envforcodeexec.json"), json.getBytes());
-											break;
-										case "YAML":
-											String yml = appObjectMappers.getYmlObjectMapper().writeValueAsString(efce);
-											Files.write(testFolder.resolve("envforcodeexec.yaml"), yml.getBytes());
-											break;
-										case "XML":
-											String xml = appObjectMappers.getXmlObjectMapper().writeValueAsString(efce);
-											Files.write(testFolder.resolve("envforcodeexec.xml"), xml.getBytes());
-											break;
-										default:
-											break;
-										}
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-									return 1;
-								}).count();
-							return;
-						} catch (Exception e2) {
+												EnvForCodeExec efce = new EnvForCodeExec.EnvForCodeExecBuilder(
+														appObjectMappers, ottd, "/opt/easyinstaller").build();
 
+												Path testFolder = sfolder.getTestPath();
+
+												switch (sf.getPreferredFormat()) {
+												case "JSON":
+													String json = appObjectMappers.getObjectMapperNoIdent()
+															.writeValueAsString(efce);
+													Files.write(testFolder.resolve("envforcodeexec.json"),
+															json.getBytes());
+													break;
+												case "YAML":
+													String yml = appObjectMappers.getYmlObjectMapper()
+															.writeValueAsString(efce);
+													Files.write(testFolder.resolve("envforcodeexec.yaml"),
+															yml.getBytes());
+													break;
+												case "XML":
+													String xml = appObjectMappers.getXmlObjectMapper()
+															.writeValueAsString(efce);
+													Files.write(testFolder.resolve("envforcodeexec.xml"),
+															xml.getBytes());
+													break;
+												default:
+													break;
+												}
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+											return 1;
+										}).count();
+								NotificationUtil.humanized(messageSource, "taskdone", filePathField.getValue());
+								return;
+							} catch (Exception e2) {
+
+							}
 						}
 					}
-				}
-					NotificationUtil.tray(messageSource, "illegalScriptFolder", filePathField.getValue());
+					NotificationUtil.warn(messageSource, "illegalScriptFolder", filePathField.getValue());
 				});
 
 		StyleUtil.setMarginLeftTen(filePathBtn);
-
+		
 		Label descriptionLabel = new Label();
 		descriptionLabel.setContentMode(ContentMode.HTML);
-		descriptionLabel
-				.setValue(MsgUtil.getMsgFallbackToSelf(messageSource, "view.envfixture.", "descriptionLabel"));
+		descriptionLabel.setValue(MsgUtil.getMsgFallbackToSelf(messageSource, "view.envfixture.", "descriptionLabel"));
 		vl.addComponents(filePathField, filePathBtn, descriptionLabel);
 		return vl;
 	}
