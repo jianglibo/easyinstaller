@@ -1,0 +1,4 @@
+How to generate envforcodeexec fixtures?
+
+Put your script folder into "fixture-softwares", If your folder contains a description.yml file and there exists a folder named "sample-env" in the parent of parent of description.yml file,
+When you run com.jianglibo.vaadin.dashboard.domain.TestScriptFixtures.java, will create a fixture env for you.
