@@ -47,19 +47,23 @@ public class SshExecRunner implements BaseRunner {
 
 	private void copyCodeToServerAndRun(JschSession jsession, OneThreadTaskDesc taskDesc) {
 		String codeToExec = softwareUtil.getParsedCodeToExecute(taskDesc.getSoftware());
-		String codeFileName = taskDesc.getSoftware().getCodeFileName(codeToExec);
-		String envFile, codeFile, tpl, cmd;
+		String codeFileName = applicationConfig.getRemoteFolder() + taskDesc.getSoftware().getCodeFileName(codeToExec);
+		String codeFileNameAtRemote = applicationConfig.getRemoteFolder() + codeFileName;
+		String envFileNameAtRemote = applicationConfig.getRemoteFolder() + codeFileName + ".env";
 		
-		envFile = uplocadEnv(jsession, taskDesc, codeFileName);
+		String tpl, cmd;
+		
+		uplocadEnv(jsession, taskDesc, envFileNameAtRemote);
+		
 		if (taskDesc.getBoxHistory().isSuccess()) {
-			codeFile = uploadCode(jsession, taskDesc,codeToExec, codeFileName);
+			uploadCode(jsession, taskDesc,codeToExec, codeFileNameAtRemote);
 			if (taskDesc.getBoxHistory().isSuccess()) {
 				String runner = taskDesc.getSoftware().getRunner();
 				if (runner.contains("{code}") || runner.contains("{envfile}") || runner.contains("{action}")) {
-					cmd = runner.replace("{code}", codeFile).replace("{envfile}", envFile).replace("{action}", taskDesc.getAction());
+					cmd = runner.replace("{code}", codeFileNameAtRemote).replace("{envfile}", envFileNameAtRemote).replace("{action}", taskDesc.getAction());
 				} else {
 					tpl = "%s %s -envfile %s -action %s";
-					cmd = String.format(tpl, runner , codeFile, envFile, taskDesc.getAction());
+					cmd = String.format(tpl, runner , codeFileNameAtRemote, envFileNameAtRemote, taskDesc.getAction());
 				}
 				JschExecuteResult jer = jsession.exec(cmd);
 				
@@ -75,7 +79,7 @@ public class SshExecRunner implements BaseRunner {
 		}
 	}
 
-	private String uplocadEnv(JschSession jsession, OneThreadTaskDesc taskDesc, String uuid) {
+	private void uplocadEnv(JschSession jsession, OneThreadTaskDesc taskDesc, String envFileNameAtRemote) {
 		EnvForCodeExec env = new EnvForCodeExec.EnvForCodeExecBuilder(appObjectmappers, taskDesc, applicationConfig.getRemoteFolder()).build();
 		String envstr = null;
 		try {
@@ -92,17 +96,14 @@ public class SshExecRunner implements BaseRunner {
 			default:
 				LOGGER.error("unsupported format: {}", taskDesc.getSoftware().getPreferredFormat());
 				taskDesc.getBoxHistory().appendLogAndSetFailure("unsupported format: " + taskDesc.getSoftware().getPreferredFormat()) ;
-				return null;
 			}
-			String targetFile = applicationConfig.getRemoteFolder() + uuid + ".env";
-			return putStream(taskDesc.getBoxHistory(), jsession, targetFile, envstr);
+			putStream(taskDesc.getBoxHistory(), jsession, envFileNameAtRemote, envstr);
 		} catch (Exception e) {
 			taskDesc.getBoxHistory().appendLogAndSetFailure(e.getMessage());
 		}
-		return null;
 	}
 
-	private String putStream(BoxHistory bh, JschSession jsession, String targetFile, String content) {
+	private void putStream(BoxHistory bh, JschSession jsession, String targetFile, String content) {
 		ChannelSftp sftp = null;
 		try {
 			sftp = jsession.getSftpCh();
@@ -122,12 +123,10 @@ public class SshExecRunner implements BaseRunner {
 				sftp.disconnect();
 			}
 		}
-		return targetFile;
 	}
 
-	private String uploadCode(JschSession jsession, OneThreadTaskDesc taskDesc,String codeToExec, String codeFileName) {
-		String targetFile = applicationConfig.getRemoteFolder() + codeFileName;
-		return putStream(taskDesc.getBoxHistory(), jsession, targetFile, codeToExec);
+	private void uploadCode(JschSession jsession, OneThreadTaskDesc taskDesc,String codeToExec, String codeFileNameAtRemote) {
+		putStream(taskDesc.getBoxHistory(), jsession, codeFileNameAtRemote, codeToExec);
 	}
 
 }

@@ -48,8 +48,8 @@ def fileToPath(file) {
 
 group = "com.jianglibo"
 archivesBaseName = "easyinstaller"
-version = "0.1.2-SNAPSHOT"
-// version = "0.1.2"
+// version = "0.1.2-SNAPSHOT"
+version = "0.1.3"
 
 jar {
     baseName = 'easyinstaller'
@@ -117,7 +117,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.h2database/h2
 	compile group: 'com.h2database', name: 'h2', version: '1.4.192'
 
-	compile group: 'com.jianglibo.easyinstaller', name: 'scriptsnippets', version: '0.1.1'
+	compile group: 'com.jianglibo.easyinstaller', name: 'scriptsnippets', version: '0.1.2'
 
 
     compile("mysql:mysql-connector-java")

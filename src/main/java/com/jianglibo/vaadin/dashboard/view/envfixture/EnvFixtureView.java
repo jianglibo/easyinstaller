@@ -224,7 +224,7 @@ public class EnvFixtureView extends VerticalLayout implements View {
 											}
 											return 1;
 										}).count();
-								NotificationUtil.humanized(messageSource, "taskdone", filePathField.getValue());
+								NotificationUtil.tray(messageSource, "taskdone", filePathField.getValue());
 								return;
 							} catch (Exception e2) {
 

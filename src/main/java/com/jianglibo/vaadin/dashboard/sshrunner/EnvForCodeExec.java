@@ -135,6 +135,8 @@ public class EnvForCodeExec {
 		
 		private String runas;
 		
+		private String runner;
+		
 		private Set<String> filesToUpload;
 		private String configContent;
 		private String actions;
@@ -149,6 +151,7 @@ public class EnvForCodeExec {
 			this.actions = software.getActions();
 			this.preferredFormat = software.getPreferredFormat();
 			this.runas = software.getRunas();
+			this.runner = software.getRunner();
 		}
 
 		public Set<String> getFilesToUpload() {
@@ -213,6 +216,14 @@ public class EnvForCodeExec {
 
 		public void setRunas(String runas) {
 			this.runas = runas;
+		}
+
+		public String getRunner() {
+			return runner;
+		}
+
+		public void setRunner(String runner) {
+			this.runner = runner;
 		}
 	}
 
