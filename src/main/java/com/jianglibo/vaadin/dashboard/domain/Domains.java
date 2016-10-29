@@ -79,7 +79,7 @@ public class Domains implements ApplicationContextAware {
 		for (Class<?> clazz : clazzesWithVt) {
 			VaadinTable vt = clazz.getAnnotation(VaadinTable.class);
 			VaadinTableWrapper vtw = new VaadinTableWrapper(vt, clazz);
-			vtw.setColumns(processOneTableColumn(clazz));
+			vtw.setColumns(processOneTableColumn(clazz, vt));
 			List<VaadinFormFieldWrapper> ff = Lists.newArrayList(processOneTableForm(clazz));
 			vtw.setFormFields(ff);
 			ffmap.put(clazz, ff);
@@ -89,13 +89,13 @@ public class Domains implements ApplicationContextAware {
 		for (Class<?> clazz : clazzesWithVg) {
 			VaadinGrid vg = clazz.getAnnotation(VaadinGrid.class);
 			VaadinGridWrapper vgw = new VaadinGridWrapper(vg, clazz);
-			vgw.setColumns(processOneGridColumn(clazz));
+			vgw.setColumns(processOneGridColumn(clazz, vg));
 			vgw.setFormFields(ffmap.get(clazz));
 			grids.put(vgw.getName(), vgw);
 		}
 	}
 
-	private List<VaadinGridColumnWrapper> processOneGridColumn(Class<?> clazz) {
+	private List<VaadinGridColumnWrapper> processOneGridColumn(Class<?> clazz, VaadinGrid vg) {
 		SortedMap<Integer, VaadinGridColumnWrapper> sm = Maps.newTreeMap();
 
 		for (Field field : clazz.getDeclaredFields()) {
@@ -111,6 +111,11 @@ public class Domains implements ApplicationContextAware {
 
 		for (Field field : clazz.getSuperclass().getDeclaredFields()) {
 			if (field.isAnnotationPresent(VaadinGridColumn.class)) {
+				if (!vg.showCreatedAt()) {
+					if ("createdAt".equals(field.getName())) {
+						continue;
+					}
+				}
 				VaadinGridColumn vgc = field.getAnnotation(VaadinGridColumn.class);
 				int i = vgc.order();
 				while (sm.containsKey(i)) {
@@ -149,7 +154,7 @@ public class Domains implements ApplicationContextAware {
 		return vfs.values();
 	}
 
-	private List<VaadinTableColumnWrapper> processOneTableColumn(Class<?> clazz) {
+	private List<VaadinTableColumnWrapper> processOneTableColumn(Class<?> clazz, VaadinTable vt) {
 		SortedMap<Integer, VaadinTableColumnWrapper> sm = Maps.newTreeMap();
 
 		for (Field field : clazz.getDeclaredFields()) {
@@ -165,6 +170,11 @@ public class Domains implements ApplicationContextAware {
 
 		for (Field field : clazz.getSuperclass().getDeclaredFields()) {
 			if (field.isAnnotationPresent(VaadinTableColumn.class)) {
+				if (!vt.showCreatedAt()) {
+					if ("createdAt".equals(field.getName())) {
+						continue;
+					}
+				}
 				VaadinTableColumn tc = field.getAnnotation(VaadinTableColumn.class);
 				int i = tc.order();
 				while (sm.containsKey(i)) {

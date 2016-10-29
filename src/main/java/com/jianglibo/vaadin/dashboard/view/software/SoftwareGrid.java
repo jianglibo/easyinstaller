@@ -26,9 +26,14 @@ public class SoftwareGrid extends BaseGrid<Software, FreeContainer<Software>> {
 	protected void setupGrid() {
 		FooterRow footer = addFooterRowAt(0);
 		FooterCell fc = footer.getCell("createdAt");
+		
+		if (fc == null) {
+			fc = footer.getCell("updatedAt"); 
+		}
 		fc.setText("0");
+		final FooterCell fcf = fc;
 		getdContainer().addItemSetChangeListener(event -> {
-			fc.setText("" + event.getContainer().size());
+			fcf.setText("" + event.getContainer().size());
 		});
 		
 	}

@@ -21,4 +21,5 @@ public @interface VaadinGrid {
 	String defaultSort() default "-createdAt";
 	int defaultPerPage() default 15;
 	Grid.SelectionMode selectMode() default Grid.SelectionMode.SINGLE;
+	boolean showCreatedAt() default false;
 }

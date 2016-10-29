@@ -19,7 +19,7 @@ import com.vaadin.ui.themes.ValoTheme;
 	selectable=true,
 	fullSize=true,
 	footerVisible=true,
-	sortable=true)
+	sortable=true, showCreatedAt=true)
 public class PkSource extends BaseEntity {
 
     /**

@@ -36,8 +36,6 @@ public class HttpPageGetter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpPageGetter.class);
 	
-
-	
 	private int fetchNewsCount = 0;
 	
 	private List<NewNew> allNews = Lists.newArrayList();

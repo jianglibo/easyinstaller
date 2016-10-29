@@ -27,10 +27,10 @@ import com.vaadin.ui.themes.ValoTheme;
 @Entity
 @VaadinTable(multiSelect = true, messagePrefix = "domain.person.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
 @VaadinGrid(multiSelect = true, messagePrefix = "domain.person.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
 @Table(name = "person", uniqueConstraints = { @UniqueConstraint(columnNames = "email"), @UniqueConstraint(columnNames="mobile"),@UniqueConstraint(columnNames="name")})
 public class Person extends BaseEntity {
 

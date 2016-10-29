@@ -1,14 +1,10 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
@@ -17,31 +13,28 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.Resource;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
 import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.GlobalComboOptions;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
@@ -65,10 +58,10 @@ import com.vaadin.ui.themes.ValoTheme;
 @Table(name = "software", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "ostype", "sversion" }) })
 @VaadinTable(multiSelect = true, footerVisible = true, messagePrefix = "domain.software.", styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, defaultSort="-updatedAt")
 @VaadinGrid(multiSelect = true, footerVisible = true, messagePrefix = "domain.software.", styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, defaultSort="-updatedAt")
 public class Software extends BaseEntity {
 
 	public static final Splitter commaSplitter = Splitter.on(',').trimResults().omitEmptyStrings();
@@ -99,6 +92,12 @@ public class Software extends BaseEntity {
 	@NotNull
 	@VaadinFormField(order = 30)
 	private String runner;
+	
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@VaadinTableColumn(order = 10001, sortable = true)
+	@VaadinGridColumn(order = 10001, sortable = true)
+	private Date updatedAt;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 100)
@@ -141,11 +140,13 @@ public class Software extends BaseEntity {
 	@PrePersist
 	public void createCreatedAt() {
 		setCreatedAt(Date.from(Instant.now()));
+		setUpdatedAt(getCreatedAt());
 	}
 
 	@PreUpdate
 	public void normalizeComm() {
-		setConfigContent(getConfigContent().replaceAll("\r", ""));
+		setUpdatedAt(Date.from(Instant.now()));
+//		setConfigContent(getConfigContent().replaceAll("\r", ""));
 		if (getActions() == null) {
 			setActions("install");
 		} else {
@@ -296,6 +297,14 @@ public class Software extends BaseEntity {
 
 	public void setCodeLineSeperator(String codeLineSeperator) {
 		this.codeLineSeperator = codeLineSeperator;
+	}
+	
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 	public void copyFrom(Software vo) {

@@ -26,10 +26,12 @@ public class KkvGrid extends BaseGrid<Kkv, FreeContainer<Kkv>> {
 	protected void setupGrid() {
 		FooterRow footer = addFooterRowAt(0);
 		FooterCell fc = footer.getCell("createdAt");
-		fc.setText("0");
-		getdContainer().addItemSetChangeListener(event -> {
-			fc.setText("" + event.getContainer().size());
-		});
+		if (fc != null) {
+			fc.setText("0");
+			getdContainer().addItemSetChangeListener(event -> {
+				fc.setText("" + event.getContainer().size());
+			});
+		}
 	}
 
 }

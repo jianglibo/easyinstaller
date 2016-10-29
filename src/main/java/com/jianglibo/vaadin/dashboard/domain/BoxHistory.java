@@ -26,10 +26,10 @@ import com.vaadin.ui.themes.ValoTheme;
 @Table(name = "box_history")
 @VaadinTable(multiSelect = true, footerVisible = true, messagePrefix = "domain.box_history.", styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
 @VaadinGrid(multiSelect = true, messagePrefix = "domain.box_history.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
 public class BoxHistory extends BaseEntity {
 
 	@ManyToOne

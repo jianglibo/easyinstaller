@@ -81,6 +81,7 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 		StyleUtil.setMarginTwenty(vl);
 
 		TextField urlField = new TextField();
+		urlField.setWidth("80%");
 
 		Button urlBtn = new Button(MsgUtil.getMsgFallbackToSelf(messageSource, "view.importsoftware.", "urlBtn"),
 				event -> {
@@ -95,12 +96,14 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 					}
 					
 					if (goon) {
+						urlField.setValue("");
 						Path zipFilePath = httpPageGetter.getFile(s, null);
 						if (zipFilePath == null) {
 							NotificationUtil.tray(messageSource, "zipDownloadFail", urlField.getValue());
 						} else {
 							try {
 								softwareImporter.installOneSoftware(zipFilePath);
+								NotificationUtil.tray(messageSource, "taskdone", urlField.getValue());
 							} catch (Exception e) {
 								NotificationUtil.tray(messageSource, "importSoftwareFail", urlField.getValue());
 							}

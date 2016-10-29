@@ -19,10 +19,10 @@ import com.vaadin.ui.themes.ValoTheme;
 @Entity
 @VaadinGrid(multiSelect = true, messagePrefix = "domain.kkv.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
 @VaadinTable(multiSelect = true, messagePrefix = "domain.kkv.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
 @Table(name = "kkv", uniqueConstraints = { @UniqueConstraint(columnNames = { "kgroup", "key", "value" }) })
 public class Kkv extends BaseEntity {
 

@@ -18,4 +18,5 @@ public @interface VaadinTable {
 	String messagePrefix();
 	String defaultSort() default "-createdAt";
 	int defaultPerPage() default 15;
+	boolean showCreatedAt() default false;
 }
