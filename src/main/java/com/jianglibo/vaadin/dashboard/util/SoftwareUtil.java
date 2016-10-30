@@ -26,6 +26,8 @@ public class SoftwareUtil {
 
 	public static final Pattern COMMON_SCRIPT_TAG = Pattern.compile("^.*insert-common-script-here:\\s*(\\S+)\\s*$");
 	
+	public static final Pattern PREFIX_FIND = Pattern.compile("^(http://|classpath:|file:///){1}.*$");
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoftwareUtil.class);
 	
 	private final ApplicationContext context;
@@ -38,8 +40,10 @@ public class SoftwareUtil {
 	}
 	
 	private List<String> parseOne(String rsptn) {
-		for(String scriptSource: scriptSources) {
-			String fullPath = scriptSource + rsptn;
+		Matcher m = PREFIX_FIND.matcher(rsptn);
+		// if is absolute path, just get it.
+		if (m.matches()) {
+			String fullPath = m.group();
 			Resource rs = context.getResource(fullPath);
 			try {
 				List<String> lines =  CharStreams.readLines(new InputStreamReader(rs.getInputStream(), Charsets.UTF_8));
@@ -47,6 +51,18 @@ public class SoftwareUtil {
 				return lines;
 			} catch (IOException e) {
 				LOGGER.info("code snippet not found in {}", fullPath);
+			}
+		} else {
+			for(String scriptSource: scriptSources) {
+				String fullPath = scriptSource + rsptn;
+				Resource rs = context.getResource(fullPath);
+				try {
+					List<String> lines =  CharStreams.readLines(new InputStreamReader(rs.getInputStream(), Charsets.UTF_8));
+					LOGGER.info("found code snippet in {}", fullPath);
+					return lines;
+				} catch (IOException e) {
+					LOGGER.info("code snippet not found in {}", fullPath);
+				}
 			}
 		}
 		return Lists.newArrayList();
