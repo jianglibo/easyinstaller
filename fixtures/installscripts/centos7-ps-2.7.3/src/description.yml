@@ -1,0 +1,13 @@
+name: hadoop
+ostype: CentOs7
+sversion: ps-2.7.3
+runner: powershell -File {code} -envfile {envfile} -action {action}
+preferredFormat: JSON
+codeToExecute: hadoop.ps1
+configContent: config.yml # content of this file will insert into software configContent field.
+codeFileExt: .ps1
+codeLineSeperator: LF
+runas:
+actions: install,start,stop,restart
+filesToUpload:
+  - http://apache.01link.hk/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz

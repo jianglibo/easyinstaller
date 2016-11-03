@@ -1,8 +1,11 @@
 package com.jianglibo.vaadin.dashboard.util;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Software;
@@ -36,6 +39,26 @@ public class SoftwareFolder {
 			Files.createDirectories(tp);
 		}
 		return tp;
+	}
+	
+	public String getBoxIp() {
+		Path pf = getDescriptionymlPath().getParent().getParent().resolve("sample-env").resolve("box.yaml");
+		try {
+			if (!Files.exists(pf)) {
+				return null;
+			} else {
+				Pattern ptn = Pattern.compile("ip:\\s*([0-9.]+)");
+				for (String line : Files.readAllLines(pf, StandardCharsets.UTF_8)) {
+					Matcher m = ptn.matcher(line);
+					if (m.matches()) {
+						return m.group(1);
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public String readBoxgroupYaml() throws IOException {

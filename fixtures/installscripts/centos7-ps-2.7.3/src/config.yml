@@ -1,0 +1,149 @@
+installDir: "/opt/hadoop"
+dfsClusterName: mydfscluster
+ports:
+  namenode:
+    api: 8020
+    http: 50070
+    https: 50470
+    backup: 50100
+    backuphttp: 50105
+  journalnode:
+    rpc: 8485
+    http: 8480
+    https: 8481
+  snamenode:
+    http: 50090
+    https: 50091
+  datanode:
+    api: 50010
+    http: 50075
+    ipc: 50020
+    https: 50475
+  resourcemanager:
+    api: 8032
+    scheduler: 8030
+    resourceTracker: 8031
+    admin: 8033
+    webapp: 8042
+coreSite:
+  - name: fs.defaultFS
+# value should from hdfsPort and box which has a NameNode role. hdfs://host:port/
+    value:
+    description:
+  - name: io.file.buffer.size
+    value: 131072
+    description:
+hdfsSite:
+  - name: dfs.namenode.name.dir
+    value: /opt/hadoop/dfs.namenode.name.dir
+    description:
+  - name: dfs.hosts
+    value:
+    description:
+#  - name: dfs.hosts.exclude
+#    value:
+#    description:
+  - name: dfs.blocksize
+    value: 268435456
+    description:
+  - name: dfs.namenode.handler.count
+    value: 100
+    description:
+# for datanode.
+  - name: dfs.datanode.data.dir
+    value:
+    description:
+yarnSite:
+  - name: yarn.acl.enable
+    value: false
+    description:
+  - name: yarn.admin.acl
+    value:
+    description:
+  - name: yarn.log-aggregation-enable
+    value: false
+    description:
+# for ResourceManager
+  - name: yarn.resourcemanager.address
+    value:
+    description:
+  - name: yarn.resourcemanager.scheduler.address
+    value:
+    description:
+  - name: yarn.resourcemanager.resource-tracker.address
+    value:
+    description:
+  - name: yarn.resourcemanager.admin.address
+    value:
+    description:
+  - name: yarn.resourcemanager.webapp.address
+    value:
+    description:
+  - name: yarn.resourcemanager.hostname
+    value:
+    description:
+  - name: yarn.resourcemanager.scheduler.class
+    value:
+    description:
+  - name: yarn.scheduler.minimum-allocation-mb
+    value:
+    description:
+  - name: yarn.scheduler.maximum-allocation-mb
+    value:
+    description:
+  - name: yarn.resourcemanager.nodes.include-path
+    value:
+    description:
+#  - name: yarn.resourcemanager.nodes.exclude-path
+#    value:
+#    description:
+# for NodeManager:
+  - name: yarn.nodemanager.resource.memory-mb
+    value:
+    description:
+  - name: yarn.nodemanager.vmem-pmem-ratio
+    value:
+    description:
+  - name: yarn.nodemanager.local-dirs
+    value:
+    description:
+  - name: yarn.nodemanager.log-dirs
+    value:
+    description:
+  - name: yarn.nodemanager.log.retain-seconds
+    value:
+    description:
+  - name: yarn.nodemanager.remote-app-log-dir
+    value:
+    description:
+  - name: yarn.nodemanager.remote-app-log-dir-suffix
+    value:
+    description:
+  - name: yarn.nodemanager.aux-services
+    value:
+    description:
+mapredSite:
+  - name: mapreduce.framework.name
+    value: yarn
+    description:
+  - name: mapreduce.map.memory.mb
+    value:
+    description:
+  - name: mapreduce.map.java.opts
+    value:
+    description:
+  - name: mapreduce.reduce.memory.mb
+    value:
+    description:
+  - name: mapreduce.reduce.java.opts
+    value:
+    description:
+  - name: mapreduce.task.io.sort.mb
+    value:
+    description:
+  - name: mapreduce.task.io.sort.factor
+    value:
+    description:
+  - name: mapreduce.reduce.shuffle.parallelcopies
+    value:
+    description:

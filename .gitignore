@@ -42,3 +42,4 @@ Vagrantfile
 _site/
 tgzFolder/
 fixture-softwares/
+/fixtures/installscripts/**/fixtures

@@ -1,0 +1,34 @@
+NameNode
+ResourceManager
+
+DataNode
+
+Read-only default configuration - core-default.xml, hdfs-default.xml, yarn-default.xml and mapred-default.xml.
+Site-specific configuration - etc/hadoop/core-site.xml, etc/hadoop/hdfs-site.xml, etc/hadoop/yarn-site.xml and etc/hadoop/mapred-site.xml.
+
+Additionally, you can control the Hadoop scripts found in the bin/ directory of the distribution, by setting site-specific values via the etc/hadoop/hadoop-env.sh and etc/hadoop/yarn-env.sh.
+
+To configure the Hadoop cluster you will need to configure the environment in which the Hadoop daemons execute as well as the configuration parameters for the Hadoop daemons.
+
+HDFS daemons are NameNode, SecondaryNameNode, and DataNode.
+YARN damones are ResourceManager, NodeManager, and WebAppProxy.
+If MapReduce is to be used, then the MapReduce Job History Server will also be running.
+For large installations, these are generally running on separate hosts.
+
+Administrators should use the etc/hadoop/hadoop-env.sh and optionally the etc/hadoop/mapred-env.sh and etc/hadoop/yarn-env.sh scripts to do site-specific customization of the Hadoop daemons’ process environment.
+At the very least, you must specify the JAVA_HOME so that it is correctly defined on each remote node.
+Administrators can configure individual daemons using the configuration options shown below in the table:
+
+Daemon	Environment Variable
+NameNode	HADOOP_NAMENODE_OPTS
+DataNode	HADOOP_DATANODE_OPTS
+Secondary NameNode	HADOOP_SECONDARYNAMENODE_OPTS
+ResourceManager	YARN_RESOURCEMANAGER_OPTS
+NodeManager	YARN_NODEMANAGER_OPTS
+WebAppProxy	YARN_PROXYSERVER_OPTS
+Map Reduce Job History Server	HADOOP_JOB_HISTORYSERVER_OPTS
+
+It is also traditional to configure HADOOP_PREFIX in the system-wide shell environment configuration. For example, a simple script inside /etc/profile.d:
+
+HADOOP_PREFIX=/path/to/hadoop
+export HADOOP_PREFIX

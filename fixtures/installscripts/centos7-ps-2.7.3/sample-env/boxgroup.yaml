@@ -1,0 +1,41 @@
+name: boxgroup1
+boxes:
+  - ip: 192.168.33.110
+    name: box1
+# this a so called master node
+    roles: NameNode,ResourceManager
+    ostype: centos7
+    description:
+    keyFilePath:
+    port:
+    sshUser:
+    hostname:
+    dnsServer:
+    ips:
+    ports:
+  - ip: 192.168.33.111
+    name: box2
+    roles: DataNode,NodeManager
+    ostype: centos7
+    description: a description
+    keyFilePath:
+    port: 222
+    sshUser: root
+    hostname: a1.host.name
+    dnsServer: 192.168.2.60
+    ips: 192.168.2.12,192.168.2.13
+    ports: 80,8080
+  - ip: 192.168.33.112
+    name: box3
+    roles: DataNode,NodeManager
+    ostype: centos7
+    description: a description
+    keyFilePath:
+    port: 222
+    sshUser: root
+    hostname: a2.host.name
+    dnsServer:
+    ips: 192.168.2.15,192.168.2.16
+    ports: 80,8080
+dnsServer: 192.168.2.60
+configContent: configContent.yaml
