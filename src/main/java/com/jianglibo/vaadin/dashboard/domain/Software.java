@@ -7,13 +7,14 @@ import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.PostUpdate;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -84,7 +85,10 @@ public class Software extends BaseEntity {
 	@NotNull
 	@VaadinGridColumn
 	private String ostype;
-
+	
+	/**
+	 * runas can be a single string, or json or anything else. It's up to consumer to explain it.
+	 */
 	@VaadinFormField(order = 25)
 	private String runas;
 
@@ -93,6 +97,8 @@ public class Software extends BaseEntity {
 	@VaadinFormField(order = 30)
 	private String runner;
 	
+	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.REMOVE)
+	private Set<TextFile> textfiles;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@VaadinTableColumn(order = 10001, sortable = true)
@@ -146,7 +152,6 @@ public class Software extends BaseEntity {
 	@PreUpdate
 	public void normalizeComm() {
 		setUpdatedAt(Date.from(Instant.now()));
-//		setConfigContent(getConfigContent().replaceAll("\r", ""));
 		if (getActions() == null) {
 			setActions("install");
 		} else {
@@ -160,12 +165,6 @@ public class Software extends BaseEntity {
 			setConfigContent(Joiner.on(parseLs()).join(CharStreams.readLines(new StringReader(getConfigContent()))));
 		} catch (IOException e) {
 		}
-		
-//		try {
-//			setCodeToExecute(Joiner.on(parseLs()).join(CharStreams.readLines(new StringReader(getCodeToExecute()))));
-//		} catch (IOException e) {
-//		}
-
 	}
 	
 	public String parseLs() {
@@ -334,5 +333,13 @@ public class Software extends BaseEntity {
 
 	public void setCodeFileExt(String codeFileExt) {
 		this.codeFileExt = codeFileExt;
+	}
+
+	public Set<TextFile> getTextfiles() {
+		return textfiles;
+	}
+
+	public void setTextfiles(Set<TextFile> textfiles) {
+		this.textfiles = textfiles;
 	}
 }
