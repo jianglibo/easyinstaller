@@ -24,7 +24,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @VaadinTable(multiSelect = true, messagePrefix = "domain.textfile.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
-@Table(name = "textfile", uniqueConstraints = { @UniqueConstraint(columnNames = "name") })
+@Table(name = "textfile", uniqueConstraints = { @UniqueConstraint(columnNames = {"name", "software"}) })
 public class TextFile extends BaseEntity {
 
 	/**

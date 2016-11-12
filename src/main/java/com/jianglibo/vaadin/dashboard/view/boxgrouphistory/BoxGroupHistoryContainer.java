@@ -39,6 +39,7 @@ public class BoxGroupHistoryContainer extends FreeContainer<BoxGroupHistory> {
 		}
 	}
 	
+	@Override
 	public void fetchPage() {
 		ManualPagable pageable = new ManualPagable(getCurrentPage(), getPerPage(), getSort());
 		LOGGER.info("fetch page with {}, {}, {}", getCurrentPage(), getPerPage(), getSort());

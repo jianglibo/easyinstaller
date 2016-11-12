@@ -35,7 +35,6 @@ import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.security.PersonAuthenticationToken;
 import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNew;
 import com.jianglibo.vaadin.dashboard.service.HttpPageGetter.NewNewsMessage;
-import com.jianglibo.vaadin.dashboard.service.SoftwareImportor.NewSoftwareMessage;
 import com.jianglibo.vaadin.dashboard.service.SoftwareDownloader.DownloadMessage;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner.GroupTaskFinishMessage;
@@ -277,12 +276,12 @@ public final class DashboardUI extends UI implements ApplicationContextAware,  B
             @Override
             public void run() {
             	switch (message.getBcmt()) {
-				case NEW_SOFTWARE:
-					NewSoftwareMessage nsm = (NewSoftwareMessage) message.getBody();
-					SoftwareViewMenuItem svmi = (SoftwareViewMenuItem)getDm().getMmis().getMenuMap().get(SoftwareViewMenuItem.class.getName());
-					svmi.updateNotificationsCount(nsm.getNewSoftwareCountAfterLastStart());
-					push();
-					break;
+//				case NEW_SOFTWARE:
+//					NewSoftwareMessage nsm = (NewSoftwareMessage) message.getBody();
+//					SoftwareViewMenuItem svmi = (SoftwareViewMenuItem)getDm().getMmis().getMenuMap().get(SoftwareViewMenuItem.class.getName());
+//					svmi.updateNotificationsCount(nsm.getNewSoftwareCountAfterLastStart());
+//					push();
+//					break;
 				case NEW_NEWS:
 					// Must sure view interested is current view.
 //					LOGGER.info("broadcaster received");

@@ -10,7 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 
-import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
@@ -23,7 +22,9 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.view.importsoftware.ImportSoftwareView;
+import com.jianglibo.vaadin.dashboard.view.textfile.TextFileListView;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
@@ -79,6 +80,9 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 		case "importSoftware":
 			UI.getCurrent().getNavigator().navigateTo(ImportSoftwareView.VIEW_NAME + "/?pv=" + getLvfb().toNavigateString());
 			break;
+		case "softwaretxtfiles":
+			UI.getCurrent().getNavigator().navigateTo(TextFileListView.VIEW_NAME + "/?software=" + selected.iterator().next().getId() + "&pv=" + getLvfb().toNavigateString());
+			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
 		}
@@ -88,8 +92,6 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 	@Override
 	public void enter(final ViewChangeEvent event) {
 		super.enter(event);
-		SoftwareViewMenuItem svmi = (SoftwareViewMenuItem)((DashboardUI)UI.getCurrent()).getDm().getMmis().getMenuMap().get(SoftwareViewMenuItem.class.getName());
-		svmi.updateNotificationsCount(0);
 	}
 
 	@Override
@@ -98,7 +100,9 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
 				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
 		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
-		new ButtonGroup(new ButtonDescription("importSoftware", null, ButtonEnableType.ALWAYS))};
+		new ButtonGroup(new ButtonDescription("importSoftware", null, ButtonEnableType.ALWAYS)),
+		new ButtonGroup(new ButtonDescription("softwaretxtfiles", null, ButtonEnableType.ONE))
+		};
 	}
 
 	@Override

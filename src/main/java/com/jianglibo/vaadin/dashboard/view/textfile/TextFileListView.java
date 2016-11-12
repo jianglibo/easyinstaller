@@ -3,23 +3,26 @@ package com.jianglibo.vaadin.dashboard.view.textfile;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
-import org.springframework.data.domain.Sort;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.domain.TextFile;
-import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
-import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
+import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
+import com.jianglibo.vaadin.dashboard.repositories.TextFileRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
@@ -37,13 +40,28 @@ public class TextFileListView extends BaseGridView<TextFile, TextFileGrid, FreeC
 	public static final String VIEW_NAME = "textfile";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.BOOK;
+	
+	private final TextFileRepository repository;
+	private final SoftwareRepository softwareRepository;
+	
+	private Software software;
 
 	
 	@Autowired
-	public TextFileListView(BoxRepository repository,Domains domains, MessageSource messageSource,
+	public TextFileListView(SoftwareRepository softwareRepository, TextFileRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, TextFile.class, TextFileGrid.class);
+		this.repository = repository;
+		this.softwareRepository = softwareRepository;
 		delayCreateContent();
+	}
+	
+	@Override
+	public void enter(ViewChangeEvent event) {
+		super.enter(event);
+		software = softwareRepository.findOne(getLvfb().getLong("software"));
+		getTopBlockBase().getTitle().setValue(MsgUtil.getListViewTitle(getMessageSource(), getClazz().getSimpleName(), software.getDisplayName()));
+		getGrid().getdContainer().whenUriFragmentChange(getLvfb());
 	}
 
 	@Override
@@ -53,23 +71,18 @@ public class TextFileListView extends BaseGridView<TextFile, TextFileGrid, FreeC
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-//					getGrid().getContainerDataSource()
-//					getRepository().delete(b);
 				} else {
 					b.setArchived(true);
-//					getRepository().save(b);
 				}
 			});
-//			((BoxContainer)getTable().getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.REFRESH:
-//			((BoxContainer)getTable().getContainerDataSource()).refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:
-			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/?pv=" + getLvfb().toNavigateString());
+			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/?software=" + software.getId() + "&pv=" + getLvfb().toNavigateString());
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
@@ -81,13 +94,8 @@ public class TextFileListView extends BaseGridView<TextFile, TextFileGrid, FreeC
 		VaadinGridWrapper vgw = domains.getGrids().get(TextFile.class.getSimpleName());
 		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
 		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
-		columnNames.add("!edit");
-		
-		RepositoryCommonCustom<TextFile> rcc = domains.getRepositoryCommonCustom(TextFile.class.getSimpleName());
-		Sort defaultSort = domains.getDefaultSort(TextFile.class);
-
-		FreeContainer<TextFile> fc = new FreeContainer<>(rcc, defaultSort, TextFile.class, vgw.getVg().defaultPerPage(), sortableContainerPropertyIds);
-		
-		return new TextFileGrid(fc, vgw, messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
+//		columnNames.add("!edit");
+		TextFileContainer tfc = new TextFileContainer(softwareRepository, repository, domains, 10, sortableContainerPropertyIds);
+		return new TextFileGrid(tfc, vgw, messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 	}
 }

@@ -1,7 +1,5 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.grid;
 
-import java.util.List;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
@@ -84,13 +82,12 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		setLvfb(new ListViewFragmentBuilder(event));
 
 		// start alter state.
-		((TopBlock) topBlock).alterState(getLvfb(), MsgUtil.getListViewTitle(messageSource, getClazz().getSimpleName()));
+		getTopBlockBase().alterState(getLvfb(), MsgUtil.getListViewTitle(messageSource, getClazz().getSimpleName()));
+		
 		((MiddleBlock)middleBlock).alterState(getLvfb());
 	}
 	
-	
-	
-	public void setTopBlock(Component topBlock) {
+	public void setTopBlock(TopBlock topBlock) {
 		this.topBlock = topBlock;
 	}
 
@@ -105,6 +102,11 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 	public Component getTopBlock() {
 		return topBlock;
 	}
+	
+	public TopBlock getTopBlockBase() {
+		return (BaseGridView<E, G, C>.TopBlock) topBlock;
+	}
+
 
 	public Component getMiddleBlock() {
 		return middleBlock;
@@ -123,7 +125,7 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 	}
 
 	
-	protected Component createTopBlock() {
+	protected TopBlock createTopBlock() {
 		TopBlock tb = new TopBlock();
 
 		tb.addClickListener(event -> {

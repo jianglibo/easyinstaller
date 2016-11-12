@@ -107,7 +107,7 @@ public class ViewFragmentBuilder {
 		return s;
 	}
 	
-	protected Optional<String> getParameterValue(String pname) {
+	public Optional<String> getParameterValue(String pname) {
 		String v = null;
 		if (getUriComs().getQueryParams().containsKey(pname)) {
 			v =  getUriComs().getQueryParams().getFirst(pname);
@@ -115,7 +115,7 @@ public class ViewFragmentBuilder {
 		return Optional.ofNullable(v);
 	}
 	
-	protected Optional<String> getParameterValue(String pname, boolean decode) {
+	public Optional<String> getParameterValue(String pname, boolean decode) {
 		String v = null;
 		if (getUriComs().getQueryParams().containsKey(pname)) {
 			v =  getUriComs().getQueryParams().getFirst(pname);

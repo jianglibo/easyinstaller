@@ -97,8 +97,8 @@ public class Software extends BaseEntity {
 	@VaadinFormField(order = 30)
 	private String runner;
 	
-	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.REMOVE)
-	private Set<TextFile> textfiles;
+	@OneToMany(fetch = FetchType.EAGER, cascade={CascadeType.REMOVE,CascadeType.PERSIST}, mappedBy = "software")
+	private Set<TextFile> textfiles = Sets.newHashSet();
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@VaadinTableColumn(order = 10001, sortable = true)
@@ -231,7 +231,7 @@ public class Software extends BaseEntity {
 
 	@Override
 	public String getDisplayName() {
-		return String.format("%s--%s--%s", getName(), getOstype(), getSversion());
+		return String.format("%s-%s-%s", getName(), getOstype(), getSversion());
 	}
 
 	public String getCodeToExecute() {
@@ -317,6 +317,7 @@ public class Software extends BaseEntity {
 		setPreferredFormat(vo.getPreferredFormat());
 		setRunas(vo.getRunas());
 		setRunner(vo.getRunner());
+//		setTextfiles(vo.getTextfiles());
 	}
 
 	public String getRunas() {

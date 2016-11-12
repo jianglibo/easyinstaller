@@ -32,9 +32,28 @@ public class TestSoftwareImporter extends Tbase {
 	public void be() {
 		softwareRepository.deleteAll();
 	}
+	
+	private Path fixtureFolder = Paths.get("fixtures", "installscripts", "centos7-ps-2.7.3");
+	
+	@Test
+	public void timportFromFolder() throws IOException {
+		
+		softwareRepository.deleteAll();
+		
+		List<Software> sfs = softwareImportor.installSoftwareFromFolder(fixtureFolder, false);
+		
+		sfs = softwareImportor.installSoftwareFromFolder(fixtureFolder, false);
+		
+		sfs = softwareRepository.findAll();
+		
+		assertThat("thers should be 1 software", sfs.size(), equalTo(1));
+		assertThat("this software should has 1 textfile", sfs.get(0).getTextfiles().size(), equalTo(1));
+		assertThat("textfile name should be right", sfs.get(0).getTextfiles().iterator().next().getName(), equalTo("etc/hadoop/hadoop-env.sh"));
+		assertThat("textfile's software field should be right", sfs.get(0).getTextfiles().iterator().next().getSoftware(), equalTo(sfs.get(0)));
+	}
 
 	@Test
-	public void timport() throws IOException {
+	public void timportFromZip() throws IOException {
 		try (Stream<Path> pstreams = Files.walk(Paths.get("fixtures"))) {
 			List<Path> spp = pstreams.filter(p -> {
 				return Files.isRegularFile(p) && p.toString().endsWith(".zip");
@@ -42,7 +61,7 @@ public class TestSoftwareImporter extends Tbase {
 			
 			List<Software> softwares = spp.stream().map(p -> {
 				try {
-					return softwareImportor.installOneSoftware(p);
+					return softwareImportor.installSoftwareFromZipFile(p);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return null;
@@ -50,8 +69,6 @@ public class TestSoftwareImporter extends Tbase {
 			}).filter(Objects::nonNull).flatMap(sfs -> sfs.stream()).collect(Collectors.toList());
 			assertThat("zip file count should equal to new software count", spp.size(), equalTo(softwares.size()));
 			assertThat("zip file count should equal to software count in db", new Long(spp.size()), equalTo(softwareRepository.count()));
-			
-			
 		}
 	}
 }

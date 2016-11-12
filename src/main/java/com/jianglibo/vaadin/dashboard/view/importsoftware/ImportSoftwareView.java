@@ -102,7 +102,7 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 							NotificationUtil.tray(messageSource, "zipDownloadFail", urlField.getValue());
 						} else {
 							try {
-								softwareImporter.installOneSoftware(zipFilePath);
+								softwareImporter.installSoftwareFromZipFile(zipFilePath);
 								NotificationUtil.tray(messageSource, "taskdone", urlField.getValue());
 							} catch (Exception e) {
 								NotificationUtil.tray(messageSource, "importSoftwareFail", urlField.getValue());
@@ -183,7 +183,7 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 	private void startImport(ZipFileUploadReceiver zfur) {
 		if (zfur.isSuccess()) {
 			try {
-				softwareImporter.installOneSoftware(zfur.getTmpFile());
+				softwareImporter.installSoftwareFromZipFile(zfur.getTmpFile());
 			} catch (IOException e) {
 				NotificationUtil.tray(messageSource, "importSoftwareFail", zfur.getFilename());
 			}

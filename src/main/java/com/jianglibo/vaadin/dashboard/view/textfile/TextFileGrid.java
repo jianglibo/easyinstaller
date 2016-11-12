@@ -10,7 +10,6 @@ import com.jianglibo.vaadin.dashboard.domain.TextFile;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGrid;
 import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickListener;
