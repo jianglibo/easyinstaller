@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.domain.TextFile;
@@ -71,8 +72,14 @@ public class SoftwareImportor {
 					try {
 						String content = com.google.common.io.Files.toString(f.toFile(), Charsets.UTF_8);
 						String name = configfiles.relativize(f).toString().replaceAll("\\\\", "/");
-						TextFile tf = new TextFile(name, content);
-						tf.setSoftware(sf);
+						
+						TextFile tf = textFileRepository.findByNameAndSoftware(name, sf);
+						if (tf == null) {
+							tf = new TextFile(name, content);
+							tf.setSoftware(sf);
+						} else {
+							tf.setContent(content);
+						}
 						tf = textFileRepository.save(tf);
 						return tf;
 					} catch (Exception e) {
@@ -109,9 +116,10 @@ public class SoftwareImportor {
 						newSf = softwareRepository.save(sf);
 					} else {
 						sfInDb.copyFrom(sf);
-						sfInDb.getTextfiles().forEach(tf -> {
-							textFileRepository.delete(tf);
-						});
+//						sfInDb.getTextfiles().forEach(tf -> {
+//							textFileRepository.delete(tf);
+//						});
+//						sfInDb.setTextfiles(Sets.newHashSet());
 						setupTextFiles(sfInDb, baseFolder);
 						newSf = softwareRepository.save(sfInDb);
 					}
@@ -124,6 +132,9 @@ public class SoftwareImportor {
 		}
 	}
 	
+	public List<Software> installSoftwareFromFolder(Path folder) throws IOException {
+		return installSoftwareFromFolder(folder, false);
+	}
 	public List<Software> installSoftwareFromFolder(Path folder, boolean removeFolder) throws IOException {
 		return decodeFromYaml(folder).stream().map(sfInZip -> {
 			Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sfInZip.getName(), sfInZip.getOstype(),sfInZip.getSversion());

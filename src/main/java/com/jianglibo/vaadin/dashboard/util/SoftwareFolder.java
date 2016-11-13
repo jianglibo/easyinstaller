@@ -22,10 +22,13 @@ public class SoftwareFolder {
 	private Software software;
 	
 	private BoxGroup boxGroup;
+	
+	private Path basePath;
 
 	public SoftwareFolder(Path descriptionymlPath) {
 		super();
 		this.setDescriptionymlPath(descriptionymlPath);
+		this.setBasePath(descriptionymlPath.getParent().getParent());
 	}
 
 	
@@ -34,7 +37,7 @@ public class SoftwareFolder {
 	}
 	
 	public Path getTestPath() throws IOException {
-		Path tp = getDescriptionymlPath().getParent().getParent().resolve("fixtures");
+		Path tp = getBasePath().resolve("fixtures");
 		if (!Files.exists(tp)) {
 			Files.createDirectories(tp);
 		}
@@ -42,7 +45,7 @@ public class SoftwareFolder {
 	}
 	
 	public String getBoxIp() {
-		Path pf = getDescriptionymlPath().getParent().getParent().resolve("sample-env").resolve("box.yaml");
+		Path pf = getBasePath().resolve("sample-env").resolve("box.yaml");
 		try {
 			if (!Files.exists(pf)) {
 				return null;
@@ -62,11 +65,11 @@ public class SoftwareFolder {
 	}
 	
 	public String readBoxgroupYaml() throws IOException {
-		return new String(Files.readAllBytes(getDescriptionymlPath().getParent().getParent().resolve("sample-env").resolve("boxgroup.yaml")));
+		return new String(Files.readAllBytes(getBasePath().resolve("sample-env").resolve("boxgroup.yaml")));
 	}
 
 	public String readBoxgroupConfigContent() throws IOException {
-		return new String(Files.readAllBytes(getDescriptionymlPath().getParent().getParent().resolve("sample-env").resolve("configContent.yaml")));
+		return new String(Files.readAllBytes(getBasePath().resolve("sample-env").resolve("configContent.yaml")));
 	}
 
 	public Path getDescriptionymlPath() {
@@ -102,7 +105,14 @@ public class SoftwareFolder {
 	public void setBoxGroup(BoxGroup boxGroup) {
 		this.boxGroup = boxGroup;
 	}
-	
-	
-	
+
+
+	public Path getBasePath() {
+		return basePath;
+	}
+
+
+	public void setBasePath(Path basePath) {
+		this.basePath = basePath;
+	}
 }

@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.view.envfixture;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -13,7 +14,6 @@ import javax.activity.InvalidActivityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
@@ -28,6 +28,7 @@ import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.security.PersonVo;
 import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
+import com.jianglibo.vaadin.dashboard.service.SoftwareImportor;
 import com.jianglibo.vaadin.dashboard.sshrunner.EnvForCodeExec;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
@@ -48,19 +49,18 @@ public class EnvFixtureCreator {
 
 	private final SoftwareRepository softwareRepository;
 
-	private final MessageSource messageSource;
+	private final SoftwareImportor softwareImportor;
 
 	@Autowired
-	public EnvFixtureCreator(PersonRepository personRepository, AppObjectMappers appObjectMappers,
-			BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, SoftwareRepository softwareRepository,
-			MessageSource messageSource) {
+	public EnvFixtureCreator(SoftwareImportor softwareImportor, PersonRepository personRepository, AppObjectMappers appObjectMappers,
+			BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, SoftwareRepository softwareRepository) {
 		super();
 		this.personRepository = personRepository;
 		this.appObjectMappers = appObjectMappers;
 		this.boxGroupRepository = boxGroupRepository;
 		this.boxRepository = boxRepository;
 		this.softwareRepository = softwareRepository;
-		this.messageSource = messageSource;
+		this.softwareImportor = softwareImportor;
 	}
 
 	public static class InValidScriptProjectPathException extends Exception {
@@ -71,10 +71,12 @@ public class EnvFixtureCreator {
 		private static final long serialVersionUID = 1L;
 	}
 
-	public void create(Path scriptPath) throws InvalidActivityException {
+	public void create(Path scriptPath) throws IOException {
 		if (!Files.exists(scriptPath) || !Files.isDirectory(scriptPath)) {
 			throw new InvalidActivityException("invalidPath");
 		}
+		
+		
 
 		Person person = personRepository.findByEmail(AppInitializer.firstEmail);
 		try (Stream<Path> pathstream = Files.walk(scriptPath)) {
@@ -122,10 +124,8 @@ public class EnvFixtureCreator {
 				}
 			}).filter(Objects::nonNull).map(sfolder -> {
 				try {
-					Software sf = appObjectMappers.getYmlObjectMapper().readValue(sfolder.readDescriptionyml(),
-							Software.class);
-					sf.setConfigContent(sfolder.getSoftwareConfigContent(sf.getConfigContent()));
-					sfolder.setSoftware(sf);
+					List<Software> sfs = softwareImportor.installSoftwareFromFolder(sfolder.getBasePath());
+					sfolder.setSoftware(sfs.get(0));
 					return (SoftwareFolder) sfolder;
 				} catch (Exception e) {
 					LOGGER.error(e.getMessage());
@@ -133,17 +133,17 @@ public class EnvFixtureCreator {
 				}
 			}).filter(Objects::nonNull).map(sfolder -> {
 				try {
-					Software sf = sfolder.getSoftware();
-					Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sf.getName(), sf.getOstype(),
-							sf.getSversion());
-					if (sfInDb != null) {
-						softwareRepository.delete(sfInDb);
-					}
-					sf.setCreator(person);
-					softwareRepository.save(sf);
+//					Software sf = sfolder.getSoftware();
+//					Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sf.getName(), sf.getOstype(),
+//							sf.getSversion());
+//					if (sfInDb != null) {
+//						softwareRepository.delete(sfInDb);
+//					}
+//					sf.setCreator(person);
+//					softwareRepository.save(sf);
 
 					TaskDesc td = new TaskDesc("", new PersonVo.PersonVoBuilder(person).build(), sfolder.getBoxGroup(),
-							Sets.newHashSet(), sf, "install");
+							Sets.newHashSet(), sfolder.getSoftware(), "install");
 					
 					List<OneThreadTaskDesc> ottds = td.createOneThreadTaskDescs(); 
 
@@ -165,7 +165,7 @@ public class EnvFixtureCreator {
 
 					Path testFolder = sfolder.getTestPath();
 
-					switch (sf.getPreferredFormat()) {
+					switch (sfolder.getSoftware().getPreferredFormat()) {
 					case "JSON":
 						String json = appObjectMappers.getObjectMapperNoIdent().writeValueAsString(efce);
 						Files.write(testFolder.resolve("envforcodeexec.json"), json.getBytes());
@@ -195,4 +195,5 @@ public class EnvFixtureCreator {
 			throw new InvalidActivityException("walkPathFailed");
 		}
 	}
+
 }

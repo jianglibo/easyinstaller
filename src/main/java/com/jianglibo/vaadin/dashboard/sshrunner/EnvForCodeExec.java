@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.domain.TextFile;
 import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.vo.ConfigContent;
@@ -137,6 +138,8 @@ public class EnvForCodeExec {
 		
 		private String runner;
 		
+		private Set<TextFileDescription> textfiles;
+		
 		private Set<String> filesToUpload;
 		private String configContent;
 		private String actions;
@@ -152,6 +155,7 @@ public class EnvForCodeExec {
 			this.preferredFormat = software.getPreferredFormat();
 			this.runas = software.getRunas();
 			this.runner = software.getRunner();
+			this.textfiles = software.getTextfiles().stream().map(TextFileDescription::new).collect(Collectors.toSet());
 		}
 
 		public Set<String> getFilesToUpload() {
@@ -224,6 +228,45 @@ public class EnvForCodeExec {
 
 		public void setRunner(String runner) {
 			this.runner = runner;
+		}
+
+		public Set<TextFileDescription> getTextfiles() {
+			return textfiles;
+		}
+
+		public void setTextfiles(Set<TextFileDescription> textfiles) {
+			this.textfiles = textfiles;
+		}
+	}
+	
+	public static class TextFileDescription {
+		private String name;
+		private String content;
+		private String codeLineSeperator;
+		
+		public TextFileDescription(TextFile tf) {
+			this.name = tf.getName();
+			this.content = tf.getContent();
+			this.codeLineSeperator = tf.getCodeLineSeperator();
+		}
+		
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getContent() {
+			return content;
+		}
+		public void setContent(String content) {
+			this.content = content;
+		}
+		public String getCodeLineSeperator() {
+			return codeLineSeperator;
+		}
+		public void setCodeLineSeperator(String codeLineSeperator) {
+			this.codeLineSeperator = codeLineSeperator;
 		}
 	}
 
