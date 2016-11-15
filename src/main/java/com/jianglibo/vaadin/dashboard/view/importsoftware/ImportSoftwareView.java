@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,10 +86,9 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 
 		Button urlBtn = new Button(MsgUtil.getMsgFallbackToSelf(messageSource, "view.importsoftware.", "urlBtn"),
 				event -> {
-					String s = null;
+					String s = urlField.getValue();
 					boolean goon = true;
 					try {
-						s = urlField.getValue();
 						new URL(s);
 					} catch (Exception e) {
 						goon = false;
@@ -99,7 +99,7 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 						urlField.setValue("");
 						Path zipFilePath = httpPageGetter.getFile(s, null);
 						if (zipFilePath == null) {
-							NotificationUtil.tray(messageSource, "zipDownloadFail", urlField.getValue());
+							NotificationUtil.tray(messageSource, "zipDownloadFail", s);
 						} else {
 							try {
 								softwareImporter.installSoftwareFromZipFile(zipFilePath);
@@ -112,6 +112,27 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 				});
 
 		StyleUtil.setMarginLeftTen(urlBtn);
+		
+		
+		TextField pathField = new TextField();
+		pathField.setWidth("80%");
+
+		Button pathBtn = new Button(MsgUtil.getMsgFallbackToSelf(messageSource, "view.importsoftware.", "pathBtn"),
+				event -> {
+					String paths = pathField.getValue();
+					
+					if (paths.trim().length() > 0) {
+						try {
+							softwareImporter.installSoftwareFromFolder(Paths.get(paths));
+							NotificationUtil.tray(messageSource, "taskdone", paths);
+						} catch (Exception e) {
+							NotificationUtil.tray(messageSource, "importSoftwareFail", pathField.getValue());
+							e.printStackTrace();
+						}
+					}
+				});
+
+		StyleUtil.setMarginLeftTen(pathBtn);
 
 		Label uploadLabel = new Label(
 				MsgUtil.getMsgFallbackToSelf(messageSource, "view.importsoftware.", "uploadLabel"));
@@ -121,13 +142,14 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 		Component uploader = new ImmediateUploader(messageSource, new ZipFileUploadReceiver());
 		StyleUtil.setMarginRightTen(uploader);
 
-//		uploader.setEnabled(false);
+		Label localLabel = new Label(
+				MsgUtil.getMsgFallbackToSelf(messageSource, "view.importsoftware.", "localLabel"));
 
 		Label descriptionLabel = new Label();
 		descriptionLabel.setContentMode(ContentMode.HTML);
 		descriptionLabel
 				.setValue(MsgUtil.getMsgFallbackToSelf(messageSource, "view.importsoftware.", "descriptionLabel"));
-		vl.addComponents(uploadLabel, uploader, remoteLabel, urlField, urlBtn, descriptionLabel);
+		vl.addComponents(uploadLabel, uploader, remoteLabel, urlField, urlBtn,localLabel, pathField, pathBtn, descriptionLabel);
 		return vl;
 	}
 

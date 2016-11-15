@@ -29,7 +29,9 @@ import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 public class ApplicationConfig {
 
 	private final RawApplicationConfig racfig;
-
+	
+	public static final String defaultScriptSource = "classpath:com/jianglibo/easyinstaller/scriptsnippets/";
+	
 	private final PersonRepository personRepository;
 
 	private final KkvRepository kkvRepository;
@@ -120,6 +122,11 @@ public class ApplicationConfig {
 			}
 			ss = inDbs;
 		}
+		// move default classpath:com/jianglibo/easyinstaller/scriptsnippets/ to last one
+		String defaultSs = ss.stream().filter(s -> defaultScriptSource.equals(s)).findAny().get();
+		ss = ss.stream().filter(s -> !defaultScriptSource.equals(s)).collect(Collectors.toList());
+		ss.add(defaultSs);
+		
 		setScriptSources(ss);
 	}
 	

@@ -75,6 +75,7 @@ application:
   auto-login: true
   script-sources:
     - classpath:com/jianglibo/easyinstaller/scriptsnippets/
+#    - file://F:/github/install-scripts/src/main/resources/com/jianglibo/easyinstaller/scriptsnippets
     - file:///~/easyinstaller-scripts
     - http://placeholder/
   combo-datas:
