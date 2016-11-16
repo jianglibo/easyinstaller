@@ -1,10 +1,12 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.dynmenu;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.context.MessageSource;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.shared.ui.MarginInfo;
@@ -48,7 +50,7 @@ public class DynButtonComponent extends HorizontalLayout implements ClickListene
         	btgHl.addComponent(hl);
         }
         addComponent(btgHl);
-        onSelectionChange(0);
+        onSelectionChange(Sets.newHashSet());
 	}
 	
 	public void AddDynaMenuItemClickListener(DynaMenuItemClickListener dynaMenuItemClickListener) {
@@ -59,9 +61,9 @@ public class DynButtonComponent extends HorizontalLayout implements ClickListene
 		void dynaMenuItemClicked(ButtonDescription btdsc);
 	}
 	
-	public void onSelectionChange(int num) {
+	public void onSelectionChange(Set<Object> selected) {
 		itemMap.forEach((k, v) -> {
-			boolean enabled = btnDescriptionMap.get(k).isEnabled(num);
+			boolean enabled = btnDescriptionMap.get(k).isEnabled(selected);
 			if (enabled) {
 				StyleUtil.show(v);
 			} else {

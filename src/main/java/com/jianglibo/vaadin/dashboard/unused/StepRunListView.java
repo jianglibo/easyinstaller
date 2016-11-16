@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -92,9 +93,9 @@ public class StepRunListView extends BaseListView<StepRun, StepRunTable, StepRun
 	@Override
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[]{ //
-		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
-		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
+		new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+				new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
+		new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
 	}
 
 	@Override

@@ -543,7 +543,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	}
 
 	@SuppressWarnings("serial")
-	protected void notifyItemSetChanged() {
+	public void notifyItemSetChanged() {
 		idxCache.invalidateAll();
 		ItemSetChangeEvent event = new ItemSetChangeEvent() {
 			@Override

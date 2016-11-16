@@ -37,7 +37,7 @@ public abstract class BaseEntity implements Serializable {
 	private Date createdAt;
 
 	@VaadinTableColumn(order = 99990, sortable = true)
-	@VaadinGridColumn(order = 10000, sortable = true, initHidden = true)
+	@VaadinGridColumn(order = 10000, sortable = true)
 	private boolean archived = false;
 
 	public abstract String getDisplayName();

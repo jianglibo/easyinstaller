@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.grid;
 
+import java.util.Set;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
@@ -10,6 +12,7 @@ import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -157,7 +160,7 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		BottomBlock bottomBlock = new BottomBlock();
 		
 		getGrid().addSelectionListener(event -> {
-			((MiddleBlock)middleBlock).alterState(event.getSelected().size());
+			((MiddleBlock)middleBlock).alterState(event.getSelected());
 		});
 		
 		return bottomBlock;
@@ -176,11 +179,11 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[]{ //
 		new ButtonGroup( //
-				new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
+				new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+				new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
 		new ButtonGroup( //
-				new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS), //
-				new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
+				new SimpleButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS), //
+				new SimpleButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
 	}
 	
 	public void backward() {
@@ -301,8 +304,8 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		}
 		
 
-		public void alterState(int selectNumber) {
-			this.menu.onSelectionChange(selectNumber);
+		public void alterState(Set<Object> selected) {
+			this.menu.onSelectionChange(selected);
 		}
 		public DynButtonComponent getMenu() {
 			return menu;

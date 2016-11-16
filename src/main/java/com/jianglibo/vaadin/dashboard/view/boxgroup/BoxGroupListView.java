@@ -16,15 +16,19 @@ import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
+import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.view.clustersoftware.ClusterSoftwareView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 @SpringView(name = BoxGroupListView.VIEW_NAME)
@@ -38,24 +42,27 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 	private static final Logger LOGGER = LoggerFactory.getLogger(BoxGroupListView.class);
 
 	public static final String VIEW_NAME = "boxgroups";
+	
+	private final BoxGroupRepository repository;
 
 	
 	@Autowired
-	public BoxGroupListView(BoxRepository repository,Domains domains, MessageSource messageSource,
+	public BoxGroupListView(BoxGroupRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, BoxGroup.class, BoxGroupGrid.class);
+		this.repository = repository;
 		delayCreateContent();
 	}
 
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[]{ //
 		new ButtonGroup( //
-				new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-				new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
+				new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+				new SimpleButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
 		new ButtonGroup( //
-				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
+				new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
 		new ButtonGroup( //
-					new ButtonDescription("manageClusterSoftware", null, ButtonEnableType.ONE))};
+					new SimpleButtonDescription("manageClusterSoftware", null, ButtonEnableType.ONE))};
 	}
 	
 	@Override
@@ -63,16 +70,23 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 		List<BoxGroup> selected = getGrid().getSelectedRows().stream().map(o -> (BoxGroup)o).collect(Collectors.toList());
 		switch (btnDesc.getItemId()) {
 		case CommonMenuItemIds.DELETE:
+			for (BoxGroup bg : selected) {
+				if (!bg.getBoxes().isEmpty()) {
+					NotificationUtil.tray(getMessageSource(), "deleteWhenHasRelations", bg.getDisplayName());
+					return;
+				}
+			}
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-//					getGrid().getContainerDataSource()
-//					getRepository().delete(b);
+					repository.delete(b);
+					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
 					b.setArchived(true);
-//					getRepository().save(b);
+					NotificationUtil.tray(getMessageSource(), "archivedone", b.getDisplayName());
+					repository.save(b);
 				}
 			});
-//			((BoxContainer)getTable().getContainerDataSource()).refresh();
+			((FreeContainer<BoxGroup>)getGrid().getContainerDataSource()).notifyItemSetChanged();
 			break;
 		case CommonMenuItemIds.REFRESH:
 //			((BoxContainer)getTable().getContainerDataSource()).refresh();

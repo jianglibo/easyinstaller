@@ -19,6 +19,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -83,10 +84,10 @@ public class BoxListView extends BaseGridView<Box, BoxGrid, FreeContainer<Box>> 
 	@Override
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[] { //
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-						new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)), //
+				new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+						new SimpleButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)), //
 				new ButtonGroup(
-						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)) //
+						new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)) //
 				};
 	}
 	

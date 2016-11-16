@@ -19,6 +19,7 @@ import com.jianglibo.vaadin.dashboard.domain.Kkv;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;

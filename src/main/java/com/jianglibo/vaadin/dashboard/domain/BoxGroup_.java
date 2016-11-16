@@ -1,12 +1,13 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.util.Date;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="Dali", date="2016-10-02T06:42:38.381+0800")
+@Generated(value="Dali", date="2016-11-16T19:43:20.061+0800")
 @StaticMetamodel(BoxGroup.class)
 public class BoxGroup_ extends BaseEntity_ {
 	public static volatile SingularAttribute<BoxGroup, String> name;
@@ -15,4 +16,5 @@ public class BoxGroup_ extends BaseEntity_ {
 	public static volatile SingularAttribute<BoxGroup, Person> creator;
 	public static volatile SingularAttribute<BoxGroup, String> dnsServer;
 	public static volatile SingularAttribute<BoxGroup, String> configContent;
+	public static volatile SingularAttribute<BoxGroup, Date> updatedAt;
 }

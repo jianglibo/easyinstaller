@@ -18,6 +18,7 @@ import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -162,7 +163,7 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 		bottomBlock.getTable().addValueChangeListener(event -> {
 			if (table.getValue() instanceof Set) {
 				Set<Object> val = (Set<Object>) table.getValue();
-				((MiddleBlock)middleBlock).alterState(val.size());
+				((MiddleBlock)middleBlock).alterState(val);
 			}
 		});
 		
@@ -175,9 +176,9 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 	
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[]{ //
-		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
-		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
+		new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+				new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
+		new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
 	}
 
 	public abstract String getListViewName();
@@ -373,8 +374,8 @@ public abstract class BaseListView<E extends BaseEntity, T extends TableBase<E>,
 			trashBt.addClickListener(cl);
 		}
 
-		public void alterState(int selectNumber) {
-			this.menu.onSelectionChange(selectNumber);
+		public void alterState(Set<Object> selected) {
+			this.menu.onSelectionChange(selected);
 		}
 
 		public Button getTrashBt() {

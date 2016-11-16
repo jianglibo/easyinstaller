@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.boxhistory;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -20,9 +21,10 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent.DynaMenuItemClickListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
@@ -71,9 +73,9 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[] { //
 				new ButtonGroup( //
-						new ButtonDescription(CommonMenuItemIds.DETAIL, FontAwesome.EDIT, ButtonEnableType.ONE)), //
+						new SimpleButtonDescription(CommonMenuItemIds.DETAIL, FontAwesome.EDIT, ButtonEnableType.ONE)), //
 				new ButtonGroup( //
-						new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH,
+						new SimpleButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH,
 								ButtonEnableType.ALWAYS)) };
 	}
 
@@ -96,7 +98,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 		MyBottomBlock bottomBlock = new MyBottomBlock();
 
 		getGrid().addSelectionListener(event -> {
-			((MyMiddleBlock) getMiddleBlock()).alterState(event.getSelected().size());
+			((MyMiddleBlock) getMiddleBlock()).alterState(event.getSelected());
 		});
 
 		return bottomBlock;
@@ -149,8 +151,8 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 			menu.AddDynaMenuItemClickListener(dynaMenuItemClickListener);
 		}
 
-		public void alterState(int selectNumber) {
-			this.menu.onSelectionChange(selectNumber);
+		public void alterState(Set<Object> selected) {
+			this.menu.onSelectionChange(selected);
 		}
 
 		public DynButtonComponent getMenu() {

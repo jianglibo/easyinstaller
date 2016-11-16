@@ -18,7 +18,7 @@ import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
@@ -88,9 +88,9 @@ public class PkSourceListView extends VerticalLayout
 //		addComponent(header);
 //
 		ButtonGroup[] bgs = new ButtonGroup[] {
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE),
-						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
-				new ButtonGroup(new ButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH,
+				new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE),
+						new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
+				new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH,
 						ButtonEnableType.ALWAYS)) };
 
 //		tableController = applicationContext.getBean(TableController.class).afterInjection(eventBus, bgs);

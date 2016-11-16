@@ -18,6 +18,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
@@ -97,11 +98,11 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 	@Override
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[]{ //
-		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-				new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
-		new ButtonGroup(new ButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
-		new ButtonGroup(new ButtonDescription("importSoftware", null, ButtonEnableType.ALWAYS)),
-		new ButtonGroup(new ButtonDescription("softwaretxtfiles", null, ButtonEnableType.ONE))
+		new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+				new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
+		new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
+		new ButtonGroup(new SimpleButtonDescription("importSoftware", null, ButtonEnableType.ALWAYS)),
+		new ButtonGroup(new SimpleButtonDescription("softwaretxtfiles", null, ButtonEnableType.ONE))
 		};
 	}
 

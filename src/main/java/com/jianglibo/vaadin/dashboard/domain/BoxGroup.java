@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -10,7 +12,10 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
@@ -21,6 +26,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField.Ft;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -35,10 +41,10 @@ import com.vaadin.ui.themes.ValoTheme;
 @Table(name = "box_group", uniqueConstraints = { @UniqueConstraint(columnNames = "name") })
 @VaadinGrid(multiSelect = true, messagePrefix = "domain.boxgroup.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=false, defaultSort="-updatedAt")
 @VaadinTable(multiSelect = true, messagePrefix = "domain.boxgroup.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=false, defaultSort="-updatedAt")
 public class BoxGroup extends BaseEntity {
 
 	@VaadinGridColumn
@@ -59,6 +65,13 @@ public class BoxGroup extends BaseEntity {
 	@NotNull
 	private Person creator;
 	
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@VaadinTableColumn(order = 9990, sortable = true)
+	@VaadinGridColumn(order = 9990, sortable = true)
+	private Date updatedAt;
+	
+
 	/**
 	 * If box has no dnsServer, It should be found here.
 	 */
@@ -73,6 +86,11 @@ public class BoxGroup extends BaseEntity {
 	@Override
 	public String toString() {
 		return Objects.toStringHelper(this).add("name", getName()).add("boxnumber", getBoxes().size()).toString();
+	}
+	
+	@PreUpdate
+	public void preUpdate() {
+		setUpdatedAt(Date.from(Instant.now()));
 	}
 	
 	public String getName() {
@@ -133,7 +151,14 @@ public class BoxGroup extends BaseEntity {
 		this.histories = histories;
 	}
 	
-	
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
 	public static class BoxGroupBuilder {
 		private final String name;
 		private final Person creator;

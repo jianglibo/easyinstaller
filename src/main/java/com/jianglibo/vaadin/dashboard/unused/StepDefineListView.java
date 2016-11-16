@@ -13,6 +13,7 @@ import com.google.common.eventbus.SubscriberExceptionContext;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.view.BaseListView;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;

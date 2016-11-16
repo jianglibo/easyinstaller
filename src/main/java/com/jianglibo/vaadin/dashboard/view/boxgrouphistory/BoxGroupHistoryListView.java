@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.boxgrouphistory;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -12,8 +13,6 @@ import org.springframework.context.MessageSource;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumnWrapper;
-import com.jianglibo.vaadin.dashboard.annotation.VaadinTableWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
@@ -21,9 +20,10 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent.DynaMenuItemClickListener;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
@@ -72,10 +72,10 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[] { //
 				new ButtonGroup( //
-						new ButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-						new ButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)), //
+						new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
+						new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)), //
 				new ButtonGroup( //
-						new ButtonDescription("boxhistories", null, ButtonEnableType.ONE)) };
+						new SimpleButtonDescription("boxhistories", null, ButtonEnableType.ONE)) };
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 		MyBottomBlock bottomBlock = new MyBottomBlock();
 
 		getGrid().addSelectionListener(event -> {
-			((MyMiddleBlock) getMiddleBlock()).alterState(event.getSelected().size());
+			((MyMiddleBlock) getMiddleBlock()).alterState(event.getSelected());
 		});
 
 		return bottomBlock;
@@ -150,8 +150,8 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 			menu.AddDynaMenuItemClickListener(dynaMenuItemClickListener);
 		}
 
-		public void alterState(int selectNumber) {
-			this.menu.onSelectionChange(selectNumber);
+		public void alterState(Set<Object> selected) {
+			this.menu.onSelectionChange(selected);
 		}
 	}
 
