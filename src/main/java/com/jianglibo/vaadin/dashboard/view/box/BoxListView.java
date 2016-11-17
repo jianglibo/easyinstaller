@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 
+import com.google.common.base.Joiner;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
@@ -19,12 +20,14 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.view.PageMetaEvent;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.UnArchiveButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.AddButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DeleteButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.EditButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
-import com.vaadin.server.FontAwesome;
+import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 
@@ -39,11 +42,14 @@ public class BoxListView extends BaseGridView<Box, BoxGrid, FreeContainer<Box>> 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BoxListView.class);
 
 	public static final String VIEW_NAME = "box";
+	
+	private final BoxRepository repository;
 
 	@Autowired
 	public BoxListView(BoxRepository repository, Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, Box.class, BoxGrid.class);
+		this.repository = repository;
 		delayCreateContent();
 	}
 
@@ -56,18 +62,27 @@ public class BoxListView extends BaseGridView<Box, BoxGrid, FreeContainer<Box>> 
 		List<Box> selected = getGrid().getSelectedRows().stream().map(o -> (Box)o).collect(Collectors.toList());
 		switch (btnDesc.getItemId()) {
 		case CommonMenuItemIds.DELETE:
+			for (Box bItem : selected) {
+				if (!bItem.getBoxGroups().isEmpty()) {
+					NotificationUtil.tray(getMessageSource(), "deleteWhenHasRelations", bItem.getDisplayName(),Joiner.on(";").join(bItem.getBoxGroups().stream().map(bg -> bg.getDisplayName()).iterator()));
+					return;
+				}
+			}
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-//					getRepository().delete(b);
+					repository.delete(b);
+					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
 					b.setArchived(true);
-//					getRepository().save(b);
+					NotificationUtil.tray(getMessageSource(), "archivedone", b.getDisplayName());
+					repository.save(b);
 				}
 			});
-//			((BoxContainer) getTable().getContainerDataSource()).refresh();
+			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		case CommonMenuItemIds.REFRESH:
-//			((BoxContainer) getTable().getContainerDataSource()).refresh();
+			getGrid().getdContainer().refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
 			UI.getCurrent().getNavigator().navigateTo(
@@ -75,6 +90,14 @@ public class BoxListView extends BaseGridView<Box, BoxGrid, FreeContainer<Box>> 
 			break;
 		case CommonMenuItemIds.ADD:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit");
+			break;
+		case CommonMenuItemIds.UN_ARCHIVE:
+			selected.forEach(b -> {
+				b.setArchived(false);
+			});
+			repository.save(selected);
+			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
@@ -84,11 +107,8 @@ public class BoxListView extends BaseGridView<Box, BoxGrid, FreeContainer<Box>> 
 	@Override
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[] { //
-				new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-						new SimpleButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)), //
-				new ButtonGroup(
-						new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)) //
-				};
+				new ButtonGroup(new EditButtonDescription(),new AddButtonDescription()), //
+				new ButtonGroup(new DeleteButtonDescription(), new UnArchiveButtonDescription())};
 	}
 	
 	@Override

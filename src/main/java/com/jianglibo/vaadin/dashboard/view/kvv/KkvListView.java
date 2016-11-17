@@ -16,11 +16,11 @@ import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Kkv;
-import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
+import com.jianglibo.vaadin.dashboard.repositories.KkvRepository;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
+import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
@@ -38,19 +38,16 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> 
 	public static final String VIEW_NAME = "kkv";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.BOOK;
-
+	
+	private final KkvRepository repository;
 	
 	@Autowired
-	public KkvListView(BoxRepository repository,Domains domains, MessageSource messageSource,
+	public KkvListView(KkvRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, Kkv.class, KkvGrid.class);
+		this.repository = repository;
 		delayCreateContent();
 	}
-
-	
-//	public void whenTotalPageChange(PageMetaEvent tpe) {
-//		getTable().setColumnFooter("createdAt", String.valueOf(tpe.getTotalRecord()));	
-//	}
 	
 	@Override
 	public void onDynButtonClicked(ButtonDescription btnDesc) {
@@ -59,23 +56,33 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> 
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-//					getGrid().getContainerDataSource()
-//					getRepository().delete(b);
+					repository.delete(b);
+					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
 					b.setArchived(true);
-//					getRepository().save(b);
+					NotificationUtil.tray(getMessageSource(), "archivedone", b.getDisplayName());
+					repository.save(b);
 				}
 			});
-//			((BoxContainer)getTable().getContainerDataSource()).refresh();
+			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		case CommonMenuItemIds.REFRESH:
-//			((BoxContainer)getTable().getContainerDataSource()).refresh();
+			getGrid().getdContainer().refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/?pv=" + getLvfb().toNavigateString());
+			break;
+		case CommonMenuItemIds.UN_ARCHIVE:
+			selected.forEach(bg -> {
+				bg.setArchived(false);
+			});
+			repository.save(selected);
+			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());

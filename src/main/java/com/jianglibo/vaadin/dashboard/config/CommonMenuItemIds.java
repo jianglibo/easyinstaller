@@ -6,5 +6,6 @@ public class CommonMenuItemIds {
 	public static final String DELETE = "delete";
 	public static final String ADD = "add";
 	public static final String DETAIL = "detail";
+	public static final String UN_ARCHIVE = "unarchive";
 	
 }

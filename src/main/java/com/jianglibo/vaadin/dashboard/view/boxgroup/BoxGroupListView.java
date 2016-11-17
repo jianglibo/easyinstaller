@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 
+import com.google.common.base.Joiner;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
@@ -17,18 +18,19 @@ import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
-import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.UnArchiveButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DeleteButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.EditButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.AddButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.view.clustersoftware.ClusterSoftwareView;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 @SpringView(name = BoxGroupListView.VIEW_NAME)
@@ -56,11 +58,8 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[]{ //
-		new ButtonGroup( //
-				new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-				new SimpleButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
-		new ButtonGroup( //
-				new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),
+		new ButtonGroup(new EditButtonDescription(),new AddButtonDescription()),//
+		new ButtonGroup(new DeleteButtonDescription(), new UnArchiveButtonDescription()),
 		new ButtonGroup( //
 					new SimpleButtonDescription("manageClusterSoftware", null, ButtonEnableType.ONE))};
 	}
@@ -72,7 +71,7 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 		case CommonMenuItemIds.DELETE:
 			for (BoxGroup bg : selected) {
 				if (!bg.getBoxes().isEmpty()) {
-					NotificationUtil.tray(getMessageSource(), "deleteWhenHasRelations", bg.getDisplayName());
+					NotificationUtil.tray(getMessageSource(), "deleteWhenHasRelations", bg.getDisplayName(),Joiner.on(";").join(bg.getBoxes().stream().map(b -> b.getDisplayName()).iterator()));
 					return;
 				}
 			}
@@ -86,16 +85,25 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 					repository.save(b);
 				}
 			});
-			((FreeContainer<BoxGroup>)getGrid().getContainerDataSource()).notifyItemSetChanged();
+			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		case CommonMenuItemIds.REFRESH:
-//			((BoxContainer)getTable().getContainerDataSource()).refresh();
+			getGrid().getdContainer().refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());
 			break;
 		case CommonMenuItemIds.ADD:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/?pv=" + getLvfb().toNavigateString());
+			break;
+		case CommonMenuItemIds.UN_ARCHIVE:
+			selected.forEach(bg -> {
+				bg.setArchived(false);
+			});
+			repository.save(selected);
+			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		case "manageClusterSoftware":
 			UI.getCurrent().getNavigator().navigateTo(ClusterSoftwareView.VIEW_NAME + "/?boxgroup=" + selected.iterator().next().getId()  + "&pv=" + getLvfb().toNavigateString());

@@ -101,8 +101,8 @@ public class Software extends BaseEntity {
 	private Set<TextFile> textfiles = Sets.newHashSet();
 	
 	@Temporal(TemporalType.TIMESTAMP)
-	@VaadinTableColumn(order = 10001, sortable = true)
-	@VaadinGridColumn(order = 10001, sortable = true)
+	@VaadinTableColumn(order = 9995, sortable = true)
+	@VaadinGridColumn(order = 9995, sortable = true)
 	private Date updatedAt;
 
 	@ElementCollection(fetch = FetchType.EAGER)

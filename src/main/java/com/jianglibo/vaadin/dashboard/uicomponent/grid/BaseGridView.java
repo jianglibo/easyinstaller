@@ -6,18 +6,20 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 import com.google.common.eventbus.Subscribe;
-import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BaseEntity;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
-import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEvent.BrowserResizeEvent;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
+import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.AddButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
-import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DeleteButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent.DynaMenuItemClickListener;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.EditButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.RefreshButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.UnArchiveButtonDescription;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
@@ -178,12 +180,8 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 	
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[]{ //
-		new ButtonGroup( //
-				new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-				new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
-		new ButtonGroup( //
-				new SimpleButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS), //
-				new SimpleButtonDescription(CommonMenuItemIds.REFRESH, FontAwesome.REFRESH, ButtonEnableType.ALWAYS))};
+		new ButtonGroup(new EditButtonDescription(),new DeleteButtonDescription(), new UnArchiveButtonDescription()),//
+		new ButtonGroup(new AddButtonDescription(),	new RefreshButtonDescription())};
 	}
 	
 	public void backward() {

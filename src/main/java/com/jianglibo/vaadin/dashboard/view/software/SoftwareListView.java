@@ -19,11 +19,15 @@ import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.UnArchiveButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.AddButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DeleteButtonDescription;
+import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.EditButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
-import com.jianglibo.vaadin.dashboard.util.MsgUtil;
+import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.view.importsoftware.ImportSoftwareView;
 import com.jianglibo.vaadin.dashboard.view.textfile.TextFileListView;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -46,11 +50,13 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.COGS;
 	
+	private final SoftwareRepository repository;
 	
 	@Autowired
 	public SoftwareListView(SoftwareRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, Software.class, SoftwareGrid.class);
+		this.repository = repository;
 		delayCreateContent();
 	}
 
@@ -61,13 +67,16 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-//					getRepository().delete(b);
+					repository.delete(b);
+					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
 					b.setArchived(true);
-//					getRepository().save(b);
+					NotificationUtil.tray(getMessageSource(), "archivedone", b.getDisplayName());
+					repository.save(b);
 				}
 			});
-//			((SoftwareContainer)getTable().getContainerDataSource()).refresh();
+			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		case CommonMenuItemIds.REFRESH:
 //			((SoftwareContainer)getTable().getContainerDataSource()).refresh();
@@ -98,9 +107,8 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 	@Override
 	public ButtonGroup[] getButtonGroups() {
 		return new ButtonGroup[]{ //
-		new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.EDIT, FontAwesome.EDIT, ButtonEnableType.ONE), //
-				new SimpleButtonDescription(CommonMenuItemIds.DELETE, FontAwesome.TRASH, ButtonEnableType.MANY)),//
-		new ButtonGroup(new SimpleButtonDescription(CommonMenuItemIds.ADD, FontAwesome.PLUS, ButtonEnableType.ALWAYS)),//
+		new ButtonGroup(new EditButtonDescription(),new DeleteButtonDescription(), new UnArchiveButtonDescription()),//
+		new ButtonGroup(new AddButtonDescription()),//
 		new ButtonGroup(new SimpleButtonDescription("importSoftware", null, ButtonEnableType.ALWAYS)),
 		new ButtonGroup(new SimpleButtonDescription("softwaretxtfiles", null, ButtonEnableType.ONE))
 		};
