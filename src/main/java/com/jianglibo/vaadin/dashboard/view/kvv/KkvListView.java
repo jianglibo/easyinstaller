@@ -56,7 +56,7 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> 
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-					repository.delete(b);
+					repository.delete(b.getId());
 					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
 					b.setArchived(true);
@@ -64,7 +64,8 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> 
 					repository.save(b);
 				}
 			});
-			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().setDirty(true);
+			getGrid().deselectAll();
 			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		case CommonMenuItemIds.REFRESH:
@@ -81,7 +82,8 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> 
 				bg.setArchived(false);
 			});
 			repository.save(selected);
-			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().setDirty(true);
+			getGrid().deselectAll();
 			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		default:

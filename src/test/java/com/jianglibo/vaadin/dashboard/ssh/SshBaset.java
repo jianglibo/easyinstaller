@@ -23,7 +23,7 @@ public class SshBaset extends Tbase {
 		return new JschSession.JschSessionBuilder()//
 				.setHost(configForTt.getSshHost())//
 				.setKeyFile(configForTt.getSshKeyfile()) //
-				.setKnownHosts(configForTt.getSshKnownhostsFile())//
+//				.setKnownHosts(configForTt.getSshKnownhostsFile())//
 				.setSshUser("root").build();
 	}
 	
@@ -34,7 +34,7 @@ public class SshBaset extends Tbase {
 		return new JschSession.JschSessionBuilder()//
 				.setHost(configForTt.getSshHost())//
 				.setKeyFile(configForTt.getSshKeyfile()) //
-				.setKnownHosts(configForTt.getSshKnownhostsFile())//
+//				.setKnownHosts(configForTt.getSshKnownhostsFile())//
 				.setSshUser("root").build();
 	}
 	

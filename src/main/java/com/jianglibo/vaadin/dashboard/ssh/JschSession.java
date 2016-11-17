@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.jcraft.jsch.ChannelExec;
@@ -14,6 +17,8 @@ import com.jcraft.jsch.Session;
 import com.jianglibo.vaadin.dashboard.vo.JschExecuteResult;
 
 public class JschSession {
+	
+	public static final Logger LOGGER = LoggerFactory.getLogger(JschSession.class);
 	
 	private Session session;
 	
@@ -96,6 +101,7 @@ public class JschSession {
 		public JschSession build() throws JSchException {
 			JSch jsch = new JSch();
 			jsch.addIdentity(keyFile);
+			LOGGER.info("connection to server with keyfile \"{}\", user: {}, host: {} port: {}", keyFile, sshUser, host,port);
 			if (knownHosts != null) {
 				jsch.setKnownHosts(knownHosts);
 			}

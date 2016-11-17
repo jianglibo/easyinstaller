@@ -7,6 +7,7 @@ import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.util.JpqlUtil;
@@ -26,8 +27,8 @@ public class SoftwareRepositoryImpl implements SoftwareRepositoryCustom<Software
 
 
 	@Override
-	public List<Software> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed) {
-		return jpqjUtil.getFilteredPage(Software.class, page, filterString, trashed, "name");
+	public List<Software> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed,Sort sort) {
+		return jpqjUtil.getFilteredPage(Software.class, page, filterString, trashed, sort, "name");
 	}
 
 

@@ -44,7 +44,11 @@ public abstract class BaseEntity implements Serializable {
 
 	@PrePersist
 	public void createCreatedAt() {
-		setCreatedAt(Date.from(Instant.now()));
+		Date now = Date.from(Instant.now());
+		setCreatedAt(now);
+		if (this instanceof HasUpdatedAt) {
+			((HasUpdatedAt)this).setUpdatedAt(now);
+		}
 	}
 
 	public long getId() {

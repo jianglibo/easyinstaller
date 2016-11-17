@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.util.JpqlUtil;
@@ -18,8 +19,8 @@ public class BoxGroupHistoryRepositoryImpl implements BoxHistoryRepositoryCustom
 	private JpqlUtil jpqjUtil;
 	
 	@Override
-	public List<BoxGroupHistory> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed) {
-		return jpqjUtil.getFilteredPage(BoxGroupHistory.class,  page, filterString, trashed);
+	public List<BoxGroupHistory> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed, Sort sort) {
+		return jpqjUtil.getFilteredPage(BoxGroupHistory.class,  page, filterString, trashed, sort);
 	}
 
 	@Override

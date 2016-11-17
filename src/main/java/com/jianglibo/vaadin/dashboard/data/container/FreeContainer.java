@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -471,8 +472,13 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 	@Override
 	public void sort(Object[] propertyId, boolean[] ascending) {
 		if (propertyId.length > 0) {
-			String s = (String) propertyId[0];
-			this.sort = new Sort(ascending[0] ? Direction.ASC : Direction.DESC, s);
+			List<Sort.Order> orders = Lists.newArrayList();
+			for (int i = 0; i< propertyId.length; i++) {
+				String s = (String) propertyId[i];
+				boolean asd = ascending[i];
+				orders.add(new Order(asd ? Direction.ASC : Direction.DESC, s));
+			}
+			this.sort = new Sort(orders);
 		} else {
 			this.sort = defaultSort;
 		}
@@ -532,7 +538,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	public void fetchPage() {
 		ManualPagable pageable = new ManualPagable(currentPage, perPage, sort);
-		currentWindow = rcc.getFilteredPageWithOnePhrase(pageable,filterString, trashed);
+		currentWindow = rcc.getFilteredPageWithOnePhrase(pageable,filterString, trashed, getSort());
 	}
 
 	public void refresh() {

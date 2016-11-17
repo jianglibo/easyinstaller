@@ -15,7 +15,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -63,7 +62,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @VaadinGrid(multiSelect = true, footerVisible = true, messagePrefix = "domain.software.", styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, defaultSort="-updatedAt")
-public class Software extends BaseEntity {
+public class Software extends BaseEntity implements HasUpdatedAt {
 
 	public static final Splitter commaSplitter = Splitter.on(',').trimResults().omitEmptyStrings();
 	public static final Joiner commaJoiner = Joiner.on(',').skipNulls();
@@ -142,12 +141,6 @@ public class Software extends BaseEntity {
 
 	@VaadinFormField(order = 200)
 	private String actions = "install";
-
-	@PrePersist
-	public void createCreatedAt() {
-		setCreatedAt(Date.from(Instant.now()));
-		setUpdatedAt(getCreatedAt());
-	}
 
 	@PreUpdate
 	public void normalizeComm() {

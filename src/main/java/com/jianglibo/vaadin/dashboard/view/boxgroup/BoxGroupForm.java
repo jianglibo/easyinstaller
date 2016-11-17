@@ -1,6 +1,5 @@
 package com.jianglibo.vaadin.dashboard.view.boxgroup;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,8 +37,10 @@ public class BoxGroupForm extends FormBase<BoxGroup> {
 		}
 		// because all entity maybe detached, they are not the same object.
 		Set<Box> newBoxes = bg.getBoxes();
-		
-		Set<Box> originBoxes = boxRepository.findByBoxGroup(bg);
+		Set<Box> originBoxes = Sets.newHashSet();
+		if (bg.getId() > 0) {
+			originBoxes = boxRepository.findByBoxGroup(bg); 
+		}
 		
 		for (Box b : originBoxes) {
 			// if origin box not in newBoxes, must remove.

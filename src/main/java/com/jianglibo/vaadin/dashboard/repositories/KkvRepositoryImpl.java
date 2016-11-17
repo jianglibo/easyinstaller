@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Kkv;
@@ -19,8 +20,8 @@ public class KkvRepositoryImpl implements KkvRepositoryCustom<Kkv> {
 	private JpqlUtil jpqjUtil;
 	
 	@Override
-	public List<Kkv> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed) {
-		return jpqjUtil.getFilteredPage(Kkv.class,  page, filterString, trashed, "kgroup", "key", "value");
+	public List<Kkv> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed, Sort sort) {
+		return jpqjUtil.getFilteredPage(Kkv.class,  page, filterString, trashed, sort, "kgroup", "key", "value");
 	}
 
 	@Override

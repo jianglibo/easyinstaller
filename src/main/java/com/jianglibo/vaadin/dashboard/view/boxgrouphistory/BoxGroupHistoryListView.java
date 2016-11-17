@@ -183,7 +183,7 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-					repository.delete(b);
+					repository.delete(b.getId());
 					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
 					b.setArchived(true);
@@ -191,7 +191,8 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 					repository.save(b);
 				}
 			});
-			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().setDirty(true);
+			getGrid().deselectAll();
 			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		case CommonMenuItemIds.REFRESH:
@@ -209,7 +210,8 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 				bg.setArchived(false);
 			});
 			repository.save(selected);
-			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().setDirty(true);
+			getGrid().deselectAll();
 			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		case "boxhistories":

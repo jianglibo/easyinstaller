@@ -34,6 +34,8 @@ public class RawApplicationConfig {
 	 */
 	private String sshKeyFolder;
 	
+	private String defaultSshKeyFile;
+	
 	/**
 	 * the folder in server box to store tmp files.
 	 */
@@ -107,6 +109,14 @@ public class RawApplicationConfig {
 
 	public void setScriptSources(List<String> scriptSources) {
 		this.scriptSources = scriptSources;
+	}
+
+	public String getDefaultSshKeyFile() {
+		return defaultSshKeyFile;
+	}
+
+	public void setDefaultSshKeyFile(String defaultSshKeyFile) {
+		this.defaultSshKeyFile = defaultSshKeyFile;
 	}
 	
 	

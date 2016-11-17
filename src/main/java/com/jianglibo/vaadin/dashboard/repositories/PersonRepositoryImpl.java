@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -91,8 +92,8 @@ public class PersonRepositoryImpl extends SimpleJpaRepository<Person, Long> impl
 
 
 	@Override
-	public List<Person> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed) {
-		return jpqjUtil.getFilteredPage(Person.class,  page, filterString, trashed, Person_.name.getName(), Person_.email.getName(), Person_.mobile.getName());
+	public List<Person> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed, Sort sort) {
+		return jpqjUtil.getFilteredPage(Person.class,  page, filterString, trashed, sort, Person_.name.getName(), Person_.email.getName(), Person_.mobile.getName());
 	}
 
 

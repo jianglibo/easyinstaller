@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.Box_;
@@ -17,8 +18,8 @@ public class BoxRepositoryImpl implements BoxRepositoryCustom<Box> {
 
 
 	@Override
-	public List<Box> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed) {
-		return jpqjUtil.getFilteredPage(Box.class, page, filterString, trashed, Box_.name.getName(), Box_.ip.getName());
+	public List<Box> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed, Sort sort) {
+		return jpqjUtil.getFilteredPage(Box.class, page, filterString, trashed, sort, Box_.name.getName(), Box_.ip.getName());
 	}
 
 	@Override

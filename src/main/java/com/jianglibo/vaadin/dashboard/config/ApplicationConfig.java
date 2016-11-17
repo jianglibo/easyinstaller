@@ -55,7 +55,7 @@ public class ApplicationConfig {
 	
 	private Map<String, List<ComboItem>> comboDatas;
 	
-	private String defaultSshKeyFile;
+	private Path defaultSshKeyFile;
 	
 	private List<String> scriptSources;
 	
@@ -77,35 +77,41 @@ public class ApplicationConfig {
 		
 		Map<String, String> applicationMap = mmap.get(APPLICATION_KGROUP) == null ? Maps.newHashMap() : mmap.get(APPLICATION_KGROUP);
 
-		String uploadDst = processOneItem(applicationMap, root, "uploadDst", racfig.getUploadDst());
-		String softwareFolder = processOneItem(applicationMap, root, "softwareFolder", racfig.getSoftwareFolder());
-		String localFolder = processOneItem(applicationMap, root, "localFolder", racfig.getLocalFolder());
-		String sshKeyFolder = processOneItem(applicationMap, root, "sshKeyFolder", racfig.getSshKeyFolder());
-		String remoteFolder = processOneItem(applicationMap, root, "remoteFolder", racfig.getRemoteFolder());
-		String autoLoginStr =  processOneItem(applicationMap, root, "autoLogin", racfig.isAutoLogin() ? "true" : "false");
-		boolean autoLogin = "true".equals(autoLoginStr);
+		String uploadDstInDb = processOneItem(applicationMap, root, "uploadDst", racfig.getUploadDst());
+		String softwareFolderInDb = processOneItem(applicationMap, root, "softwareFolder", racfig.getSoftwareFolder());
+		String localFolderInDb = processOneItem(applicationMap, root, "localFolder", racfig.getLocalFolder());
+		String sshKeyFolderInDb = processOneItem(applicationMap, root, "sshKeyFolder", racfig.getSshKeyFolder());
+		String remoteFolderInDb = processOneItem(applicationMap, root, "remoteFolder", racfig.getRemoteFolder());
+		String defaultSshKeyFileInDb = processOneItem(applicationMap, root, "defaultSshKeyFile", racfig.getDefaultSshKeyFile());
+		String autoLoginStrInDb =  processOneItem(applicationMap, root, "autoLogin", racfig.isAutoLogin() ? "true" : "false");
+		boolean autoLogin = "true".equals(autoLoginStrInDb);
 
-		setUploadDstPath(convertToPath(uploadDst));
-		setSoftwareFolderPath(convertToPath(softwareFolder));
-		setLocalFolderPath(convertToPath(localFolder));
-		setSshKeyFolderPath(convertToPath(sshKeyFolder));
+		setUploadDstPath(convertToPath(uploadDstInDb));
+		setSoftwareFolderPath(convertToPath(softwareFolderInDb));
+		setLocalFolderPath(convertToPath(localFolderInDb));
+		setSshKeyFolderPath(convertToPath(sshKeyFolderInDb));
 		setAutoLogin(autoLogin);
 
-		remoteFolder = remoteFolder.replaceAll("\\\\", "/");
-		if (remoteFolder.startsWith("~")) {
-			remoteFolder = remoteFolder.substring(1);
+		remoteFolderInDb = remoteFolderInDb.replaceAll("\\\\", "/");
+		if (remoteFolderInDb.startsWith("~")) {
+			remoteFolderInDb = remoteFolderInDb.substring(1);
 		}
-		if (!remoteFolder.startsWith("/")) {
-			remoteFolder = "/" + remoteFolder;
+		if (!remoteFolderInDb.startsWith("/")) {
+			remoteFolderInDb = "/" + remoteFolderInDb;
 		}
-		if (!remoteFolder.endsWith("/")) {
-			remoteFolder = remoteFolder + "/";
+		if (!remoteFolderInDb.endsWith("/")) {
+			remoteFolderInDb = remoteFolderInDb + "/";
 		}
-		setRemoteFolder(remoteFolder);
+		
+		setRemoteFolder(remoteFolderInDb);
 		
 		setComboDatas(racfig.getComboDatas());
-		defaultSshKeyFile = getSshKeyFolderPath().resolve("ssh_id").toAbsolutePath().toString();
 		
+		if (Strings.isNullOrEmpty(defaultSshKeyFileInDb)) {
+			defaultSshKeyFileInDb = getSshKeyFolderPath().resolve("ssh_id").toAbsolutePath().toString();
+		}
+		
+		setDefaultSshKeyFile(convertToPath(defaultSshKeyFileInDb));
 		List<String> ss = normalizeScriptSources(racfig.getScriptSources());
 		
 		String scriptSourceInDb = applicationMap.get("scriptSources");
@@ -168,13 +174,13 @@ public class ApplicationConfig {
 			}
 		}
 		if (isDefaultSshKeyFileExists()) {
-			return getDefaultSshKeyFile();
+			return getDefaultSshKeyFile().toAbsolutePath().toString();
 		}
 		return "";
 	}
 	
 	
-	public String getDefaultSshKeyFile() {
+	public Path getDefaultSshKeyFile() {
 		return defaultSshKeyFile;
 	}
 
@@ -279,4 +285,9 @@ public class ApplicationConfig {
 	public void setScriptSources(List<String> scriptSources) {
 		this.scriptSources = scriptSources;
 	}
+	
+	public void setDefaultSshKeyFile(Path defaultSshKeyFile) {
+		this.defaultSshKeyFile = defaultSshKeyFile;
+	}
+
 }

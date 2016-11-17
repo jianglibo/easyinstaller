@@ -45,7 +45,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @VaadinTable(multiSelect = true, messagePrefix = "domain.boxgroup.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=false, defaultSort="-updatedAt")
-public class BoxGroup extends BaseEntity {
+public class BoxGroup extends BaseEntity implements HasUpdatedAt {
 
 	@VaadinGridColumn
 	@VaadinFormField(order = 10)

@@ -1,5 +1,7 @@
 package com.jianglibo.vaadin.dashboard.taskrunner;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -99,7 +101,7 @@ public class TaskRunner {
 	public void submitTasks(TaskDesc taskDesc) {
 		for(Box box : taskDesc.getBoxes()) {
 			if (applicationConfig.getSshKeyFile(box).isEmpty()) {
-				NotificationUtil.error(messageSource, "noKeyFilePath", applicationConfig.getDefaultSshKeyFile());
+				NotificationUtil.error(messageSource, "noKeyFilePath", applicationConfig.getDefaultSshKeyFile().toAbsolutePath().toString());
 				return;
 			}
 		}
@@ -257,10 +259,11 @@ public class TaskRunner {
 				if (jsession.getSession().isConnected()) {
 					jsession.getSession().disconnect();
 				}
-			Broadcaster.broadcast(new BroadCasterMessage(new OneTaskFinishMessage(oneThreadtaskDesc)));
+				Broadcaster.broadcast(new BroadCasterMessage(new OneTaskFinishMessage(oneThreadtaskDesc)));
 			} catch (Exception e) {
-				String emsg = e.getMessage();
-				oneThreadtaskDesc.getBoxHistory().appendLogAndSetFailure(emsg);
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw));
+				oneThreadtaskDesc.getBoxHistory().appendLogAndSetFailure(sw.toString());
 			}
 			return oneThreadtaskDesc;
 		}

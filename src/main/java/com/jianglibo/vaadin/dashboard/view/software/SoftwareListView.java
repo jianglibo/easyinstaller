@@ -67,7 +67,7 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-					repository.delete(b);
+					repository.delete(b.getId());
 					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
 					b.setArchived(true);
@@ -79,7 +79,7 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		case CommonMenuItemIds.REFRESH:
-//			((SoftwareContainer)getTable().getContainerDataSource()).refresh();
+			getGrid().getdContainer().refresh();
 			break;
 		case CommonMenuItemIds.EDIT:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());

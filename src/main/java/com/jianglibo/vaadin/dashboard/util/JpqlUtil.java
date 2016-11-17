@@ -7,6 +7,7 @@ import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -23,8 +24,17 @@ public class JpqlUtil {
 		return String.format("SELECT COUNT(DISTINCT s) FROM %s as s", clazz.getSimpleName());
 	}
 
-	public String selectAllJpql(Class<? extends BaseEntity> clazz) {
-		return String.format("SELECT DISTINCT s FROM %s as s", clazz.getSimpleName());
+	public String selectAllJpql(Class<? extends BaseEntity> clazz, Sort sort) {
+		return String.format("SELECT DISTINCT s FROM %s as s %s", clazz.getSimpleName(), getOrderByClause(sort));
+	}
+	
+	private String getOrderByClause(Sort sort) {
+		StringBuilder sb = new StringBuilder(" ORDER BY ");
+		
+		sort.forEach(od -> {
+			sb.append(" s.").append(od.getProperty()).append(od.isAscending() ? " ASC" : " DESC").append(",");
+		});
+		return sb.substring(0, sb.length() - 1);
 	}
 
 	private String getWhereClause(String... fns) {
@@ -46,19 +56,19 @@ public class JpqlUtil {
 		return String.format("SELECT COUNT(DISTINCT s) FROM %s as s WHERE %s", clazz.getSimpleName(), getWhereClause(fns));
 	}
 
-	public String selectLikeJpql(Class<? extends BaseEntity> clazz, String...fns) {
-		return String.format("SELECT DISTINCT s FROM %s as s WHERE %s", clazz.getSimpleName(), getWhereClause(fns));
+	public String selectLikeJpql(Class<? extends BaseEntity> clazz,Sort sort, String...fns) {
+		return String.format("SELECT DISTINCT s FROM %s as s WHERE %s %s", clazz.getSimpleName(), getWhereClause(fns), getOrderByClause(sort));
 	}
 	
 
 
 	public <T extends BaseEntity> List<T> getFilteredPage(Class<T> clazz, Pageable page, String filterString,
-			boolean trashed, String...fns) {
+			boolean trashed, Sort sort, String...fns) {
 		String jpql;
 		if (Strings.isNullOrEmpty(filterString)) {
-			jpql = selectAllJpql(clazz);
+			jpql = selectAllJpql(clazz, sort);
 		} else {
-			jpql = selectLikeJpql(clazz, fns);
+			jpql = selectLikeJpql(clazz,sort, fns);
 		}
 
 		TypedQuery<T> q = em.createQuery(jpql, clazz);
