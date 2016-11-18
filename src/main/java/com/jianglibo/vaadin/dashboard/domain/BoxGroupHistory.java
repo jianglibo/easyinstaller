@@ -15,6 +15,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
@@ -25,7 +26,7 @@ import com.vaadin.ui.themes.ValoTheme;
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
 @VaadinGrid(multiSelect = true, messagePrefix = "domain.box_group_history.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true, selectMode=Grid.SelectionMode.MULTI)
 public class BoxGroupHistory extends BaseEntity {
 
 	@ManyToOne

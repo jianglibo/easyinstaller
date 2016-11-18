@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.context.MessageSource;
@@ -91,7 +92,8 @@ public class OneBoxGroupHistoriesGrid extends BaseGrid<BoxGroupHistory, FreeCont
 		dspBt.setEnabled(false);
 		
 		dspBt.addClickListener(event -> {
-			BoxGroupHistory bgh = (BoxGroupHistory) getSelectedRow();
+			Collection<?> o = getSelectedRows();
+			BoxGroupHistory bgh = (BoxGroupHistory)o.iterator().next() ;
 			if (bgh != null) {
 				String fg = UI.getCurrent().getPage().getUriFragment();
 				if (fg.startsWith("!")) {

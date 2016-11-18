@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -115,53 +116,59 @@ public class ApplicationConfig {
 		List<String> ss = normalizeScriptSources(racfig.getScriptSources());
 		
 		String scriptSourceInDb = applicationMap.get("scriptSources");
+		List<String> ssInDb = Lists.newArrayList();
 		
-		// configuration item in database has high priority.
-		if(Strings.isNullOrEmpty(scriptSourceInDb)) {
-			processOneItem(applicationMap, root, "scriptSources", Joiner.on(';').join(ss));
-		} else {
-			List<String> inDbs = normalizeScriptSources(Lists.newArrayList(scriptSourceInDb.split(";")));
-			for(String s: ss) {
-				if (!inDbs.contains(s)) {
-					inDbs.add(s);
-				}
+		if (!Strings.isNullOrEmpty(scriptSourceInDb)) {
+			ssInDb = normalizeScriptSources(Lists.newArrayList(Splitter.on(";").trimResults().split(scriptSourceInDb)));
+		}
+		
+		boolean hasNewItem = false;
+		for(String s: ss) {
+			if (!ssInDb.contains(s)) {
+				ssInDb.add(s);
+				hasNewItem = true;
 			}
-			ss = inDbs;
+		}
+		if (hasNewItem) {
+			processOneItem(applicationMap, root, "scriptSources", Joiner.on(';').join(ssInDb));
 		}
 		// move default classpath:com/jianglibo/easyinstaller/scriptsnippets/ to last one
-		String defaultSs = ss.stream().filter(s -> defaultScriptSource.equals(s)).findAny().get();
-		ss = ss.stream().filter(s -> !defaultScriptSource.equals(s)).collect(Collectors.toList());
-		ss.add(defaultSs);
-		
-		setScriptSources(ss);
+		String defaultSs = ssInDb.stream().filter(s -> defaultScriptSource.equals(s)).findAny().get();
+		ssInDb = ssInDb.stream().filter(s -> !defaultScriptSource.equals(s)).collect(Collectors.toList());
+		ssInDb.add(defaultSs);
+		setScriptSources(ssInDb);
 	}
 	
 	private List<String> normalizeScriptSources(List<String> raw) {
 		List<String> ss = Lists.newArrayList();
 		for(String s : raw) {
-			s = s.trim();
-			if (s.startsWith("classpath:")) {
-				if (s.endsWith("/")) {
-					ss.add(s);
-				} else {
-					ss.add(s + "/");
-				}
-			} else if (s.startsWith("http://") || s.startsWith("https://")) {
-				if (!s.contains("placeholder")) {
+			try { //if configuration item is invalid, ignore it.
+				s = s.trim();
+				if (s.startsWith("classpath:")) {
 					if (s.endsWith("/")) {
 						ss.add(s);
 					} else {
 						ss.add(s + "/");
 					}
+				} else if (s.startsWith("http://") || s.startsWith("https://")) {
+					if (!s.contains("placeholder")) {
+						if (s.endsWith("/")) {
+							ss.add(s);
+						} else {
+							ss.add(s + "/");
+						}
+					}
+				} else if (s.startsWith("file:///")) {
+					String fn = s.substring(8);
+					fn = convertToPath(fn).toAbsolutePath().toString();
+					fn = fn.replaceAll("\\\\", "/");
+					if (!fn.endsWith("/")) {
+						fn = fn + "/";
+					}
+					ss.add("file:///" + fn);
 				}
-			} else if (s.startsWith("file:///")) {
-				String fn = s.substring(8);
-				fn = convertToPath(fn).toAbsolutePath().toString();
-				fn = fn.replaceAll("\\\\", "/");
-				if (!fn.endsWith("/")) {
-					fn = fn + "/";
-				}
-				ss.add("file:///" + fn);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 		return ss;

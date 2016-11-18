@@ -28,6 +28,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.themes.ValoTheme;
 
 /**
@@ -41,7 +42,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @Table(name = "box_group", uniqueConstraints = { @UniqueConstraint(columnNames = "name") })
 @VaadinGrid(multiSelect = true, messagePrefix = "domain.boxgroup.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=false, defaultSort="-updatedAt")
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=false, defaultSort="-updatedAt", selectMode=Grid.SelectionMode.MULTI)
 @VaadinTable(multiSelect = true, messagePrefix = "domain.boxgroup.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=false, defaultSort="-updatedAt")

@@ -297,7 +297,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	@Override
 	public Collection<?> getItemIds() {
-		return null;
+		return currentWindow;
 	}
 
 	@Override
@@ -538,7 +538,19 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	public void fetchPage() {
 		ManualPagable pageable = new ManualPagable(currentPage, perPage, sort);
-		currentWindow = rcc.getFilteredPageWithOnePhrase(pageable,filterString, trashed, getSort());
+		while((this.currentWindow = rcc.getFilteredPageWithOnePhrase(pageable,filterString, trashed, getSort())).isEmpty()) {
+			if (getCurrentPage() > 0) {
+				setCurrentPage(getCurrentPage() - 1);
+			} else {
+				break;
+			}
+		}
+	}
+	
+	public void fetchPageAfterModify() {
+		setDirty(true);
+		fetchPage();
+		notifyItemSetChanged();
 	}
 
 	public void refresh() {

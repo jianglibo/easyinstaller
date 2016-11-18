@@ -28,6 +28,8 @@ public class SoftwareUtil {
 	
 	public static final Pattern PREFIX_FIND = Pattern.compile("^(http://|classpath:|file:///){1}.*$");
 	
+	public static final String UTF8_BOM = "\uFEFF";
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoftwareUtil.class);
 	
 	private final ApplicationContext context;
@@ -47,6 +49,11 @@ public class SoftwareUtil {
 			Resource rs = context.getResource(fullPath);
 			try {
 				List<String> lines =  CharStreams.readLines(new InputStreamReader(rs.getInputStream(), Charsets.UTF_8));
+				if (lines.size() > 0) {
+					if (lines.get(0).startsWith(UTF8_BOM)) {
+						lines.set(0, lines.get(0).substring(1));
+					}
+				}
 				LOGGER.info("found code snippet in {}", fullPath);
 				return lines;
 			} catch (IOException e) {
@@ -57,7 +64,12 @@ public class SoftwareUtil {
 				String fullPath = scriptSource + rsptn;
 				Resource rs = context.getResource(fullPath);
 				try {
-					List<String> lines =  CharStreams.readLines(new InputStreamReader(rs.getInputStream(), Charsets.UTF_8));
+					List<String> lines = CharStreams.readLines(new InputStreamReader(rs.getInputStream(), Charsets.UTF_8));
+					if (lines.size() > 0) {
+						if (lines.get(0).startsWith(UTF8_BOM)) {
+							lines.set(0, lines.get(0).substring(1));
+						}
+					}
 					LOGGER.info("found code snippet in {}", fullPath);
 					return lines;
 				} catch (IOException e) {

@@ -9,8 +9,6 @@ import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGrid;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.ui.Grid.FooterCell;
-import com.vaadin.ui.Grid.FooterRow;
 
 @SuppressWarnings("serial")
 public class BoxGroupHistoryGrid extends BaseGrid<BoxGroupHistory, BoxGroupHistoryContainer> {

@@ -16,6 +16,7 @@ import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
+import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
 /**
@@ -68,16 +69,17 @@ public class SshUploadRunner implements BaseRunner {
 						try {
 							sftp.mkdir(targetFolder);
 						} catch (Exception e) {
+							// will throw exception if exists.
 							e.printStackTrace();
 						}
 
 						sftp.put(fileToUpload, targetFile, ChannelSftp.OVERWRITE);
 					}
 				} catch (Exception e) {
-					bh.appendLogAndSetFailure(e.getMessage());
+					bh.appendLogAndSetFailure(ThrowableUtil.printToString(e));
 				}
 			} catch (Exception e) {
-				bh.appendLogAndSetFailure(e.getMessage());
+				bh.appendLogAndSetFailure(ThrowableUtil.printToString(e));
 				bh.setSuccess(false);
 			} finally {
 				if (sftp != null) {

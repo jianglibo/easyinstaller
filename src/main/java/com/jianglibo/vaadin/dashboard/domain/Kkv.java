@@ -23,7 +23,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @VaadinTable(multiSelect = true, messagePrefix = "domain.kkv.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
-@Table(name = "kkv", uniqueConstraints = { @UniqueConstraint(columnNames = { "kgroup", "key", "value" }) })
+@Table(name = "kkv", uniqueConstraints = { @UniqueConstraint(columnNames = {"owner", "kgroup", "key", "value" })})
 public class Kkv extends BaseEntity {
 
 	/**

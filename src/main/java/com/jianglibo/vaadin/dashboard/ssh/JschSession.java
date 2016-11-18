@@ -14,6 +14,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
 import com.jianglibo.vaadin.dashboard.vo.JschExecuteResult;
 
 public class JschSession {
@@ -50,7 +51,7 @@ public class JschSession {
 				results.add(new JschExecuteResult(out , err , ext));
 				chExec.disconnect();
 			} catch (JSchException | IOException e) {
-				results.add(new JschExecuteResult(e.getMessage(), e.getClass().getName(), 1));
+				results.add(new JschExecuteResult(ThrowableUtil.printToString(e), "", 1));
 			}
 		}
 		return results;
@@ -74,7 +75,10 @@ public class JschSession {
 		private String knownHosts;
 		
 		public JschSessionBuilder setSshUser(String sshUser) {
-			this.sshUser = sshUser;
+			this.sshUser = sshUser == null ? "root" : sshUser; 
+			if (this.sshUser.trim().isEmpty()) {
+				this.sshUser = "root";
+			}
 			return this;
 		}
 
@@ -84,7 +88,7 @@ public class JschSession {
 		}
 
 		public JschSessionBuilder  setPort(int port) {
-			this.port = port;
+			this.port = port == 0 ? 22 : port;
 			return this;
 		}
 		

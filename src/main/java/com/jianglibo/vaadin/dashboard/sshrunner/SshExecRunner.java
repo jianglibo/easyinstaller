@@ -18,6 +18,7 @@ import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.util.SoftwareUtil;
+import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
 import com.jianglibo.vaadin.dashboard.vo.JschExecuteResult;
 
 /**
@@ -47,9 +48,8 @@ public class SshExecRunner implements BaseRunner {
 
 	private void copyCodeToServerAndRun(JschSession jsession, OneThreadTaskDesc taskDesc) {
 		String codeToExec = softwareUtil.getParsedCodeToExecute(taskDesc.getSoftware());
-		String codeFileName = applicationConfig.getRemoteFolder() + taskDesc.getSoftware().getCodeFileName(codeToExec);
-		String codeFileNameAtRemote = applicationConfig.getRemoteFolder() + codeFileName;
-		String envFileNameAtRemote = applicationConfig.getRemoteFolder() + codeFileName + ".env";
+		String codeFileNameAtRemote = applicationConfig.getRemoteFolder() + taskDesc.getSoftware().getCodeFileName(codeToExec);
+		String envFileNameAtRemote = codeFileNameAtRemote + ".env";
 		
 		String tpl, cmd;
 		
@@ -99,7 +99,7 @@ public class SshExecRunner implements BaseRunner {
 			}
 			putStream(taskDesc.getBoxHistory(), jsession, envFileNameAtRemote, envstr);
 		} catch (Exception e) {
-			taskDesc.getBoxHistory().appendLogAndSetFailure(e.getMessage());
+			taskDesc.getBoxHistory().appendLogAndSetFailure(ThrowableUtil.printToString(e));
 		}
 	}
 
@@ -114,10 +114,11 @@ public class SshExecRunner implements BaseRunner {
 				os.flush();
 				os.close();
 			} catch (SftpException | IOException e) {
-				bh.appendLogAndSetFailure(e.getMessage());
+				bh.appendLogAndSetFailure(String.format("boxhistory: %s, targetFile: %s", bh.getDisplayName(), targetFile));
+				bh.appendLogAndSetFailure(ThrowableUtil.printToString(e));
 			}
 		} catch (JSchException e) {
-			bh.appendLogAndSetFailure(e.getMessage());
+			bh.appendLogAndSetFailure(ThrowableUtil.printToString(e));
 		} finally {
 			if (sftp != null) {
 				sftp.disconnect();

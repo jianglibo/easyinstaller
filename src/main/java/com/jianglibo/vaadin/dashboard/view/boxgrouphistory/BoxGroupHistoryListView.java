@@ -191,9 +191,7 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 					repository.save(b);
 				}
 			});
-			getGrid().getdContainer().setDirty(true);
-			getGrid().deselectAll();
-			getGrid().getdContainer().notifyItemSetChanged();
+			getGrid().getdContainer().fetchPageAfterModify();
 			break;
 		case CommonMenuItemIds.REFRESH:
 			getGrid().getdContainer().refresh();

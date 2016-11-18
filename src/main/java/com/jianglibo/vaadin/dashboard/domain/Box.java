@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
 import java.nio.file.Path;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +12,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
@@ -31,10 +34,10 @@ import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
-@VaadinTable(multiSelect=true, messagePrefix="domain.box.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true, showCreatedAt=true)
-@VaadinGrid(multiSelect=true, messagePrefix="domain.box.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true, showCreatedAt=true)
+@VaadinTable(multiSelect=true, messagePrefix="domain.box.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true, showCreatedAt=false, defaultSort="-updatedAt")
+@VaadinGrid(multiSelect=true, messagePrefix="domain.box.",footerVisible=true, styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT}, selectable=true, fullSize=true, showCreatedAt=false, defaultSort="-updatedAt")
 @Table(name = "box", uniqueConstraints = { @UniqueConstraint(columnNames = "ip") })
-public class Box extends BaseEntity {
+public class Box extends BaseEntity implements HasUpdatedAt {
 
 	/**
 	 * 
@@ -63,6 +66,11 @@ public class Box extends BaseEntity {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@NotNull
 	private Person creator;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@VaadinTableColumn(order = 9990, sortable = true)
+	@VaadinGridColumn(order = 9990, sortable = true)
+	private Date updatedAt;
 	
 	@VaadinTableColumn(order=2)
 	@VaadinGridColumn(order = 2)
@@ -245,5 +253,15 @@ public class Box extends BaseEntity {
 	public void setRoles(String roles) {
 		this.roles = roles;
 	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+	
+	
 
 }
