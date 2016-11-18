@@ -1,6 +1,5 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +11,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -87,11 +85,6 @@ public class BoxGroup extends BaseEntity implements HasUpdatedAt {
 	@Override
 	public String toString() {
 		return Objects.toStringHelper(this).add("name", getName()).add("boxnumber", getBoxes().size()).toString();
-	}
-	
-	@PreUpdate
-	public void preUpdate() {
-		setUpdatedAt(Date.from(Instant.now()));
 	}
 	
 	public String getName() {

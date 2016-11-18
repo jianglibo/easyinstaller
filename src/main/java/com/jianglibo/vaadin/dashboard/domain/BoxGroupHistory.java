@@ -59,11 +59,12 @@ public class BoxGroupHistory extends BaseEntity {
 	public BoxGroupHistory() {
 	}
 	
-	public BoxGroupHistory(Software software, BoxGroup boxGroup, String action, Set<BoxHistory> boxHistories) {
+	public BoxGroupHistory(Software software, BoxGroup boxGroup, String action, Set<BoxHistory> boxHistories, boolean forAllBox) {
 		this.software = software;
 		this.boxGroup = boxGroup;
 		this.action = action;
 		this.boxHistories = boxHistories;
+		this.forAllBox = forAllBox;
 	}
 	
 	@Override

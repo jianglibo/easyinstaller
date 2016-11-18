@@ -12,7 +12,6 @@ import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
-import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
@@ -77,8 +76,6 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 	
 	private final TaskRunner taskRunner;
 	
-	private final ApplicationConfig applicationConfig;
-	
 	private BoxGroup boxGroup;
 	
 	private OneBoxGroupHistoriesDc obghdc;
@@ -88,13 +85,12 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 	private final Domains domains;
 	
 	@Autowired
-	public ClusterSoftwareView(BoxGroupHistoryRepository boxGroupHistoryRepository, MessageSource messageSource,ApplicationConfig applicationConfig, BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, Domains domains, PersonRepository personRepository, FieldFactories fieldFactories, TaskRunner taskRunner) {
+	public ClusterSoftwareView(BoxGroupHistoryRepository boxGroupHistoryRepository, MessageSource messageSource, BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, Domains domains, PersonRepository personRepository, FieldFactories fieldFactories, TaskRunner taskRunner) {
 		this.messageSource = messageSource;
 		this.boxGroupRepository = boxGroupRepository;
 		this.personRepository = personRepository;
 		this.boxRepository = boxRepository;
 		this.fieldFactories = fieldFactories;
-		this.applicationConfig = applicationConfig;
 		this.domains = domains;
 		this.taskRunner = taskRunner;
 		setSizeFull();
@@ -110,7 +106,7 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		VaadinGridWrapper vgw = domains.getGrids().get(BoxGroupHistory.class.getSimpleName());
 		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
 		
-		columnNames.add("!boxRuned");
+		columnNames.add("!boxRan");
 		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
 		
 		obghdc  = new OneBoxGroupHistoriesDc(boxGroupHistoryRepository, null, domains, 10, sortableContainerPropertyIds);

@@ -2,7 +2,6 @@ package com.jianglibo.vaadin.dashboard.domain;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,6 +39,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ScalarGridFieldDescription;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -61,7 +61,7 @@ import com.vaadin.ui.themes.ValoTheme;
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, defaultSort="-updatedAt")
 @VaadinGrid(multiSelect = true, footerVisible = true, messagePrefix = "domain.software.", styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, defaultSort="-updatedAt")
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, defaultSort="-updatedAt", selectMode = Grid.SelectionMode.MULTI)
 public class Software extends BaseEntity implements HasUpdatedAt {
 
 	public static final Splitter commaSplitter = Splitter.on(',').trimResults().omitEmptyStrings();
@@ -143,8 +143,9 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 	private String actions = "install";
 
 	@PreUpdate
-	public void normalizeComm() {
-		setUpdatedAt(Date.from(Instant.now()));
+	@Override
+	public void preUpdate() {
+		super.preUpdate();
 		if (getActions() == null) {
 			setActions("install");
 		} else {

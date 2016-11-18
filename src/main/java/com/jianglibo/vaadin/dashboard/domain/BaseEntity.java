@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
@@ -48,6 +49,13 @@ public abstract class BaseEntity implements Serializable {
 		setCreatedAt(now);
 		if (this instanceof HasUpdatedAt) {
 			((HasUpdatedAt)this).setUpdatedAt(now);
+		}
+	}
+	
+	@PreUpdate
+	public void preUpdate() {
+		if (this instanceof HasUpdatedAt) {
+			((HasUpdatedAt)this).setUpdatedAt(Date.from(Instant.now()));	
 		}
 	}
 

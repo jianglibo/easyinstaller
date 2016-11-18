@@ -40,19 +40,21 @@ public class OneBoxGroupHistoriesGrid extends BaseGrid<BoxGroupHistory, FreeCont
 	@Override
 	protected void addGeneratedProperty(GeneratedPropertyContainer gpcontainer, String name) {
 		switch (name) {
-		default:
+		case "!boxRan":
 			gpcontainer.addGeneratedProperty(name, new PropertyValueGenerator<String>() {
-			@Override
-			public String getValue(Item item, Object itemId, Object propertyId) {
-				BoxGroupHistory bgh = (BoxGroupHistory) itemId;
-				return String.valueOf(bgh.getBoxHistories().size());
-			}
-
-			@Override
-			public Class<String> getType() {
-				return String.class;
-			}
-		});
+				@Override
+				public String getValue(Item item, Object itemId, Object propertyId) {
+					BoxGroupHistory bgh = (BoxGroupHistory) itemId;
+					return String.valueOf(bgh.getBoxHistories().size());
+				}
+	
+				@Override
+				public Class<String> getType() {
+					return String.class;
+				}
+			});
+			break;
+		default:
 			break;
 		}
 	}
@@ -78,10 +80,9 @@ public class OneBoxGroupHistoriesGrid extends BaseGrid<BoxGroupHistory, FreeCont
 			// start to submit tasks;
 			PersonAuthenticationToken ac = VaadinSession.getCurrent().getAttribute(PersonAuthenticationToken.class);
 			DashboardUI dui = (DashboardUI) UI.getCurrent();
-			
-			BoxGroupHistory bgh = (BoxGroupHistory) getSelectedRow();
-			
-			if (bgh != null) {
+			Collection<?> selects = getSelectedRows();
+			if (selects.size() > 0) {
+				BoxGroupHistory bgh = (BoxGroupHistory) selects.iterator().next();
 				TaskDesc td = new TaskDesc(dui.getUniqueUiID(), ac.getPrincipal(), bgh);
 				taskRunner.submitTasks(td);
 			}
@@ -92,9 +93,10 @@ public class OneBoxGroupHistoriesGrid extends BaseGrid<BoxGroupHistory, FreeCont
 		dspBt.setEnabled(false);
 		
 		dspBt.addClickListener(event -> {
-			Collection<?> o = getSelectedRows();
-			BoxGroupHistory bgh = (BoxGroupHistory)o.iterator().next() ;
-			if (bgh != null) {
+			Collection<?> selects = getSelectedRows();
+			
+			if (selects.size() > 0) {
+				BoxGroupHistory bgh = (BoxGroupHistory)selects.iterator().next() ;
 				String fg = UI.getCurrent().getPage().getUriFragment();
 				if (fg.startsWith("!")) {
 					fg = fg.substring(1);
@@ -105,7 +107,6 @@ public class OneBoxGroupHistoriesGrid extends BaseGrid<BoxGroupHistory, FreeCont
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
 				UI.getCurrent().getNavigator().navigateTo(BoxHistoryListView.VIEW_NAME + "/?boxGroupHistoryId=" + bgh.getId() + "&pv=" + fg);
 			}
 		});
@@ -113,7 +114,7 @@ public class OneBoxGroupHistoriesGrid extends BaseGrid<BoxGroupHistory, FreeCont
 		namesCell.setComponent(hl);	
 		
 		addSelectionListener(event -> {
-			if (event.getSelected().size() > 0) {
+			if (event.getSelected().size() == 1) {
 				redoBt.setEnabled(true);
 				dspBt.setEnabled(true);
 			} else {

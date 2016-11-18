@@ -147,7 +147,7 @@ public class TaskRunner {
 						return bh;
 					}).filter(BoxHistory::isSuccess).count();
 					
-					BoxGroupHistory bgh = new BoxGroupHistory(taskDesc.getSoftware(), taskDesc.getBoxGroup(), taskDesc.getAction(), bhs);
+					BoxGroupHistory bgh = new BoxGroupHistory(taskDesc.getSoftware(), taskDesc.getBoxGroup(), taskDesc.getAction(), bhs, taskDesc.isForAllBox());
 					bgh.setRunner(personRepository.findByEmail(AppInitializer.firstEmail));
 					
 					if (successes == result.size()) {
