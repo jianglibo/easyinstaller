@@ -32,10 +32,10 @@ What does code_to_exec_md5_filename_env like? It contains all information about 
 code_to_exec_md5_filename_env will upload to target server before script is invoked.
 
 ### screenshot
-[[https://github.com/jianglibo/easyinstaller/blob/master/wiki/images/screenshot/console.png|alt=console]]
-[[https://github.com/jianglibo/easyinstaller/blob/master/wiki/images/screenshot/boxgroup_edit.png|alt=boxgroup]]
-[[https://github.com/jianglibo/easyinstaller/blob/master/wiki/images/screenshot/softwarelist.png|alt=softwarelist]]
-[[https://github.com/jianglibo/easyinstaller/blob/master/wiki/images/screenshot/softwareinstall.png|alt=softwareinstall]]
+![console](https://github.com/jianglibo/easyinstaller/blob/master/wiki/images/screenshot/console.png)
+![boxgroup](https://github.com/jianglibo/easyinstaller/blob/master/wiki/images/screenshot/boxgroup_edit.png)
+![softwarelist](https://github.com/jianglibo/easyinstaller/blob/master/wiki/images/screenshot/softwarelist.png)
+![softwareinstall](https://github.com/jianglibo/easyinstaller/blob/master/wiki/images/screenshot/softwareinstall.png)
 
 ### Need Help?
 * email: jianglibo@hotmail.com
