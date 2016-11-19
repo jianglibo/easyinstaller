@@ -86,7 +86,7 @@ Vagrant.configure("2") do |config|
 #      	  v.customize ['createmedium', '--filename',  'f:/vms/desktop', '--size', 100000]
     	end
     	centos.vm.box = "geerlingguy/centos7"
-    	centos.vm.network "private_network", ip: "192.168.33.10"
+    	centos.vm.network "public_network", ip: "192.168.33.10"
   	end
 
     config.vm.define "centos1" do |centos|
@@ -96,7 +96,7 @@ Vagrant.configure("2") do |config|
 #      	  v.customize ['createmedium', '--filename',  'f:/vms/desktop', '--size', 100000]
       end
       centos.vm.box = "geerlingguy/centos7"
-      centos.vm.network "private_network", ip: "192.168.33.11"
+      centos.vm.network "public_network", ip: "192.168.33.11"
     end
 
     config.vm.define "centos2" do |centos|
@@ -106,7 +106,7 @@ Vagrant.configure("2") do |config|
 #      	  v.customize ['createmedium', '--filename',  'f:/vms/desktop', '--size', 100000]
       end
       centos.vm.box = "geerlingguy/centos7"
-      centos.vm.network "private_network", ip: "192.168.33.12"
+      centos.vm.network "public_network", ip: "192.168.33.12"
     end
 
 
@@ -114,7 +114,7 @@ Vagrant.configure("2") do |config|
 	    ubuntu.vm.provider "virtualbox" do |v|
     	end
     	ubuntu.vm.box = "ubuntu/trusty64"
-    	ubuntu.vm.network "private_network", ip: "192.168.33.21"
+    	ubuntu.vm.network "public_network", ip: "192.168.33.21"
   	end
 
 end

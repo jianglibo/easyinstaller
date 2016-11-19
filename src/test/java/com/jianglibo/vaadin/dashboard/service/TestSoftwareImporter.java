@@ -17,8 +17,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jianglibo.vaadin.dashboard.Tbase;
+import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
+import com.jianglibo.vaadin.dashboard.vo.SoftwareImportResult;
 
 public class TestSoftwareImporter extends Tbase {
 	
@@ -28,9 +31,17 @@ public class TestSoftwareImporter extends Tbase {
 	@Autowired
 	private SoftwareRepository softwareRepository;
 	
+	@Autowired
+	private BoxGroupHistoryRepository boxGroupHistoryRepository;
+	
 	@Before
 	public void be() {
-		softwareRepository.deleteAll();
+		List<Software> sfs = softwareRepository.findAll();
+		for(Software sw : sfs) {
+			List<BoxGroupHistory> bghs = boxGroupHistoryRepository.findBySoftware(sw);
+			bghs.forEach(bgh -> boxGroupHistoryRepository.delete(bgh));
+			softwareRepository.delete(sw);
+		}
 	}
 	
 	private Path fixtureFolder = Paths.get("fixtures", "installscripts", "centos7-ps-2.7.3");
@@ -38,18 +49,16 @@ public class TestSoftwareImporter extends Tbase {
 	@Test
 	public void timportFromFolder() throws IOException {
 		
-		softwareRepository.deleteAll();
+		List<SoftwareImportResult> sirs = softwareImportor.installSoftwareFromFolder(fixtureFolder, false);
 		
-		List<Software> sfs = softwareImportor.installSoftwareFromFolder(fixtureFolder, false);
+		sirs = softwareImportor.installSoftwareFromFolder(fixtureFolder, false);
 		
-		sfs = softwareImportor.installSoftwareFromFolder(fixtureFolder, false);
+		sirs = softwareRepository.findAll().stream().map(sf -> new SoftwareImportResult(sf)).collect(Collectors.toList());
 		
-		sfs = softwareRepository.findAll();
-		
-		assertThat("thers should be 1 software", sfs.size(), equalTo(1));
-		assertThat("this software should has 1 textfile", sfs.get(0).getTextfiles().size(), equalTo(1));
-		assertThat("textfile name should be right", sfs.get(0).getTextfiles().iterator().next().getName(), equalTo("etc/hadoop/hadoop-env.sh"));
-		assertThat("textfile's software field should be right", sfs.get(0).getTextfiles().iterator().next().getSoftware(), equalTo(sfs.get(0)));
+		assertThat("thers should be 1 software", sirs.size(), equalTo(1));
+		assertThat("this software should has 1 textfile", sirs.get(0).getSoftware().getTextfiles().size(), equalTo(1));
+		assertThat("textfile name should be right", sirs.get(0).getSoftware().getTextfiles().iterator().next().getName(), equalTo("etc/hadoop/hadoop-env.sh"));
+		assertThat("textfile's software field should be right", sirs.get(0).getSoftware().getTextfiles().iterator().next().getSoftware(), equalTo(sirs.get(0).getSoftware()));
 	}
 
 	@Test
@@ -59,7 +68,7 @@ public class TestSoftwareImporter extends Tbase {
 				return Files.isRegularFile(p) && p.toString().endsWith(".zip");
 			}).collect(Collectors.toList());
 			
-			List<Software> softwares = spp.stream().map(p -> {
+			List<SoftwareImportResult> sirs = spp.stream().map(p -> {
 				try {
 					return softwareImportor.installSoftwareFromZipFile(p);
 				} catch (Exception e) {
@@ -67,7 +76,7 @@ public class TestSoftwareImporter extends Tbase {
 					return null;
 				}
 			}).filter(Objects::nonNull).flatMap(sfs -> sfs.stream()).collect(Collectors.toList());
-			assertThat("zip file count should equal to new software count", spp.size(), equalTo(softwares.size()));
+			assertThat("zip file count should equal to new software count", spp.size(), equalTo(sirs.size()));
 			assertThat("zip file count should equal to software count in db", new Long(spp.size()), equalTo(softwareRepository.count()));
 		}
 	}

@@ -20,12 +20,10 @@ import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Person;
-import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
-import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.security.PersonVo;
 import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.service.SoftwareImportor;
@@ -33,6 +31,7 @@ import com.jianglibo.vaadin.dashboard.sshrunner.EnvForCodeExec;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.util.SoftwareFolder;
+import com.jianglibo.vaadin.dashboard.vo.SoftwareImportResult;
 
 @Component
 public class EnvFixtureCreator {
@@ -47,19 +46,16 @@ public class EnvFixtureCreator {
 
 	private final BoxRepository boxRepository;
 
-	private final SoftwareRepository softwareRepository;
-
 	private final SoftwareImportor softwareImportor;
 
 	@Autowired
 	public EnvFixtureCreator(SoftwareImportor softwareImportor, PersonRepository personRepository, AppObjectMappers appObjectMappers,
-			BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, SoftwareRepository softwareRepository) {
+			BoxGroupRepository boxGroupRepository, BoxRepository boxRepository) {
 		super();
 		this.personRepository = personRepository;
 		this.appObjectMappers = appObjectMappers;
 		this.boxGroupRepository = boxGroupRepository;
 		this.boxRepository = boxRepository;
-		this.softwareRepository = softwareRepository;
 		this.softwareImportor = softwareImportor;
 	}
 
@@ -124,9 +120,14 @@ public class EnvFixtureCreator {
 				}
 			}).filter(Objects::nonNull).map(sfolder -> {
 				try {
-					List<Software> sfs = softwareImportor.installSoftwareFromFolder(sfolder.getBasePath());
-					sfolder.setSoftware(sfs.get(0));
-					return (SoftwareFolder) sfolder;
+					List<SoftwareImportResult> sirs = softwareImportor.installSoftwareFromFolder(sfolder.getBasePath());
+					for(SoftwareImportResult sir : sirs) {
+						if (sir.isSuccess()) {
+							sfolder.setSoftware(sir.getSoftware());
+							return sfolder;
+						}
+					}
+					return null;
 				} catch (Exception e) {
 					LOGGER.error(e.getMessage());
 					return null;

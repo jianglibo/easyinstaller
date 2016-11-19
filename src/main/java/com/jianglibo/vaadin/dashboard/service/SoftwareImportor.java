@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
-import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.domain.TextFile;
@@ -27,7 +26,9 @@ import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.repositories.TextFileRepository;
 import com.jianglibo.vaadin.dashboard.util.SoftwareFolder;
 import com.jianglibo.vaadin.dashboard.util.SoftwarePackUtil;
+import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
+import com.jianglibo.vaadin.dashboard.vo.SoftwareImportResult;
 
 /**
  * 
@@ -47,12 +48,6 @@ public class SoftwareImportor {
 
 	@Autowired
 	private SoftwareDownloader softwareDownloader;
-
-//	@Autowired
-//	private ApplicationConfig applicationConfig;
-//
-//	@Autowired
-//	private HttpPageGetter httpPageGetter;
 
 	@Autowired
 	private ObjectMapper ymlObjectMapper;
@@ -92,7 +87,7 @@ public class SoftwareImportor {
 		}
 	}
 	
-	private List<Software> decodeFromYaml(Path unpackedFolder) throws IOException {
+	private List<SoftwareImportResult> decodeFromYaml(Path unpackedFolder) throws IOException {
 		try (Stream<Path> fstream = Files.walk(unpackedFolder)) {
 			return fstream.filter(p -> {
 				return Files.isRegularFile(p) && SoftwareFolder.descriptionyml.equals(p.getFileName().toString());
@@ -116,40 +111,40 @@ public class SoftwareImportor {
 						newSf = softwareRepository.save(sf);
 					} else {
 						sfInDb.copyFrom(sf);
-//						sfInDb.getTextfiles().forEach(tf -> {
-//							textFileRepository.delete(tf);
-//						});
-//						sfInDb.setTextfiles(Sets.newHashSet());
 						setupTextFiles(sfInDb, baseFolder);
 						newSf = softwareRepository.save(sfInDb);
 					}
-					return newSf;
+					return new SoftwareImportResult(newSf);
 				} catch (Exception e) {
-					e.printStackTrace();
-					return null;
+					return new SoftwareImportResult(ThrowableUtil.printToString(e));
 				}
-			}).filter(java.util.Objects::nonNull).collect(Collectors.toList());
+			}).collect(Collectors.toList());
 		}
 	}
 	
-	public List<Software> installSoftwareFromFolder(Path folder) throws IOException {
+	public List<SoftwareImportResult> installSoftwareFromFolder(Path folder) throws IOException {
 		return installSoftwareFromFolder(folder, false);
 	}
-	public List<Software> installSoftwareFromFolder(Path folder, boolean removeFolder) throws IOException {
-		return decodeFromYaml(folder).stream().map(sfInZip -> {
-			Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sfInZip.getName(), sfInZip.getOstype(),sfInZip.getSversion());
-			Software newSf;
-			if (sfInDb == null) {
-				newSf = softwareRepository.save(sfInZip);
-			} else {
-				sfInDb.copyFrom(sfInZip);
-				sfInDb.setTextfiles(
-				sfInDb.getTextfiles().stream().map(tf -> {
-					tf.setSoftware(sfInDb);
-					return textFileRepository.save(tf);
-				}).collect(Collectors.toSet()));
-				newSf = softwareRepository.save(sfInDb);
-			}
+	
+	
+	public List<SoftwareImportResult> installSoftwareFromFolder(Path folder, boolean removeFolder) throws IOException {
+		return decodeFromYaml(folder).stream().map(sir -> {
+			if (sir.isSuccess()) {
+				Software sfInZip = sir.getSoftware();
+				Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sfInZip.getName(), sfInZip.getOstype(),sfInZip.getSversion());
+				Software newSf;
+				if (sfInDb == null) {
+					newSf = softwareRepository.save(sfInZip);
+				} else {
+					sfInDb.copyFrom(sfInZip);
+					sfInDb.setTextfiles(
+					sfInDb.getTextfiles().stream().map(tf -> {
+						tf.setSoftware(sfInDb);
+						return textFileRepository.save(tf);
+					}).collect(Collectors.toSet()));
+					newSf = softwareRepository.save(sfInDb);
+				}
+				sir.setSoftware(newSf);
 			try {
 				if (removeFolder) {
 					Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
@@ -167,13 +162,14 @@ public class SoftwareImportor {
 					});
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.error("remove folder {} failed", folder.toAbsolutePath().toString());
 			}
-			return newSf;
+		}
+		return sir;
 		}).collect(Collectors.toList());
 	}
 
-	public List<Software> installSoftwareFromZipFile(Path zipFilePath) throws IOException {
+	public List<SoftwareImportResult> installSoftwareFromZipFile(Path zipFilePath) throws IOException {
 		return installSoftwareFromFolder(SoftwarePackUtil.unpack(zipFilePath), true);
 	}
 

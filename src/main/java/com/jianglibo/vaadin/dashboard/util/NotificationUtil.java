@@ -22,4 +22,8 @@ public class NotificationUtil {
 	public static void error(MessageSource messageSource,String msg, String...subs) {
 		Notification.show(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "notification.error." + msg, subs), "", Type.ERROR_MESSAGE);
 	}
+	
+	public static void errorRaw(String msg) {
+		Notification.show(msg, "", Type.ERROR_MESSAGE);
+	}
 }

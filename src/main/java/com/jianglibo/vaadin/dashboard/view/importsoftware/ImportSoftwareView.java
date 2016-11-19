@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,8 @@ import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
+import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
+import com.jianglibo.vaadin.dashboard.vo.SoftwareImportResult;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -123,11 +126,17 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 					
 					if (paths.trim().length() > 0) {
 						try {
-							softwareImporter.installSoftwareFromFolder(Paths.get(paths));
+							List<SoftwareImportResult> sirs = softwareImporter.installSoftwareFromFolder(Paths.get(paths));
+							for(SoftwareImportResult sir : sirs) {
+								if (!sir.isSuccess()) {
+									NotificationUtil.errorRaw(sir.getReason());
+									return;
+								}
+							}
 							NotificationUtil.tray(messageSource, "taskdone", paths);
 						} catch (Exception e) {
 							NotificationUtil.tray(messageSource, "importSoftwareFail", pathField.getValue());
-							e.printStackTrace();
+							LOGGER.error(ThrowableUtil.printToString(e));
 						}
 					}
 				});

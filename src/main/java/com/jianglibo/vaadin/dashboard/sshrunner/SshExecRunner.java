@@ -40,7 +40,7 @@ public class SshExecRunner implements BaseRunner {
 	
 	@Autowired
 	private SoftwareUtil softwareUtil;
-
+	
 	@Override
 	public void run(JschSession jsession, OneThreadTaskDesc taskDesc) {
 		copyCodeToServerAndRun(jsession, taskDesc);
@@ -102,8 +102,29 @@ public class SshExecRunner implements BaseRunner {
 			taskDesc.getBoxHistory().appendLogAndSetFailure(ThrowableUtil.printToString(e));
 		}
 	}
-
+	
+	private void createRemoteFolder(BoxHistory bh,JschSession jsession, String targetFile, String content) {
+		ChannelSftp sftp = null;
+		try {
+			sftp = jsession.getSftpCh();
+			sftp.connect();
+			try {
+				sftp.mkdir(applicationConfig.getRemoteFolder());
+				putStream(bh, jsession, targetFile, content, true);
+			} catch (SftpException e) {
+			}
+		} catch (JSchException e) {
+		} finally {
+			if (sftp != null) {
+				sftp.disconnect();
+			}
+		}
+	}
+	
 	private void putStream(BoxHistory bh, JschSession jsession, String targetFile, String content) {
+		putStream(bh, jsession, targetFile, content,false);
+	}
+	private void putStream(BoxHistory bh, JschSession jsession, String targetFile, String content, boolean retry) {
 		ChannelSftp sftp = null;
 		try {
 			sftp = jsession.getSftpCh();
@@ -114,8 +135,19 @@ public class SshExecRunner implements BaseRunner {
 				os.flush();
 				os.close();
 			} catch (SftpException | IOException e) {
-				bh.appendLogAndSetFailure(String.format("boxhistory: %s, targetFile: %s", bh.getDisplayName(), targetFile));
-				bh.appendLogAndSetFailure(ThrowableUtil.printToString(e));
+				// /easyinstaller folder on target server doesn't exists.
+				if (!retry) {
+					if (e instanceof SftpException) {
+						if (((SftpException)e).id == 2) {
+							if (targetFile.startsWith(applicationConfig.getRemoteFolder())) {
+								createRemoteFolder(bh,jsession,targetFile, content);
+							}
+						}
+					}
+				} else {
+					bh.appendLogAndSetFailure(String.format("boxhistory: %s, targetFile: %s", bh.getDisplayName(), targetFile));
+					bh.appendLogAndSetFailure(ThrowableUtil.printToString(e));
+				}
 			}
 		} catch (JSchException e) {
 			bh.appendLogAndSetFailure(ThrowableUtil.printToString(e));
