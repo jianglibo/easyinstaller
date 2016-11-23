@@ -3,6 +3,7 @@ package com.jianglibo.vaadin.dashboard.domain;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
 import com.google.common.io.CharStreams;
@@ -96,6 +98,9 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 	@VaadinFormField(order = 30)
 	private String runner;
 	
+	@VaadinFormField(order = 35)
+	private String timeouts;
+	
 	@OneToMany(fetch = FetchType.EAGER, cascade={CascadeType.REMOVE,CascadeType.PERSIST}, mappedBy = "software")
 	private Set<TextFile> textfiles = Sets.newHashSet();
 	
@@ -164,6 +169,59 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 	public String parseLs() {
 		String cls = Strings.isNullOrEmpty(getCodeLineSeperator()) ? "LF" : getCodeLineSeperator().toUpperCase();
 		return cls.replace("CR", "\r").replace("LF", "\n");
+	}
+	
+	public Map<String, Long> getTimeOutMaps() {
+		Map<String, Long> mp = Maps.newHashMap();
+		if (!Strings.isNullOrEmpty(getTimeouts())) {
+			Splitter.on(',').omitEmptyStrings().trimResults().split(getTimeouts()).iterator().forEachRemaining(colonPair -> {
+				String[] ss = colonPair.split(":");
+				if (ss.length == 2) {
+					String key = ss[0].trim();
+					String value = ss[1].trim();
+					String unit = "";
+					if (value.endsWith("ms")) {
+						value = value.substring(0, value.length() - 2);
+						unit = "ms";
+					} else if (value.endsWith("s")) {
+						value = value.substring(0, value.length() - 1);
+						unit = "s";
+					} else if (value.endsWith("m")) {
+						value = value.substring(0, value.length() - 1);
+						unit = "m";
+					} else if (value.endsWith("h")) {
+						value = value.substring(0, value.length() - 1);
+						unit = "h";
+					}
+					
+					if (value.matches("^\\d+$")) {
+						Long lvalue = Long.valueOf(value);
+						switch (unit) {
+						case "s":
+							lvalue = lvalue * 1000;
+							break;
+						case "m":
+							lvalue = lvalue * 60000;
+							break;
+						case "h":
+							lvalue = lvalue * 3600000;
+						default:
+							break;
+						}
+						mp.put(key, lvalue);
+					}
+				}
+			});
+		}
+		return mp;
+	}
+
+	public String getTimeouts() {
+		return timeouts;
+	}
+
+	public void setTimeouts(String timeouts) {
+		this.timeouts = timeouts;
 	}
 
 	public String getCodeFileName(String content) {

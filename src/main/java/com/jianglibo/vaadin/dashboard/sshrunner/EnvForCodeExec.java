@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard.sshrunner;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -136,6 +137,8 @@ public class EnvForCodeExec {
 		
 		private String runas;
 		
+		private Map<String, Long> timeouts;
+		
 		private String runner;
 		
 		private Set<TextFileDescription> textfiles;
@@ -156,6 +159,7 @@ public class EnvForCodeExec {
 			this.runas = software.getRunas();
 			this.runner = software.getRunner();
 			this.textfiles = software.getTextfiles().stream().map(TextFileDescription::new).collect(Collectors.toSet());
+			this.timeouts = software.getTimeOutMaps();
 		}
 
 		public Set<String> getFilesToUpload() {
@@ -236,6 +240,14 @@ public class EnvForCodeExec {
 
 		public void setTextfiles(Set<TextFileDescription> textfiles) {
 			this.textfiles = textfiles;
+		}
+
+		public Map<String, Long> getTimeouts() {
+			return timeouts;
+		}
+
+		public void setTimeouts(Map<String, Long> timeouts) {
+			this.timeouts = timeouts;
 		}
 	}
 	

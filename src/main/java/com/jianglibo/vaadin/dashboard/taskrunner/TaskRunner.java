@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -242,6 +243,21 @@ public class TaskRunner {
 
 		@Override
 		public OneThreadTaskDesc call() throws Exception {
+			Map<String, Long> map = oneThreadtaskDesc.getSoftware().getTimeOutMaps();
+			if (map.containsKey(oneThreadtaskDesc.getAction())) {
+				Thread t = new Thread(new StopableRunnable());
+				t.start();
+				Thread.sleep(map.get(oneThreadtaskDesc.getAction()));
+				if(t.isAlive()) {
+					t.interrupt();
+				}
+			} else {
+				runOneThreadTaskDesc();
+			}
+			return oneThreadtaskDesc;
+		}
+
+		private void runOneThreadTaskDesc() {
 			Box box = oneThreadtaskDesc.getBox();
 			try {
 				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(applicationConfig.getSshKeyFile(box))
@@ -264,8 +280,17 @@ public class TaskRunner {
 				StringWriter sw = new StringWriter();
 				e.printStackTrace(new PrintWriter(sw));
 				oneThreadtaskDesc.getBoxHistory().appendLogAndSetFailure(sw.toString());
+				if (e instanceof java.io.InterruptedIOException) {
+					oneThreadtaskDesc.getBoxHistory().appendLogAndSetFailure("-----Notice---------\n, This error message maybe don't mean task failed, Pleach check software state manully.");
+				}
 			}
-			return oneThreadtaskDesc;
+		}
+		
+		private class StopableRunnable implements Runnable {
+			@Override
+			public void run() {
+				runOneThreadTaskDesc();
+			}
 		}
 	}
 }
