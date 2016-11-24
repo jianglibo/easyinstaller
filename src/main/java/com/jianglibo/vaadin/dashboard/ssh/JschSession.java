@@ -35,11 +35,14 @@ public class JschSession {
 		return (ChannelSftp) getSession().openChannel("sftp");
 	}
 	
-	public List<JschExecuteResult> execs(String...cmds) {
+	public List<JschExecuteResult> execs(boolean pty, String...cmds) {
 		List<JschExecuteResult> results = Lists.newArrayList();
 		for(String cmd: cmds) {
 			try {
 				ChannelExec chExec = (ChannelExec) getSession().openChannel("exec");
+				if (pty) {
+					chExec.setPty(true);
+				}
 				chExec.setCommand(cmd);
 				chExec.setInputStream(null);
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -55,6 +58,10 @@ public class JschSession {
 			}
 		}
 		return results;
+	}
+	
+	public List<JschExecuteResult> execs(String...cmds) {
+		return execs(true, cmds);
 	}
 
 	public Session getSession() {
