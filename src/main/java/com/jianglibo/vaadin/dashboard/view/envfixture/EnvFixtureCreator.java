@@ -31,6 +31,7 @@ import com.jianglibo.vaadin.dashboard.sshrunner.EnvForCodeExec;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.util.SoftwareFolder;
+import com.jianglibo.vaadin.dashboard.util.StrUtil;
 import com.jianglibo.vaadin.dashboard.vo.SoftwareImportResult;
 
 @Component
@@ -102,9 +103,13 @@ public class EnvFixtureCreator {
 
 					Set<Box> boxes = bg.getBoxes().stream().map(box -> {
 						Box boxInDb = boxRepository.findByIp(box.getIp());
+						Set<String> roles = Sets.newHashSet();
 						if (boxInDb != null) {
+							roles = boxInDb.getRoleSetUpCase();
 							boxRepository.delete(boxInDb);
 						}
+						roles.addAll(box.getRoleSetUpCase());
+						box.setRoles(StrUtil.commaJoiner.join(roles));
 						box.setCreator(person);
 						box.setBoxGroups(bgs);
 						return boxRepository.save(box);
@@ -134,15 +139,6 @@ public class EnvFixtureCreator {
 				}
 			}).filter(Objects::nonNull).map(sfolder -> {
 				try {
-//					Software sf = sfolder.getSoftware();
-//					Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sf.getName(), sf.getOstype(),
-//							sf.getSversion());
-//					if (sfInDb != null) {
-//						softwareRepository.delete(sfInDb);
-//					}
-//					sf.setCreator(person);
-//					softwareRepository.save(sf);
-
 					TaskDesc td = new TaskDesc("", new PersonVo.PersonVoBuilder(person).build(), sfolder.getBoxGroup(),
 							Sets.newHashSet(), sfolder.getSoftware(), "install");
 					

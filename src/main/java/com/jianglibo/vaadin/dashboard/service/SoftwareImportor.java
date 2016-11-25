@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,6 +27,7 @@ import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.repositories.TextFileRepository;
 import com.jianglibo.vaadin.dashboard.util.SoftwareFolder;
 import com.jianglibo.vaadin.dashboard.util.SoftwarePackUtil;
+import com.jianglibo.vaadin.dashboard.util.StrUtil;
 import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 import com.jianglibo.vaadin.dashboard.vo.SoftwareImportResult;

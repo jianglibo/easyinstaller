@@ -141,6 +141,8 @@ public class EnvForCodeExec {
 		
 		private String runner;
 		
+		private String possibleRoles;
+		
 		private Set<TextFileDescription> textfiles;
 		
 		private Set<String> filesToUpload;
@@ -160,6 +162,7 @@ public class EnvForCodeExec {
 			this.runner = software.getRunner();
 			this.textfiles = software.getTextfiles().stream().map(TextFileDescription::new).collect(Collectors.toSet());
 			this.timeouts = software.getTimeOutMaps();
+			this.possibleRoles = software.getPossibleRoles();
 		}
 
 		public Set<String> getFilesToUpload() {
@@ -248,6 +251,14 @@ public class EnvForCodeExec {
 
 		public void setTimeouts(Map<String, Long> timeouts) {
 			this.timeouts = timeouts;
+		}
+
+		public String getPossibleRoles() {
+			return possibleRoles;
+		}
+
+		public void setPossibleRoles(String possibleRoles) {
+			this.possibleRoles = possibleRoles;
 		}
 	}
 	

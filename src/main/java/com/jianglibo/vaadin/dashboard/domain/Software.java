@@ -40,6 +40,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ScalarGridFieldDescription;
+import com.jianglibo.vaadin.dashboard.util.StrUtil;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Table.Align;
@@ -66,9 +67,6 @@ import com.vaadin.ui.themes.ValoTheme;
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, defaultSort="-updatedAt", selectMode = Grid.SelectionMode.MULTI)
 public class Software extends BaseEntity implements HasUpdatedAt {
 
-	public static final Splitter commaSplitter = Splitter.on(',').trimResults().omitEmptyStrings();
-	public static final Joiner commaJoiner = Joiner.on(',').skipNulls();
-
 	@VaadinFormField(order = 10)
 	@VaadinTableColumn(alignment = Align.LEFT)
 	@NotNull
@@ -92,6 +90,9 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 	 */
 	@VaadinFormField(order = 25)
 	private String runas;
+	
+	@VaadinFormField(order = 27)
+	private String possibleRoles;
 
 	@VaadinGridColumn
 	@NotNull
@@ -157,12 +158,23 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 			if (getActions().trim().isEmpty()) {
 				setActions("install");
 			} else {
-				setActions(commaJoiner.join(commaSplitter.split(getActions())));
+				setActions(StrUtil.commaJoiner.join(StrUtil.commaSplitter.split(getActions())));
 			}
+		}
+		if (getPossibleRoles() != null) {
+			setPossibleRoles(getPossibleRoles().toUpperCase());
 		}
 		try {
 			setConfigContent(Joiner.on(parseLs()).join(CharStreams.readLines(new StringReader(getConfigContent()))));
 		} catch (IOException e) {
+		}
+	}
+	
+	public Set<String> getPossibleRoleSetUpcase() {
+		if (getPossibleRoles() == null || getPossibleRoles().trim().isEmpty()) {
+			return Sets.newHashSet();
+		} else {
+			return Sets.newHashSet(StrUtil.commaSplitter.split(getPossibleRoles().toUpperCase()));
 		}
 	}
 	
@@ -357,6 +369,8 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
+	
+	
 
 	public void copyFrom(Software vo) {
 		setActions(vo.getActions());
@@ -369,6 +383,7 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 		setPreferredFormat(vo.getPreferredFormat());
 		setRunas(vo.getRunas());
 		setRunner(vo.getRunner());
+		setPossibleRoles(vo.getPossibleRoles());
 //		setTextfiles(vo.getTextfiles());
 	}
 
@@ -394,5 +409,17 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 
 	public void setTextfiles(Set<TextFile> textfiles) {
 		this.textfiles = textfiles;
+	}
+
+	public String getPossibleRoles() {
+		return possibleRoles;
+	}
+
+	public void setPossibleRoles(String possibleRoles) {
+		if (possibleRoles != null) {
+			this.possibleRoles = possibleRoles.toUpperCase();
+		} else {
+			this.possibleRoles = possibleRoles;
+		}
 	}
 }

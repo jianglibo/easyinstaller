@@ -31,6 +31,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
+import com.jianglibo.vaadin.dashboard.util.StrUtil;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -173,6 +174,14 @@ public class Box extends BaseEntity implements HasUpdatedAt {
 	public String getDisplayName() {
 		return toString();
 	}
+	
+	public Set<String> getRoleSetUpCase() {
+		if (getRoles() == null || getRoles().trim().isEmpty()) {
+			return Sets.newHashSet();
+		} else {
+			return Sets.newHashSet(StrUtil.commaSplitter.split(getRoles().toUpperCase()));
+		}
+	}
 
 	public int getPort() {
 		return port;
@@ -251,7 +260,11 @@ public class Box extends BaseEntity implements HasUpdatedAt {
 	}
 
 	public void setRoles(String roles) {
-		this.roles = roles;
+		if (roles != null) {
+			this.roles = roles.toUpperCase();
+		} else {
+			this.roles = roles;
+		}
 	}
 
 	public Date getUpdatedAt() {

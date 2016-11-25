@@ -125,7 +125,24 @@ public class TaskRunner {
 		
 		NotificationUtil.tray(messageSource, "tasksent");
 		
-		List<OneThreadTaskDesc> onetds = taskDesc.createOneThreadTaskDescs();
+		// filter boxes they have no role in software's possible roles.
+		List<OneThreadTaskDesc> onetds = taskDesc.createOneThreadTaskDescs().stream().filter(otd -> {
+			
+			Set<String> possibleRoles = otd.getSoftware().getPossibleRoleSetUpcase();
+			
+			if (possibleRoles.isEmpty()) {
+				return true;
+			}
+			
+			Set<String> boxRoles = otd.getBox().getRoleSetUpCase();
+			
+			for(String r : boxRoles) {
+				if (possibleRoles.contains(r)) {
+					return true;
+				}
+			}
+			return false;
+		}).collect(Collectors.toList());
 
 		List<ListenableFuture<OneThreadTaskDesc>> llfs = onetds.stream().map(td -> service.submit(new OneTaskCallable(td)))
 				.collect(Collectors.toList());
@@ -148,7 +165,7 @@ public class TaskRunner {
 						return bh;
 					}).filter(BoxHistory::isSuccess).count();
 					
-					BoxGroupHistory bgh = new BoxGroupHistory(taskDesc.getSoftware(), taskDesc.getBoxGroup(), taskDesc.getAction(), bhs, taskDesc.isForAllBox());
+					BoxGroupHistory bgh = new BoxGroupHistory(taskDesc.getSoftware(), taskDesc.getBoxGroup(), taskDesc.getAction(), bhs, (successes == taskDesc.getBoxGroup().getBoxes().size()));
 					bgh.setRunner(personRepository.findByEmail(AppInitializer.firstEmail));
 					
 					if (successes == result.size()) {
@@ -259,6 +276,7 @@ public class TaskRunner {
 
 		private void runOneThreadTaskDesc() {
 			Box box = oneThreadtaskDesc.getBox();
+
 			try {
 				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(applicationConfig.getSshKeyFile(box))
 						.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
