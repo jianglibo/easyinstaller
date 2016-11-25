@@ -94,6 +94,8 @@ public class TaskRunner {
 	private MessageSource messageSource;
 	
 	private int bgHistoriesSofar = 0;
+	
+	private static Set<String> needUploadActions = Sets.newHashSet("install", "changeYumSource");
 
 	public TaskRunner() {
 		this.service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
@@ -281,7 +283,7 @@ public class TaskRunner {
 				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(applicationConfig.getSshKeyFile(box))
 						.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
 				
-				boolean needUploadFile = "install".equals(oneThreadtaskDesc.getAction());
+				boolean needUploadFile = needUploadActions.contains(oneThreadtaskDesc.getAction());
 				
 				if (needUploadFile) {
 					sshUploadRunner.run(jsession, oneThreadtaskDesc);

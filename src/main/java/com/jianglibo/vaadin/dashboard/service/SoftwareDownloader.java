@@ -162,6 +162,9 @@ public class SoftwareDownloader {
 							outstream.close();
 							Files.move(tmpFile, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
 							return true;
+						} catch(Exception e) {
+							Files.copy(tmpFile, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+							Files.delete(tmpFile);
 						} finally {
 						}
 					}
