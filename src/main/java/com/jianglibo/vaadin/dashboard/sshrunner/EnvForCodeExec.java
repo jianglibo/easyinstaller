@@ -298,12 +298,15 @@ public class EnvForCodeExec {
 		private String name;
 		
 		private String configContent;
+		
+		private String installResults;
 
 		private List<BoxDescription> boxes;
 
 		public BoxGroupDescription(BoxGroup bg) {
 			this.name = bg.getName();
 			this.configContent = bg.getConfigContent();
+			this.installResults = bg.getInstallResults();
 
 			this.setBoxes(bg.getBoxes().stream().map(b -> {
 				BoxDescription bd = new BoxDescription(b);
@@ -344,6 +347,14 @@ public class EnvForCodeExec {
 
 		public void setBoxes(List<BoxDescription> boxes) {
 			this.boxes = boxes;
+		}
+
+		public String getInstallResults() {
+			return installResults;
+		}
+
+		public void setInstallResults(String installResults) {
+			this.installResults = installResults;
 		}
 	}
 	

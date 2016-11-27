@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
@@ -50,38 +52,42 @@ public class SshUploadRunner implements BaseRunner {
 			String log = noneExistsFiles.stream().reduce("", (result, l) -> result + l);
 			bh.appendLogAndSetFailure(log);
 		} else {
-			ChannelSftp sftp = null;
 			try {
-				sftp = jsession.getSftpCh();
-				try {
-					for(FileToUploadVo fvo : taskDesc.getSoftware().getFileToUploadVos()) {
-						String fileToUpload = applicationConfig.getLocalFolderPath().resolve(fvo.getRelative()).toAbsolutePath().toString().replace("\\\\", "/");
-						String targetFile = applicationConfig.getRemoteFolder() + fvo.getRelative().replaceAll("\\\\", "/");
-						
-						sftp.connect();
-						int idx = targetFile.lastIndexOf('/');
-						String targetFolder = targetFile.substring(0, idx);
-						
-						try {
-							sftp.mkdir(targetFolder);
-						} catch (Exception e) {
-							// will throw exception if exists.
-							e.printStackTrace();
+				for(FileToUploadVo fvo : taskDesc.getSoftware().getFileToUploadVos()) {
+					ChannelSftp sftp = null;
+					try {
+						sftp = jsession.getSftpCh();
+						putOneFile(sftp, fvo);
+					} catch (Exception e) {
+						bh.appendLogAndSetFailure(ThrowableUtil.printToString(e));
+						bh.setSuccess(false);
+					} finally {
+						if (sftp != null) {
+							sftp.disconnect();
 						}
-
-						sftp.put(fileToUpload, targetFile, ChannelSftp.OVERWRITE);
 					}
-				} catch (Exception e) {
-					bh.appendLogAndSetFailure(ThrowableUtil.printToString(e));
 				}
 			} catch (Exception e) {
 				bh.appendLogAndSetFailure(ThrowableUtil.printToString(e));
-				bh.setSuccess(false);
-			} finally {
-				if (sftp != null) {
-					sftp.disconnect();
-				}
 			}
 		}
+	}
+
+	private void putOneFile(ChannelSftp sftp, FileToUploadVo fvo) throws JSchException, SftpException {
+		String fileToUpload = applicationConfig.getLocalFolderPath().resolve(fvo.getRelative()).toAbsolutePath().toString().replace("\\\\", "/");
+		String targetFile = applicationConfig.getRemoteFolder() + fvo.getRelative().replaceAll("\\\\", "/");
+		
+		sftp.connect();
+		int idx = targetFile.lastIndexOf('/');
+		String targetFolder = targetFile.substring(0, idx);
+		
+		try {
+			sftp.mkdir(targetFolder);
+		} catch (Exception e) {
+			// will throw exception if exists.
+			e.printStackTrace();
+		}
+
+		sftp.put(fileToUpload, targetFile, ChannelSftp.OVERWRITE);
 	}
 }

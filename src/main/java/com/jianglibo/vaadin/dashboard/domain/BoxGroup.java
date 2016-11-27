@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
@@ -63,6 +64,10 @@ public class BoxGroup extends BaseEntity implements HasUpdatedAt {
 	@ManyToOne
 	@NotNull
 	private Person creator;
+	
+	@Lob
+	@Column(length = 65536)
+	private String installResults;
 	
 	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -151,6 +156,14 @@ public class BoxGroup extends BaseEntity implements HasUpdatedAt {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public String getInstallResults() {
+		return installResults;
+	}
+
+	public void setInstallResults(String installResults) {
+		this.installResults = installResults;
 	}
 
 	public static class BoxGroupBuilder {

@@ -39,7 +39,7 @@ public class Broadcaster implements Serializable {
 	}
 	
 	public static enum BroadCasterMessageType {
-		NEW_SOFTWARE, NEW_NEWS, DOWNLOAD, ONE_TASK_FINISH, GROUP_TASK_FINISH
+		NEW_SOFTWARE, NEW_NEWS, DOWNLOAD, ONE_TASK_FINISH, GROUP_TASK_FINISH, RUNNING_THREADS
 	}
 	
 	public static class BroadCasterMessage {

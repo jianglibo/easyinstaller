@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -93,6 +94,8 @@ public class TaskRunner {
 	@Autowired
 	private MessageSource messageSource;
 	
+	private AtomicInteger runningThreads = new AtomicInteger(0);
+	
 	private int bgHistoriesSofar = 0;
 	
 	private static Set<String> needUploadActions = Sets.newHashSet("install", "changeYumSource");
@@ -148,6 +151,10 @@ public class TaskRunner {
 
 		List<ListenableFuture<OneThreadTaskDesc>> llfs = onetds.stream().map(td -> service.submit(new OneTaskCallable(td)))
 				.collect(Collectors.toList());
+		
+		int n = this.getRunningThreads().addAndGet(llfs.size());
+		
+		Broadcaster.broadcast(new BroadCasterMessage(new RunningThreadsMessage(n)));
 
 		// successfulAsList means when one task failed, the value will be null.
 		ListenableFuture<List<OneThreadTaskDesc>> lf = Futures.successfulAsList(llfs);
@@ -203,6 +210,18 @@ public class TaskRunner {
 		this.bgHistoriesSofar = bgHistoriesSofar;
 	}
 	
+
+
+	public AtomicInteger getRunningThreads() {
+		return runningThreads;
+	}
+
+	public void setRunningThreads(AtomicInteger runningThreads) {
+		this.runningThreads = runningThreads;
+	}
+
+
+
 	public static class GroupTaskFinishMessage implements BroadCasterMessageBody {
 		
 		private final int bgHistoriesSofar;
@@ -233,9 +252,12 @@ public class TaskRunner {
 		
 		private OneThreadTaskDesc ottd;
 		
-		public OneTaskFinishMessage(OneThreadTaskDesc ottd) {
+		private int runningThreads;
+		
+		public OneTaskFinishMessage(OneThreadTaskDesc ottd,int runningThreads) {
 			super();
 			this.setOttd(ottd);
+			this.setRunningThreads(runningThreads);
 		}
 		
 		public BroadCasterMessageType getBroadCasterMessageType() {
@@ -250,8 +272,37 @@ public class TaskRunner {
 			this.ottd = ottd;
 		}
 
+		public int getRunningThreads() {
+			return runningThreads;
+		}
+
+		public void setRunningThreads(int runningThreads) {
+			this.runningThreads = runningThreads;
+		}
 	}
 
+	public static class RunningThreadsMessage implements BroadCasterMessageBody {
+		
+		private int runningThreads;
+		
+		public RunningThreadsMessage(int runningThreads) {
+			super();
+			this.setRunningThreads(runningThreads);
+		}
+		
+		public BroadCasterMessageType getBroadCasterMessageType() {
+			return BroadCasterMessageType.RUNNING_THREADS;
+		}
+
+		public int getRunningThreads() {
+			return runningThreads;
+		}
+
+		public void setRunningThreads(int runningThreads) {
+			this.runningThreads = runningThreads;
+		}
+	}
+	
 	private class OneTaskCallable implements Callable<OneThreadTaskDesc> {
 
 		private OneThreadTaskDesc oneThreadtaskDesc;
@@ -295,7 +346,8 @@ public class TaskRunner {
 				if (jsession.getSession().isConnected()) {
 					jsession.getSession().disconnect();
 				}
-				Broadcaster.broadcast(new BroadCasterMessage(new OneTaskFinishMessage(oneThreadtaskDesc)));
+				int n = TaskRunner.this.getRunningThreads().decrementAndGet(); 
+				Broadcaster.broadcast(new BroadCasterMessage(new OneTaskFinishMessage(oneThreadtaskDesc, n)));
 			} catch (Exception e) {
 				StringWriter sw = new StringWriter();
 				e.printStackTrace(new PrintWriter(sw));

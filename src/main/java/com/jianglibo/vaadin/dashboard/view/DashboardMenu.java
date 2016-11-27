@@ -11,6 +11,7 @@ import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.security.PersonVo;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
+import com.jianglibo.vaadin.dashboard.view.kvv.KkvListView;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelectorWindow;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
@@ -77,13 +78,27 @@ public final class DashboardMenu extends CustomComponent {
 		menuContent.addComponent(buildTitle());
 		menuContent.addComponent(buildUserMenu());
 		menuContent.addComponent(buildToggleButton());
+//		menuContent.addComponent(buildActivityMenuItems());
 		menuContent.addComponent(buildMenuItems());
 
 		return menuContent;
 	}
+	
+	private Label logo;
+	
+	public void setLogoTitle(int runningThreads) {
+		if (logo != null) {
+			String c = messageSource.getMessage("dmenu.title", null, UI.getCurrent().getLocale());
+			if (runningThreads > 0) {
+				logo.setValue(c + "<span>(" + runningThreads + ")</span>");
+			} else {
+				logo.setValue(c);
+			}
+		}
+	}
 
 	private Component buildTitle() {
-		Label logo = new Label(messageSource.getMessage("dmenu.title", null, UI.getCurrent().getLocale()), ContentMode.HTML);
+		logo = new Label(messageSource.getMessage("dmenu.title", null, UI.getCurrent().getLocale()), ContentMode.HTML);
 		logo.setSizeUndefined();
 		HorizontalLayout logoWrapper = new HorizontalLayout(logo);
 		logoWrapper.setComponentAlignment(logo, Alignment.MIDDLE_CENTER);
@@ -135,6 +150,17 @@ public final class DashboardMenu extends CustomComponent {
 		valoMenuToggleButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
 		valoMenuToggleButton.addStyleName(ValoTheme.BUTTON_SMALL);
 		return valoMenuToggleButton;
+	}
+	
+	private Component buildActivityMenuItems() {
+		CssLayout menuItemsLayout = new CssLayout();
+		menuItemsLayout.addStyleName("valo-menuitems");
+		Button btn = new Button();
+        btn.setPrimaryStyleName("valo-menu-item");
+        btn.setCaptionAsHtml(true);
+        btn.setCaption("<i class=\"fa fa-spinner fa-spin fa-3x fa-fw\"></i><span class=\"sr-only\">Loading...</span>");
+		menuItemsLayout.addComponent(btn);
+		return menuItemsLayout;
 	}
 
 	private Component buildMenuItems() {

@@ -2,6 +2,8 @@ package com.jianglibo.vaadin.dashboard.sshrunner;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringReader;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
+import com.google.common.io.CharStreams;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
@@ -97,6 +101,8 @@ public class SshExecRunner implements BaseRunner {
 				LOGGER.error("unsupported format: {}", taskDesc.getSoftware().getPreferredFormat());
 				taskDesc.getBoxHistory().appendLogAndSetFailure("unsupported format: " + taskDesc.getSoftware().getPreferredFormat()) ;
 			}
+			List<String> lines = CharStreams.readLines(new StringReader(envstr));
+			envstr = Joiner.on(taskDesc.getSoftware().parseLs()).join(lines);
 			putStream(taskDesc.getBoxHistory(), jsession, envFileNameAtRemote, envstr);
 		} catch (Exception e) {
 			taskDesc.getBoxHistory().appendLogAndSetFailure(ThrowableUtil.printToString(e));

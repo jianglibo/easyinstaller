@@ -39,6 +39,7 @@ import com.jianglibo.vaadin.dashboard.service.SoftwareDownloader.DownloadMessage
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner.GroupTaskFinishMessage;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner.OneTaskFinishMessage;
+import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner.RunningThreadsMessage;
 import com.jianglibo.vaadin.dashboard.uicomponent.tile.TileBase;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
@@ -70,6 +71,7 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -109,6 +111,8 @@ public final class DashboardUI extends UI implements ApplicationContextAware,  B
 	private PersonRepository personRepository;
 	
 	private String uniqueUiID;
+	
+	private int activeThreadNumber = 0;
 
 	private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
@@ -256,6 +260,7 @@ public final class DashboardUI extends UI implements ApplicationContextAware,  B
 			addStyleName("mainview");
 			// MainMenuItems must inject this way.
 			setDm(new DashboardMenu(messageSource, localeResolver, applicationContext.getBean(MainMenuItems.class)));
+
 			addComponent(getDm());
 			ComponentContainer content = new CssLayout();
 			content.addStyleName("view-content");
@@ -332,8 +337,13 @@ public final class DashboardUI extends UI implements ApplicationContextAware,  B
 					break;
 				case ONE_TASK_FINISH:
 					OneTaskFinishMessage otfm = (OneTaskFinishMessage) message.getBody();
+					getDm().setLogoTitle(otfm.getRunningThreads());
 					NotificationUtil.humanized(messageSource, "onetaskfinished", otfm.getOttd().getBox().getHostname(), otfm.getOttd().getAction(), otfm.getOttd().getBoxHistory().isSuccess() ? "Success" : "Failed");
 					push();
+					break;
+				case RUNNING_THREADS:
+					RunningThreadsMessage rtm = (RunningThreadsMessage) message.getBody();
+					getDm().setLogoTitle(rtm.getRunningThreads());
 					break;
 				default:
 					break;

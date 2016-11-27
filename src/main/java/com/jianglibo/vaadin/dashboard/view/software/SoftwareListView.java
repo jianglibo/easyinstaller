@@ -14,8 +14,10 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
+import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
@@ -50,12 +52,15 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.COGS;
 	
+	private final BoxGroupHistoryRepository boxGroupHistoryRepository;
+	
 	private final SoftwareRepository repository;
 	
 	@Autowired
-	public SoftwareListView(SoftwareRepository repository,Domains domains, MessageSource messageSource,
+	public SoftwareListView(SoftwareRepository repository,Domains domains, MessageSource messageSource,BoxGroupHistoryRepository boxGroupHistoryRepository,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, Software.class, SoftwareGrid.class);
+		this.boxGroupHistoryRepository = boxGroupHistoryRepository;
 		this.repository = repository;
 		delayCreateContent();
 	}
@@ -67,6 +72,8 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
 				if (b.isArchived()) {
+					List<BoxGroupHistory> bghs = boxGroupHistoryRepository.findBySoftware(b);
+					boxGroupHistoryRepository.delete(bghs);
 					repository.delete(b.getId());
 					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
@@ -75,7 +82,8 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 					repository.save(b);
 				}
 			});
-			getGrid().getdContainer().fetchPage();
+			getGrid().getdContainer().setDirty(true);
+			getGrid().deselectAll();
 			getGrid().getdContainer().notifyItemSetChanged();
 			break;
 		case CommonMenuItemIds.REFRESH:
