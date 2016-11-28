@@ -144,7 +144,7 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 					// start to submit tasks;
 					LOGGER.info("{}, {}", ac.getClass().getName(), ac.getName());
 					DashboardUI dui = (DashboardUI) UI.getCurrent();
-					TaskDesc td = new TaskDesc(dui.getUniqueUiID(), ac.getPrincipal(), boxGroup,boxesToRun.getValue(), insf.getSelectedSoftware().get(), insf.getSelectedAction().get());
+					TaskDesc td = new TaskDesc(dui.getUniqueUiID(), ac.getPrincipal(), boxGroup,boxesToRun.getValue(), insf.getSelectedSoftware().get(), insf.getSelectedAction().get(), insf.getOthers().orElse(""));
 					taskRunner.submitTasks(td);
 				} else {
 					NotificationUtil.humanized(messageSource, "actionabsent");

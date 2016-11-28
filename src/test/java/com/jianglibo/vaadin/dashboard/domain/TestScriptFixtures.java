@@ -1,7 +1,5 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -13,13 +11,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.inject.Named;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -171,7 +166,7 @@ public class TestScriptFixtures extends Tbase {
 					softwareRepository.save(sf);
 					
 					TaskDesc td = new TaskDesc("", new PersonVo.PersonVoBuilder(getFirstPerson()).build(), sfolder.getBoxGroup(),
-							Sets.newHashSet(), sf, "install");
+							Sets.newHashSet(), sf, "install", "");
 
 					OneThreadTaskDesc ottd = td.createOneThreadTaskDescs().get(0);
 

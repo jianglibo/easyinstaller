@@ -32,13 +32,15 @@ public class TaskDesc {
 
 	private String action;
 	
+	private String remainParameters;
+	
 	
 	/**
 	 * use broadcast instead of reference, because of when task finished, UI maybe not exists any more. 
 	 */
 	private final String uniqueUiId;
 
-	public TaskDesc(String uniqueUiId, PersonVo person, BoxGroup boxGroup, Set<Box> boxes, Software software, String action) {
+	public TaskDesc(String uniqueUiId, PersonVo person, BoxGroup boxGroup, Set<Box> boxes, Software software, String action, String remainParameters) {
 		this.boxGroup = boxGroup;
 		this.uniqueUiId = uniqueUiId;
 		if (boxes == null || boxes.isEmpty()) {
@@ -49,6 +51,7 @@ public class TaskDesc {
 		this.software = software;
 		this.action = action;
 		this.person = person;
+		this.remainParameters = remainParameters;
 	}
 
 	public TaskDesc(String uniqueUiID, PersonVo principa, BoxGroupHistory bgh) {
@@ -104,5 +107,13 @@ public class TaskDesc {
 
 	public String getUniqueUiId() {
 		return uniqueUiId;
+	}
+
+	public String getRemainParameters() {
+		return remainParameters;
+	}
+
+	public void setRemainParameters(String remainParameters) {
+		this.remainParameters = remainParameters;
 	}
 }

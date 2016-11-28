@@ -15,6 +15,7 @@ import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.TextField;
 
 @SuppressWarnings("serial")
 public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
@@ -22,6 +23,8 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 	private ComboBox softwareCb;
 	
 	private ComboBox actionCb;
+	
+	private TextField othersField;
 
 	public InstallNewSoftwareForm(PersonRepository personRepository,
 			MessageSource messageSource, Domains domains, FieldFactories fieldFactories) {
@@ -34,10 +37,19 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		List<PropertyIdAndField> fields = Lists.newArrayList();
 		fields.add(createSoftwareField());
 		fields.add(createActionField());
+		fields.add(createOthersField());
 		return fields;
 	}
 	
 	
+	private PropertyIdAndField createOthersField() {
+		othersField = new TextField(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.others"));
+		String desc = MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.desc.others");
+		if (!desc.equals("view.clustersoftware.form.desc.others")) {
+			othersField.setDescription(desc);
+		}
+		return new PropertyIdAndField("others", othersField);
+	}
 
 	private PropertyIdAndField createActionField() {
 		actionCb = new ComboBox(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.action"));
@@ -91,6 +103,15 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 	
 	public Optional<String> getSelectedAction() {
 		String s= (String) actionCb.getValue();
+		if (s == null || s.trim().isEmpty()) {
+			return Optional.empty();
+		} else {
+			return Optional.of(s);
+		}
+	}
+	
+	public Optional<String> getOthers() {
+		String s= (String) othersField.getValue();
 		if (s == null || s.trim().isEmpty()) {
 			return Optional.empty();
 		} else {

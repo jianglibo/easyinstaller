@@ -144,7 +144,7 @@ public class EnvFixtureCreator {
 			}).filter(Objects::nonNull).map(sfolder -> {
 				try {
 					TaskDesc td = new TaskDesc("", new PersonVo.PersonVoBuilder(person).build(), sfolder.getBoxGroup(),
-							Sets.newHashSet(), sfolder.getSoftware(), "install");
+							Sets.newHashSet(), sfolder.getSoftware(), "install", "");
 					
 					List<OneThreadTaskDesc> ottds = td.createOneThreadTaskDescs(); 
 

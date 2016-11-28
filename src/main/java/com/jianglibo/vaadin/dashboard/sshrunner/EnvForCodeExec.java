@@ -379,7 +379,7 @@ public class EnvForCodeExec {
 			this.remoteFolder = remoteFolder;
 			this.appObjectMappers = appObjectMappers;
 			this.box = new BoxDescription(oneThreadTaskDesc.getBox());
-			this.boxGroup = new BoxGroupDescription(oneThreadTaskDesc.getTd().getBoxGroup());
+			this.boxGroup = new BoxGroupDescription(oneThreadTaskDesc.getTaskDesc().getBoxGroup());
 			this.software = new SoftwareDescription(oneThreadTaskDesc.getSoftware());
 		}
 		

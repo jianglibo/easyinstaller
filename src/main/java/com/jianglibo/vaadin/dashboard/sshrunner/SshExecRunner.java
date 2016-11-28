@@ -69,10 +69,14 @@ public class SshExecRunner implements BaseRunner {
 					tpl = "%s %s -envfile %s -action %s";
 					cmd = String.format(tpl, runner , codeFileNameAtRemote, envFileNameAtRemote, taskDesc.getAction());
 				}
+				if (!taskDesc.getTaskDesc().getRemainParameters().isEmpty()) {
+					cmd = cmd + " " + taskDesc.getTaskDesc().getRemainParameters();
+				}
 				JschExecuteResult jer = jsession.exec(cmd);
 				
 				taskDesc.getBoxHistory().appendLog(jer.getOut());
 				taskDesc.getBoxHistory().appendLog(jer.getErr());
+				
 				// must return explicit @@success@@ to indicate success. 
 				if (jer.getOut() != null && jer.getOut().contains("@@success@@")) {
 					taskDesc.getBoxHistory().setSuccess(true);

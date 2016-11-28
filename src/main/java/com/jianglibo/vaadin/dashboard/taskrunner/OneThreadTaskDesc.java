@@ -18,7 +18,7 @@ public class OneThreadTaskDesc {
 	
 	private final BoxHistory boxHistory;
 	
-	private final TaskDesc td;
+	private final TaskDesc taskDesc;
 	
 	private final BoxGroup boxGroup;
 	
@@ -28,7 +28,7 @@ public class OneThreadTaskDesc {
 
 	public OneThreadTaskDesc(TaskDesc td,BoxGroup boxGroup, Box box, Software software, String action) {
 		super();
-		this.td = td;
+		this.taskDesc = td;
 		this.action = action;
 		this.box = box;
 		this.software = software;
@@ -37,8 +37,8 @@ public class OneThreadTaskDesc {
 		this.boxHistory = new BoxHistory.BoxHistoryBuilder(boxGroup, software, box, "", action, true).build();
 	}
 
-	public TaskDesc getTd() {
-		return td;
+	public TaskDesc getTaskDesc() {
+		return taskDesc;
 	}
 
 	public Box getBox() {
