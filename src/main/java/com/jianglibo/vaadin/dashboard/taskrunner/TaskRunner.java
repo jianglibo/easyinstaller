@@ -346,8 +346,6 @@ public class TaskRunner {
 				if (jsession.getSession().isConnected()) {
 					jsession.getSession().disconnect();
 				}
-				int n = TaskRunner.this.getRunningThreads().decrementAndGet(); 
-				Broadcaster.broadcast(new BroadCasterMessage(new OneTaskFinishMessage(oneThreadtaskDesc, n)));
 			} catch (Exception e) {
 				StringWriter sw = new StringWriter();
 				e.printStackTrace(new PrintWriter(sw));
@@ -356,6 +354,8 @@ public class TaskRunner {
 					oneThreadtaskDesc.getBoxHistory().appendLogAndSetFailure("-----Notice---------\n, This error message maybe don't mean task failed, Pleach check software state manully.");
 				}
 			}
+			int n = TaskRunner.this.getRunningThreads().decrementAndGet(); 
+			Broadcaster.broadcast(new BroadCasterMessage(new OneTaskFinishMessage(oneThreadtaskDesc, n)));
 		}
 		
 		private class StopableRunnable implements Runnable {

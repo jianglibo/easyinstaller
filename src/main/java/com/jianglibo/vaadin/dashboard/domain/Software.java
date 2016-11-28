@@ -40,6 +40,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ComboBoxBackByYaml;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.ScalarGridFieldDescription;
+import com.jianglibo.vaadin.dashboard.util.SoftwareUtil;
 import com.jianglibo.vaadin.dashboard.util.StrUtil;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 import com.vaadin.ui.Grid;
@@ -165,7 +166,7 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 			setPossibleRoles(getPossibleRoles().toUpperCase());
 		}
 		try {
-			setConfigContent(Joiner.on(parseLs()).join(CharStreams.readLines(new StringReader(getConfigContent()))));
+			setConfigContent(Joiner.on(SoftwareUtil.parseLs(getCodeLineSeperator())).join(CharStreams.readLines(new StringReader(getConfigContent()))));
 		} catch (IOException e) {
 		}
 	}
@@ -176,11 +177,6 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 		} else {
 			return Sets.newHashSet(StrUtil.commaSplitter.split(getPossibleRoles().toUpperCase()));
 		}
-	}
-	
-	public String parseLs() {
-		String cls = Strings.isNullOrEmpty(getCodeLineSeperator()) ? "LF" : getCodeLineSeperator().toUpperCase();
-		return cls.replace("CR", "\r").replace("LF", "\n");
 	}
 	
 	public Map<String, Long> getTimeOutMaps() {

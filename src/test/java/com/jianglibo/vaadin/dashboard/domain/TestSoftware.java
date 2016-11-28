@@ -31,6 +31,6 @@ public class TestSoftware extends Tbase {
 		Software sf = new Software();
 		sf.setCodeToExecute("helloinsert-common-script-here: powershell/PsCommon.ps1 		");
 		String code = softwareUtil.getParsedCodeToExecute(sf);
-		assertThat("code lines should more than 1", code.split(sf.parseLs()).length, greaterThan(2));
+		assertThat("code lines should more than 1", code.split(SoftwareUtil.parseLs(sf.getCodeLineSeperator())).length, greaterThan(2));
 	}
 }

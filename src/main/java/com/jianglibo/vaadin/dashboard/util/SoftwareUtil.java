@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
@@ -34,6 +35,11 @@ public class SoftwareUtil {
 	
 	private final ApplicationContext context;
 	private final List<String> scriptSources;
+	
+	public static String parseLs(String codeSep) {
+		String cls = Strings.isNullOrEmpty(codeSep) ? "LF" : codeSep.toUpperCase();
+		return cls.replace("CR", "\r").replace("LF", "\n");
+	}
 	
 	@Autowired
 	public SoftwareUtil(ApplicationContext context, ApplicationConfig applicationConfig) {
@@ -101,7 +107,7 @@ public class SoftwareUtil {
 			// will process 2 level depth substitute.
 			List<String> newlines =  getParsedLines(lines);
 			newlines = getParsedLines(newlines);
-			return Joiner.on(software.parseLs()).join(newlines);
+			return Joiner.on(parseLs(software.getCodeLineSeperator())).join(newlines);
 		} catch (IOException e) {
 			return code;
 		}

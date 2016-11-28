@@ -91,6 +91,16 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 		if (vgcw.isPresent()) {
 			setupColumn(vgcw.get(), col);
 		}
+		switch (cn) {
+		case "archived":
+			ColumnUtil.setTrueFalseRender(col, false);
+			break;
+		case "success":
+			ColumnUtil.setTrueFalseRender(col, true);
+			break;
+		default:
+			break;
+		}
 	}
 
 	private void setupColumn(VaadinGridColumnWrapper vgcw, Grid.Column col) {

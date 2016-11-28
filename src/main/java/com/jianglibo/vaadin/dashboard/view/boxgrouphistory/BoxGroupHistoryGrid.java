@@ -8,6 +8,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGrid;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 
 @SuppressWarnings("serial")
@@ -26,6 +27,7 @@ public class BoxGroupHistoryGrid extends BaseGrid<BoxGroupHistory, BoxGroupHisto
 	@Override
 	protected void addGeneratedProperty(GeneratedPropertyContainer gpcontainer, String name) {
 	}
+	
 
 	@Override
 	protected void setupGrid() {

@@ -15,6 +15,7 @@ import com.jianglibo.vaadin.dashboard.security.PersonAuthenticationToken;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGrid;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.view.boxhistory.BoxHistoryListView;
 import com.vaadin.data.Item;

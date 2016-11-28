@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Person;
@@ -48,16 +49,19 @@ public class EnvFixtureCreator {
 	private final BoxRepository boxRepository;
 
 	private final SoftwareImportor softwareImportor;
+	
+	private final ApplicationConfig applicationConfig;
 
 	@Autowired
 	public EnvFixtureCreator(SoftwareImportor softwareImportor, PersonRepository personRepository, AppObjectMappers appObjectMappers,
-			BoxGroupRepository boxGroupRepository, BoxRepository boxRepository) {
+			BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, ApplicationConfig applicationConfig) {
 		super();
 		this.personRepository = personRepository;
 		this.appObjectMappers = appObjectMappers;
 		this.boxGroupRepository = boxGroupRepository;
 		this.boxRepository = boxRepository;
 		this.softwareImportor = softwareImportor;
+		this.applicationConfig = applicationConfig;
 	}
 
 	public static class InValidScriptProjectPathException extends Exception {
@@ -158,7 +162,7 @@ public class EnvFixtureCreator {
 					}
 
 					EnvForCodeExec efce = new EnvForCodeExec.EnvForCodeExecBuilder(appObjectMappers, ottd,
-							"/opt/easyinstaller").build();
+							applicationConfig.getRemoteFolder()).build();
 
 					Path testFolder = sfolder.getTestPath();
 

@@ -9,9 +9,8 @@ import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGrid;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.ui.Grid.FooterCell;
-import com.vaadin.ui.Grid.FooterRow;
 
 @SuppressWarnings("serial")
 public class BoxHistoryGrid extends BaseGrid<BoxHistory, BoxHistoryContainer> {
@@ -30,7 +29,7 @@ public class BoxHistoryGrid extends BaseGrid<BoxHistory, BoxHistoryContainer> {
 	@Override
 	protected void addGeneratedProperty(GeneratedPropertyContainer gpcontainer, String name) {
 	}
-
+	
 	@Override
 	protected void setupGrid() {
 		FooterRow footer = addFooterRowAt(0);

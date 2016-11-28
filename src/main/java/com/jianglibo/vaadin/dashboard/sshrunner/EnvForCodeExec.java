@@ -1,18 +1,23 @@
 package com.jianglibo.vaadin.dashboard.sshrunner;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.domain.TextFile;
 import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
+import com.jianglibo.vaadin.dashboard.util.SoftwareUtil;
 import com.jianglibo.vaadin.dashboard.vo.ConfigContent;
 
 /**
@@ -269,7 +274,11 @@ public class EnvForCodeExec {
 		
 		public TextFileDescription(TextFile tf) {
 			this.name = tf.getName();
-			this.content = tf.getContent();
+			try {
+				this.setContent(Joiner.on(SoftwareUtil.parseLs(tf.getCodeLineSeperator())).join(CharStreams.readLines(new StringReader(tf.getContent()))));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			this.codeLineSeperator = tf.getCodeLineSeperator();
 		}
 		

@@ -15,10 +15,12 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.ImageRenderer;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickListener;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 public class ColumnUtil {
 
@@ -102,6 +104,43 @@ public class ColumnUtil {
 			@Override
 			public Class<Resource> getPresentationType() {
 				return Resource.class;
+			}
+		});
+	}
+	
+	@SuppressWarnings("serial")
+	public static void setTrueFalseRender(Grid.Column column, boolean displayFalse) {
+		column.setRenderer(new HtmlRenderer(), new Converter<String, Boolean>() {
+
+			@Override
+			public Boolean convertToModel(String value, Class<? extends Boolean> targetType, Locale locale)
+					throws com.vaadin.data.util.converter.Converter.ConversionException {
+				return false;
+			}
+
+			@Override
+			public String convertToPresentation(Boolean value, Class<? extends String> targetType, Locale locale)
+					throws com.vaadin.data.util.converter.Converter.ConversionException {
+				if (value) {
+					return FontAwesome.CHECK_SQUARE_O.getHtml();
+				} else {
+					if (displayFalse) {
+						return FontAwesome.CLOSE.getHtml();
+					} else {
+						return "";
+					}
+					
+				}
+			}
+
+			@Override
+			public Class<Boolean> getModelType() {
+				return Boolean.class;
+			}
+
+			@Override
+			public Class<String> getPresentationType() {
+				return String.class;
 			}
 		});
 	}

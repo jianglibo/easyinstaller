@@ -57,7 +57,7 @@ public class SshExecRunner implements BaseRunner {
 		
 		String tpl, cmd;
 		
-		uplocadEnv(jsession, taskDesc, envFileNameAtRemote);
+		uploadEnv(jsession, taskDesc, envFileNameAtRemote);
 		
 		if (taskDesc.getBoxHistory().isSuccess()) {
 			uploadCode(jsession, taskDesc,codeToExec, codeFileNameAtRemote);
@@ -83,7 +83,7 @@ public class SshExecRunner implements BaseRunner {
 		}
 	}
 
-	private void uplocadEnv(JschSession jsession, OneThreadTaskDesc taskDesc, String envFileNameAtRemote) {
+	private void uploadEnv(JschSession jsession, OneThreadTaskDesc taskDesc, String envFileNameAtRemote) {
 		EnvForCodeExec env = new EnvForCodeExec.EnvForCodeExecBuilder(appObjectmappers, taskDesc, applicationConfig.getRemoteFolder()).build();
 		String envstr = null;
 		try {
@@ -102,7 +102,7 @@ public class SshExecRunner implements BaseRunner {
 				taskDesc.getBoxHistory().appendLogAndSetFailure("unsupported format: " + taskDesc.getSoftware().getPreferredFormat()) ;
 			}
 			List<String> lines = CharStreams.readLines(new StringReader(envstr));
-			envstr = Joiner.on(taskDesc.getSoftware().parseLs()).join(lines);
+			envstr = Joiner.on(SoftwareUtil.parseLs(taskDesc.getSoftware().getCodeLineSeperator())).join(lines);
 			putStream(taskDesc.getBoxHistory(), jsession, envFileNameAtRemote, envstr);
 		} catch (Exception e) {
 			taskDesc.getBoxHistory().appendLogAndSetFailure(ThrowableUtil.printToString(e));
