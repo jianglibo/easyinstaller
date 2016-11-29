@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.context.MessageSource;
@@ -15,6 +16,7 @@ import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 @SuppressWarnings("serial")
@@ -25,6 +27,12 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 	private ComboBox actionCb;
 	
 	private TextField othersField;
+	
+	private TextArea actionParameterTpl;
+	
+	private Software software;
+	
+	private Map<String, String> actionDescMap;
 
 	public InstallNewSoftwareForm(PersonRepository personRepository,
 			MessageSource messageSource, Domains domains, FieldFactories fieldFactories) {
@@ -38,10 +46,16 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		fields.add(createSoftwareField());
 		fields.add(createActionField());
 		fields.add(createOthersField());
+		fields.add(createDescriptionField());
 		return fields;
 	}
 	
 	
+	private PropertyIdAndField createDescriptionField() {
+		actionParameterTpl = new TextArea(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.actionpatpl"));
+		return new PropertyIdAndField("actionParameterTpl", actionParameterTpl);
+	}
+
 	private PropertyIdAndField createOthersField() {
 		othersField = new TextField(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.others"));
 		String desc = MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.desc.others");
@@ -56,16 +70,32 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		actionCb.setNewItemsAllowed(false);
 		
 		if (softwareCb != null) {
-			Software sf = (Software)softwareCb.getValue();
-			setActionCbItems(sf);
+			software = (Software)softwareCb.getValue();
+			if (software != null) {
+				actionDescMap = software.getActionDescriptionsMap();
+			}
+			setActionCbItems();
 		}
+		
+		actionCb.addValueChangeListener(event -> {
+			String action = (String) event.getProperty().getValue();
+			if (software != null) {
+				if (actionDescMap.get(action) != null) {
+					actionParameterTpl.setValue(actionDescMap.get(action));
+				} else {
+					actionParameterTpl.setValue("");
+				}
+			}
+			
+		});
+		
 		return new PropertyIdAndField("action", actionCb);
 	}
 	
-	private void setActionCbItems(Software sf) {
-		if (sf != null) {
+	private void setActionCbItems() {
+		if (software != null) {
 			actionCb.removeAllItems();
-			String[] acs = sf.getActions().split(",");
+			String[] acs = software.getActions().split(",");
 			if (acs.length == 0) {
 				acs = new String[]{"install"};
 			}
@@ -86,8 +116,9 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		softwareCb.setPageLength(10);
 		
 		softwareCb.addValueChangeListener(event -> {
-			Software sw = (Software) event.getProperty().getValue();
-			setActionCbItems(sw);
+			software = (Software) event.getProperty().getValue();
+			actionDescMap = software.getActionDescriptionsMap();
+			setActionCbItems();
 		});
 		return new PropertyIdAndField("software", softwareCb);
 	}
@@ -122,6 +153,22 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 	@Override
 	public boolean saveToRepo() {
 		return false;
+	}
+
+	public TextField getOthersField() {
+		return othersField;
+	}
+
+	public void setOthersField(TextField othersField) {
+		this.othersField = othersField;
+	}
+	
+	public TextArea getActionParameterTpl() {
+		return actionParameterTpl;
+	}
+
+	public void setActionParameterTpl(TextArea actionParameterTpl) {
+		this.actionParameterTpl = actionParameterTpl;
 	}
 
 }

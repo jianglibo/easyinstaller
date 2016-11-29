@@ -70,7 +70,7 @@ public class SshExecRunner implements BaseRunner {
 					cmd = String.format(tpl, runner , codeFileNameAtRemote, envFileNameAtRemote, taskDesc.getAction());
 				}
 				if (!taskDesc.getTaskDesc().getRemainParameters().isEmpty()) {
-					cmd = cmd + " " + taskDesc.getTaskDesc().getRemainParameters();
+					cmd = cmd + " \"" + taskDesc.getTaskDesc().getRemainParameters() + "\"";
 				}
 				JschExecuteResult jer = jsession.exec(cmd);
 				

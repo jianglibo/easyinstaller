@@ -9,5 +9,6 @@ codeFileExt: .ps1
 codeLineSeperator: LF
 runas:
 actions: install,start,stop,restart
+actionDescriptions: actions.yaml
 filesToUpload:
   - http://apache.01link.hk/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz

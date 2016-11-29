@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.domain.TextFile;
@@ -27,7 +27,6 @@ import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.repositories.TextFileRepository;
 import com.jianglibo.vaadin.dashboard.util.SoftwareFolder;
 import com.jianglibo.vaadin.dashboard.util.SoftwarePackUtil;
-import com.jianglibo.vaadin.dashboard.util.StrUtil;
 import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 import com.jianglibo.vaadin.dashboard.vo.SoftwareImportResult;
@@ -99,6 +98,15 @@ public class SoftwareImportor {
 					Software sf = ymlObjectMapper.readValue(Files.newInputStream(yf), Software.class);
 					sf.setCodeToExecute(com.google.common.io.Files.toString(baseFolder.resolve(sf.getCodeToExecute()).toFile(), Charsets.UTF_8));
 					sf.setConfigContent(com.google.common.io.Files.toString(baseFolder.resolve(sf.getConfigContent()).toFile(), Charsets.UTF_8));
+					if (!Strings.isNullOrEmpty(sf.getActionDescriptions())) {
+						try {
+							if (Files.exists(baseFolder.resolve(sf.getActionDescriptions()))) {
+								sf.setActionDescriptions(com.google.common.io.Files.toString(baseFolder.resolve(sf.getActionDescriptions()).toFile(), Charsets.UTF_8));
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
 					sf.getFileToUploadVos().stream().filter(FileToUploadVo::isRemoteFile).forEach(vo -> {
 						softwareDownloader.submitTasks(vo);
 					});
@@ -133,6 +141,7 @@ public class SoftwareImportor {
 		return decodeFromYaml(folder).stream().map(sir -> {
 			if (sir.isSuccess()) {
 				Software sfInZip = sir.getSoftware();
+				
 				Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sfInZip.getName(), sfInZip.getOstype(),sfInZip.getSversion());
 				Software newSf;
 				if (sfInDb == null) {

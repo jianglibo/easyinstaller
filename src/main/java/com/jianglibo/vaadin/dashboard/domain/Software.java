@@ -22,6 +22,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
@@ -149,6 +150,11 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 	@VaadinFormField(order = 200)
 	private String actions = "install";
 
+	@Lob
+	@Column(length = 154112)
+	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 140)
+	private String actionDescriptions;
+
 	@PreUpdate
 	@Override
 	public void preUpdate() {
@@ -177,6 +183,17 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 		} else {
 			return Sets.newHashSet(StrUtil.commaSplitter.split(getPossibleRoles().toUpperCase()));
 		}
+	}
+	
+	public Map<String, String> getActionDescriptionsMap() {
+		Map<String, String> mp = Maps.newHashMap();
+		try {
+			JavaType jt = SoftwareUtil.ymlObjectMapper.getTypeFactory().constructParametrizedType(Map.class,Map.class, String.class, String.class);
+			mp = SoftwareUtil.ymlObjectMapper.readValue(getActionDescriptions(),jt);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return mp;
 	}
 	
 	public Map<String, Long> getTimeOutMaps() {
@@ -417,5 +434,13 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 		} else {
 			this.possibleRoles = possibleRoles;
 		}
+	}
+
+	public String getActionDescriptions() {
+		return actionDescriptions;
+	}
+
+	public void setActionDescriptions(String actionDescriptions) {
+		this.actionDescriptions = actionDescriptions;
 	}
 }

@@ -14,6 +14,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -30,6 +32,8 @@ public class SoftwareUtil {
 	public static final Pattern PREFIX_FIND = Pattern.compile("^(http://|classpath:|file:///){1}.*$");
 	
 	public static final String UTF8_BOM = "\uFEFF";
+	
+	public static final ObjectMapper ymlObjectMapper = new ObjectMapper(new YAMLFactory());
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoftwareUtil.class);
 	
