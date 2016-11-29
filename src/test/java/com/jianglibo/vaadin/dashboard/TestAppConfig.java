@@ -19,7 +19,7 @@ public class TestAppConfig extends Tbase {
 	@Test
 	public void tscriptSources() {
 		List<String> ss = applicationConfig.getScriptSources();
-		assertThat("should have 2 sources", ss.size(), equalTo(2));
+		assertThat("should have 2 sources", ss.size(), equalTo(3));
 		assertThat("default script source should be classpath.", ss.get(ss.size() - 1), equalTo(ApplicationConfig.defaultScriptSource));
 	}
 

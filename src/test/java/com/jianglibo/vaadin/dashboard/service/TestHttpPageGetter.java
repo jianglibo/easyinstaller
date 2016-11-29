@@ -2,6 +2,7 @@ package com.jianglibo.vaadin.dashboard.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 
@@ -25,6 +26,11 @@ public class TestHttpPageGetter extends Tbase {
 	
 	@Autowired
 	private SoftwareImportor preDefinedSoftwareProcessor;
+	
+	@Test
+	public void ttrue() {
+		assertTrue(true);
+	}
 
 //	@Test
 //	public void t() throws IOException {

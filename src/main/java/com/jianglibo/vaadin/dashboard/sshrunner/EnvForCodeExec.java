@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -142,7 +141,7 @@ public class EnvForCodeExec {
 		
 		private String runas;
 		
-		private Map<String, Long> timeouts;
+		private String timeouts;
 		
 		private String runner;
 		
@@ -166,7 +165,7 @@ public class EnvForCodeExec {
 			this.runas = software.getRunas();
 			this.runner = software.getRunner();
 			this.textfiles = software.getTextfiles().stream().map(TextFileDescription::new).collect(Collectors.toSet());
-			this.timeouts = software.getTimeOutMaps();
+			this.timeouts = software.getTimeouts();
 			this.possibleRoles = software.getPossibleRoles();
 		}
 
@@ -250,11 +249,11 @@ public class EnvForCodeExec {
 			this.textfiles = textfiles;
 		}
 
-		public Map<String, Long> getTimeouts() {
+		public String getTimeouts() {
 			return timeouts;
 		}
 
-		public void setTimeouts(Map<String, Long> timeouts) {
+		public void setTimeouts(String timeouts) {
 			this.timeouts = timeouts;
 		}
 
