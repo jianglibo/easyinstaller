@@ -57,6 +57,7 @@ public class EnvForCodeExec {
 	}
 
 	public static class BoxDescription {
+		private long id;
 		private String ip;
 		private String name;
 		private String hostname;
@@ -64,6 +65,8 @@ public class EnvForCodeExec {
 		private String dnsServer;
 		private String ips;
 		private String ports;
+		
+		private String boxRoleConfig;
 
 		public BoxDescription(Box box) {
 			this.ip = box.getIp();
@@ -73,6 +76,7 @@ public class EnvForCodeExec {
 			this.dnsServer = box.getDnsServer();
 			this.ips= box.getIps();
 			this.ports= box.getPorts();
+			this.id = box.getId();
 		}
 		
 		public String getRoles() {
@@ -131,6 +135,22 @@ public class EnvForCodeExec {
 
 		public void setPorts(String ports) {
 			this.ports = ports;
+		}
+
+		public String getBoxRoleConfig() {
+			return boxRoleConfig;
+		}
+
+		public void setBoxRoleConfig(String boxRoleConfig) {
+			this.boxRoleConfig = boxRoleConfig;
+		}
+
+		public long getId() {
+			return id;
+		}
+
+		public void setId(long id) {
+			this.id = id;
 		}
 	}
 	
@@ -302,7 +322,7 @@ public class EnvForCodeExec {
 	}
 
 	public static class BoxGroupDescription {
-
+		private long id;
 		private String name;
 		
 		private String configContent;
@@ -313,6 +333,7 @@ public class EnvForCodeExec {
 
 		public BoxGroupDescription(BoxGroup bg) {
 			this.name = bg.getName();
+			this.id = bg.getId();
 			this.configContent = bg.getConfigContent();
 			this.installResults = bg.getInstallResults();
 
@@ -364,6 +385,14 @@ public class EnvForCodeExec {
 		public void setInstallResults(String installResults) {
 			this.installResults = installResults;
 		}
+
+		public long getId() {
+			return id;
+		}
+
+		public void setId(long id) {
+			this.id = id;
+		}
 	}
 	
 	public static class EnvForCodeExecBuilder {
@@ -385,6 +414,7 @@ public class EnvForCodeExec {
 		public EnvForCodeExec build() {
 			software.setConfigContent(new ConfigContent(software.getConfigContent()).getConverted(appObjectMappers, this.software.getPreferredFormat())); 
 			boxGroup.setConfigContent(new ConfigContent(boxGroup.getConfigContent()).getConverted(appObjectMappers, this.software.getPreferredFormat()));
+			box.setBoxRoleConfig(new ConfigContent(box.getBoxRoleConfig()).getConverted(appObjectMappers, this.software.getPreferredFormat()));
 			return new EnvForCodeExec(box, boxGroup, software, remoteFolder);
 		}
 		

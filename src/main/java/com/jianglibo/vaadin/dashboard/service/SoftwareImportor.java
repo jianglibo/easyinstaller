@@ -72,10 +72,10 @@ public class SoftwareImportor {
 						TextFile tf = textFileRepository.findByNameAndSoftware(name, sf);
 						if (tf == null) {
 							tf = new TextFile(name, content);
-							tf.setSoftware(sf);
 						} else {
 							tf.setContent(content);
 						}
+						tf.setSoftware(sf);
 						tf = textFileRepository.save(tf);
 						return tf;
 					} catch (Exception e) {

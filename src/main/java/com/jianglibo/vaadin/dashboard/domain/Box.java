@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -62,7 +63,7 @@ public class Box extends BaseEntity implements HasUpdatedAt {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<BoxGroup> boxGroups = Sets.newHashSet();
 	
-	@VaadinFormField(order = 100)
+	@VaadinFormField(order = 120)
 	private String roles;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -97,17 +98,21 @@ public class Box extends BaseEntity implements HasUpdatedAt {
 	@VaadinFormField(order = 70)
 	private String sshUser = "root";
 	
-	@VaadinFormField(order = 70)
+	@VaadinFormField(order = 80)
 	private String hostname;
 	
-	@VaadinFormField(order = 70)
+	@VaadinFormField(order = 90)
 	private String dnsServer;
 	
-	@VaadinFormField(order = 70)
+	@VaadinFormField(order = 100)
 	private String ips;
 	
-	@VaadinFormField(order = 70)
+	@VaadinFormField(order = 110)
 	private String ports;
+	
+	@Lob
+	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 200, rowNumber = 5)
+	private String boxRoleConfig = "#mysqld: \r\n#  server-id: 33";
 	
 	public List<BoxHistory> getHistories() {
 		return histories;
@@ -274,7 +279,12 @@ public class Box extends BaseEntity implements HasUpdatedAt {
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-	
-	
 
+	public String getBoxRoleConfig() {
+		return boxRoleConfig;
+	}
+
+	public void setBoxRoleConfig(String boxRoleConfig) {
+		this.boxRoleConfig = boxRoleConfig;
+	}
 }
