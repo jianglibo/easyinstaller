@@ -112,12 +112,12 @@ public class BoxTwinGridFieldFree extends BaseTwinGridFieldFree<Set<Box>, Box, B
 
 	@Override
 	protected String[] getLeftColumns() {
-		return new String[]{"name", "ip", "!remove" };
+		return new String[]{"name", "ip","roles" , "!remove" };
 	}
 
 	@Override
 	protected String[] getRightColumns() {
-		return new String[]{"!addtoleft","name", "ip"};
+		return new String[]{"!addtoleft","name", "ip","roles"};
 	}
 
 	@Override

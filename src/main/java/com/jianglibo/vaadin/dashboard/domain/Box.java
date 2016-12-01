@@ -64,6 +64,7 @@ public class Box extends BaseEntity implements HasUpdatedAt {
 	private Set<BoxGroup> boxGroups = Sets.newHashSet();
 	
 	@VaadinFormField(order = 120)
+	@VaadinGridColumn(order = 120)
 	private String roles;
 	
 	@ManyToOne(fetch = FetchType.EAGER)

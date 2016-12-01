@@ -334,7 +334,7 @@ public class TaskRunner {
 				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(applicationConfig.getSshKeyFile(box))
 						.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
 				
-				boolean needUploadFile = needUploadActions.contains(oneThreadtaskDesc.getAction());
+				boolean needUploadFile = needUploadActions.contains(oneThreadtaskDesc.getAction()) || oneThreadtaskDesc.getAction().toUpperCase().startsWith("INSTALL");
 				
 				if (needUploadFile) {
 					sshUploadRunner.run(jsession, oneThreadtaskDesc);
