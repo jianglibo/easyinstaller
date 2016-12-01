@@ -397,7 +397,7 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 		setRunas(vo.getRunas());
 		setRunner(vo.getRunner());
 		setPossibleRoles(vo.getPossibleRoles());
-//		setTextfiles(vo.getTextfiles());
+		setActionDescriptions(vo.getActionDescriptions());
 	}
 
 	public String getRunas() {

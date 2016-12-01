@@ -54,7 +54,7 @@ public class BoxGroup extends BaseEntity implements HasUpdatedAt {
 	
 	@ManyToMany(fetch=FetchType.EAGER, mappedBy = "boxGroups")
 	@TwinGridFieldDescription(leftClazz = Box.class, rightClazz = Box.class, leftPageLength = 100, rightColumns = {"!addtoleft",
-			"name", "ip" }, leftColumns = { "name", "ip", "!remove" }, rowNumber = 4)
+			"name", "ip", "roles" }, leftColumns = { "name", "ip", "roles", "!remove" }, rowNumber = 4)
 	@VaadinFormField(fieldType = Ft.HAND_MAKER, order = 30)
 	private Set<Box> boxes = Sets.newHashSet();
 	
@@ -67,6 +67,7 @@ public class BoxGroup extends BaseEntity implements HasUpdatedAt {
 	
 	@Lob
 	@Column(length = 65536)
+	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 40, rowNumber=6)
 	private String installResults;
 	
 	
