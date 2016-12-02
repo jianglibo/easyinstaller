@@ -3,6 +3,7 @@ package com.jianglibo.vaadin.dashboard.sshrunner;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.Base64;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -72,7 +73,7 @@ public class SshExecRunner implements BaseRunner {
 				}
 				String extraStr = taskDesc.getTaskDesc().getRemainParameters();
 				if (!Strings.isNullOrEmpty(extraStr)) {
-					extraStr = extraStr.replaceAll("'", "'\"'\"'");
+					extraStr = Base64.getEncoder().encodeToString(extraStr.getBytes());
 					cmd = cmd + " '" + extraStr + "'";
 				}
 				JschExecuteResult jer = jsession.exec(cmd);
