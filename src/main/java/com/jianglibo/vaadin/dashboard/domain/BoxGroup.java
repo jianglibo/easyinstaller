@@ -27,6 +27,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.jianglibo.vaadin.dashboard.annotation.vaadinfield.TwinGridFieldDescription;
+import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -225,7 +226,6 @@ public class BoxGroup extends BaseEntity implements HasUpdatedAt {
 		public Person getCreator() {
 			return creator;
 		}
-		
-		
 	}
+
 }

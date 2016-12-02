@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
@@ -69,8 +70,10 @@ public class SshExecRunner implements BaseRunner {
 					tpl = "%s %s -envfile %s -action %s";
 					cmd = String.format(tpl, runner , codeFileNameAtRemote, envFileNameAtRemote, taskDesc.getAction());
 				}
-				if (!taskDesc.getTaskDesc().getRemainParameters().isEmpty()) {
-					cmd = cmd + " \"" + taskDesc.getTaskDesc().getRemainParameters() + "\"";
+				String extraStr = taskDesc.getTaskDesc().getRemainParameters();
+				if (!Strings.isNullOrEmpty(extraStr)) {
+					extraStr = extraStr.replaceAll("'", "'\"'\"'");
+					cmd = cmd + " '" + extraStr + "'";
 				}
 				JschExecuteResult jer = jsession.exec(cmd);
 				

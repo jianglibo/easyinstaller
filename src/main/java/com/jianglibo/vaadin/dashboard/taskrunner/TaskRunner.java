@@ -1,11 +1,13 @@
 package com.jianglibo.vaadin.dashboard.taskrunner;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -19,8 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -42,6 +47,7 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
+import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.service.SoftwareDownloader;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession.JschSessionBuilder;
@@ -92,6 +98,9 @@ public class TaskRunner {
 	private ApplicationConfig applicationConfig;
 	
 	@Autowired
+	private AppObjectMappers appObjectmappers;
+	
+	@Autowired
 	private MessageSource messageSource;
 	
 	private AtomicInteger runningThreads = new AtomicInteger(0);
@@ -103,7 +112,7 @@ public class TaskRunner {
 	public TaskRunner() {
 		this.service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
 	}
-
+	
 	public void submitTasks(TaskDesc taskDesc) {
 		for(Box box : taskDesc.getBoxes()) {
 			if (applicationConfig.getSshKeyFile(box).isEmpty()) {
@@ -190,6 +199,10 @@ public class TaskRunner {
 					
 					BoxGroup bg = taskDesc.getBoxGroup();
 					bg.getHistories().add(bgh);
+					List<BoxGroupHistory> newBhistories = bg.getHistories();
+					newBhistories.add(bgh);
+					bg.setHistories(newBhistories);
+					bg.setInstallResults(extractInstallResults(bg, bgh));
 					boxGroupRepository.save(bg);
 					Broadcaster.broadcast(new BroadCasterMessage(new GroupTaskFinishMessage(bgHistoriesSofar, taskDesc.getUniqueUiId())));
 					
@@ -200,6 +213,73 @@ public class TaskRunner {
 				LOGGER.error(t.getMessage());
 			}
 		});
+	}
+	
+	protected List<List<String>> getResultBlocks(List<String> lines) {
+		boolean startFlag = false;
+		boolean endFlag = false;
+		List<List<String>> blocks = Lists.newArrayList();
+		List<String> block = Lists.newArrayList();
+		for(String line : lines) {
+			if (line.contains(BoxHistory.R_T_C_E)) {
+				endFlag = true;
+				if (startFlag) {
+					blocks.add(block);
+				}
+				startFlag = false;
+				block = Lists.newArrayList();
+			} else {
+				endFlag = false;
+			}
+			if (startFlag && !endFlag) {
+				block.add(line);
+			}
+			if (line.contains(BoxHistory.R_T_C_B)) {
+				startFlag = true;
+			}
+		}
+		return blocks;
+	}
+	
+	protected Map<String,Object> extractResultMap(List<String> lines) {
+		Map<String, Object> mp = Maps.newHashMap();
+		
+		getResultBlocks(lines).forEach(bl -> {
+			String s = Joiner.on("").join(bl);
+			try {
+				JavaType jt = appObjectmappers.getObjectMapperNoIdent().getTypeFactory().constructParametrizedType(Map.class,Map.class, String.class, Object.class);
+				Map<String, Object> onemp = appObjectmappers.getObjectMapperNoIdent().readValue(s, jt);
+				onemp.entrySet().forEach(entry -> {
+					mp.put(entry.getKey(), entry.getValue());
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+		return mp;
+	}
+	
+	private String extractInstallResults(BoxGroup bg, BoxGroupHistory bgh) {
+		Map<String, Object> mp = Maps.newHashMap();
+		try {
+			if (bg.getInstallResults() != null && bg.getInstallResults().trim().length() > 0) {
+				JavaType jt = appObjectmappers.getObjectMapperNoIdent().getTypeFactory().constructParametrizedType(Map.class,Map.class, String.class, Object.class);
+				mp = appObjectmappers.getObjectMapperNoIdent().readValue(bg.getInstallResults(), jt);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		for (BoxHistory bh : bgh.getBoxHistories()) {
+			for (Entry<String, Object> entry: extractResultMap(bh.getLogLines()).entrySet()) {
+				mp.put(entry.getKey(), entry.getValue());
+			};
+		}
+		try {
+			return appObjectmappers.getObjectMapperNoIdent().writeValueAsString(mp);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return "{}";
 	}
 
 	public int getBgHistoriesSofar() {

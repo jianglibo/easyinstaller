@@ -181,7 +181,7 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 	
 	private Component createTop() {
 		HorizontalLayout hl = new HorizontalLayout();
-		
+//		hl.setWidth("100%");
 		hl.addStyleName("viewheader");
 		hl.setSpacing(true);
 		Responsive.makeResponsive(hl);

@@ -1,6 +1,5 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 
@@ -31,6 +30,9 @@ import com.vaadin.ui.themes.ValoTheme;
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
 public class BoxHistory extends BaseEntity {
+	
+	public static final String R_T_C_B = "------RETURN_TO_CLIENT_BEGIN------";
+	public static final String R_T_C_E = "------RETURN_TO_CLIENT_END------";
 
 	@ManyToOne
 	@VaadinGridColumn(order = 10)
@@ -108,11 +110,16 @@ public class BoxHistory extends BaseEntity {
 		return log;
 	}
 	
-	public List<String> getLogLines() throws IOException {
+	public List<String> getLogLines() {
 		if (getLog() == null) {
 			return Lists.newArrayList();
 		} else {
-			return  CharStreams.readLines(new StringReader(getLog()));
+			try {
+				return  CharStreams.readLines(new StringReader(getLog()));
+			} catch (Exception e) {
+				return Lists.newArrayList();
+				
+			}
 		}
 	}
 
