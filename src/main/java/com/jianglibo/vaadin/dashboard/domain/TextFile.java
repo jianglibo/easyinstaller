@@ -38,7 +38,7 @@ public class TextFile extends BaseEntity {
 
 	@Lob
 	@Column(length = 1048576)
-	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 20)
+	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 20, rowNumber=25)
 	private String content;
 	
 	@ManyToOne

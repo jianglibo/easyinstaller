@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.security.PersonAuthenticationToken;
+import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner;
 import com.jianglibo.vaadin.dashboard.uicomponent.twingrid2.BoxContainerInRc;
@@ -76,6 +78,8 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 	
 	private final TaskRunner taskRunner;
 	
+	private final AppObjectMappers appObjectMappers;
+	
 	private BoxGroup boxGroup;
 	
 	private OneBoxGroupHistoriesDc obghdc;
@@ -85,7 +89,7 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 	private final Domains domains;
 	
 	@Autowired
-	public ClusterSoftwareView(BoxGroupHistoryRepository boxGroupHistoryRepository, MessageSource messageSource, BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, Domains domains, PersonRepository personRepository, FieldFactories fieldFactories, TaskRunner taskRunner) {
+	public ClusterSoftwareView(BoxGroupHistoryRepository boxGroupHistoryRepository, MessageSource messageSource, BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, Domains domains, PersonRepository personRepository, FieldFactories fieldFactories, TaskRunner taskRunner, AppObjectMappers appObjectMappers) {
 		this.messageSource = messageSource;
 		this.boxGroupRepository = boxGroupRepository;
 		this.personRepository = personRepository;
@@ -93,6 +97,7 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		this.fieldFactories = fieldFactories;
 		this.domains = domains;
 		this.taskRunner = taskRunner;
+		this.appObjectMappers = appObjectMappers;
 		setSizeFull();
 		addStyleName("transactions");
 		addComponent(createTop());
@@ -118,14 +123,13 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		addComponent(vl);
 		setExpandRatio(vl, 1);
 	}
-	
 
 	private Component toolbars() {
 		GridLayout gl = new GridLayout(10, 1);
 		gl.setSizeFull();
 		Responsive.makeResponsive(gl);
 		
-		InstallNewSoftwareForm insf =  new InstallNewSoftwareForm(personRepository, messageSource, domains, fieldFactories);
+		InstallNewSoftwareForm insf =  new InstallNewSoftwareForm(personRepository, messageSource, domains, fieldFactories, appObjectMappers);
 		bcInRc = new BoxContainerInRc(null, domains, 10 , Lists.newArrayList());
 		
 		VaadinGridWrapper vgw = domains.getGrids().get(Box.class.getSimpleName());
@@ -144,9 +148,15 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 					// start to submit tasks;
 					LOGGER.info("{}, {}", ac.getClass().getName(), ac.getName());
 					DashboardUI dui = (DashboardUI) UI.getCurrent();
-					TaskDesc td = new TaskDesc(dui.getUniqueUiID(), ac.getPrincipal(), boxGroup,boxesToRun.getValue(), insf.getSelectedSoftware().get(), insf.getSelectedAction().get(), insf.getOthers().orElse(""));
-					insf.getOthersField().setValue("");
-					taskRunner.submitTasks(td);
+					String otherParameters;
+					try {
+						otherParameters = insf.getOthers();
+						TaskDesc td = new TaskDesc(dui.getUniqueUiID(), ac.getPrincipal(), boxGroup,boxesToRun.getValue(), insf.getSelectedSoftware().get(), insf.getSelectedAction().get(), otherParameters);
+						insf.getOthersField().setValue("");
+						taskRunner.submitTasks(td);
+					} catch (IOException e) {
+						NotificationUtil.error(messageSource, "invalidYml");
+					}
 				} else {
 					NotificationUtil.humanized(messageSource, "actionabsent");
 				}

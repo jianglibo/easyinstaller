@@ -1,15 +1,19 @@
 package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.context.MessageSource;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
+import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBase.PropertyIdAndField;
 import com.jianglibo.vaadin.dashboard.uicomponent.form.FormBaseFree;
 import com.jianglibo.vaadin.dashboard.uifactory.FieldFactories;
@@ -17,7 +21,6 @@ import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 
 @SuppressWarnings("serial")
 public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
@@ -26,17 +29,20 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 	
 	private ComboBox actionCb;
 	
-	private TextField othersField;
+	private TextArea othersField;
 	
 	private TextArea actionParameterTpl;
 	
 	private Software software;
 	
-	private Map<String, String> actionDescMap;
+	private AppObjectMappers appObjectMappers;
+	
+	private ActionParameters actionParameters;
 
 	public InstallNewSoftwareForm(PersonRepository personRepository,
-			MessageSource messageSource, Domains domains, FieldFactories fieldFactories) {
+			MessageSource messageSource, Domains domains, FieldFactories fieldFactories,AppObjectMappers appObjectMappers) {
 		super(InstallNewSoftwareVo.class, personRepository, messageSource, domains, fieldFactories);
+		this.appObjectMappers = appObjectMappers;
 		delayCreateContent();
 	}
 
@@ -53,11 +59,13 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 	
 	private PropertyIdAndField createDescriptionField() {
 		actionParameterTpl = new TextArea(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.actionpatpl"));
+		actionParameterTpl.setRows(4);
 		return new PropertyIdAndField("actionParameterTpl", actionParameterTpl);
 	}
 
 	private PropertyIdAndField createOthersField() {
-		othersField = new TextField(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.others"));
+		othersField = new TextArea(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.others"));
+		othersField.setRows(4);
 		String desc = MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.desc.others");
 		if (!desc.equals("view.clustersoftware.form.desc.others")) {
 			othersField.setDescription(desc);
@@ -72,7 +80,7 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		if (softwareCb != null) {
 			software = (Software)softwareCb.getValue();
 			if (software != null) {
-				actionDescMap = software.getActionDescriptionsMap();
+				actionParameters = new ActionParameters(appObjectMappers, software.getActionDescriptions());
 			}
 			setActionCbItems();
 		}
@@ -80,13 +88,13 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		actionCb.addValueChangeListener(event -> {
 			String action = (String) event.getProperty().getValue();
 			if (software != null) {
-				if (actionDescMap.get(action) != null) {
-					actionParameterTpl.setValue(actionDescMap.get(action));
+				String actionDesc = actionParameters.getParameterYmlStr(action);
+				if (actionDesc != null) {
+					actionParameterTpl.setValue(actionDesc);
 				} else {
 					actionParameterTpl.setValue("");
 				}
 			}
-			
 		});
 		
 		return new PropertyIdAndField("action", actionCb);
@@ -117,7 +125,7 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		
 		softwareCb.addValueChangeListener(event -> {
 			software = (Software) event.getProperty().getValue();
-			actionDescMap = software.getActionDescriptionsMap();
+			actionParameters = new ActionParameters(appObjectMappers, software.getActionDescriptions());
 			setActionCbItems();
 		});
 		return new PropertyIdAndField("software", softwareCb);
@@ -141,13 +149,12 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		}
 	}
 	
-	public Optional<String> getOthers() {
+	public String getOthers() throws JsonParseException, JsonMappingException, JsonProcessingException, IOException {
 		String s= (String) othersField.getValue();
-		if (s == null || s.trim().isEmpty()) {
-			return Optional.empty();
-		} else {
-			return Optional.of(s);
+		if (actionParameters != null) {
+			return actionParameters.convertToServerNeeds(s);
 		}
+		return s.trim();
 	}
 
 	@Override
@@ -155,11 +162,11 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		return false;
 	}
 
-	public TextField getOthersField() {
+	public TextArea getOthersField() {
 		return othersField;
 	}
 
-	public void setOthersField(TextField othersField) {
+	public void setOthersField(TextArea othersField) {
 		this.othersField = othersField;
 	}
 	

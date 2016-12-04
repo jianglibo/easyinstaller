@@ -437,6 +437,9 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 	}
 
 	public String getActionDescriptions() {
+		if (actionDescriptions == null) {
+			return "";
+		}
 		return actionDescriptions;
 	}
 

@@ -1,1 +1,16 @@
-createUser: rootpassword:{password},,,sql:{CREATE USER 'jeffrey'@'localhost' IDENTIFIED BY 'new_password';} #PASSWORD EXPIRE
+create-user:
+  rootpass: # root password to execute sql
+  userpass: # password for new user
+  user: # jeffery@localhost
+  comment: CREATE USER 'jeffrey'@'localhost' IDENTIFIED BY 'new_password';
+install-master:
+  newpass:
+  replicauser:
+  replicapass:
+  comment: please remember theses passwords, they are required for following steps.
+install-masterreplica:
+  newpass:
+  replicauser:
+  replicapass:
+install-replica:
+  newpass:

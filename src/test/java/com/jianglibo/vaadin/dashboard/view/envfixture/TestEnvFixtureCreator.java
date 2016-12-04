@@ -37,7 +37,6 @@ public class TestEnvFixtureCreator extends Tbase {
 		EnvForCodeExecSimple efc = appObjectMappers.getObjectMapperNoIdent().readValue(s, EnvForCodeExecSimple.class);
 		
 		assertThat("box is right", efc.getBox().getIp(), equalTo("192.168.33.110"));
-		
 	}
 	
 	private static class EnvForCodeExecSimple {

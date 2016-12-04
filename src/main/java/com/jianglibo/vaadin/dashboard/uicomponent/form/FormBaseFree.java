@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.uicomponent.form;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -7,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.Authentication;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
@@ -64,7 +67,11 @@ public abstract class FormBaseFree<T> extends FormLayout {
 		fieldGroup = new BeanFieldGroup<T>(clazz);
 		addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-		fields = buildFields();
+		try {
+			fields = buildFields();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		for (PropertyIdAndField paf : fields) {
 			fieldGroup.bind(paf.getField(), paf.getPropertyId());
@@ -73,7 +80,7 @@ public abstract class FormBaseFree<T> extends FormLayout {
 		StyleUtil.setMarginTopTwenty(this);
 	}
 	
-	protected abstract List<PropertyIdAndField> buildFields();
+	protected abstract List<PropertyIdAndField> buildFields() throws JsonParseException, JsonMappingException, IOException;
 
 	protected Person getCurrentUser() {
 		if (M3958SecurityUtil.isLogined()) {
