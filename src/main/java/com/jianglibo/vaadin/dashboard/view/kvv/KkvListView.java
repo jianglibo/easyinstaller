@@ -64,9 +64,7 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> 
 					repository.save(b);
 				}
 			});
-			getGrid().getdContainer().setDirty(true);
-			getGrid().deselectAll();
-			getGrid().getdContainer().notifyItemSetChanged();
+			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.REFRESH:
 			getGrid().getdContainer().refresh();
@@ -82,9 +80,7 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> 
 				bg.setArchived(false);
 			});
 			repository.save(selected);
-			getGrid().getdContainer().setDirty(true);
-			getGrid().deselectAll();
-			getGrid().getdContainer().notifyItemSetChanged();
+			refreshAfterItemContentChange();
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());

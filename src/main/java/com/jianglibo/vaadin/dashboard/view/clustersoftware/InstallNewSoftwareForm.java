@@ -9,6 +9,7 @@ import org.springframework.context.MessageSource;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.dataformat.yaml.snakeyaml.scanner.ScannerException;
 import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
@@ -149,7 +150,7 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		}
 	}
 	
-	public String getOthers() throws JsonParseException, JsonMappingException, JsonProcessingException, IOException {
+	public String getOthers() throws JsonParseException, JsonMappingException, JsonProcessingException,ScannerException, IOException {
 		String s= (String) othersField.getValue();
 		if (actionParameters != null) {
 			return actionParameters.convertToServerNeeds(s);

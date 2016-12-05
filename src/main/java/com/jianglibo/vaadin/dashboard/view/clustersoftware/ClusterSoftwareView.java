@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
+import com.fasterxml.jackson.dataformat.yaml.snakeyaml.scanner.ScannerException;
 import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
@@ -154,7 +155,9 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 						TaskDesc td = new TaskDesc(dui.getUniqueUiID(), ac.getPrincipal(), boxGroup,boxesToRun.getValue(), insf.getSelectedSoftware().get(), insf.getSelectedAction().get(), otherParameters);
 						insf.getOthersField().setValue("");
 						taskRunner.submitTasks(td);
-					} catch (IOException e) {
+					} catch(ScannerException se){
+						NotificationUtil.error(messageSource, "invalidYml");
+					} catch (Exception e) {
 						NotificationUtil.error(messageSource, "invalidYml");
 					}
 				} else {

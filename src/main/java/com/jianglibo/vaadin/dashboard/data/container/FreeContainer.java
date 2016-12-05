@@ -273,10 +273,12 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 //		LOGGER.info("{} called with parameter {}", "isLastId", itemId);
 		return false;
 	}
+	
+	private boolean itemAdded = false;
+	
 
 	@Override
 	public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
-//		LOGGER.info("{} called with parameter {}", "addItemAfter", previousItemId);
 		return null;
 	}
 
@@ -506,7 +508,8 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 			return o;
 		} else {
 			int inPage = index/perPage;
-			if (inPage != this.currentPage) {
+			if (inPage != this.currentPage || isItemAdded()) {
+				setItemAdded(false);
 				this.currentPage = inPage;
 				fetchPage();
 			}
@@ -515,6 +518,7 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 			idxCache.put(index, o);
 			idCache.put(o.getId(), o);
 			return o;
+
 		}
 	}
 
@@ -547,12 +551,6 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 		}
 	}
 	
-	public void fetchPageAfterModify() {
-		setDirty(true);
-		fetchPage();
-		notifyItemSetChanged();
-	}
-
 	public void refresh() {
 		setDirty(true);
 		setCurrentPage(-1);
@@ -646,6 +644,15 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
+	}
+
+
+	public boolean isItemAdded() {
+		return itemAdded;
+	}
+
+	public void setItemAdded(boolean itemAdded) {
+		this.itemAdded = itemAdded;
 	}
 
 

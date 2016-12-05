@@ -17,6 +17,7 @@ import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.domain.TextFile;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
@@ -82,9 +83,7 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 					repository.save(b);
 				}
 			});
-			getGrid().getdContainer().setDirty(true);
-			getGrid().deselectAll();
-			getGrid().getdContainer().notifyItemSetChanged();
+			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.REFRESH:
 			getGrid().getdContainer().refresh();
@@ -101,6 +100,21 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 		case "softwaretxtfiles":
 			UI.getCurrent().getNavigator().navigateTo(TextFileListView.VIEW_NAME + "/?software=" + selected.iterator().next().getId() + "&pv=" + getLvfb().toNavigateString());
 			break;
+		case "clone":
+			Software sf = selected.iterator().next();
+			Software newsf = new Software();
+			newsf.copyFrom(sf);
+			newsf.setName(sf.getName() + "-clone");
+			newsf.setSversion(sf.getSversion());
+			newsf.setOstype(sf.getOstype());
+			newsf.setCreator(sf.getCreator());
+			newsf.setTextfiles(sf.getTextfiles().stream().map(tf -> {
+				TextFile one = new TextFile(tf.getName(), tf.getContent());
+				one.setSoftware(newsf);
+				return one;
+				}).collect(Collectors.toSet()));
+			repository.save(newsf);
+			refreshAfterItemNumberChange();
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
 		}
@@ -118,7 +132,8 @@ public class SoftwareListView extends BaseGridView<Software, SoftwareGrid, FreeC
 		new ButtonGroup(new EditButtonDescription(),new DeleteButtonDescription(), new UnArchiveButtonDescription()),//
 		new ButtonGroup(new AddButtonDescription()),//
 		new ButtonGroup(new SimpleButtonDescription("importSoftware", null, ButtonEnableType.ALWAYS)),
-		new ButtonGroup(new SimpleButtonDescription("softwaretxtfiles", null, ButtonEnableType.ONE))
+		new ButtonGroup(new SimpleButtonDescription("softwaretxtfiles", null, ButtonEnableType.ONE)),
+		new ButtonGroup(new SimpleButtonDescription("clone", null, ButtonEnableType.ONE))
 		};
 	}
 

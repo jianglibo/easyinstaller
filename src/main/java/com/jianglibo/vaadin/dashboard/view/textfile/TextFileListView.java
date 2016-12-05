@@ -22,6 +22,7 @@ import com.jianglibo.vaadin.dashboard.repositories.TextFileRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
+import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
@@ -71,10 +72,15 @@ public class TextFileListView extends BaseGridView<TextFile, TextFileGrid, FreeC
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
 				if (b.isArchived()) {
+					repository.delete(b.getId());
+					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
 					b.setArchived(true);
+					NotificationUtil.tray(getMessageSource(), "archivedone", b.getDisplayName());
+					repository.save(b);
 				}
 			});
+			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.REFRESH:
 			break;
@@ -94,7 +100,6 @@ public class TextFileListView extends BaseGridView<TextFile, TextFileGrid, FreeC
 		VaadinGridWrapper vgw = domains.getGrids().get(TextFile.class.getSimpleName());
 		List<String> sortableContainerPropertyIds = vgw.getSortableColumnNames();
 		List<String> columnNames = vgw.getColumns().stream().map(VaadinGridColumnWrapper::getName).collect(Collectors.toList());
-//		columnNames.add("!edit");
 		TextFileContainer tfc = new TextFileContainer(softwareRepository, repository, domains, 10, sortableContainerPropertyIds);
 		return new TextFileGrid(tfc, vgw, messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 	}

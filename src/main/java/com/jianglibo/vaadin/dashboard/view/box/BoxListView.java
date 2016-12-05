@@ -78,9 +78,7 @@ public class BoxListView extends BaseGridView<Box, BoxGrid, FreeContainer<Box>> 
 					repository.save(b);
 				}
 			});
-			getGrid().getdContainer().setDirty(true);
-			getGrid().deselectAll();
-			getGrid().getdContainer().notifyItemSetChanged();
+			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.REFRESH:
 			getGrid().getdContainer().refresh();
@@ -97,9 +95,7 @@ public class BoxListView extends BaseGridView<Box, BoxGrid, FreeContainer<Box>> 
 				b.setArchived(false);
 			});
 			repository.save(selected);
-			getGrid().getdContainer().setDirty(true);
-			getGrid().deselectAll();
-			getGrid().getdContainer().notifyItemSetChanged();
+			refreshAfterItemContentChange();
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());

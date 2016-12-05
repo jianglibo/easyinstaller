@@ -23,6 +23,7 @@ import com.jianglibo.vaadin.dashboard.uicomponent.button.NotificationBuilder;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
+import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
@@ -40,39 +41,38 @@ public class PersonListView extends BaseGridView<Person, PersonGrid, FreeContain
 	public static final String VIEW_NAME = "person";
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.USERS;
-
+	
+	private PersonRepository repository;
 	
 	@Autowired
 	public PersonListView(PersonRepository repository,Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, Person.class, PersonGrid.class);
+		this.repository = repository;
 		delayCreateContent();
 		new NotificationBuilder(messageSource, "personlist").setDelayMsec(20000).buildAndShow();
 	}
 
 	
-//	public void whenTotalPageChange(PageMetaEvent tpe) {
-//		getTable().setColumnFooter("createdAt", String.valueOf(tpe.getTotalRecord()));	
-//	}
-	
 	@Override
 	public void onDynButtonClicked(ButtonDescription btnDesc) {
-		List<Kkv> selected = getGrid().getSelectedRows().stream().map(o -> (Kkv)o).collect(Collectors.toList());
+		List<Person> selected = getGrid().getSelectedRows().stream().map(o -> (Person)o).collect(Collectors.toList());
 		switch (btnDesc.getItemId()) {
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-//					getGrid().getContainerDataSource()
-//					getRepository().delete(b);
+					repository.delete(b.getId());
+					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
 					b.setArchived(true);
-//					getRepository().save(b);
+					NotificationUtil.tray(getMessageSource(), "archivedone", b.getDisplayName());
+					repository.save(b);
 				}
 			});
-//			((BoxContainer)getTable().getContainerDataSource()).refresh();
+			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.REFRESH:
-//			((BoxContainer)getTable().getContainerDataSource()).refresh();
+			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.EDIT:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());

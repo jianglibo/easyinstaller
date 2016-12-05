@@ -85,9 +85,7 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 					repository.save(b);
 				}
 			});
-			getGrid().getdContainer().setDirty(true);
-			getGrid().deselectAll();
-			getGrid().getdContainer().notifyItemSetChanged();
+			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.REFRESH:
 			getGrid().getdContainer().refresh();
@@ -103,9 +101,7 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 				bg.setArchived(false);
 			});
 			repository.save(selected);
-			getGrid().getdContainer().setDirty(true);
-			getGrid().deselectAll();
-			getGrid().getdContainer().notifyItemSetChanged();
+			refreshAfterItemContentChange();
 			break;
 		case "manageClusterSoftware":
 			UI.getCurrent().getNavigator().navigateTo(ClusterSoftwareView.VIEW_NAME + "/?boxgroup=" + selected.iterator().next().getId()  + "&pv=" + getLvfb().toNavigateString());

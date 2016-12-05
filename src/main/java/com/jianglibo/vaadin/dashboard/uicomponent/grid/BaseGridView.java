@@ -321,7 +321,18 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		}
 	}
 	
+	public void refreshAfterItemNumberChange() {
+		getGrid().getdContainer().setItemAdded(true);
+		getGrid().getdContainer().setDirty(true);
+		getGrid().deselectAll();
+		getGrid().getdContainer().notifyItemSetChanged();
+	}
 	
+	public void refreshAfterItemContentChange() {
+		getGrid().getdContainer().setDirty(true);
+		getGrid().deselectAll();
+		getGrid().getdContainer().notifyItemSetChanged();
+	}
 	
 	public G getGrid() {
 		return grid;

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.dataformat.yaml.snakeyaml.scanner.ScannerException;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
@@ -113,7 +114,7 @@ public class ActionParameters {
 		return Joiner.on(System.lineSeparator()).join(mylines);
 	}
 	
-	public String convertToServerNeeds(String ymlContent) throws JsonParseException, JsonMappingException, JsonProcessingException, IOException {
+	public String convertToServerNeeds(String ymlContent) throws JsonParseException, JsonMappingException, JsonProcessingException,ScannerException, IOException {
 		if (ymlContent == null || ymlContent.trim().length() == 0) {
 			return "";
 		}

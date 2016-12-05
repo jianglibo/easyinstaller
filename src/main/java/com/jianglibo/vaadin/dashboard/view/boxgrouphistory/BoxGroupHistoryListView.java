@@ -191,7 +191,7 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 					repository.save(b);
 				}
 			});
-			getGrid().getdContainer().fetchPageAfterModify();
+			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.REFRESH:
 			getGrid().getdContainer().refresh();
@@ -208,9 +208,7 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 				bg.setArchived(false);
 			});
 			repository.save(selected);
-			getGrid().getdContainer().setDirty(true);
-			getGrid().deselectAll();
-			getGrid().getdContainer().notifyItemSetChanged();
+			refreshAfterItemContentChange();
 			break;
 		case "boxhistories":
 			UI.getCurrent().getNavigator().navigateTo(BoxHistoryListView.VIEW_NAME + "/?boxGroupHistoryId=" + selected.get(0).getId() + "&pv=" + getLvfb().toNavigateString());
