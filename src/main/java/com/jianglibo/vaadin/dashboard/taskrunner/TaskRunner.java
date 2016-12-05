@@ -259,6 +259,7 @@ public class TaskRunner {
 		return mp;
 	}
 	
+	// existing installResults will be replaced by same key, So if each box return different key result, they shoud't overlap each other.
 	private String extractInstallResults(BoxGroup bg, BoxGroupHistory bgh) {
 		Map<String, Object> mp = Maps.newHashMap();
 		try {
