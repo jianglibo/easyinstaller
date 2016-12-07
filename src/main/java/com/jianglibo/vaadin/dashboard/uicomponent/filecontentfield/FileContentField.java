@@ -5,15 +5,19 @@ import java.io.OutputStream;
 import org.springframework.context.MessageSource;
 
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
-import com.jianglibo.vaadin.dashboard.uicomponent.upload.UploadReceiver;
-import com.jianglibo.vaadin.dashboard.uicomponent.upload.UploadSuccessEventLinstener;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.ReceiverWithEventListener;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.SimplifiedUploadResultLinstener;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.TextUploadResult;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.Upload.FailedEvent;
+import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class FileContentField extends CustomField<String> implements UploadReceiver<String>, UploadSuccessEventLinstener<String>{
+public class FileContentField extends CustomField<String> implements ReceiverWithEventListener, SimplifiedUploadResultLinstener<String, TextUploadResult>{
 	
 	private TextArea textArea;
 	
@@ -49,20 +53,28 @@ public class FileContentField extends CustomField<String> implements UploadRecei
 	}
 
 	@Override
-	public void onUploadSuccess(String ufe) {
+	public void onUploadResult(TextUploadResult ufe) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void uploadSuccessed() {
+	public void uploadFailed(FailedEvent event) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void uploadNotSuccess() {
+	public void uploadSucceeded(SucceededEvent event) {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void uploadFinished(FinishedEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 }

@@ -18,10 +18,13 @@ import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Upload.FailedEvent;
+import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.SucceededEvent;
 
 
 @SuppressWarnings("serial")
-public class PkSourceUploadReceiver implements UploadReceiver<PkSourceUploadFinishResult>  {
+public class PkSourceUploadReceiver implements ReceiverWithEventListener  {
 	
 	public static final Logger LOGGER = LoggerFactory.getLogger(PkSourceUploadReceiver.class);
 	
@@ -37,15 +40,16 @@ public class PkSourceUploadReceiver implements UploadReceiver<PkSourceUploadFini
 	
 	private String mimeType;
 	
-	private UploadSuccessEventLinstener<PkSourceUploadFinishResult> ufeListener;
+	private SimplifiedUploadResultLinstener<PkSource, PkSourceUploadResult> ufeListener;
 	
-	public PkSourceUploadReceiver(MessageSource messageSource,Path uploadDstPath, PkSourceRepository pkSourceRepository, UploadSuccessEventLinstener<PkSourceUploadFinishResult> ufeListener) {
+	public PkSourceUploadReceiver(MessageSource messageSource,Path uploadDstPath, PkSourceRepository pkSourceRepository, SimplifiedUploadResultLinstener<PkSource, PkSourceUploadResult> ufeListener) {
 		this.messageSource = messageSource;
 		this.pkSourceRepository = pkSourceRepository;
 		this.ufeListener = ufeListener;
 		this.uploadDstPath = uploadDstPath;
 	}
 
+	@Override
 	public OutputStream receiveUpload(String filename, String mimeType) {
 		// Create upload stream
 		
@@ -66,7 +70,15 @@ public class PkSourceUploadReceiver implements UploadReceiver<PkSourceUploadFini
 	}
 
 	@Override
-	public void uploadSuccessed() {
+	public void uploadFailed(FailedEvent event) {
+		if (file != null) {
+			file.delete();
+		}
+		
+	}
+
+	@Override
+	public void uploadSucceeded(SucceededEvent event) {
 		try {
 			String md5 = Files.asByteSource(file).hash(Hashing.md5()).toString();
 			PkSource ps = pkSourceRepository.findByFileMd5(md5);
@@ -78,9 +90,9 @@ public class PkSourceUploadReceiver implements UploadReceiver<PkSourceUploadFini
 				}
 				ps = new PkSource.PkSourceBuilder(md5, filename, nf.length(), extNoDot, mimeType).build();
 				pkSourceRepository.save(ps);
-				ufeListener.onUploadSuccess(new PkSourceUploadFinishResult(ps));
+				ufeListener.onUploadResult(new PkSourceUploadResult(ps));
 			} else {
-				ufeListener.onUploadSuccess(new PkSourceUploadFinishResult(ps));
+				ufeListener.onUploadResult(new PkSourceUploadResult(ps));
 				new Notification(messageSource.getMessage("component.upload.duplicated", new String[]{filename}, UI.getCurrent().getLocale()), "", Notification.Type.ERROR_MESSAGE)
 				.show(Page.getCurrent());
 			}
@@ -93,10 +105,8 @@ public class PkSourceUploadReceiver implements UploadReceiver<PkSourceUploadFini
 			LOGGER.error("hashing {} failed.", filename);
 		}
 	}
-	
-	public void uploadNotSuccess() {
-		if (file != null) {
-			file.delete();
-		}
+
+	@Override
+	public void uploadFinished(FinishedEvent event) {
 	}
 }

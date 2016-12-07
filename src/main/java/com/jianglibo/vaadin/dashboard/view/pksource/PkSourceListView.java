@@ -11,7 +11,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
@@ -19,7 +18,6 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
-import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
@@ -30,22 +28,20 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DeleteButtonDescriptio
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.RefreshButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
-import com.jianglibo.vaadin.dashboard.uicomponent.upload.PkSourceUploadFinishResult;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.PkSourceUploadResult;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.PkSourceUploadReceiver;
-import com.jianglibo.vaadin.dashboard.uicomponent.upload.UploadSuccessEventLinstener;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.SimplifiedUploadResultLinstener;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
-import com.jianglibo.vaadin.dashboard.view.boxhistory.BoxHistoryListView;
 import com.vaadin.navigator.View;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.UI;
 
 @SpringView(name = PkSourceListView.VIEW_NAME)
 public class PkSourceListView extends BaseGridView<PkSource, PkSourceGrid, FreeContainer<PkSource>>
-		implements View, SubscriberExceptionHandler, UploadSuccessEventLinstener<PkSourceUploadFinishResult> {
+		implements View, SubscriberExceptionHandler, SimplifiedUploadResultLinstener<PkSource, PkSourceUploadResult> {
 
 	/**
 	 * 
@@ -58,8 +54,6 @@ public class PkSourceListView extends BaseGridView<PkSource, PkSourceGrid, FreeC
 
 	public static final FontAwesome ICON_VALUE = FontAwesome.FILE_ARCHIVE_O;
 
-	private EventBus eventBus;
-	
 	private final ApplicationConfig applicationConfig;
 
 	private PkSourceRepository repository;
@@ -68,7 +62,6 @@ public class PkSourceListView extends BaseGridView<PkSource, PkSourceGrid, FreeC
 	public PkSourceListView(PkSourceRepository repository, Domains domains, MessageSource messageSource,
 			ApplicationContext applicationContext, ApplicationConfig applicationConfig) {
 		super(applicationContext, messageSource, domains, PkSource.class, PkSourceGrid.class);
-		this.eventBus = new EventBus(this);
 		this.repository = repository;
 		this.applicationConfig = applicationConfig;
 		delayCreateContent();
@@ -137,10 +130,11 @@ public class PkSourceListView extends BaseGridView<PkSource, PkSourceGrid, FreeC
 		LOGGER.info(exception.getMessage());
 
 	}
+	
 
 	@Override
-	public void onUploadSuccess(PkSourceUploadFinishResult ufe) {
-		NotificationUtil.tray(getMessageSource(), ufe.getPkSource().getDisplayName());
+	public void onUploadResult(PkSourceUploadResult ufe) {
+		NotificationUtil.tray(getMessageSource(), ufe.getResult().getDisplayName());
 		refreshAfterItemNumberChange();
 	}
 
@@ -180,4 +174,5 @@ public class PkSourceListView extends BaseGridView<PkSource, PkSourceGrid, FreeC
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
 		}
 	}
+
 }

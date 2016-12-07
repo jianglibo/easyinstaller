@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.view.boxgroup;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -28,9 +29,16 @@ import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.AddButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonDescription.ButtonEnableType;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.TextContentReceiver;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.TextUploadResult;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.SimplifiedUploadResultLinstener;
+import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.view.clustersoftware.ClusterSoftwareView;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 
 @SpringView(name = BoxGroupListView.VIEW_NAME)
@@ -108,6 +116,39 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
+		}
+	}
+	
+	@Override
+	protected com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGridView.MiddleBlock createMiddleBlock() {
+		return new MyMiddleBlock(super.createMiddleBlock());
+	}
+	
+	@SuppressWarnings("serial")
+	protected class MyMiddleBlock extends HorizontalLayout implements MiddleBlock, SimplifiedUploadResultLinstener<String, TextUploadResult> {
+		
+		private MiddleBlock mb;
+		
+		public MyMiddleBlock(MiddleBlock mb) {
+			this.mb = mb;
+			TextContentReceiver tcr = new TextContentReceiver(this);
+			addComponents((Component)mb, new ImmediateUploader(getMessageSource(), tcr));
+		}
+
+		@Override
+		public void alterState(ListViewFragmentBuilder lvfb) {
+			mb.alterState(lvfb);
+			
+		}
+
+		@Override
+		public void alterState(Set<Object> selected) {
+			mb.alterState(selected);
+		}
+
+		@Override
+		public void onUploadResult(TextUploadResult tur) {
+			
 		}
 	}
 

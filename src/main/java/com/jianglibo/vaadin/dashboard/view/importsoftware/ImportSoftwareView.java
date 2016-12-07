@@ -16,7 +16,7 @@ import com.google.common.io.Files;
 import com.jianglibo.vaadin.dashboard.service.HttpPageGetter;
 import com.jianglibo.vaadin.dashboard.service.SoftwareImportor;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.ImmediateUploader;
-import com.jianglibo.vaadin.dashboard.uicomponent.upload.UploadReceiver;
+import com.jianglibo.vaadin.dashboard.uicomponent.upload.ReceiverWithEventListener;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
@@ -36,6 +36,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Upload.FailedEvent;
+import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -223,11 +226,11 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 		}
 	}
 	
-	public class ZipFileUploadReceiver implements UploadReceiver<Path> {
+	// Because it's a inner class, so can direct access main class.
+	public class ZipFileUploadReceiver implements ReceiverWithEventListener {
 		
 		private Path tmpFile;
 		private boolean success = false;
-		
 		private String filename;
 		
 		@Override
@@ -243,18 +246,6 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 					return null;
 				}
 			}
-		}
-
-		@Override
-		public void uploadSuccessed() {
-			this.setSuccess(true);
-			startImport(this);
-		}
-
-		@Override
-		public void uploadNotSuccess() {
-			this.setSuccess(false);
-			startImport(this);
 		}
 
 		public Path getTmpFile() {
@@ -279,6 +270,22 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 
 		public void setFilename(String filename) {
 			this.filename = filename;
+		}
+
+		@Override
+		public void uploadFailed(FailedEvent event) {
+			this.setSuccess(false);
+			startImport(this);
+		}
+
+		@Override
+		public void uploadSucceeded(SucceededEvent event) {
+			this.setSuccess(true);
+			startImport(this);
+		}
+
+		@Override
+		public void uploadFinished(FinishedEvent event) {
 		}
 	}
 }

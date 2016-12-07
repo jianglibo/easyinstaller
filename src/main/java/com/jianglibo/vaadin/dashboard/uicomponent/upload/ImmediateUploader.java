@@ -31,9 +31,9 @@ public class ImmediateUploader extends HorizontalLayout {
 
 	private Button cancelBtn;
 	
-	public ImmediateUploader(MessageSource messageSource, UploadReceiver<?> uploadReceiver) {
+	public ImmediateUploader(MessageSource messageSource,ReceiverWithEventListener receiver) {
 		setSpacing(true);
-		this.upload = new Upload("", uploadReceiver);
+		this.upload = new Upload("", receiver);
 		this.upload.addStyleName("uploadwrapper");
 
 		addComponent(status);
@@ -84,7 +84,7 @@ public class ImmediateUploader extends HorizontalLayout {
 		upload.addSucceededListener(new SucceededListener() {
 			@Override
 			public void uploadSucceeded(SucceededEvent event) {
-				uploadReceiver.uploadSuccessed();
+				receiver.uploadSucceeded(event);
 				new Notification(messageSource.getMessage("component.upload.success", new String[]{event.getFilename()}, UI.getCurrent().getLocale()), "", Notification.Type.TRAY_NOTIFICATION)
 				.show(Page.getCurrent());
 			}
@@ -94,7 +94,7 @@ public class ImmediateUploader extends HorizontalLayout {
 		upload.addFailedListener(new FailedListener() {
 			@Override
 			public void uploadFailed(FailedEvent event) {
-				uploadReceiver.uploadNotSuccess();
+				receiver.uploadFailed(event);
 				new Notification(messageSource.getMessage("component.upload.fail", new String[]{event.getFilename()}, UI.getCurrent().getLocale()), "", Notification.Type.ERROR_MESSAGE)
 				.show(Page.getCurrent());
 			}
@@ -106,6 +106,7 @@ public class ImmediateUploader extends HorizontalLayout {
 				status.setValue("");
 				cancelBtn.setVisible(false);
 				upload.setVisible(true);
+				receiver.uploadFinished(event);
 			}
 		});
 	}
