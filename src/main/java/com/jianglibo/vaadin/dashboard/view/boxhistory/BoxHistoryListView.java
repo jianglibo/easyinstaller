@@ -20,7 +20,6 @@ import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
-import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DynButtonComponent;
@@ -37,7 +36,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 
@@ -82,21 +80,21 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 				new ButtonGroup(new RefreshButtonDescription()) };
 	}
 
-	@Override
-	public void delayCreateContent() {
-		setSizeFull();
-		addStyleName("transactions");
-		setTopBlock(createTopBlock());
-		addComponent(getTopBlock());
-		setMiddleBlock(createMiddleBlock());
-		addComponent(getMiddleBlock());
-		setBottomBlock(createBottomBlock());
-		addComponent(getBottomBlock());
-		setExpandRatio(getBottomBlock(), 1);
-	}
+//	@Override
+//	public void delayCreateContent() {
+//		setSizeFull();
+//		addStyleName("transactions");
+//		setTopBlock(createTopBlock());
+//		addComponent(getTopBlock());
+//		setMiddleBlock(createMiddleBlock());
+//		addComponent(getMiddleBlock());
+//		setBottomBlock(createBottomBlock());
+//		addComponent(getBottomBlock());
+//		setExpandRatio(getBottomBlock(), 1);
+//	}
 
 	@Override
-	protected Component createBottomBlock() {
+	protected BottomBlock createBottomBlock() {
 		setGrid(createGrid(getMessageSource(), getDomains()));
 		MyBottomBlock bottomBlock = new MyBottomBlock();
 
@@ -108,7 +106,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 	}
 
 	@Override
-	protected Component createMiddleBlock() {
+	protected MiddleBlock createMiddleBlock() {
 		DynButtonComponent dynMenu = new DynButtonComponent(getMessageSource(), getButtonGroups());
 		MyMiddleBlock mb = new MyMiddleBlock(dynMenu);
 
@@ -119,7 +117,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 	}
 
 	@SuppressWarnings("serial")
-	private class MyBottomBlock extends HorizontalLayout {
+	private class MyBottomBlock extends HorizontalLayout implements BottomBlock {
 		public MyBottomBlock() {
 			setSizeFull();
 			addComponent(getGrid());
@@ -127,7 +125,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 	}
 
 	@SuppressWarnings("serial")
-	private class MyMiddleBlock extends HorizontalLayout {
+	private class MyMiddleBlock extends HorizontalLayout implements MiddleBlock {
 
 		private DynButtonComponent menu;
 
@@ -174,7 +172,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 			boxGroupHistory = boxGroupHistoryRepository.findOne(boxGroupHistoryId);
 			title = boxGroupHistory.getDisplayName() + "'s " + title;
 		}
-		((TopBlock) getTopBlock()).alterState(getLvfb(), title);
+		((TopBlockInList) getTopBlock()).alterState(getLvfb(), title);
 		((MyMiddleBlock) getMiddleBlock()).alterState(getLvfb());
 		((BoxHistoryContainer) (getGrid().getdContainer())).whenUriFragmentChange(getLvfb());
 	}
@@ -197,7 +195,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.REFRESH:
-			getGrid().getdContainer().refresh();
+			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.DETAIL:
 			UI.getCurrent().getNavigator().navigateTo(

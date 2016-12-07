@@ -88,7 +88,7 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.REFRESH:
-			getGrid().getdContainer().refresh();
+			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.EDIT:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());

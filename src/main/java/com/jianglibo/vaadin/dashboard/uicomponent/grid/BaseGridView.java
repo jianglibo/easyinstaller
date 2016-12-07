@@ -56,9 +56,9 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 	
 	private UiEventListener uel = new UiEventListener();
 	
-	private Component topBlock;
-	private Component middleBlock;
-	private Component bottomBlock;
+	private TopBlock topBlock;
+	private MiddleBlock middleBlock;
+	private BottomBlock bottomBlock;
 	
 	public BaseGridView(ApplicationContext applicationContext, MessageSource messageSource, Domains domains,
 			Class<E> clazz, Class<G> gridClazz) {
@@ -73,12 +73,12 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		setSizeFull();
 		addStyleName("transactions");
 		setTopBlock(createTopBlock());
-		addComponent(getTopBlock());
-		setMiddleBlock(createMiddleBlock());
-		addComponent(getMiddleBlock());
+		addComponent((Component) getTopBlock());
+		setMiddleBlock((Component) createMiddleBlock());
+		addComponent((Component)getMiddleBlock());
 		setBottomBlock(createBottomBlock());
-		addComponent(getBottomBlock());
-		setExpandRatio(getBottomBlock(), 1);
+		addComponent((Component) getBottomBlock());
+		setExpandRatio((Component) getBottomBlock(), 1);
 	}
 
 	@Override
@@ -87,9 +87,8 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		setLvfb(new ListViewFragmentBuilder(event));
 
 		// start alter state.
-		getTopBlockBase().alterState(getLvfb(), MsgUtil.getListViewTitle(messageSource, getClazz().getSimpleName()));
-		
-		((MiddleBlock)middleBlock).alterState(getLvfb());
+		getTopBlock().alterState(getLvfb(), MsgUtil.getListViewTitle(messageSource, getClazz().getSimpleName()));
+		middleBlock.alterState(getLvfb());
 	}
 	
 	public void setTopBlock(TopBlock topBlock) {
@@ -97,27 +96,27 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 	}
 
 	public void setMiddleBlock(Component middleBlock) {
-		this.middleBlock = middleBlock;
+		this.middleBlock = (MiddleBlock) middleBlock;
 	}
 
-	public void setBottomBlock(Component bottomBlock) {
+	public void setBottomBlock(BottomBlock bottomBlock) {
 		this.bottomBlock = bottomBlock;
 	}
 
-	public Component getTopBlock() {
+	public TopBlock getTopBlock() {
 		return topBlock;
 	}
 	
-	public TopBlock getTopBlockBase() {
-		return (BaseGridView<E, G, C>.TopBlock) topBlock;
-	}
+//	public TopBlockInList getTopBlockBase() {
+//		return (BaseGridView<E, G, C>.TopBlockInList) topBlock;
+//	}
 
 
-	public Component getMiddleBlock() {
+	public MiddleBlock getMiddleBlock() {
 		return middleBlock;
 	}
 
-	public Component getBottomBlock() {
+	public BottomBlock getBottomBlock() {
 		return bottomBlock;
 	}
 
@@ -131,7 +130,7 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 
 	
 	protected TopBlock createTopBlock() {
-		TopBlock tb = new TopBlock();
+		TopBlockInList tb = new TopBlockInList();
 
 		tb.addClickListener(event -> {
 			this.backward();
@@ -147,9 +146,9 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		return uel;
 	}
 
-	protected Component createMiddleBlock() {
+	protected MiddleBlock createMiddleBlock() {
 		DynButtonComponent dynMenu = new DynButtonComponent(messageSource,getButtonGroups());
-		MiddleBlock mb = new MiddleBlock(dynMenu);
+		MiddleBlockInList mb = new MiddleBlockInList(dynMenu);
 
 		mb.addDynaMenuItemClickListener(btnDsc -> {
 			onDynButtonClicked(btnDsc);
@@ -157,12 +156,12 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		return mb;
 	}
 	
-	protected Component createBottomBlock() {
+	protected BottomBlock createBottomBlock() {
 		setGrid(createGrid(messageSource, domains));
-		BottomBlock bottomBlock = new BottomBlock();
+		BottomBlockInList bottomBlock = new BottomBlockInList();
 		
 		getGrid().addSelectionListener(event -> {
-			((MiddleBlock)middleBlock).alterState(event.getSelected());
+			middleBlock.alterState(event.getSelected());
 		});
 		
 		return bottomBlock;
@@ -214,11 +213,11 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		return lvfb;
 	}
 	
-	protected class TopBlock extends HorizontalLayout {
+	protected class TopBlockInList extends HorizontalLayout implements TopBlock {
 		private Label title;
 		private Button backBtn;
 
-		public TopBlock() {
+		public TopBlockInList() {
 			addStyleName("viewheader");
 			setSpacing(true);
 			Responsive.makeResponsive(this);
@@ -276,11 +275,11 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		}
 	}
 
-	protected class MiddleBlock extends HorizontalLayout {
+	protected class MiddleBlockInList extends HorizontalLayout implements MiddleBlock {
 
 		private DynButtonComponent menu;
 
-		public MiddleBlock(DynButtonComponent menu) {
+		public MiddleBlockInList(DynButtonComponent menu) {
 			this.menu = menu;
 			addStyleName("table-controller");
 			setWidth("100%");
@@ -310,9 +309,9 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 		}
 	}
 
-	protected class BottomBlock extends HorizontalLayout {
+	protected class BottomBlockInList extends HorizontalLayout implements BottomBlock {
 
-		public BottomBlock() {
+		public BottomBlockInList() {
 			setSizeFull();
 			addComponent(grid);
 		}
@@ -345,6 +344,20 @@ public abstract class BaseGridView<E extends BaseEntity, G extends BaseGrid<E, C
 			// enough to make the table fit better.
 //			BottomBlock bb = (BaseGridView<E, G, C>.BottomBlock) bottomBlock;
 		}
+	}
+	
+	protected static interface MiddleBlock {
+		void alterState(ListViewFragmentBuilder lvfb);
+		public void alterState(Set<Object> selected);
+	}
+	
+	protected static interface BottomBlock {
+		
+	}
+	
+	protected static interface TopBlock {
+		void alterState(ListViewFragmentBuilder lvfb, String title);
+		Label getTitle();
 	}
 
 }

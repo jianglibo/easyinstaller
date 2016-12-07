@@ -61,7 +61,7 @@ public class TextFileListView extends BaseGridView<TextFile, TextFileGrid, FreeC
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
 		software = softwareRepository.findOne(getLvfb().getLong("software"));
-		getTopBlockBase().getTitle().setValue(MsgUtil.getListViewTitle(getMessageSource(), getClazz().getSimpleName(), software.getDisplayName()));
+		getTopBlock().getTitle().setValue(MsgUtil.getListViewTitle(getMessageSource(), getClazz().getSimpleName(), software.getDisplayName()));
 		getGrid().getdContainer().whenUriFragmentChange(getLvfb());
 	}
 
@@ -83,6 +83,7 @@ public class TextFileListView extends BaseGridView<TextFile, TextFileGrid, FreeC
 			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.REFRESH:
+			refreshAfterItemNumberChange();
 			break;
 		case CommonMenuItemIds.EDIT:
 			UI.getCurrent().getNavigator().navigateTo(VIEW_NAME + "/edit/" + selected.iterator().next().getId() + "?pv=" + getLvfb().toNavigateString());

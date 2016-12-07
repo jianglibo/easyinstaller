@@ -7,12 +7,17 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
+import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
 @Table(name = "pksource",uniqueConstraints = { @UniqueConstraint(columnNames = "fileMd5"), @UniqueConstraint(columnNames = "pkname") })
+@VaadinGrid(multiSelect = true, messagePrefix = "domain.pksource.", footerVisible = true, styleNames = {
+		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
 @VaadinTable(multiSelect = true,
 	messagePrefix="domain.pksource.",
 	styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT},
@@ -33,17 +38,21 @@ public class PkSource extends BaseEntity {
 
 	@VaadinTableColumn(order = 10)
 	@VaadinFormField
+	@VaadinGridColumn(order = 10, sortable = true, filterable = true)
     private String pkname;
     
 	@VaadinFormField
+	@VaadinGridColumn(order = 20)
     private String originFrom;
     
-    @VaadinTableColumn(order = 20)
+    @VaadinTableColumn(order = 30)
+    @VaadinGridColumn(order = 30)
     private Long length;
     
     private String extNoDot;
     
-    @VaadinTableColumn(order = 30)
+    @VaadinTableColumn(order = 40)
+    @VaadinGridColumn(order = 40)
     private String mimeType;
 
 	public String getFileMd5() {
@@ -135,6 +144,6 @@ public class PkSource extends BaseEntity {
 
 	@Override
 	public String getDisplayName() {
-		return null;
+		return getPkname();
 	}
 }
