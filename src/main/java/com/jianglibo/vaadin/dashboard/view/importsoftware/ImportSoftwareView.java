@@ -38,6 +38,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload.FailedEvent;
 import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -151,7 +152,7 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 
 		Label remoteLabel = new Label(
 				MsgUtil.getMsgFallbackToSelf(messageSource, "view.importsoftware.", "remoteLabel"));
-		Component uploader = new ImmediateUploader(messageSource, new ZipFileUploadReceiver());
+		Component uploader = new ImmediateUploader(messageSource, new ZipFileUploadReceiver(), "");
 		StyleUtil.setMarginRightTen(uploader);
 
 		Label localLabel = new Label(
@@ -286,6 +287,12 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 
 		@Override
 		public void uploadFinished(FinishedEvent event) {
+		}
+
+		@Override
+		public void uploadStarted(StartedEvent event) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 }

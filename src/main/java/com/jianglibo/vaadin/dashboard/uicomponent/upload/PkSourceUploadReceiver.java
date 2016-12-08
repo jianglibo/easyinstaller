@@ -20,6 +20,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload.FailedEvent;
 import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 
 
@@ -90,9 +91,9 @@ public class PkSourceUploadReceiver implements ReceiverWithEventListener  {
 				}
 				ps = new PkSource.PkSourceBuilder(md5, filename, nf.length(), extNoDot, mimeType).build();
 				pkSourceRepository.save(ps);
-				ufeListener.onUploadResult(new PkSourceUploadResult(ps));
+				ufeListener.onUploadResult(PkSourceUploadResult.createSuccessed(new UploadMeta(event.getFilename(), event.getLength(), event.getMIMEType()), null));
 			} else {
-				ufeListener.onUploadResult(new PkSourceUploadResult(ps));
+				ufeListener.onUploadResult(PkSourceUploadResult.createSuccessed(new UploadMeta(event.getFilename(), event.getLength(), event.getMIMEType()), ps));
 				new Notification(messageSource.getMessage("component.upload.duplicated", new String[]{filename}, UI.getCurrent().getLocale()), "", Notification.Type.ERROR_MESSAGE)
 				.show(Page.getCurrent());
 			}
@@ -108,5 +109,11 @@ public class PkSourceUploadReceiver implements ReceiverWithEventListener  {
 
 	@Override
 	public void uploadFinished(FinishedEvent event) {
+	}
+
+	@Override
+	public void uploadStarted(StartedEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 }

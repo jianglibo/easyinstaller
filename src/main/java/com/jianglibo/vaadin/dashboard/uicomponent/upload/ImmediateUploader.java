@@ -31,14 +31,13 @@ public class ImmediateUploader extends HorizontalLayout {
 
 	private Button cancelBtn;
 	
-	public ImmediateUploader(MessageSource messageSource,ReceiverWithEventListener receiver) {
+	public ImmediateUploader(MessageSource messageSource,ReceiverWithEventListener receiver, String title) {
 		setSpacing(true);
-		this.upload = new Upload("", receiver);
+		this.upload = new Upload(title, receiver);
 		this.upload.addStyleName("uploadwrapper");
 
 		addComponent(status);
 		addComponent(upload);
-		
 		setComponentAlignment(status, Alignment.MIDDLE_RIGHT);
 
 		// Make uploading start immediately when file is selected

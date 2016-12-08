@@ -4,29 +4,32 @@ import com.jianglibo.vaadin.dashboard.vo.UploadResult;
 
 public class TextUploadResult implements UploadResult<String> {
 	
-	public static TextUploadResult createFailed(String reason) {
+	public static TextUploadResult createFailed(Exception reason) {
 		TextUploadResult tur = new TextUploadResult();
 		tur.setReason(reason);
 		tur.setSuccess(false);
 		return tur;
 	}
 	
-	public static TextUploadResult createSuccessed(String result) {
+	public static TextUploadResult createSuccessed(UploadMeta uploadMeta, String result) {
 		TextUploadResult tur = new TextUploadResult();
 		tur.setResult(result);
 		tur.setSuccess(true);
+		tur.setUploadMeta(uploadMeta);
 		return tur;
 	}
 	
+	private UploadMeta uploadMeta;
+	
 	private String result;
-	private String reason;
+	private Exception reason;
 	private boolean success;
 
 	public void setResult(String result) {
 		this.result = result;
 	}
 
-	public void setReason(String reason) {
+	public void setReason(Exception reason) {
 		this.reason = reason;
 	}
 
@@ -40,13 +43,22 @@ public class TextUploadResult implements UploadResult<String> {
 	}
 
 	@Override
-	public String getReason() {
+	public Exception getReason() {
 		return reason;
 	}
 
 	@Override
 	public boolean isSuccess() {
 		return success;
+	}
+
+	@Override
+	public UploadMeta getUploadMeta() {
+		return uploadMeta;
+	}
+
+	public void setUploadMeta(UploadMeta uploadMeta) {
+		this.uploadMeta = uploadMeta;
 	}
 
 }

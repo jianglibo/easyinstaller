@@ -80,7 +80,7 @@ public class PkSourceListView extends BaseGridView<PkSource, PkSourceGrid, FreeC
 		public PksourceMiddleBlock(MiddleBlock mb) {
 			this.mb = mb;
 			PkSourceUploadReceiver pkur = new PkSourceUploadReceiver(getMessageSource(), applicationConfig.getUploadDstPath(), repository, PkSourceListView.this);
-			ImmediateUploader imd = new ImmediateUploader(getMessageSource(), pkur);
+			ImmediateUploader imd = new ImmediateUploader(getMessageSource(), pkur, "");
 			imd.setMargin(true);
 			addComponents((Component) mb, imd);
 		}

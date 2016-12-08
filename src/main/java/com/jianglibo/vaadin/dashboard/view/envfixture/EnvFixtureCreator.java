@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Box;
@@ -71,13 +73,63 @@ public class EnvFixtureCreator {
 		 */
 		private static final long serialVersionUID = 1L;
 	}
+	
+	public BoxGroup importBoxGroup(String ymlContent) throws JsonParseException, JsonMappingException, IOException {
+		return importBoxGroup(ymlContent, null, null);
+	}
+	
+	protected BoxGroup importBoxGroup(String ymlContent,SoftwareFolder sfolder, Person person) throws JsonParseException, JsonMappingException, IOException {
+		BoxGroup bg = appObjectMappers.getYmlObjectMapper().readValue(ymlContent, BoxGroup.class);
+		
+		if (sfolder != null) {
+			bg.setConfigContent(sfolder.readBoxgroupConfigContent());
+		}
+		
+		if (person == null) {
+			person = personRepository.findByEmail(AppInitializer.firstEmail);
+		}
+		
+		final Person fperson = person;
+		
+		BoxGroup bgInDb = boxGroupRepository.findByName(bg.getName());
+
+		if (bgInDb != null) {
+			bgInDb.getBoxes().forEach(b -> {
+				b.getBoxGroups().remove(bgInDb);
+				boxRepository.save(b);
+			});
+			boxGroupRepository.delete(bgInDb);
+		}
+
+		bg.setCreator(person);
+
+		bg = boxGroupRepository.save(bg);
+
+		final Set<BoxGroup> bgs = Sets.newHashSet(bg);
+
+		Set<Box> boxes = bg.getBoxes().stream().map(box -> {
+			Box boxInDb = boxRepository.findByIp(box.getIp());
+			Set<String> roles = Sets.newHashSet();
+			if (boxInDb != null) {
+				roles = boxInDb.getRoleSetUpCase();
+				boxRepository.delete(boxInDb);
+			}
+			roles.addAll(box.getRoleSetUpCase());
+			box.setRoles(StrUtil.commaJoiner.join(roles));
+			box.setCreator(fperson);
+			box.setBoxGroups(bgs);
+			return boxRepository.save(box);
+		}).collect(Collectors.toSet());
+
+		bg.setBoxes(boxes);
+		bgs.add(boxGroupRepository.save(bg));
+		return bg;
+	}
 
 	public void create(Path scriptPath) throws IOException {
 		if (!Files.exists(scriptPath) || !Files.isDirectory(scriptPath)) {
 			throw new InvalidActivityException("invalidPath");
 		}
-		
-		
 
 		Person person = personRepository.findByEmail(AppInitializer.firstEmail);
 		try (Stream<Path> pathstream = Files.walk(scriptPath)) {
@@ -86,41 +138,42 @@ public class EnvFixtureCreator {
 				return Files.exists(sp) && Files.exists(sp.resolve("boxgroup.yaml"));
 			}).map(SoftwareFolder::new).map(sfolder -> {
 				try {
-					BoxGroup bg = appObjectMappers.getYmlObjectMapper().readValue(sfolder.readBoxgroupYaml(),
-							BoxGroup.class);
-					bg.setConfigContent(sfolder.readBoxgroupConfigContent());
-					BoxGroup bgInDb = boxGroupRepository.findByName(bg.getName());
-
-					if (bgInDb != null) {
-						bgInDb.getBoxes().forEach(b -> {
-							b.getBoxGroups().remove(bgInDb);
-							boxRepository.save(b);
-						});
-						boxGroupRepository.delete(bgInDb);
-					}
-
-					bg.setCreator(person);
-
-					bg = boxGroupRepository.save(bg);
-
-					final Set<BoxGroup> bgs = Sets.newHashSet(bg);
-
-					Set<Box> boxes = bg.getBoxes().stream().map(box -> {
-						Box boxInDb = boxRepository.findByIp(box.getIp());
-						Set<String> roles = Sets.newHashSet();
-						if (boxInDb != null) {
-							roles = boxInDb.getRoleSetUpCase();
-							boxRepository.delete(boxInDb);
-						}
-						roles.addAll(box.getRoleSetUpCase());
-						box.setRoles(StrUtil.commaJoiner.join(roles));
-						box.setCreator(person);
-						box.setBoxGroups(bgs);
-						return boxRepository.save(box);
-					}).collect(Collectors.toSet());
-
-					bg.setBoxes(boxes);
-					bgs.add(boxGroupRepository.save(bg));
+					BoxGroup bg = importBoxGroup(sfolder.readBoxgroupYaml(), sfolder, person);
+//					BoxGroup bg = appObjectMappers.getYmlObjectMapper().readValue(sfolder.readBoxgroupYaml(),
+//							BoxGroup.class);
+//					bg.setConfigContent(sfolder.readBoxgroupConfigContent());
+//					BoxGroup bgInDb = boxGroupRepository.findByName(bg.getName());
+//
+//					if (bgInDb != null) {
+//						bgInDb.getBoxes().forEach(b -> {
+//							b.getBoxGroups().remove(bgInDb);
+//							boxRepository.save(b);
+//						});
+//						boxGroupRepository.delete(bgInDb);
+//					}
+//
+//					bg.setCreator(person);
+//
+//					bg = boxGroupRepository.save(bg);
+//
+//					final Set<BoxGroup> bgs = Sets.newHashSet(bg);
+//
+//					Set<Box> boxes = bg.getBoxes().stream().map(box -> {
+//						Box boxInDb = boxRepository.findByIp(box.getIp());
+//						Set<String> roles = Sets.newHashSet();
+//						if (boxInDb != null) {
+//							roles = boxInDb.getRoleSetUpCase();
+//							boxRepository.delete(boxInDb);
+//						}
+//						roles.addAll(box.getRoleSetUpCase());
+//						box.setRoles(StrUtil.commaJoiner.join(roles));
+//						box.setCreator(person);
+//						box.setBoxGroups(bgs);
+//						return boxRepository.save(box);
+//					}).collect(Collectors.toSet());
+//
+//					bg.setBoxes(boxes);
+//					bgs.add(boxGroupRepository.save(bg));
 					sfolder.setBoxGroup(bg);
 					return sfolder;
 				} catch (Exception e) {

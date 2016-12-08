@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.view.boxgroup;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 
 import com.google.common.base.Joiner;
+import com.google.common.io.Files;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
@@ -34,8 +36,10 @@ import com.jianglibo.vaadin.dashboard.uicomponent.upload.TextContentReceiver;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.TextUploadResult;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.SimplifiedUploadResultLinstener;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
+import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.view.clustersoftware.ClusterSoftwareView;
+import com.jianglibo.vaadin.dashboard.view.envfixture.EnvFixtureCreator;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -54,13 +58,16 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 	public static final String VIEW_NAME = "boxgroups";
 	
 	private final BoxGroupRepository repository;
+	
+	private final EnvFixtureCreator envFixtureCreator;
 
 	
 	@Autowired
 	public BoxGroupListView(BoxGroupRepository repository,Domains domains, MessageSource messageSource,
-			ApplicationContext applicationContext) {
+			ApplicationContext applicationContext, EnvFixtureCreator envFixtureCreator) {
 		super(applicationContext, messageSource, domains, BoxGroup.class, BoxGroupGrid.class);
 		this.repository = repository;
+		this.envFixtureCreator = envFixtureCreator;
 		delayCreateContent();
 	}
 
@@ -132,7 +139,9 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 		public MyMiddleBlock(MiddleBlock mb) {
 			this.mb = mb;
 			TextContentReceiver tcr = new TextContentReceiver(this);
-			addComponents((Component)mb, new ImmediateUploader(getMessageSource(), tcr));
+			ImmediateUploader imd = new ImmediateUploader(getMessageSource(), tcr, MsgUtil.getDynaMenuMsg(getMessageSource(), "import"));
+			imd.setMargin(true);
+			addComponents((Component)mb, imd);
 		}
 
 		@Override
@@ -148,7 +157,21 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 
 		@Override
 		public void onUploadResult(TextUploadResult tur) {
-			
+			if (tur.isSuccess()) {
+				String ext = Files.getFileExtension(tur.getUploadMeta().getFilename()); 
+				if ("yaml".equalsIgnoreCase(ext) || "yml".equalsIgnoreCase(ext)) {
+					try {
+						envFixtureCreator.importBoxGroup(tur.getResult());
+						refreshAfterItemNumberChange();
+					} catch (IOException e) {
+						NotificationUtil.error(getMessageSource(), "wrongFormat", "YAML");
+					}
+				} else {
+					NotificationUtil.error(getMessageSource(), "wrongExt", "yaml,yml");
+				}
+			} else {
+				NotificationUtil.error(getMessageSource(), "uploadFail");
+			}
 		}
 	}
 

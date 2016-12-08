@@ -13,6 +13,7 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Upload.FailedEvent;
 import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
 
@@ -31,7 +32,7 @@ public class FileContentField extends CustomField<String> implements ReceiverWit
 	
 	@Override
 	protected Component initContent() {
-		this.uploader = new ImmediateUploader(messageSource, this);
+		this.uploader = new ImmediateUploader(messageSource, this, "");
 		this.textArea = new TextArea();
 		this.textArea.setWidth("100%");
 		VerticalLayout vl = new VerticalLayout();
@@ -72,6 +73,12 @@ public class FileContentField extends CustomField<String> implements ReceiverWit
 
 	@Override
 	public void uploadFinished(FinishedEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void uploadStarted(StartedEvent event) {
 		// TODO Auto-generated method stub
 		
 	}

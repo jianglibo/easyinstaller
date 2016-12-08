@@ -5,9 +5,9 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-import com.google.common.io.Files;
 import com.vaadin.ui.Upload.FailedEvent;
 import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 
 @SuppressWarnings("serial")
@@ -30,12 +30,8 @@ public class TextContentReceiver implements ReceiverWithEventListener {
 		@Override
 		public OutputStream receiveUpload(String filename, String mimeType) {
 			this.setMimeType(mimeType);
-			if (!"zip".equalsIgnoreCase(Files.getFileExtension(filename))) {
-				return null;
-			} else {
-				baos = new ByteArrayOutputStream();
-				return baos;
-			}
+			baos = new ByteArrayOutputStream();
+			return baos;
 		}
 
 		private String guessCharset() {
@@ -71,23 +67,31 @@ public class TextContentReceiver implements ReceiverWithEventListener {
 		public void uploadFailed(FailedEvent event) {
 			this.setSuccess(false);
 			this.baos = null;
-			this.usel.onUploadResult(TextUploadResult.createFailed(event.getReason().getMessage()));
+			if (event.getReason() != null) {
+				this.usel.onUploadResult(TextUploadResult.createFailed(event.getReason()));
+			} else {
+				this.usel.onUploadResult(TextUploadResult.createFailed(new Exception("Unknown")));
+			}
 		}
 
 		@Override
 		public void uploadSucceeded(SucceededEvent event) {
 			try {
 				this.setContent(baos.toString(guessCharset()));
-				this.usel.onUploadResult(TextUploadResult.createSuccessed(getContent()));
+				this.usel.onUploadResult(TextUploadResult.createSuccessed(new UploadMeta(event.getFilename(), event.getLength(), event.getMIMEType()),getContent()));
 				this.setSuccess(true);
 			} catch (UnsupportedEncodingException e) {
-				this.usel.onUploadResult(TextUploadResult.createFailed("UnsupportedEncodingException"));
+				this.usel.onUploadResult(TextUploadResult.createFailed(e));
 				this.setSuccess(false);
 			}
 		}
 
 		@Override
 		public void uploadFinished(FinishedEvent event) {
+		}
+
+		@Override
+		public void uploadStarted(StartedEvent event) {
 			// TODO Auto-generated method stub
 			
 		}

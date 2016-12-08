@@ -6,44 +6,42 @@ import com.jianglibo.vaadin.dashboard.vo.UploadResult;
 public class PkSourceUploadResult implements UploadResult<PkSource>{
 
 	private PkSource result;
-	private String reason;
+	private Exception reason;
 	private boolean success;
 	private boolean newCreated;
 	
-	public static PkSourceUploadResult createFailed(String reason) {
-		PkSourceUploadResult tur = new PkSourceUploadResult(null);
+	private UploadMeta uploadMeta;
+	
+	public static PkSourceUploadResult createFailed(Exception reason) {
+		PkSourceUploadResult tur = new PkSourceUploadResult();
 		tur.setReason(reason);
 		tur.setSuccess(false);
 		return tur;
 	}
 	
-	public static PkSourceUploadResult createSuccessed(PkSource result) {
-		PkSourceUploadResult tur = new PkSourceUploadResult(result);
+	public static PkSourceUploadResult createSuccessed(UploadMeta uploadMeta,PkSource result) {
+		PkSourceUploadResult tur = new PkSourceUploadResult();
+		if (result == null) {
+			tur.setNewCreated(false);
+		} else {
+			tur.setNewCreated(true);
+		}
+		tur.setResult(result);
 		tur.setSuccess(true);
+		tur.setUploadMeta(uploadMeta);
 		return tur;
 	}
-	
-	
 	
 	public void setResult(PkSource result) {
 		this.result = result;
 	}
 
-	public void setReason(String reason) {
+	public void setReason(Exception reason) {
 		this.reason = reason;
 	}
 
 	public void setSuccess(boolean success) {
 		this.success = success;
-	}
-
-	public PkSourceUploadResult(PkSource pkSource) {
-		if (pkSource == null) {
-			setNewCreated(false);
-		} else {
-			setNewCreated(true);
-		}
-		setResult(pkSource);
 	}
 
 	public boolean isNewCreated() {
@@ -60,12 +58,21 @@ public class PkSourceUploadResult implements UploadResult<PkSource>{
 	}
 
 	@Override
-	public String getReason() {
+	public Exception getReason() {
 		return reason;
 	}
 
 	@Override
 	public boolean isSuccess() {
 		return success;
+	}
+
+	@Override
+	public UploadMeta getUploadMeta() {
+		return uploadMeta;
+	}
+
+	public void setUploadMeta(UploadMeta uploadMeta) {
+		this.uploadMeta = uploadMeta;
 	}
 }
