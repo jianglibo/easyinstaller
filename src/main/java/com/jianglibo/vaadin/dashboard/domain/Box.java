@@ -113,7 +113,7 @@ public class Box extends BaseEntity implements HasUpdatedAt {
 	
 	@Lob
 	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 200, rowNumber = 5)
-	private String boxRoleConfig = "#mysqld: \r\n#  server-id: 33";
+	private String boxRoleConfig = "";
 	
 	public List<BoxHistory> getHistories() {
 		return histories;

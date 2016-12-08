@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -110,6 +111,11 @@ public class ActionParameters {
 					firstMatch = true;
 				}
 			}
+		}
+		// for simplifying, just search "bellow-is-plain-lines:".
+		List<String> mylines1 = mylines.stream().filter(l -> !l.contains("bellow-is-plain-lines:")).collect(Collectors.toList());
+		if (mylines.size() != mylines1.size()) {
+			mylines = mylines1.stream().map(l -> l.replaceFirst("\\s+-\\s+", "")).collect(Collectors.toList());
 		}
 		return Joiner.on(System.lineSeparator()).join(mylines);
 	}
