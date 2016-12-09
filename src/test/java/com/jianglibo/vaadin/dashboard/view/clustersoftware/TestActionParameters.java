@@ -26,6 +26,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.jianglibo.vaadin.dashboard.Tbase;
 import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
+import com.jianglibo.vaadin.dashboard.util.SoftwareUtil;
 
 public class TestActionParameters extends Tbase {
 	
@@ -143,7 +144,7 @@ public class TestActionParameters extends Tbase {
 	public void testGetParameterYmlStr() throws JsonParseException, JsonMappingException, IOException {
 		Path actionsyaml = Paths.get("fixtures", "installscripts","centos7-ps-2.7.3", "src", "actions.yaml");
 		String content = Joiner.on(System.lineSeparator()).join(Files.readAllLines(actionsyaml, StandardCharsets.UTF_8));
-		ActionParameters aps = new ActionParameters(appObjectMappers, content);
+		ActionParameters aps = new ActionParameters(appObjectMappers, content, SoftwareUtil.unparseLs(System.lineSeparator()));
 		String ymlContent = aps.getParameterYmlStr("create-user");
 		
 		Map<String, Object> ms = aps.convertToMap(ymlContent);
@@ -162,7 +163,7 @@ public class TestActionParameters extends Tbase {
 		lines.add("  ddd:");
 		lines.add("    - a");
 		
-		ActionParameters aps = new ActionParameters(appObjectMappers, Joiner.on(System.lineSeparator()).join(lines));
+		ActionParameters aps = new ActionParameters(appObjectMappers, Joiner.on(System.lineSeparator()).join(lines), SoftwareUtil.unparseLs(System.lineSeparator()));
 		String ymlContent = aps.getParameterYmlStr("abc");
 		
 		assertThat(ymlContent, equalTo(Joiner.on(System.lineSeparator()).join(Lists.newArrayList("ddd:", "  - a"))));

@@ -45,6 +45,16 @@ public class SoftwareUtil {
 		return cls.replace("CR", "\r").replace("LF", "\n");
 	}
 	
+	public static String unparseLs(String codeSep) {
+		if ("\r\n".equals(codeSep)) {
+			return "CRLF";
+		} else if ("\r".equals(codeSep)) {
+			return "CR";
+		} else {
+			return "LF";
+		}
+	}
+	
 	@Autowired
 	public SoftwareUtil(ApplicationContext context, ApplicationConfig applicationConfig) {
 		this.context = context;

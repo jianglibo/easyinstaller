@@ -21,4 +21,9 @@ public interface TextFileRepository extends JpaRepository<TextFile, Long>,TextFi
 	long countBySoftwareEquals(Software software);
 	
 	TextFile findByNameAndSoftware(String name, Software software);
+
+	Page<TextFile> findBySoftwareEqualsAndNameContaining(Software software,Pageable pageable,
+			String filterString);
+
+	long countBySoftwareEqualsAndNameContaining(Software software, String filterString);
 }

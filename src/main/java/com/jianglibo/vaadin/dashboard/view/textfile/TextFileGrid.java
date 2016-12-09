@@ -53,7 +53,7 @@ public class TextFileGrid extends BaseGrid<TextFile, FreeContainer<TextFile>> {
 	@Override
 	protected void setupGrid() {
 		FooterRow footer = addFooterRowAt(0);
-		FooterCell fc = footer.getCell("createdAt");
+		FooterCell fc = footer.getCell("upldatedAt");
 		if (fc != null) {
 			fc.setText("0");
 			getdContainer().addItemSetChangeListener(event -> {

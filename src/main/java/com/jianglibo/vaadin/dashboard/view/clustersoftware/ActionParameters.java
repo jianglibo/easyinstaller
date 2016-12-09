@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,6 +16,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
+import com.jianglibo.vaadin.dashboard.util.SoftwareUtil;
 
 public class ActionParameters {
 	
@@ -36,8 +36,11 @@ public class ActionParameters {
 	
 	private ToServerFormat ts = ToServerFormat.PLAIN_TEXT;
 	
-	public ActionParameters(AppObjectMappers appObjectMappers, String actionDescriptions) {
+	private String lineSeparator;
+	
+	public ActionParameters(AppObjectMappers appObjectMappers, String actionDescriptions, String lineSeparator) {
 		this.appObjectMappers = appObjectMappers;
+		this.lineSeparator = lineSeparator;
 		initActionParameters(actionDescriptions);
 	}
 	
@@ -112,12 +115,12 @@ public class ActionParameters {
 				}
 			}
 		}
-		// for simplifying, just search "bellow-is-plain-lines:".
-		List<String> mylines1 = mylines.stream().filter(l -> !l.contains("bellow-is-plain-lines:")).collect(Collectors.toList());
-		if (mylines.size() != mylines1.size()) {
-			mylines = mylines1.stream().map(l -> l.replaceFirst("\\s+-\\s+", "")).collect(Collectors.toList());
-		}
-		return Joiner.on(System.lineSeparator()).join(mylines);
+		// for simplifying, just search "bellow-is-plain-lines:". No! don't need do anything, The only needs is indent. 
+//		List<String> mylines1 = mylines.stream().filter(l -> !l.contains("bellow-is-plain-lines:")).collect(Collectors.toList());
+//		if (mylines.size() != mylines1.size()) {
+//			mylines = mylines1.stream().map(l -> l.replaceFirst("\\s+-\\s+", "")).collect(Collectors.toList());
+//		}
+		return Joiner.on(SoftwareUtil.parseLs(lineSeparator)).join(mylines);
 	}
 	
 	public String convertToServerNeeds(String ymlContent) throws JsonParseException, JsonMappingException, JsonProcessingException,ScannerException, IOException {

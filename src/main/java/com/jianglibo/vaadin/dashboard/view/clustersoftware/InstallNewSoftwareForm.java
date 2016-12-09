@@ -81,7 +81,7 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		if (softwareCb != null) {
 			software = (Software)softwareCb.getValue();
 			if (software != null) {
-				actionParameters = new ActionParameters(appObjectMappers, software.getActionDescriptions());
+				actionParameters = new ActionParameters(appObjectMappers, software.getActionDescriptions(), software.getCodeLineSeperator());
 			}
 			setActionCbItems();
 		}
@@ -126,7 +126,7 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 		
 		softwareCb.addValueChangeListener(event -> {
 			software = (Software) event.getProperty().getValue();
-			actionParameters = new ActionParameters(appObjectMappers, software.getActionDescriptions());
+			actionParameters = new ActionParameters(appObjectMappers, software.getActionDescriptions(), software.getCodeLineSeperator());
 			setActionCbItems();
 		});
 		return new PropertyIdAndField("software", softwareCb);
