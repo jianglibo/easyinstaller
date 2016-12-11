@@ -79,6 +79,7 @@ public class SoftwareImportor {
 						tf = textFileRepository.save(tf);
 						return tf;
 					} catch (Exception e) {
+						e.printStackTrace();
 						return null;
 					}
 				}).filter(java.util.Objects::nonNull).collect(Collectors.toSet()));
@@ -117,8 +118,9 @@ public class SoftwareImportor {
 					if (sfInDb == null) {
 						Person root = personRepository.findByEmail(AppInitializer.firstEmail);
 						sf.setCreator(root);
-						setupTextFiles(sf,baseFolder);
 						newSf = softwareRepository.save(sf);
+						setupTextFiles(sf,baseFolder);
+						newSf = softwareRepository.save(newSf);
 					} else {
 						sfInDb.copyFrom(sf);
 						setupTextFiles(sfInDb, baseFolder);
