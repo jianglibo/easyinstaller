@@ -108,9 +108,9 @@ public class SoftwareImportor {
 							e.printStackTrace();
 						}
 					}
-					sf.getFileToUploadVos().stream().filter(FileToUploadVo::isRemoteFile).forEach(vo -> {
-						softwareDownloader.submitTasks(vo);
-					});
+//					sf.getFileToUploadVos().stream().filter(FileToUploadVo::isRemoteFile).forEach(vo -> {
+//						softwareDownloader.submitTasks(vo);
+//					});
 					
 					Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sf.getName(), sf.getOstype(),sf.getSversion());
 					Software newSf;

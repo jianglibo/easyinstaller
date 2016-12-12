@@ -1,13 +1,18 @@
 package com.jianglibo.vaadin.dashboard.service;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -19,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.io.ByteStreams;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -30,6 +35,7 @@ import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessage;
 import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageBody;
 import com.jianglibo.vaadin.dashboard.Broadcaster.BroadCasterMessageType;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
+import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
 /**
@@ -45,11 +51,23 @@ public class SoftwareDownloader {
 	private ListeningExecutorService service;
 	
 	private final Path localFolder;
+	
+	private final SoftwareRepository softwareRepository;
+	
+	private Set<String> downloadings = Sets.newHashSet();
 
 	@Autowired
-	public SoftwareDownloader(ApplicationConfig applicationConfig) {
+	public SoftwareDownloader(ApplicationConfig applicationConfig, SoftwareRepository softwareRepository) {
 		this.service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
+		this.softwareRepository = softwareRepository;
 		this.localFolder = applicationConfig.getLocalFolderPath();
+	}
+	
+	@PostConstruct
+	public void postContruct() {
+		softwareRepository.findAll().stream().map(sw -> sw.getFilesToUpload()).flatMap(fs -> fs.stream()).map(FileToUploadVo::new).filter(FileToUploadVo::isRemoteFile).forEach(ftu -> {
+			submitTasks(ftu);
+		});
 	}
 	
 	public static class DownloadMessage implements BroadCasterMessageBody {
@@ -100,6 +118,21 @@ public class SoftwareDownloader {
 			return BroadCasterMessageType.DOWNLOAD;
 		}
 	}
+	
+	private synchronized boolean detectDownloading(String value, boolean remove) {
+		if (remove) {
+			if (downloadings.contains(value)) {
+				downloadings.remove(value);
+				return true;
+			}
+		} else {
+			if (downloadings.contains(value)) {
+				LOGGER.info("downloading {} already submited, skip it.", value);
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public void submitTasks(FileToUploadVo fvo) {
 		if (Files.exists(localFolder.resolve(fvo.getRelative()))) {
@@ -107,6 +140,9 @@ public class SoftwareDownloader {
 		}
 		
 		if (fvo.isRemoteFile()) {
+			if (detectDownloading(fvo.getOrignValue(), false)) {
+				return;
+			}
 			LOGGER.info("start download file from {}", fvo.getOrignValue());
 			Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue())));
 			
@@ -115,11 +151,13 @@ public class SoftwareDownloader {
 			Futures.addCallback(lf, new FutureCallback<Boolean>() {
 				@Override
 				public void onSuccess(Boolean result) {
+					detectDownloading(fvo.getOrignValue(), true);
 					Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue(), result)));
 				}
 
 				@Override
 				public void onFailure(Throwable t) {
+					detectDownloading(fvo.getOrignValue(), true);
 					Broadcaster.broadcast(new BroadCasterMessage(new DownloadMessage(fvo.getOrignValue(), false)));	
 				}
 			} );
@@ -129,10 +167,34 @@ public class SoftwareDownloader {
 	private class DownloadOne implements Callable<Boolean> {
 
 		private FileToUploadVo fvo;
+		
+		private static final int BUF_SIZE = 0x1000;
 
 		public DownloadOne(FileToUploadVo fvo) {
 			this.fvo= fvo;
 		}
+		
+		private long copy(InputStream from, OutputStream to)
+			      throws IOException {
+		    checkNotNull(from);
+		    checkNotNull(to);
+		    byte[] buf = new byte[BUF_SIZE];
+		    long total = 0;
+		    long lastPosition = 0;
+		    while (true) {
+		      int r = from.read(buf);
+		      if (r == -1) {
+		        break;
+		      }
+		      to.write(buf, 0, r);
+		      total += r;
+		      if ((total - lastPosition) > 512000) {
+		    	  lastPosition = total;
+		    	  LOGGER.info(fvo.getOrignValue() + " has download " + (total / 1024) + "K till now.");
+		      }
+		    }
+		    return total;
+		  }
 
 		@Override
 		public Boolean call() throws Exception {
@@ -156,7 +218,7 @@ public class SoftwareDownloader {
 						InputStream instream = entity.getContent();
 						OutputStream outstream = Files.newOutputStream(tmpFile);
 						try {
-							ByteStreams.copy(instream, outstream);
+							copy(instream, outstream);
 							instream.close();
 							outstream.flush();
 							outstream.close();
