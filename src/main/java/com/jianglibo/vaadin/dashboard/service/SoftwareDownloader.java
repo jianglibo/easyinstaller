@@ -225,7 +225,7 @@ public class SoftwareDownloader {
 							Files.move(tmpFile, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
 							return true;
 						} catch(Exception e) {
-							Files.copy(tmpFile, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+							Files.copy(tmpFile, target, StandardCopyOption.REPLACE_EXISTING);
 							Files.delete(tmpFile);
 						} finally {
 						}
@@ -240,7 +240,7 @@ public class SoftwareDownloader {
 						}
 					}
 				}
-			} catch (IOException e1) {
+			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 			return false;
