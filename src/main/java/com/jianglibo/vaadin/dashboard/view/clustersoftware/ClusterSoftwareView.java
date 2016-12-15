@@ -1,6 +1,5 @@
 package com.jianglibo.vaadin.dashboard.view.clustersoftware;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +21,7 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
+import com.jianglibo.vaadin.dashboard.repositories.SoftwareRepository;
 import com.jianglibo.vaadin.dashboard.security.PersonAuthenticationToken;
 import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
@@ -81,6 +81,8 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 	
 	private final AppObjectMappers appObjectMappers;
 	
+	private final SoftwareRepository softwareRepository;
+	
 	private BoxGroup boxGroup;
 	
 	private OneBoxGroupHistoriesDc obghdc;
@@ -90,13 +92,14 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 	private final Domains domains;
 	
 	@Autowired
-	public ClusterSoftwareView(BoxGroupHistoryRepository boxGroupHistoryRepository, MessageSource messageSource, BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, Domains domains, PersonRepository personRepository, FieldFactories fieldFactories, TaskRunner taskRunner, AppObjectMappers appObjectMappers) {
+	public ClusterSoftwareView(BoxGroupHistoryRepository boxGroupHistoryRepository, MessageSource messageSource, BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, Domains domains, PersonRepository personRepository, FieldFactories fieldFactories, TaskRunner taskRunner, AppObjectMappers appObjectMappers, SoftwareRepository softwareRepository) {
 		this.messageSource = messageSource;
 		this.boxGroupRepository = boxGroupRepository;
 		this.personRepository = personRepository;
 		this.boxRepository = boxRepository;
 		this.fieldFactories = fieldFactories;
 		this.domains = domains;
+		this.softwareRepository = softwareRepository;
 		this.taskRunner = taskRunner;
 		this.appObjectMappers = appObjectMappers;
 		setSizeFull();
@@ -130,7 +133,7 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		gl.setSizeFull();
 		Responsive.makeResponsive(gl);
 		
-		InstallNewSoftwareForm insf =  new InstallNewSoftwareForm(personRepository, messageSource, domains, fieldFactories, appObjectMappers);
+		InstallNewSoftwareForm insf =  new InstallNewSoftwareForm(personRepository, messageSource, domains, fieldFactories, appObjectMappers, softwareRepository.findAll());
 		bcInRc = new BoxContainerInRc(null, domains, 10 , Lists.newArrayList());
 		
 		VaadinGridWrapper vgw = domains.getGrids().get(Box.class.getSimpleName());

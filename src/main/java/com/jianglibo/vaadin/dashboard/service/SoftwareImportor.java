@@ -28,7 +28,6 @@ import com.jianglibo.vaadin.dashboard.repositories.TextFileRepository;
 import com.jianglibo.vaadin.dashboard.util.SoftwareFolder;
 import com.jianglibo.vaadin.dashboard.util.SoftwarePackUtil;
 import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
-import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 import com.jianglibo.vaadin.dashboard.vo.SoftwareImportResult;
 
 /**
@@ -108,10 +107,6 @@ public class SoftwareImportor {
 							e.printStackTrace();
 						}
 					}
-//					sf.getFileToUploadVos().stream().filter(FileToUploadVo::isRemoteFile).forEach(vo -> {
-//						softwareDownloader.submitTasks(vo);
-//					});
-					
 					Software sfInDb = softwareRepository.findByNameAndOstypeAndSversion(sf.getName(), sf.getOstype(),sf.getSversion());
 					Software newSf;
 					

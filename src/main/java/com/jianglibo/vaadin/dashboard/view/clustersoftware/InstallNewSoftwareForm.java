@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.MessageSource;
+import org.vaadin.maddon.ListContainer;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,11 +40,14 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 	private AppObjectMappers appObjectMappers;
 	
 	private ActionParameters actionParameters;
+	
+	private List<Software> softwares;
 
 	public InstallNewSoftwareForm(PersonRepository personRepository,
-			MessageSource messageSource, Domains domains, FieldFactories fieldFactories,AppObjectMappers appObjectMappers) {
+			MessageSource messageSource, Domains domains, FieldFactories fieldFactories,AppObjectMappers appObjectMappers,List<Software> softwares) {
 		super(InstallNewSoftwareVo.class, personRepository, messageSource, domains, fieldFactories);
 		this.appObjectMappers = appObjectMappers;
+		this.softwares = softwares;
 		delayCreateContent();
 	}
 
@@ -118,10 +122,11 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 	private PropertyIdAndField createSoftwareField() {
 		softwareCb = new ComboBox(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.software"));
 		softwareCb.setNewItemsAllowed(false);
-		AllSoftwareContainer fc = new AllSoftwareContainer(domains, 10, Lists.newArrayList());
+//		AllSoftwareContainer fc = new AllSoftwareContainer(domains, 10, Lists.newArrayList());
 		softwareCb.setItemCaptionMode(ItemCaptionMode.PROPERTY);
 		softwareCb.setItemCaptionPropertyId("displayName");
-		softwareCb.setContainerDataSource(fc);
+		ListContainer<Software> lc = new ListContainer<>(softwares);
+		softwareCb.setContainerDataSource(lc);
 		softwareCb.setPageLength(10);
 		
 		softwareCb.addValueChangeListener(event -> {

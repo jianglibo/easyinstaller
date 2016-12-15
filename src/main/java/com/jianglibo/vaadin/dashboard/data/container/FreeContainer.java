@@ -382,9 +382,10 @@ public class FreeContainer<T extends BaseEntity> implements Indexed, Sortable, I
 			LOGGER.info("{} called with parameter {}", "addContainerFilter", sfilter.getFilterString());
 			this.filterString = sfilter.getFilterString();
 		}
-		this.currentPage = 0;
-		fetchPage();
-		notifyItemSetChanged();
+		refresh();
+//		this.currentPage = 0;
+//		fetchPage();
+//		notifyItemSetChanged();
 	}
 
 	@Override
