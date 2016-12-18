@@ -31,8 +31,11 @@ import com.vaadin.ui.themes.ValoTheme;
 		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
 public class BoxHistory extends BaseEntity {
 	
-	public static final String R_T_C_B = "------RETURN_TO_CLIENT_BEGIN------";
-	public static final String R_T_C_E = "------RETURN_TO_CLIENT_END------";
+	public static final String _INSTALL_RESULT_BEGIN_ = "------RETURN_TO_CLIENT_BEGIN------";
+	public static final String _INSTALL_RESULT_END_ = "------RETURN_TO_CLIENT_END------";
+	
+	public static final String _DOWNLOAD_BEGIN_ = "------DOWNLOAD_TO_CLIENT_BEGIN------";
+	public static final String _DOWNLOAD_END_ = "------DOWNLOAD_TO_CLIENT_END------";
 
 	@ManyToOne
 	@VaadinGridColumn(order = 10)

@@ -1,11 +1,16 @@
 package com.jianglibo.vaadin.dashboard.domain;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.hash.Hashing;
+import com.google.common.io.Files;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinFormField;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
@@ -123,6 +128,15 @@ public class PkSource extends BaseEntity {
 			this.length = length;
 			this.extNoDot = extNoDot;
 			this.mimeType = mimeType;
+		}
+		
+		public PkSourceBuilder(Path dst) throws IOException {
+			super();
+			this.fileMd5 = Files.asByteSource(dst.toFile()).hash(Hashing.md5()).toString();;
+			this.pkname = dst.getFileName().toString();
+			this.length = dst.toFile().length();
+			this.extNoDot = Files.getFileExtension(dst.toFile().getName());
+			this.mimeType = "";
 		}
 		
 		public PkSource build() {

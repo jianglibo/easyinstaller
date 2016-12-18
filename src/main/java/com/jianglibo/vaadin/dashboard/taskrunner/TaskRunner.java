@@ -41,6 +41,7 @@ import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
+import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
@@ -204,8 +205,26 @@ public class TaskRunner {
 					bg.setHistories(newBhistories);
 					bg.setInstallResults(extractInstallResults(bg, bgh));
 					boxGroupRepository.save(bg);
+					
+					saveNeedDownloadFiles(bg,bgh);
+					
 					Broadcaster.broadcast(new BroadCasterMessage(new GroupTaskFinishMessage(bgHistoriesSofar, taskDesc.getUniqueUiId())));
 					
+					
+			}
+
+			private void saveNeedDownloadFiles(BoxGroup bg, BoxGroupHistory bgh) {
+				try {
+					for (BoxHistory bh : bgh.getBoxHistories()) {
+						List<DownloadBLock> dbs = extractDownloadResultMap(bh.getLogLines());
+						dbs.stream().flatMap(db -> db.getFiles().stream()).forEach(ndf -> {
+							PkSource ps = new PkSource();
+							
+						});
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
 			@Override
@@ -215,13 +234,13 @@ public class TaskRunner {
 		});
 	}
 	
-	protected List<List<String>> getResultBlocks(List<String> lines) {
+	protected List<List<String>> getResultBlocks(List<String> lines, String startPtn, String endPtn) {
 		boolean startFlag = false;
 		boolean endFlag = false;
 		List<List<String>> blocks = Lists.newArrayList();
 		List<String> block = Lists.newArrayList();
 		for(String line : lines) {
-			if (line.contains(BoxHistory.R_T_C_E)) {
+			if (line.contains(endPtn)) {
 				endFlag = true;
 				if (startFlag) {
 					blocks.add(block);
@@ -234,17 +253,22 @@ public class TaskRunner {
 			if (startFlag && !endFlag) {
 				block.add(line);
 			}
-			if (line.contains(BoxHistory.R_T_C_B)) {
+			if (line.contains(startPtn)) {
 				startFlag = true;
 			}
 		}
 		return blocks;
 	}
 	
-	protected Map<String,Object> extractResultMap(List<String> lines) {
+	protected List<List<String>> getInstallResultBlocks(List<String> lines) {
+		return  getResultBlocks(lines, BoxHistory._INSTALL_RESULT_BEGIN_, BoxHistory._INSTALL_RESULT_END_);
+	}
+	
+	// extract all blocks of installResults.
+	protected Map<String,Object> extractInstallResultMap(List<String> lines) {
 		Map<String, Object> mp = Maps.newHashMap();
 		
-		getResultBlocks(lines).forEach(bl -> {
+		getInstallResultBlocks(lines).forEach(bl -> {
 			String s = Joiner.on("").join(bl);
 			try {
 				JavaType jt = appObjectmappers.getObjectMapperNoIdent().getTypeFactory().constructParametrizedType(Map.class,Map.class, String.class, Object.class);
@@ -252,6 +276,50 @@ public class TaskRunner {
 				onemp.entrySet().forEach(entry -> {
 					mp.put(entry.getKey(), entry.getValue());
 				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+		return mp;
+	}
+	
+	protected class NeedDownloadFile {
+		private String name;
+		private String fullName;
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getFullName() {
+			return fullName;
+		}
+		public void setFullName(String fullName) {
+			this.fullName = fullName;
+		}
+	}
+	
+	protected class DownloadBLock {
+		private List<NeedDownloadFile> files;
+
+		public List<NeedDownloadFile> getFiles() {
+			return files;
+		}
+
+		public void setFiles(List<NeedDownloadFile> files) {
+			this.files = files;
+		}
+	}
+	
+	// extract all blocks of downloads in results lines. is for one boxhistory!
+	protected List<DownloadBLock> extractDownloadResultMap(List<String> lines) {
+		List<DownloadBLock> mp = Lists.newArrayList();
+		
+		getResultBlocks(lines, BoxHistory._DOWNLOAD_BEGIN_, BoxHistory._DOWNLOAD_END_).forEach(bl -> {
+			String s = Joiner.on("").join(bl);
+			try {
+				mp.add(appObjectmappers.getObjectMapperNoIdent().readValue(s, DownloadBLock.class));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -271,7 +339,7 @@ public class TaskRunner {
 			e.printStackTrace();
 		}
 		for (BoxHistory bh : bgh.getBoxHistories()) {
-			for (Entry<String, Object> entry: extractResultMap(bh.getLogLines()).entrySet()) {
+			for (Entry<String, Object> entry: extractInstallResultMap(bh.getLogLines()).entrySet()) {
 				mp.put(entry.getKey(), entry.getValue());
 			};
 		}
@@ -282,6 +350,7 @@ public class TaskRunner {
 		}
 		return "{}";
 	}
+
 
 	public int getBgHistoriesSofar() {
 		return bgHistoriesSofar;
