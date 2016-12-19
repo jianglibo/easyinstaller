@@ -73,7 +73,6 @@ public abstract class BaseGrid<T extends BaseEntity, C extends FreeContainer<T>>
 
 		setColumnFiltering(getColumnNames());
 		setupGrid();
-//		setSortOrder(Lists.newArrayList(getdContainer().getVaadinSort()));
 		sort(getdContainer().getVaadinSort());
 		// Allow column reordering
 		setColumnReorderingAllowed(true);

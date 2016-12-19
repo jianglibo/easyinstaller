@@ -95,6 +95,7 @@ public class WebSecConfig extends WebSecurityConfigurerAdapter {
                 		"/icon-images/**", //
                 		"/autologin",
                 		"/view/**", //
+                		"/download/**",//
                 		"/test/**")//
                 .permitAll()
                 .antMatchers("/VAADIN/**").permitAll().

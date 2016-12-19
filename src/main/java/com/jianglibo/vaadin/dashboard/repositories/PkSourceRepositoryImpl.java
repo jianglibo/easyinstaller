@@ -16,12 +16,12 @@ public class PkSourceRepositoryImpl implements PkSourceRepositoryCustom<PkSource
 	
 	@Override
 	public List<PkSource> getFilteredPageWithOnePhrase(Pageable page, String filterString, boolean trashed, Sort sort) {
-		return jpqjUtil.getFilteredPage(PkSource.class,  page, filterString, trashed, sort, "name");
+		return jpqjUtil.getFilteredPage(PkSource.class,  page, filterString, trashed, sort, "pkname");
 	}
 
 	@Override
 	public long getFilteredNumberWithOnePhrase(String filterString, boolean trashed) {
-		return jpqjUtil.getFilteredNumber(PkSource.class, filterString, trashed, "name");
+		return jpqjUtil.getFilteredNumber(PkSource.class, filterString, trashed, "pkname");
 	}
 
 }

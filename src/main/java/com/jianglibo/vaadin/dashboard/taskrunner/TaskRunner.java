@@ -1,10 +1,13 @@
 package com.jianglibo.vaadin.dashboard.taskrunner;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,6 +30,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -48,10 +52,12 @@ import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
+import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
 import com.jianglibo.vaadin.dashboard.service.SoftwareDownloader;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession;
 import com.jianglibo.vaadin.dashboard.ssh.JschSession.JschSessionBuilder;
+import com.jianglibo.vaadin.dashboard.sshrunner.SshDownloader;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshExecRunner;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshUploadRunner;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
@@ -85,6 +91,13 @@ public class TaskRunner {
 
 	@Autowired
 	private SshUploadRunner sshUploadRunner;
+	
+	@Autowired
+	private SshDownloader sshDownloader;
+	
+	@Autowired
+	private PkSourceRepository pkSourceRepository;
+
 	
 	@Autowired
 	private BoxGroupHistoryRepository boxGroupHistoryRepository;
@@ -209,17 +222,40 @@ public class TaskRunner {
 					saveNeedDownloadFiles(bg,bgh);
 					
 					Broadcaster.broadcast(new BroadCasterMessage(new GroupTaskFinishMessage(bgHistoriesSofar, taskDesc.getUniqueUiId())));
-					
-					
 			}
 
 			private void saveNeedDownloadFiles(BoxGroup bg, BoxGroupHistory bgh) {
 				try {
 					for (BoxHistory bh : bgh.getBoxHistories()) {
+						JschSession jsession = new JschSessionBuilder().setHost(bh.getBox().getIp()).setKeyFile(applicationConfig.getSshKeyFile(bh.getBox()))
+								.setPort(bh.getBox().getPort()).setSshUser(bh.getBox().getSshUser()).build();
+
 						List<DownloadBLock> dbs = extractDownloadResultMap(bh.getLogLines());
+						
 						dbs.stream().flatMap(db -> db.getFiles().stream()).forEach(ndf -> {
-							PkSource ps = new PkSource();
-							
+							Path downloaded = sshDownloader.download(jsession, ndf.getFullName(), ndf.getName());
+							if (downloaded == null) {
+								LOGGER.error("download {} from {} failed", ndf.getFullName(), bh.getBox().getIp());
+							} else {
+								try {
+									String extNoDot = com.google.common.io.Files.getFileExtension(ndf.getName());
+									String md5 = com.google.common.io.Files.asByteSource(downloaded.toFile()).hash(Hashing.md5()).toString();
+									PkSource ps = pkSourceRepository.findByFileMd5(md5);
+									if (ps == null) {
+										File nf = new File(downloaded.toFile().getParentFile(), md5 + "." + extNoDot);
+										if (!nf.exists()) {
+											com.google.common.io.Files.move(downloaded.toFile(), nf);
+										}
+										ps = new PkSource.PkSourceBuilder(md5, ndf.getName(), nf.length(), extNoDot, Files.probeContentType(nf.toPath())).build();
+										pkSourceRepository.save(ps);
+									} else {
+										ps.setUpdatedAt(Date.from(Instant.now()));
+										pkSourceRepository.save(ps);
+									}
+								} catch (IOException e) {
+									LOGGER.error("save {} as pksource failed", downloaded.toAbsolutePath().toString());
+								}
+							}
 						});
 					}
 				} catch (Exception e) {

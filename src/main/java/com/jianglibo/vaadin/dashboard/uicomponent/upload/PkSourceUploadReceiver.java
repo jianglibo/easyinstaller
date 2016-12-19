@@ -91,7 +91,9 @@ public class PkSourceUploadReceiver implements ReceiverWithEventListener  {
 				}
 				ps = new PkSource.PkSourceBuilder(md5, filename, nf.length(), extNoDot, mimeType).build();
 				pkSourceRepository.save(ps);
-				ufeListener.onUploadResult(PkSourceUploadResult.createSuccessed(new UploadMeta(event.getFilename(), event.getLength(), event.getMIMEType()), null));
+				PkSourceUploadResult pkr = PkSourceUploadResult.createSuccessed(new UploadMeta(event.getFilename(), event.getLength(), event.getMIMEType()), ps);
+				pkr.setNewCreated(true);
+				ufeListener.onUploadResult(pkr);
 			} else {
 				ufeListener.onUploadResult(PkSourceUploadResult.createSuccessed(new UploadMeta(event.getFilename(), event.getLength(), event.getMIMEType()), ps));
 				new Notification(messageSource.getMessage("component.upload.duplicated", new String[]{filename}, UI.getCurrent().getLocale()), "", Notification.Type.ERROR_MESSAGE)

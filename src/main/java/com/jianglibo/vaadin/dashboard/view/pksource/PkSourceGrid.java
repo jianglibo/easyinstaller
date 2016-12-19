@@ -25,7 +25,7 @@ public class PkSourceGrid extends BaseGrid<PkSource, FreeContainer<PkSource>> {
 	@Override
 	protected void setupGrid() {
 		FooterRow footer = addFooterRowAt(0);
-		FooterCell fc = footer.getCell("createdAt");
+		FooterCell fc = footer.getCell("updatedAt");
 		fc.setText("0");
 		getdContainer().addItemSetChangeListener(event -> {
 			fc.setText("" + event.getContainer().size());

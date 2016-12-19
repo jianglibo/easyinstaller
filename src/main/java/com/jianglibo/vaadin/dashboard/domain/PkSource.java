@@ -2,10 +2,13 @@ package com.jianglibo.vaadin.dashboard.domain;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
@@ -16,21 +19,22 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinGrid;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumn;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Entity
 @Table(name = "pksource",uniqueConstraints = { @UniqueConstraint(columnNames = "fileMd5"), @UniqueConstraint(columnNames = "pkname") })
 @VaadinGrid(multiSelect = true, messagePrefix = "domain.pksource.", footerVisible = true, styleNames = {
 		ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES,
-		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=true)
+		ValoTheme.TABLE_COMPACT }, selectable = true, fullSize = true, showCreatedAt=false,defaultSort="-updatedAt", selectMode = Grid.SelectionMode.MULTI)
 @VaadinTable(multiSelect = true,
 	messagePrefix="domain.pksource.",
 	styleNames={ValoTheme.TABLE_BORDERLESS, ValoTheme.TABLE_NO_HORIZONTAL_LINES, ValoTheme.TABLE_COMPACT},
 	selectable=true,
 	fullSize=true,
 	footerVisible=true,
-	sortable=true, showCreatedAt=true)
-public class PkSource extends BaseEntity {
+	sortable=true, showCreatedAt=false, defaultSort="-updatedAt")
+public class PkSource extends BaseEntity implements HasUpdatedAt {
 
     /**
 	 * 
@@ -59,6 +63,12 @@ public class PkSource extends BaseEntity {
     @VaadinTableColumn(order = 40)
     @VaadinGridColumn(order = 40)
     private String mimeType;
+    
+    
+	@Temporal(TemporalType.TIMESTAMP)
+	@VaadinTableColumn(order = 9995, sortable = true)
+	@VaadinGridColumn(order = 9995, sortable = true)
+	private Date updatedAt;
 
 	public String getFileMd5() {
 		return fileMd5;
@@ -107,6 +117,20 @@ public class PkSource extends BaseEntity {
 	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
 	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public void setLength(Long length) {
+		this.length = length;
+	}
+
+
 
 	public static class PkSourceBuilder {
 		private final String fileMd5;

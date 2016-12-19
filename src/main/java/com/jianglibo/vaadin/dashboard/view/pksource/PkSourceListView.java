@@ -33,11 +33,13 @@ import com.jianglibo.vaadin.dashboard.uicomponent.upload.PkSourceUploadReceiver;
 import com.jianglibo.vaadin.dashboard.uicomponent.upload.SimplifiedUploadResultLinstener;
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
+import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.navigator.View;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 
 @SpringView(name = PkSourceListView.VIEW_NAME)
 public class PkSourceListView extends BaseGridView<PkSource, PkSourceGrid, FreeContainer<PkSource>>
@@ -72,17 +74,31 @@ public class PkSourceListView extends BaseGridView<PkSource, PkSourceGrid, FreeC
 		return new PksourceMiddleBlock(super.createMiddleBlock());
 	}
 	
+	private String getUrlHtml(PkSource pks) {
+		return String.format("<a href=\"/download/%s.%s\" target=\"_blank\">%s</a>", pks.getFileMd5(), pks.getExtNoDot(), pks.getPkname());
+	}
+	
 	@SuppressWarnings("serial")
 	protected class PksourceMiddleBlock extends HorizontalLayout implements MiddleBlock {
 		
 		private MiddleBlock mb;
+		
+		private Label downloadLabel;
+		
+		private HorizontalLayout hl;
 		
 		public PksourceMiddleBlock(MiddleBlock mb) {
 			this.mb = mb;
 			PkSourceUploadReceiver pkur = new PkSourceUploadReceiver(getMessageSource(), applicationConfig.getUploadDstPath(), repository, PkSourceListView.this);
 			ImmediateUploader imd = new ImmediateUploader(getMessageSource(), pkur, "");
 			imd.setMargin(true);
-			addComponents((Component) mb, imd);
+			hl = new HorizontalLayout();
+			hl.setMargin(true);
+			downloadLabel = new Label();
+			downloadLabel.setCaptionAsHtml(true);
+			hl.addComponent(downloadLabel);
+			addComponents((Component) mb, imd, hl);
+			StyleUtil.hide(hl);
 		}
 
 		@Override
@@ -92,29 +108,16 @@ public class PkSourceListView extends BaseGridView<PkSource, PkSourceGrid, FreeC
 
 		@Override
 		public void alterState(Set<Object> selected) {
+			if (selected.size() == 1) {
+				downloadLabel.setCaption(getUrlHtml((PkSource) selected.iterator().next()));	
+				StyleUtil.show(hl);
+			} else {
+				StyleUtil.hide(hl);
+			}
 			mb.alterState(selected);
 		}
 		
 	}
-
-//	@Subscribe
-//	public void whenFilterStrChange(FilterStrEvent fse) {
-//		String nvs = lvfb.setFilterStr(fse.getFilterStr()).toNavigateString();
-//		UI.getCurrent().getNavigator().navigateTo(nvs);
-//	}
-//
-//	@Subscribe
-//	public void whenSortChanged(TableSortEvent tse) {
-//		SortUtil.setUrlObSort(tse.getSort(), domains.getTables().get(PkSource.class.getSimpleName()), lvfb);
-//		UI.getCurrent().getNavigator().navigateTo(lvfb.toNavigateString());
-//	}
-
-//	@Subscribe
-//	public void whenTrashedCheckboxChange(TrashedCheckBoxEvent tce) {
-//		String nvs = lvfb.setFilterStr("").setCurrentPage(1)
-//				.setBoolean(ListViewFragmentBuilder.TRASHED_PARAM_NAME, tce.isChecked()).toNavigateString();
-//		UI.getCurrent().getNavigator().navigateTo(nvs);
-//	}
 
 	@Override
 	public ButtonGroup[] getButtonGroups() {
