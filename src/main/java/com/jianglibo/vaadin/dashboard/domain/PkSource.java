@@ -21,6 +21,9 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinTable;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinTableColumn;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.themes.ValoTheme;
+import javax.persistence.Basic;
+import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Table(name = "pksource",uniqueConstraints = { @UniqueConstraint(columnNames = "fileMd5"), @UniqueConstraint(columnNames = "pkname") })
@@ -59,6 +62,11 @@ public class PkSource extends BaseEntity implements HasUpdatedAt {
     private Long length;
     
     private String extNoDot;
+
+    @VaadinTableColumn(order = 100)
+    @VaadinGridColumn(order = 100)
+    @Basic
+	private int downloadCount = 0;
     
     @VaadinTableColumn(order = 40)
     @VaadinGridColumn(order = 40)
@@ -183,5 +191,13 @@ public class PkSource extends BaseEntity implements HasUpdatedAt {
 	@Override
 	public String getDisplayName() {
 		return getPkname();
+	}
+
+	public int getDownloadCount() {
+		return downloadCount;
+	}
+
+	public void setDownloadCount(int downloadCount) {
+		this.downloadCount = downloadCount;
 	}
 }

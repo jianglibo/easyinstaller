@@ -229,34 +229,42 @@ public class TaskRunner {
 					for (BoxHistory bh : bgh.getBoxHistories()) {
 						JschSession jsession = new JschSessionBuilder().setHost(bh.getBox().getIp()).setKeyFile(applicationConfig.getSshKeyFile(bh.getBox()))
 								.setPort(bh.getBox().getPort()).setSshUser(bh.getBox().getSshUser()).build();
-
-						List<DownloadBLock> dbs = extractDownloadResultMap(bh.getLogLines());
-						
-						dbs.stream().flatMap(db -> db.getFiles().stream()).forEach(ndf -> {
-							Path downloaded = sshDownloader.download(jsession, ndf.getFullName(), ndf.getName());
-							if (downloaded == null) {
-								LOGGER.error("download {} from {} failed", ndf.getFullName(), bh.getBox().getIp());
-							} else {
-								try {
-									String extNoDot = com.google.common.io.Files.getFileExtension(ndf.getName());
-									String md5 = com.google.common.io.Files.asByteSource(downloaded.toFile()).hash(Hashing.md5()).toString();
-									PkSource ps = pkSourceRepository.findByFileMd5(md5);
-									if (ps == null) {
-										File nf = new File(downloaded.toFile().getParentFile(), md5 + "." + extNoDot);
-										if (!nf.exists()) {
-											com.google.common.io.Files.move(downloaded.toFile(), nf);
+						try {
+							List<DownloadBLock> dbs = extractDownloadResultMap(bh.getLogLines());
+							
+							dbs.stream().flatMap(db -> db.getFiles().stream()).forEach(ndf -> {
+								Path downloaded = sshDownloader.download(jsession, ndf.getFullName(), ndf.getName());
+								if (downloaded == null) {
+									LOGGER.error("download {} from {} failed", ndf.getFullName(), bh.getBox().getIp());
+								} else {
+									try {
+										String extNoDot = com.google.common.io.Files.getFileExtension(ndf.getName());
+										String md5 = com.google.common.io.Files.asByteSource(downloaded.toFile()).hash(Hashing.md5()).toString();
+										PkSource ps = pkSourceRepository.findByFileMd5(md5);
+										if (ps == null) {
+											File nf = new File(downloaded.toFile().getParentFile(), md5 + "." + extNoDot);
+											if (!nf.exists()) {
+												com.google.common.io.Files.move(downloaded.toFile(), nf);
+											}
+											ps = new PkSource.PkSourceBuilder(md5, ndf.getName(), nf.length(), extNoDot, Files.probeContentType(nf.toPath())).build();
+											pkSourceRepository.save(ps);
+										} else {
+											ps.setUpdatedAt(Date.from(Instant.now()));
+											pkSourceRepository.save(ps);
 										}
-										ps = new PkSource.PkSourceBuilder(md5, ndf.getName(), nf.length(), extNoDot, Files.probeContentType(nf.toPath())).build();
-										pkSourceRepository.save(ps);
-									} else {
-										ps.setUpdatedAt(Date.from(Instant.now()));
-										pkSourceRepository.save(ps);
+									} catch (IOException e) {
+										LOGGER.error("save {} as pksource failed", downloaded.toAbsolutePath().toString());
 									}
-								} catch (IOException e) {
-									LOGGER.error("save {} as pksource failed", downloaded.toAbsolutePath().toString());
+								}
+							});
+						} catch (Exception e) {
+						} finally {
+							if (jsession != null) {
+								if (jsession.getSession().isConnected()) {
+									jsession.getSession().disconnect();
 								}
 							}
-						});
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -319,9 +327,14 @@ public class TaskRunner {
 		return mp;
 	}
 	
-	protected class NeedDownloadFile {
+	// need static for jackson to work.
+	protected static class NeedDownloadFile {
 		private String name;
 		private String fullName;
+		
+		public NeedDownloadFile() {
+		}
+		
 		public String getName() {
 			return name;
 		}
@@ -336,8 +349,11 @@ public class TaskRunner {
 		}
 	}
 	
-	protected class DownloadBLock {
+	protected static class DownloadBLock {
 		private List<NeedDownloadFile> files;
+		
+		public DownloadBLock() {
+		}
 
 		public List<NeedDownloadFile> getFiles() {
 			return files;
@@ -515,9 +531,9 @@ public class TaskRunner {
 
 		private void runOneThreadTaskDesc() {
 			Box box = oneThreadtaskDesc.getBox();
-
+			JschSession jsession = null;
 			try {
-				JschSession jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(applicationConfig.getSshKeyFile(box))
+				jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(applicationConfig.getSshKeyFile(box))
 						.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
 				
 				boolean needUploadFile = needUploadActions.contains(oneThreadtaskDesc.getAction()) || oneThreadtaskDesc.getAction().toUpperCase().startsWith("INSTALL");
@@ -529,15 +545,18 @@ public class TaskRunner {
 				if (oneThreadtaskDesc.getBoxHistory().isSuccess() || !needUploadFile) {
 					sshExecRunner.run(jsession, oneThreadtaskDesc);
 				}
-				if (jsession.getSession().isConnected()) {
-					jsession.getSession().disconnect();
-				}
 			} catch (Exception e) {
 				StringWriter sw = new StringWriter();
 				e.printStackTrace(new PrintWriter(sw));
 				oneThreadtaskDesc.getBoxHistory().appendLogAndSetFailure(sw.toString());
 				if (e instanceof java.io.InterruptedIOException) {
 					oneThreadtaskDesc.getBoxHistory().appendLogAndSetFailure("-----Notice---------\n, This error message maybe don't mean task failed, Pleach check software state manully.");
+				}
+			} finally {
+				if (jsession != null) {
+					if (jsession.getSession().isConnected()) {
+						jsession.getSession().disconnect();
+					}
 				}
 			}
 			int n = TaskRunner.this.getRunningThreads().decrementAndGet(); 

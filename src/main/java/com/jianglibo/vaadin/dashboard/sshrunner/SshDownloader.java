@@ -31,9 +31,11 @@ public class SshDownloader {
 		ChannelSftp sftp = null;
 		try {
 			sftp = jsession.getSftpCh();
+			sftp.connect();
 			sftp.get(remoteFilePath, dstFile.toAbsolutePath().toString());
 			return dstFile;
 		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
 			if (sftp != null) {
 				sftp.disconnect();

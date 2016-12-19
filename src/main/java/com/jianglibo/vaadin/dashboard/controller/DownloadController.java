@@ -40,6 +40,8 @@ public class DownloadController {
 			String md5 = pkname.substring(0, pkname.lastIndexOf('.'));
 			PkSource pk = pkSourceRepository.findByFileMd5(md5);
 			try {
+				pk.setDownloadCount(pk.getDownloadCount() + 1);
+				pkSourceRepository.save(pk);
 				response.setContentLengthLong(dst.toFile().length());
 				response.setContentType(pk.getMimeType());      
 				response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(pk.getPkname(), "utf-8"));

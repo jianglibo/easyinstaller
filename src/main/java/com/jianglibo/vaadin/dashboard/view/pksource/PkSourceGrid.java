@@ -8,6 +8,7 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.uicomponent.grid.BaseGrid;
+import com.jianglibo.vaadin.dashboard.util.ColumnUtil;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 
 @SuppressWarnings("serial")
@@ -20,6 +21,14 @@ public class PkSourceGrid extends BaseGrid<PkSource, FreeContainer<PkSource>> {
 
 	@Override
 	protected void addGeneratedProperty(GeneratedPropertyContainer gpcontainer, String name) {
+	}
+	
+	@Override
+	protected void setupColumn(Column col, String cn) {
+		super.setupColumn(col, cn);
+		if ("length".equals(cn)) {
+			ColumnUtil.setFileLengthRender(col);
+		}
 	}
 
 	@Override
