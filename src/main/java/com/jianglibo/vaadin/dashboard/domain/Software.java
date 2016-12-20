@@ -185,16 +185,16 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 		}
 	}
 	
-	public Map<String, String> getActionDescriptionsMap() {
-		Map<String, String> mp = Maps.newHashMap();
-		try {
-			JavaType jt = SoftwareUtil.ymlObjectMapper.getTypeFactory().constructParametrizedType(Map.class,Map.class, String.class, String.class);
-			mp = SoftwareUtil.ymlObjectMapper.readValue(getActionDescriptions(),jt);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return mp;
-	}
+//	public Map<String, String> getActionDescriptionsMap() {
+//		Map<String, String> mp = Maps.newHashMap();
+//		try {
+//			JavaType jt = SoftwareUtil.ymlObjectMapper.getTypeFactory().constructParametrizedType(Map.class,Map.class, String.class, String.class);
+//			mp = SoftwareUtil.ymlObjectMapper.readValue(getActionDescriptions(),jt);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		return mp;
+//	}
 	
 	public Map<String, Long> getTimeOutMaps() {
 		Map<String, Long> mp = Maps.newHashMap();
