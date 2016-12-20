@@ -73,7 +73,7 @@ public class OneBoxGroupHistoriesGrid extends BaseGrid<BoxGroupHistory, FreeCont
 		HorizontalLayout hl = new HorizontalLayout();
 		hl.setSpacing(true);
 		
-		redoBt = new Button(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(getMessageSource(), "view.clustersoftware.button.redo"));
+		redoBt = new Button(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(getMessageSource(), "view.clustersoftware.button.", "redo"));
 		hl.addComponent(redoBt);
 		redoBt.setEnabled(false);
 		
@@ -89,7 +89,7 @@ public class OneBoxGroupHistoriesGrid extends BaseGrid<BoxGroupHistory, FreeCont
 			}
 		});
 		
-		dspBt = new Button(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(getMessageSource(), "view.clustersoftware.button.boxhistories"));
+		dspBt = new Button(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(getMessageSource(), "view.clustersoftware.button.", "boxhistories"));
 		hl.addComponent(dspBt);
 		dspBt.setEnabled(false);
 		

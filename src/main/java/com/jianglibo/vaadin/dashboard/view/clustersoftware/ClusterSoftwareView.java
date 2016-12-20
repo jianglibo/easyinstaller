@@ -140,9 +140,9 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		String mpx = vgw.getVg().messagePrefix();
 		BoxTwinGridFieldFree boxesToRun = new BoxTwinGridFieldFree(bcInRc, domains, messageSource, boxRepository, 3 , 3, mpx, mpx);
 		
-		boxesToRun.setCaption(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.selectboxes"));
+		boxesToRun.setCaption(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.", "selectboxes"));
 		boxesToRun.setSizeFull();
-		Button ok = new Button(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "shared.btn.execute"));
+		Button ok = new Button(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "shared.btn.", "execute"));
 		ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		ok.addClickListener(new ClickListener() {
 			@Override
@@ -216,7 +216,7 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		backBtn = new Button(FontAwesome.MAIL_REPLY);
 		StyleUtil.hide(backBtn);
 
-		backBtn.setDescription(MsgUtil.getMsgWithSubsReturnKeyOnAbsent( messageSource ,"shared.btn.return"));
+		backBtn.setDescription(MsgUtil.getMsgWithSubsReturnKeyOnAbsent( messageSource ,"shared.btn.", "return"));
 		
 		backBtn.addClickListener(event -> {
 			this.backward();

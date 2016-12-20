@@ -162,11 +162,11 @@ public class MsgUtil {
 		return name;
 	}
 	
-	public static String getMsgWithSubsReturnKeyOnAbsent(MessageSource messageSource, String key, String...substitudes) {
+	public static String getMsgWithSubsReturnKeyOnAbsent(MessageSource messageSource,String prefix, String key, String...substitudes) {
 		try {
-			return messageSource.getMessage(key, substitudes, UI.getCurrent().getLocale());
+			return messageSource.getMessage(prefix + key, substitudes, UI.getCurrent().getLocale());
 		} catch (NoSuchMessageException e) {
-			LOGGER.info("field {} has no localized message", key);
+			LOGGER.info("field {} has no localized message",prefix + key);
 		}
 		return key;
 	}

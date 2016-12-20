@@ -194,7 +194,7 @@ public class ImportSoftwareView extends VerticalLayout implements View {
 		backBtn = new Button(FontAwesome.MAIL_REPLY);
 		StyleUtil.hide(backBtn);
 
-		backBtn.setDescription(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "shared.btn.return"));
+		backBtn.setDescription(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "shared.btn.", "return"));
 
 		backBtn.addClickListener(event -> {
 			this.backward();

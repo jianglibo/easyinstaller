@@ -128,7 +128,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(EnvFixtureView.clas
 		backBtn = new Button(FontAwesome.MAIL_REPLY);
 		StyleUtil.hide(backBtn);
 
-		backBtn.setDescription(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "shared.btn.return"));
+		backBtn.setDescription(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "shared.btn.", "return"));
 
 		backBtn.addClickListener(event -> {
 			this.backward();

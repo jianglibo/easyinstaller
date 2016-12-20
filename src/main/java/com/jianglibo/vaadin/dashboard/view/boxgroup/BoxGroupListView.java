@@ -1,8 +1,15 @@
 package com.jianglibo.vaadin.dashboard.view.boxgroup;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -10,17 +17,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Sort;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
+import com.google.common.hash.Hashing;
+import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
+import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.data.container.FreeContainer;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
+import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
+import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.UnArchiveButtonDescription;
@@ -38,8 +52,10 @@ import com.jianglibo.vaadin.dashboard.uicomponent.upload.SimplifiedUploadResultL
 import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
+import com.jianglibo.vaadin.dashboard.util.StrUtil;
 import com.jianglibo.vaadin.dashboard.view.clustersoftware.ClusterSoftwareView;
 import com.jianglibo.vaadin.dashboard.view.envfixture.EnvFixtureCreator;
+import com.jianglibo.vaadin.dashboard.view.pksource.PkSourceListView;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -60,14 +76,20 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 	private final BoxGroupRepository repository;
 	
 	private final EnvFixtureCreator envFixtureCreator;
+	
+	private final ApplicationConfig applicationConfig;
+	
+	private final PkSourceRepository pkSourceRepository;
 
 	
 	@Autowired
 	public BoxGroupListView(BoxGroupRepository repository,Domains domains, MessageSource messageSource,
-			ApplicationContext applicationContext, EnvFixtureCreator envFixtureCreator) {
+			ApplicationContext applicationContext, EnvFixtureCreator envFixtureCreator, ApplicationConfig applicationConfig, PkSourceRepository pkSourceRepository) {
 		super(applicationContext, messageSource, domains, BoxGroup.class, BoxGroupGrid.class);
 		this.repository = repository;
 		this.envFixtureCreator = envFixtureCreator;
+		this.applicationConfig = applicationConfig;
+		this.pkSourceRepository = pkSourceRepository;
 		delayCreateContent();
 	}
 
@@ -76,7 +98,9 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 		new ButtonGroup(new EditButtonDescription(),new AddButtonDescription()),//
 		new ButtonGroup(new DeleteButtonDescription(), new UnArchiveButtonDescription()),
 		new ButtonGroup( //
-					new SimpleButtonDescription("manageClusterSoftware", null, ButtonEnableType.ONE))};
+					new SimpleButtonDescription("manageClusterSoftware", null, ButtonEnableType.ONE)),
+		new ButtonGroup( //
+					new SimpleButtonDescription("createUpdateHostPs1", null, ButtonEnableType.ONE))};
 	}
 	
 	@Override
@@ -120,6 +144,41 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 			break;
 		case "manageClusterSoftware":
 			UI.getCurrent().getNavigator().navigateTo(ClusterSoftwareView.VIEW_NAME + "/?boxgroup=" + selected.iterator().next().getId()  + "&pv=" + getLvfb().toNavigateString());
+			break;
+		case "createUpdateHostPs1":
+			try {
+				BoxGroup bg = selected.iterator().next();
+				String pairs = StrUtil.doubleQuotation(bg.getBoxes().stream().filter(box -> !box.getIp().equals(box.getHostname())).map(box -> box.getIp() + " " + box.getHostname()).collect(Collectors.joining(",")));
+				Resource rs = getApplicationContext().getResource("classpath:snippets/HostModifier.ps1");
+				List<String> lines =  CharStreams.readLines(new InputStreamReader(rs.getInputStream(), Charsets.UTF_8));
+				lines = lines.stream().map(l -> {
+					if (l.contains("---insert-items-here---")) {
+						return "$items = " + pairs;
+					} else {
+						return l;
+					}
+				}).collect(Collectors.toList());
+				
+				String uuid = UUID.randomUUID().toString();
+				Path tmpPath = applicationConfig.getUploadDstPath().resolve(uuid);
+				Files.write(Joiner.on(System.lineSeparator()).join(lines), tmpPath.toFile(), StandardCharsets.UTF_8);
+				String md5 = com.google.common.io.Files.asByteSource(tmpPath.toFile()).hash(Hashing.md5()).toString();
+				PkSource ps = pkSourceRepository.findByFileMd5(md5);
+				if (ps == null) {
+					File nf = new File(tmpPath.toFile().getParentFile(), md5 + ".ps1");
+					if (!nf.exists()) {
+						com.google.common.io.Files.move(tmpPath.toFile(), nf);
+					}
+					ps = new PkSource.PkSourceBuilder(md5, "HostModifier-" + md5 + ".ps1", nf.length(), "ps1", java.nio.file.Files.probeContentType(nf.toPath())).build();
+					pkSourceRepository.save(ps);
+				} else {
+					ps.setUpdatedAt(Date.from(Instant.now()));
+					pkSourceRepository.save(ps);
+				}
+				NotificationUtil.tray(getMessageSource(), "go to '" + MsgUtil.getViewMenuMsg(getMessageSource(), PkSourceListView.VIEW_NAME) + "', to download ps1 file to execute." );
+			} catch (IOException e) {
+				NotificationUtil.errorRaw(e.getMessage());
+			}
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());

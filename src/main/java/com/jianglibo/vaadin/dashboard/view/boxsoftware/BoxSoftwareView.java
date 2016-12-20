@@ -54,7 +54,7 @@ public class BoxSoftwareView extends VerticalLayout implements View {
 		vl.setSpacing(true);
 		vl.setSizeFull();
 
-		Label label = new Label(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.boxsoftware.intro"));
+		Label label = new Label(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.boxsoftware.", "intro"));
 		StyleUtil.setMarginTwenty(label);
 		Component c = createInstallForm();
 		vl.addComponents(label, c);

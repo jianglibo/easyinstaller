@@ -63,15 +63,15 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 	
 	
 	private PropertyIdAndField createDescriptionField() {
-		actionParameterTpl = new TextArea(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.actionpatpl"));
+		actionParameterTpl = new TextArea(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.", "actionpatpl"));
 		actionParameterTpl.setRows(4);
 		return new PropertyIdAndField("actionParameterTpl", actionParameterTpl);
 	}
 
 	private PropertyIdAndField createOthersField() {
-		othersField = new TextArea(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.others"));
+		othersField = new TextArea(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.", "others"));
 		othersField.setRows(4);
-		String desc = MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.desc.others");
+		String desc = MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.desc.", "others");
 		if (!desc.equals("view.clustersoftware.form.desc.others")) {
 			othersField.setDescription(desc);
 		}
@@ -79,7 +79,7 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 	}
 
 	private PropertyIdAndField createActionField() {
-		actionCb = new ComboBox(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.action"));
+		actionCb = new ComboBox(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.", "action"));
 		actionCb.setNewItemsAllowed(false);
 		
 		if (softwareCb != null) {
@@ -120,7 +120,7 @@ public class InstallNewSoftwareForm extends FormBaseFree<InstallNewSoftwareVo>{
 	}
 
 	private PropertyIdAndField createSoftwareField() {
-		softwareCb = new ComboBox(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.software"));
+		softwareCb = new ComboBox(MsgUtil.getMsgWithSubsReturnKeyOnAbsent(messageSource, "view.clustersoftware.form.", "software"));
 		softwareCb.setNewItemsAllowed(false);
 //		AllSoftwareContainer fc = new AllSoftwareContainer(domains, 10, Lists.newArrayList());
 		softwareCb.setItemCaptionMode(ItemCaptionMode.PROPERTY);
