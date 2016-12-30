@@ -28,6 +28,7 @@ import com.jianglibo.vaadin.dashboard.repositories.TextFileRepository;
 import com.jianglibo.vaadin.dashboard.util.SoftwareFolder;
 import com.jianglibo.vaadin.dashboard.util.SoftwarePackUtil;
 import com.jianglibo.vaadin.dashboard.util.ThrowableUtil;
+import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 import com.jianglibo.vaadin.dashboard.vo.SoftwareImportResult;
 
 /**
@@ -151,6 +152,13 @@ public class SoftwareImportor {
 						return textFileRepository.save(tf);
 					}).collect(Collectors.toSet()));
 					newSf = softwareRepository.save(sfInDb);
+					try {
+						newSf.getFilesToUpload().stream().map(FileToUploadVo::new).filter(FileToUploadVo::isRemoteFile).forEach(ftu -> {
+							softwareDownloader.submitTasks(ftu);
+						});
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				sir.setSoftware(newSf);
 			try {
