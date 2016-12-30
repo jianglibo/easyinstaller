@@ -72,7 +72,7 @@ public class Software extends BaseEntity implements HasUpdatedAt {
 	@VaadinFormField(order = 10)
 	@VaadinTableColumn(alignment = Align.LEFT)
 	@NotNull
-	@VaadinGridColumn
+	@VaadinGridColumn(filterable=true)
 	private String name;
 
 	@VaadinFormField(order = 15)
