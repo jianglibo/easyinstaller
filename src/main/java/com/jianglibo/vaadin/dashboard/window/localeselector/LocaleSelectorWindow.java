@@ -193,15 +193,7 @@ public class LocaleSelectorWindow extends Window {
 				} else {
 					LOGGER.info("change language from {} to {}", curLan, lan.getCode());
 				}
-//				Locale newLocale = new Locale(lan.getCode());
-//				VaadinSession.getCurrent().setLocale(newLocale);
-//
-//				HttpServletRequest originRequest = (VaadinServletRequest) VaadinService.getCurrentRequest();
-//				LOGGER.info("origin request: {}", originRequest);
-//				HttpServletResponse originResponse = (VaadinServletResponse) VaadinService.getCurrentResponse();
-//				LOGGER.info("origin response: {}", originResponse);
-//				localeResolver.setLocale(originRequest, originResponse, newLocale);
-				UI.getCurrent().getPage().setLocation("/localeswitch?lo=" + lan.getCode());
+				UI.getCurrent().getPage().setLocation("/localeswitch?language=" + lan.getCode());
 			}
 		});
 		return table;

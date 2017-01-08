@@ -20,8 +20,8 @@ public class HomeController {
 	private LocaleResolver localeResolver;
     
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	public String redirectToVaadin(HttpServletRequest req, HttpServletResponse res, @RequestParam String lo) {
-		Locale newLocale = new Locale(lo);
+	public String redirectToVaadin(HttpServletRequest req, HttpServletResponse res, @RequestParam String language) {
+		Locale newLocale = new Locale(language);
 		localeResolver.setLocale(req, res, newLocale);
 		return "redirect:/";
 	}

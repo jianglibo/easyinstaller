@@ -191,9 +191,12 @@ public class TaskRunner {
 					Set<BoxHistory> bhs = Sets.newHashSet();
 					long successes = result.stream().filter(Objects::nonNull).map(td -> {
 						BoxHistory bh = boxHistoryRepository.save(td.getBoxHistory());
-						bh.getBox().getHistories().add(bh);
+						// may cause org.eclipse.persistence.exceptions.OptimisticLockException
+						Box box = boxRepository.findOne(bh.getBox().getId());
+						box.getHistories().add(bh);
 						bhs.add(bh);
-						boxRepository.save(bh.getBox());
+						box = boxRepository.save(box);
+						bh.setBox(box);;
 						return bh;
 					}).filter(BoxHistory::isSuccess).count();
 					
@@ -211,7 +214,8 @@ public class TaskRunner {
 					}
 					bgHistoriesSofar++;
 					
-					BoxGroup bg = taskDesc.getBoxGroup();
+					BoxGroup bg = boxGroupRepository.findOne(taskDesc.getBoxGroup().getId());
+					
 					bg.getHistories().add(bgh);
 					List<BoxGroupHistory> newBhistories = bg.getHistories();
 					newBhistories.add(bgh);

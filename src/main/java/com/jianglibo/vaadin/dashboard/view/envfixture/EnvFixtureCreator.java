@@ -102,12 +102,14 @@ public class EnvFixtureCreator {
 		}
 
 		bg.setCreator(person);
-
+		
+		Set<Box> waitingToSaves = bg.getBoxes();
+		bg.setBoxes(Sets.newHashSet());
 		bg = boxGroupRepository.save(bg);
 
 		final Set<BoxGroup> bgs = Sets.newHashSet(bg);
 
-		Set<Box> boxes = bg.getBoxes().stream().map(box -> {
+		Set<Box> boxes = waitingToSaves.stream().map(box -> {
 			Box boxInDb = boxRepository.findByIp(box.getIp());
 			Set<String> roles = Sets.newHashSet();
 			if (boxInDb != null) {
