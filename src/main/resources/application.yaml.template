@@ -30,6 +30,12 @@ spring:
             defaultPageSize: 10
             returnBodyOnCreate: true
             returnBodyOnupdate: false
+    messages:
+        basename: messages/all,messages/subs/format
+        always-use-message-format: false
+        cache-seconds: -1
+        encoding: UTF-8
+        fallback-to-system-locale: true
     rabbitmq:
         port: 5672
         username:
