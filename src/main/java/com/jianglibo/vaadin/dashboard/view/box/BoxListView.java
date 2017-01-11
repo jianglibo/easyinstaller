@@ -70,7 +70,7 @@ public class BoxListView extends BaseGridView<Box, BoxGrid, FreeContainer<Box>> 
 			}
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-					repository.delete(b.getId());
+					repository.delete(b);
 					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
 					b.setArchived(true);
@@ -95,7 +95,7 @@ public class BoxListView extends BaseGridView<Box, BoxGrid, FreeContainer<Box>> 
 				b.setArchived(false);
 			});
 			repository.save(selected);
-			refreshAfterItemContentChange();
+			refreshAfterItemNumberChange();
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());

@@ -53,7 +53,7 @@ public class LocaleSelector {
 
 	private static final Set<String> supportedLanguages = Sets.newHashSet("en", "zh");
 
-	private final LocaleResolver localeResolver;
+//	private final LocaleResolver localeResolver;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocaleSelector.class);
 
@@ -71,7 +71,7 @@ public class LocaleSelector {
 	
 	public LocaleSelector(MessageSource messageSource, LocaleResolver localeResolver){
 		this.messageSource = messageSource;
-		this.localeResolver = localeResolver;
+//		this.localeResolver = localeResolver;
 	}
 
 	public Button getButton() {
@@ -219,9 +219,9 @@ public class LocaleSelector {
 				Locale newLocale = new Locale(lan.getCode());
 				VaadinSession.getCurrent().setLocale(newLocale);
 
-				HttpServletRequest originRequest = (VaadinServletRequest) VaadinService.getCurrentRequest();
-				HttpServletResponse originResponse = (VaadinServletResponse) VaadinService.getCurrentResponse();
-				localeResolver.setLocale(originRequest, originResponse, newLocale);
+//				HttpServletRequest originRequest = (VaadinServletRequest) VaadinService.getCurrentRequest();
+//				HttpServletResponse originResponse = (VaadinServletResponse) VaadinService.getCurrentResponse();
+//				localeResolver.setLocale(originRequest, originResponse, newLocale);
 				UI.getCurrent().getPage().reload();
 			}
 		});

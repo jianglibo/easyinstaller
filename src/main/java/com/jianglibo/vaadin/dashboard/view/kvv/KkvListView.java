@@ -80,7 +80,7 @@ public class KkvListView extends BaseGridView<Kkv, KkvGrid, FreeContainer<Kkv>> 
 				bg.setArchived(false);
 			});
 			repository.save(selected);
-			refreshAfterItemContentChange();
+			refreshAfterItemNumberChange();
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());

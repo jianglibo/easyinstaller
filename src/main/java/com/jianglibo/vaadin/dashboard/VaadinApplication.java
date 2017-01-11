@@ -102,14 +102,14 @@ public class VaadinApplication {
     }
     
     
-    @Bean
-    public MessageSource messageSource() {
-    	ResourceBundleMessageSource parent = new ResourceBundleMessageSource();
-    	parent.setBasename("messages.all");
-    	ResourceBundleMessageSource rbm = new ResourceBundleMessageSource();
-    	rbm.setParentMessageSource(parent);
-    	rbm.setBasenames("messages.subs.format");
-    	return rbm;
-    }
+//    @Bean
+//    public MessageSource messageSource() {
+//    	ResourceBundleMessageSource parent = new ResourceBundleMessageSource();
+//    	parent.setBasename("messages.all");
+//    	ResourceBundleMessageSource rbm = new ResourceBundleMessageSource();
+//    	rbm.setParentMessageSource(parent);
+//    	rbm.setBasenames("messages.subs.format");
+//    	return rbm;
+//    }
 
 }
