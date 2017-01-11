@@ -140,7 +140,7 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 				bg.setArchived(false);
 			});
 			repository.save(selected);
-			refreshAfterItemContentChange();
+			refreshAfterItemNumberChange();
 			break;
 		case "manageClusterSoftware":
 			UI.getCurrent().getNavigator().navigateTo(ClusterSoftwareView.VIEW_NAME + "/?boxgroup=" + selected.iterator().next().getId()  + "&pv=" + getLvfb().toNavigateString());

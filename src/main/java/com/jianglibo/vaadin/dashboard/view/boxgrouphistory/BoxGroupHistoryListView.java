@@ -207,7 +207,7 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 				bg.setArchived(false);
 			});
 			repository.save(selected);
-			refreshAfterItemContentChange();
+			refreshAfterItemNumberChange();
 			break;
 		case "boxhistories":
 			UI.getCurrent().getNavigator().navigateTo(BoxHistoryListView.VIEW_NAME + "/?boxGroupHistoryId=" + selected.get(0).getId() + "&pv=" + getLvfb().toNavigateString());

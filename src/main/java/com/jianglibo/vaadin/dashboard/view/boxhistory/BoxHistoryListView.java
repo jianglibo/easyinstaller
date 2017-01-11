@@ -209,7 +209,7 @@ public class BoxHistoryListView extends BaseGridView<BoxHistory, BoxHistoryGrid,
 				bg.setArchived(false);
 			});
 			repository.save(selected);
-			refreshAfterItemContentChange();
+			refreshAfterItemNumberChange();
 			break;
 		default:
 			LOGGER.error("unKnown menuName {}", btnDesc.getItemId());
