@@ -61,6 +61,7 @@ import com.jianglibo.vaadin.dashboard.sshrunner.SshDownloader;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshExecRunner;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshUploadRunner;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
+import com.jianglibo.vaadin.dashboard.util.RunOrNotRun;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
 /**
@@ -153,6 +154,8 @@ public class TaskRunner {
 		
 		NotificationUtil.tray(messageSource, "tasksent");
 		
+		RunOrNotRun rnr = new RunOrNotRun(taskDesc.getSoftware());
+		
 		// filter boxes they have no role in software's possible roles.
 		List<OneThreadTaskDesc> onetds = taskDesc.createOneThreadTaskDescs().stream().filter(otd -> {
 			
@@ -170,7 +173,12 @@ public class TaskRunner {
 				}
 			}
 			return false;
-		}).collect(Collectors.toList());
+		}).filter(rnr::needRun) // filter RunOrNotRun again.
+		.collect(Collectors.toList());
+		
+
+
+		
 
 		List<ListenableFuture<OneThreadTaskDesc>> llfs = onetds.stream().map(td -> service.submit(new OneTaskCallable(td)))
 				.collect(Collectors.toList());
