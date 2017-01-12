@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +24,8 @@ import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Software;
+import com.jianglibo.vaadin.dashboard.service.AppObjectMappers;
+import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 
 @Component
 public class SoftwareUtil {
@@ -34,6 +37,9 @@ public class SoftwareUtil {
 	public static final String UTF8_BOM = "\uFEFF";
 	
 	public static final ObjectMapper ymlObjectMapper = new ObjectMapper(new YAMLFactory());
+	
+	@Autowired
+	private AppObjectMappers appObjectmappers;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoftwareUtil.class);
 	
@@ -53,6 +59,30 @@ public class SoftwareUtil {
 		} else {
 			return "LF";
 		}
+	}
+	
+	private Map<String, Object> getConfigContentObj(Software software) {
+		Map<String, Object> ccobj = null;
+		if (Strings.isNullOrEmpty(software.getConfigContent())) {
+			return null;
+		}
+		try {
+			ccobj = appObjectmappers.getYmlObjectMapper().readValue(software.getConfigContent(), Map.class);
+		} catch (Exception e) {
+		}
+		return ccobj;
+	}
+	
+	public boolean needRun(OneThreadTaskDesc ottd) {
+		Map<String, Object> ccobj = getConfigContentObj(ottd.getSoftware()); 
+		if ( ccobj == null) {
+			return true;
+		}
+		if (ccobj.containsKey("serverToRun")) {
+			Map<String, Object> serverToRun = (Map<String, Object>) ccobj.get("serverToRun");
+			
+		}
+		return false;
 	}
 	
 	@Autowired

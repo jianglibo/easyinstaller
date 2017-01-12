@@ -1,0 +1,47 @@
+installDir: /opt/hadoop
+dfsClusterName: mydfscluster
+envvs:
+  # If is relative path, It relate to installDir
+  HADOOP_PID_DIR: dfspiddir
+  HADOOP_LOG_DIR: dfslogdir
+  YARN_LOG_DIR: yarnlogdir
+  YARN_PID_DIR: yarnpiddir
+# YARN_CONF_DIR  Alternate conf dir. Default is ${HADOOP_YARN_HOME}/conf.
+# YARN_MASTER    host:path where hadoop code should be rsync'd from
+# YARN_IDENT_STRING   A string representing this instance of hadoop. $USER by default
+# YARN_NICENESS The scheduling priority for daemons. Defaults to 0.
+firewall:
+  NameNode: 8020,50070,50470,50090,50091
+  DataNode: 50010,50075,50020,50475
+  ResourceManager: 8032,8033,8042,8030,8031
+  NodeManager: 8042,30000-65535
+ports:
+  namenode:
+    api: 8020
+    http: 50070
+    https: 50470
+    backup: 50100
+    backuphttp: 50105
+  journalnode:
+    rpc: 8485
+    http: 8480
+    https: 8481
+  snamenode:
+    http: 50090
+    https: 50091
+  datanode:
+    api: 50010
+    http: 50075
+    ipc: 50020
+    https: 50475
+  resourcemanager:
+    api: 8032
+    scheduler: 8030
+    resourceTracker: 8031
+    admin: 8033
+    webapp: 8042
+serverToRun:
+    Invoke-DfsCmd:
+        number: one
+        roles:
+            - NameNode
