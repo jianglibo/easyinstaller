@@ -45,3 +45,5 @@ serverToRun:
         number: one
         roles:
             - NameNode
+needUpload:
+    - install

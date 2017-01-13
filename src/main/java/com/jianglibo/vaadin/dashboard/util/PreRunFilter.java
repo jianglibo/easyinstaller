@@ -13,7 +13,7 @@ import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.domain.Software;
 import com.jianglibo.vaadin.dashboard.taskrunner.OneThreadTaskDesc;
 
-public class RunOrNotRun {
+public class PreRunFilter {
 	
 	public static final ObjectMapper ymlObjectMapper = new ObjectMapper(new YAMLFactory());
 	
@@ -21,9 +21,9 @@ public class RunOrNotRun {
 	
 	private boolean oneHasSelected = false;
 	
-	protected RunOrNotRun() {}
+	protected PreRunFilter() {}
 	
-	public RunOrNotRun(Software software) {
+	public PreRunFilter(Software software) {
 		setScc(parse(software.getConfigContent()));
 	}
 	
@@ -35,6 +35,7 @@ public class RunOrNotRun {
 				rc.setRoles(rc.getRoles().stream().map(r -> r.toUpperCase()).collect(Collectors.toSet()));
 				newWstr.put(k.toUpperCase(), rc);
 			});
+			scc.setNeedUpload(scc.getNeedUpload().stream().map(String::toUpperCase).collect(Collectors.toSet()));
 			scc.setServerToRun(newWstr);
 			return scc;
 		} catch (IOException e) {
@@ -74,6 +75,21 @@ public class RunOrNotRun {
 		return true;
 	}
 	
+	public boolean needUpload(String action) {
+		if ("install".equalsIgnoreCase(action) || "changeYumSource".equalsIgnoreCase(action)) { // compatibility with early code.
+			return true;
+		}
+		if (scc == null) {
+			return false;
+		}
+		
+		if (scc.getNeedUpload().contains(action.toUpperCase())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	
 	public SoftwareConfigContent getScc() {
 		return scc;
@@ -88,6 +104,8 @@ public class RunOrNotRun {
 	public static class SoftwareConfigContent {
 		
 		private Map<String, ToRunConfig> serverToRun = Maps.newHashMap();
+		
+		private Set<String> needUpload = Sets.newHashSet();
 
 		public Map<String, ToRunConfig> getServerToRun() {
 			return serverToRun;
@@ -95,6 +113,14 @@ public class RunOrNotRun {
 
 		public void setServerToRun(Map<String, ToRunConfig> serverToRun) {
 			this.serverToRun = serverToRun;
+		}
+
+		public Set<String> getNeedUpload() {
+			return needUpload;
+		}
+
+		public void setNeedUpload(Set<String> needUpload) {
+			this.needUpload = needUpload;
 		}
 	}
 	

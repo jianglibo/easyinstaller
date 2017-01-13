@@ -12,17 +12,17 @@ import java.nio.file.Paths;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import com.jianglibo.vaadin.dashboard.util.RunOrNotRun.SoftwareConfigContent;
+import com.jianglibo.vaadin.dashboard.util.PreRunFilter.SoftwareConfigContent;
 
 
-public class TestRunOrNotRun {
+public class TestPreRunFilter {
 	
 	private Path ccpp = Paths.get("fixtures", "configcontent");
 	
 	@Test
 	public void hasKey() throws IOException {
 		String hasKeyStr = new String(Files.readAllBytes(ccpp.resolve("has-server-to-run-key.yml")));
-		RunOrNotRun ronr = new RunOrNotRun();
+		PreRunFilter ronr = new PreRunFilter();
 		
 		SoftwareConfigContent scc = ronr.parse(hasKeyStr);
 		
@@ -33,7 +33,7 @@ public class TestRunOrNotRun {
 	@Test
 	public void noKey() throws IOException {
 		String hasKeyStr = new String(Files.readAllBytes(ccpp.resolve("no-server-to-run-key.yml")));
-		RunOrNotRun ronr = new RunOrNotRun();
+		PreRunFilter ronr = new PreRunFilter();
 		
 		SoftwareConfigContent scc = ronr.parse(hasKeyStr);
 		assertNull(scc.getServerToRun());

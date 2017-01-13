@@ -61,7 +61,7 @@ import com.jianglibo.vaadin.dashboard.sshrunner.SshDownloader;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshExecRunner;
 import com.jianglibo.vaadin.dashboard.sshrunner.SshUploadRunner;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
-import com.jianglibo.vaadin.dashboard.util.RunOrNotRun;
+import com.jianglibo.vaadin.dashboard.util.PreRunFilter;
 import com.jianglibo.vaadin.dashboard.vo.FileToUploadVo;
 
 /**
@@ -122,8 +122,6 @@ public class TaskRunner {
 	
 	private int bgHistoriesSofar = 0;
 	
-	private static Set<String> needUploadActions = Sets.newHashSet("install", "changeYumSource");
-
 	public TaskRunner() {
 		this.service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
 	}
@@ -154,7 +152,7 @@ public class TaskRunner {
 		
 		NotificationUtil.tray(messageSource, "tasksent");
 		
-		RunOrNotRun rnr = new RunOrNotRun(taskDesc.getSoftware());
+		PreRunFilter rnr = new PreRunFilter(taskDesc.getSoftware());
 		
 		// filter boxes they have no role in software's possible roles.
 		List<OneThreadTaskDesc> onetds = taskDesc.createOneThreadTaskDescs().stream().filter(otd -> {
@@ -180,7 +178,7 @@ public class TaskRunner {
 
 		
 
-		List<ListenableFuture<OneThreadTaskDesc>> llfs = onetds.stream().map(td -> service.submit(new OneTaskCallable(td)))
+		List<ListenableFuture<OneThreadTaskDesc>> llfs = onetds.stream().map(td -> service.submit(new OneTaskCallable(td, rnr)))
 				.collect(Collectors.toList());
 		
 		int n = this.getRunningThreads().addAndGet(llfs.size());
@@ -520,9 +518,12 @@ public class TaskRunner {
 	private class OneTaskCallable implements Callable<OneThreadTaskDesc> {
 
 		private OneThreadTaskDesc oneThreadtaskDesc;
+		
+		private PreRunFilter rnr;
 
-		public OneTaskCallable(OneThreadTaskDesc taskDesc) {
+		public OneTaskCallable(OneThreadTaskDesc taskDesc, PreRunFilter rnr) {
 			this.oneThreadtaskDesc = taskDesc;
+			this.rnr = rnr;
 		}
 
 		@Override
@@ -548,7 +549,7 @@ public class TaskRunner {
 				jsession = new JschSessionBuilder().setHost(box.getIp()).setKeyFile(applicationConfig.getSshKeyFile(box))
 						.setPort(box.getPort()).setSshUser(box.getSshUser()).build();
 				
-				boolean needUploadFile = needUploadActions.contains(oneThreadtaskDesc.getAction()) || oneThreadtaskDesc.getAction().toUpperCase().startsWith("INSTALL");
+				boolean needUploadFile = rnr.needUpload(oneThreadtaskDesc.getAction());
 				
 				if (needUploadFile) {
 					sshUploadRunner.run(jsession, oneThreadtaskDesc);
