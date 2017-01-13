@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
@@ -34,6 +35,7 @@ import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.domain.PkSource;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
+import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PkSourceRepository;
 import com.jianglibo.vaadin.dashboard.repositories.RepositoryCommonCustom;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
@@ -80,16 +82,19 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 	private final ApplicationConfig applicationConfig;
 	
 	private final PkSourceRepository pkSourceRepository;
+	
+	private final BoxHistoryRepository boxHistoryRepository;
 
 	
 	@Autowired
 	public BoxGroupListView(BoxGroupRepository repository,Domains domains, MessageSource messageSource,
-			ApplicationContext applicationContext, EnvFixtureCreator envFixtureCreator, ApplicationConfig applicationConfig, PkSourceRepository pkSourceRepository) {
+			ApplicationContext applicationContext, EnvFixtureCreator envFixtureCreator, ApplicationConfig applicationConfig, PkSourceRepository pkSourceRepository,BoxHistoryRepository boxHistoryRepository) {
 		super(applicationContext, messageSource, domains, BoxGroup.class, BoxGroupGrid.class);
 		this.repository = repository;
 		this.envFixtureCreator = envFixtureCreator;
 		this.applicationConfig = applicationConfig;
 		this.pkSourceRepository = pkSourceRepository;
+		this.boxHistoryRepository = boxHistoryRepository;
 		delayCreateContent();
 	}
 
@@ -116,6 +121,13 @@ public class BoxGroupListView extends BaseGridView<BoxGroup, BoxGroupGrid, FreeC
 			}
 			selected.forEach(b -> {
 				if (b.isArchived()) {
+					b.getHistories().forEach(bgh -> {
+						bgh.getBoxHistories().forEach(bh -> {
+							bh.setBoxGroupHistory(null);
+							boxHistoryRepository.save(bh);
+						});
+						bgh.setBoxHistories(Sets.newHashSet());
+					});
 					repository.delete(b.getId());
 					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {

@@ -2,7 +2,6 @@ package com.jianglibo.vaadin.dashboard.domain;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
@@ -51,7 +50,8 @@ public class BoxGroupHistory extends BaseEntity {
 	@VaadinGridColumn(order = 50, sortable=true)
 	private boolean success;
 	
-	@OneToMany(mappedBy="boxGroupHistory", fetch=FetchType.EAGER, cascade=CascadeType.REMOVE)
+	// boxhistory has remove cascade by box.
+	@OneToMany(mappedBy="boxGroupHistory", fetch=FetchType.EAGER/*, cascade=CascadeType.REMOVE*/)
 	private Set<BoxHistory> boxHistories = Sets.newHashSet();
 	
 	private boolean readed = false;

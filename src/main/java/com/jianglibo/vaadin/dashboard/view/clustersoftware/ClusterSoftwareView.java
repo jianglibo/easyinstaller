@@ -123,7 +123,7 @@ public class ClusterSoftwareView extends VerticalLayout implements View {
 		Component cib = new OneBoxGroupHistoriesGrid(taskRunner, obghdc,vgw, messageSource, sortableContainerPropertyIds, columnNames, vgw.getVg().messagePrefix());
 		vl.addComponent(cib);
 		vl.setExpandRatio(tb, 1);
-		vl.setExpandRatio(cib, 2);
+		vl.setExpandRatio(cib, 1);
 		addComponent(vl);
 		setExpandRatio(vl, 1);
 	}
