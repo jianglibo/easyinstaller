@@ -39,20 +39,21 @@ import com.jianglibo.vaadin.dashboard.service.SoftwareDownloader.DownloadMessage
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskDesc;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner.GroupTaskFinishMessage;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner.OneTaskFinishMessage;
+import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner.ReturnToClientDownloadFinishMessage;
 import com.jianglibo.vaadin.dashboard.taskrunner.TaskRunner.RunningThreadsMessage;
 import com.jianglibo.vaadin.dashboard.uicomponent.tile.TileBase;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
-import com.jianglibo.vaadin.dashboard.view.DashboardMenu;
 import com.jianglibo.vaadin.dashboard.view.LoginView;
-import com.jianglibo.vaadin.dashboard.view.MainMenuItems;
 import com.jianglibo.vaadin.dashboard.view.boxgrouphistory.BoxGroupHistoryViewMenuItem;
 import com.jianglibo.vaadin.dashboard.view.clustersoftware.ClusterSoftwareView;
 import com.jianglibo.vaadin.dashboard.view.dashboard.DashboardView;
 import com.jianglibo.vaadin.dashboard.view.dashboard.NewNewsTile;
-import com.jianglibo.vaadin.dashboard.view.software.SoftwareViewMenuItem;
+import com.jianglibo.vaadin.dashboard.view.menuatleft.DashboardMenu;
+import com.jianglibo.vaadin.dashboard.view.menuatleft.MainMenuItems;
+import com.jianglibo.vaadin.dashboard.view.pksource.PkSourceViewMenuItem;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelector;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
@@ -71,7 +72,6 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -327,11 +327,18 @@ public final class DashboardUI extends UI implements ApplicationContextAware,  B
 					if (getUniqueUiID().equals(gtfm.getUniqueUiId())) {
 						BoxGroupHistoryViewMenuItem bghvmi = (BoxGroupHistoryViewMenuItem)getDm().getMmis().getMenuMap().get(BoxGroupHistoryViewMenuItem.class.getName());
 						bghvmi.updateNotificationsCount(gtfm.getBgHistoriesSofar());
-						
-					if (getNavigator().getCurrentView() instanceof ClusterSoftwareView) {
-						ClusterSoftwareView csv = (ClusterSoftwareView) getNavigator().getCurrentView();
-						csv.getObghdc().refresh();
+						if (getNavigator().getCurrentView() instanceof ClusterSoftwareView) {
+							ClusterSoftwareView csv = (ClusterSoftwareView) getNavigator().getCurrentView();
+							csv.getObghdc().refresh();
+						}
+						push();
 					}
+					break;
+				case RETURNCLIENT_DOWNLOAD:
+					ReturnToClientDownloadFinishMessage rcdfm = (ReturnToClientDownloadFinishMessage) message.getBody();
+					if (getUniqueUiID().equals(rcdfm.getUniqueUiId())) {
+						PkSourceViewMenuItem pkvvmi = (PkSourceViewMenuItem)getDm().getMmis().getMenuMap().get(PkSourceViewMenuItem.class.getName());
+						pkvvmi.updateNotificationsCount(rcdfm.getBgHistoriesSofar());
 						push();
 					}
 					break;

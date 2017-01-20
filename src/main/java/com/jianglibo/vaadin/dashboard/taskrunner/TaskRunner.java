@@ -122,6 +122,8 @@ public class TaskRunner {
 	
 	private int bgHistoriesSofar = 0;
 	
+	private int rtcDownloadSofar = 0;
+	
 	public TaskRunner() {
 		this.service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
 	}
@@ -231,6 +233,7 @@ public class TaskRunner {
 					
 					saveNeedDownloadFiles(bg,bgh);
 					
+					Broadcaster.broadcast(new BroadCasterMessage(new ReturnToClientDownloadFinishMessage(rtcDownloadSofar, taskDesc.getUniqueUiId())));
 					Broadcaster.broadcast(new BroadCasterMessage(new GroupTaskFinishMessage(bgHistoriesSofar, taskDesc.getUniqueUiId())));
 			}
 
@@ -262,6 +265,7 @@ public class TaskRunner {
 											ps.setUpdatedAt(Date.from(Instant.now()));
 											pkSourceRepository.save(ps);
 										}
+										rtcDownloadSofar++;
 									} catch (IOException e) {
 										LOGGER.error("save {} as pksource failed", downloaded.toAbsolutePath().toString());
 									}
@@ -433,6 +437,31 @@ public class TaskRunner {
 	}
 
 
+	public static class ReturnToClientDownloadFinishMessage implements BroadCasterMessageBody {
+		
+		private final int downloadedSofar;
+		
+		private final String uniqueUiId;
+		
+		public ReturnToClientDownloadFinishMessage(int downloadedSofar, String uniqueUiId) {
+			super();
+			this.downloadedSofar = downloadedSofar;
+			this.uniqueUiId = uniqueUiId;
+			
+		}
+		
+		public BroadCasterMessageType getBroadCasterMessageType() {
+			return BroadCasterMessageType.RETURNCLIENT_DOWNLOAD;
+		}
+
+		public int getBgHistoriesSofar() {
+			return downloadedSofar;
+		}
+
+		public String getUniqueUiId() {
+			return uniqueUiId;
+		}
+	}
 
 	public static class GroupTaskFinishMessage implements BroadCasterMessageBody {
 		

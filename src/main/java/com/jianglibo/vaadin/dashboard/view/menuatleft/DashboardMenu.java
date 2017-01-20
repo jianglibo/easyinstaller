@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view;
+package com.jianglibo.vaadin.dashboard.view.menuatleft;
 
 import org.springframework.context.MessageSource;
 import org.springframework.web.servlet.LocaleResolver;
@@ -11,7 +11,6 @@ import com.jianglibo.vaadin.dashboard.security.M3958SecurityUtil;
 import com.jianglibo.vaadin.dashboard.security.PersonVo;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.util.MsgUtil;
-import com.jianglibo.vaadin.dashboard.view.kvv.KkvListView;
 import com.jianglibo.vaadin.dashboard.window.localeselector.LocaleSelectorWindow;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
@@ -152,16 +151,16 @@ public final class DashboardMenu extends CustomComponent {
 		return valoMenuToggleButton;
 	}
 	
-	private Component buildActivityMenuItems() {
-		CssLayout menuItemsLayout = new CssLayout();
-		menuItemsLayout.addStyleName("valo-menuitems");
-		Button btn = new Button();
-        btn.setPrimaryStyleName("valo-menu-item");
-        btn.setCaptionAsHtml(true);
-        btn.setCaption("<i class=\"fa fa-spinner fa-spin fa-3x fa-fw\"></i><span class=\"sr-only\">Loading...</span>");
-		menuItemsLayout.addComponent(btn);
-		return menuItemsLayout;
-	}
+//	private Component buildActivityMenuItems() {
+//		CssLayout menuItemsLayout = new CssLayout();
+//		menuItemsLayout.addStyleName("valo-menuitems");
+//		Button btn = new Button();
+//        btn.setPrimaryStyleName("valo-menu-item");
+//        btn.setCaptionAsHtml(true);
+//        btn.setCaption("<i class=\"fa fa-spinner fa-spin fa-3x fa-fw\"></i><span class=\"sr-only\">Loading...</span>");
+//		menuItemsLayout.addComponent(btn);
+//		return menuItemsLayout;
+//	}
 
 	private Component buildMenuItems() {
 		CssLayout menuItemsLayout = new CssLayout();

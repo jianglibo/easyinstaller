@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
+import com.jianglibo.vaadin.dashboard.DashboardUI;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridColumnWrapper;
 import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
@@ -35,11 +36,13 @@ import com.jianglibo.vaadin.dashboard.util.ListViewFragmentBuilder;
 import com.jianglibo.vaadin.dashboard.util.NotificationUtil;
 import com.jianglibo.vaadin.dashboard.util.StyleUtil;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 
 @SpringView(name = PkSourceListView.VIEW_NAME)
 public class PkSourceListView extends BaseGridView<PkSource, PkSourceGrid, FreeContainer<PkSource>>
@@ -117,6 +120,13 @@ public class PkSourceListView extends BaseGridView<PkSource, PkSourceGrid, FreeC
 			mb.alterState(selected);
 		}
 		
+	}
+	
+	@Override
+	public void enter(ViewChangeEvent event) {
+		super.enter(event);
+		PkSourceViewMenuItem svmi = (PkSourceViewMenuItem)((DashboardUI)UI.getCurrent()).getDm().getMmis().getMenuMap().get(PkSourceViewMenuItem.class.getName());
+		svmi.updateNotificationsCount(0);
 	}
 
 	@Override

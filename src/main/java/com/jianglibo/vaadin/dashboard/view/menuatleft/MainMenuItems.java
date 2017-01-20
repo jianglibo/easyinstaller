@@ -1,4 +1,4 @@
-package com.jianglibo.vaadin.dashboard.view;
+package com.jianglibo.vaadin.dashboard.view.menuatleft;
 
 import java.util.List;
 import java.util.Map;

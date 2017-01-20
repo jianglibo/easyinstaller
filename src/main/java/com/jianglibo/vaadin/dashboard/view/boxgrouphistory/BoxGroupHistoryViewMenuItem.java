@@ -6,8 +6,8 @@ import org.springframework.context.MessageSource;
 import com.jianglibo.vaadin.dashboard.annotation.MainMenu;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.view.DboardViewUtil;
-import com.jianglibo.vaadin.dashboard.view.MenuItemWrapper;
 import com.jianglibo.vaadin.dashboard.view.ValoMenuItemButton;
+import com.jianglibo.vaadin.dashboard.view.menuatleft.MenuItemWrapper;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
