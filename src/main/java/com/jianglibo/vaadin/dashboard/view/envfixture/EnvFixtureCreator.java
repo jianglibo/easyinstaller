@@ -22,9 +22,12 @@ import com.google.common.collect.Sets;
 import com.jianglibo.vaadin.dashboard.config.ApplicationConfig;
 import com.jianglibo.vaadin.dashboard.domain.Box;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
+import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
 import com.jianglibo.vaadin.dashboard.domain.Person;
 import com.jianglibo.vaadin.dashboard.init.AppInitializer;
+import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
+import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxRepository;
 import com.jianglibo.vaadin.dashboard.repositories.PersonRepository;
 import com.jianglibo.vaadin.dashboard.security.PersonVo;
@@ -53,10 +56,14 @@ public class EnvFixtureCreator {
 	private final SoftwareImportor softwareImportor;
 	
 	private final ApplicationConfig applicationConfig;
+	
+	private final BoxGroupHistoryRepository bghRepo;
+	
+	private final BoxHistoryRepository bhRepo;
 
 	@Autowired
 	public EnvFixtureCreator(SoftwareImportor softwareImportor, PersonRepository personRepository, AppObjectMappers appObjectMappers,
-			BoxGroupRepository boxGroupRepository, BoxRepository boxRepository, ApplicationConfig applicationConfig) {
+			BoxGroupRepository boxGroupRepository, BoxRepository boxRepository,BoxGroupHistoryRepository bghRepo,BoxHistoryRepository bhRepo, ApplicationConfig applicationConfig) {
 		super();
 		this.personRepository = personRepository;
 		this.appObjectMappers = appObjectMappers;
@@ -64,6 +71,8 @@ public class EnvFixtureCreator {
 		this.boxRepository = boxRepository;
 		this.softwareImportor = softwareImportor;
 		this.applicationConfig = applicationConfig;
+		this.bghRepo = bghRepo;
+		this.bhRepo = bhRepo;
 	}
 
 	public static class InValidScriptProjectPathException extends Exception {
@@ -98,7 +107,14 @@ public class EnvFixtureCreator {
 				b.getBoxGroups().remove(bgInDb);
 				boxRepository.save(b);
 			});
-			boxGroupRepository.delete(bgInDb);
+			bgInDb.getHistories().forEach(h -> {
+				h.getBoxHistories().forEach(bh -> {
+					bhRepo.delete(bh);
+				});
+				bghRepo.delete(h);
+			});
+			BoxGroup bgInDb1 = boxGroupRepository.findByName(bg.getName());
+			boxGroupRepository.delete(bgInDb1);
 		}
 
 		bg.setCreator(person);
