@@ -177,11 +177,14 @@ public class TaskRunner {
 		.collect(Collectors.toList());
 		
 
-
+		List<ListenableFuture<OneThreadTaskDesc>> llfs = Lists.newArrayList();
 		
-
-		List<ListenableFuture<OneThreadTaskDesc>> llfs = onetds.stream().map(td -> service.submit(new OneTaskCallable(td, rnr)))
-				.collect(Collectors.toList());
+		onetds.stream().forEach(td -> {
+			llfs.add(service.submit(new OneTaskCallable(td, rnr)));
+		});
+		
+//		onetds.stream().map(td -> service.submit(new OneTaskCallable(td, rnr)))
+//				.collect(Collectors.toList());
 		
 		int n = this.getRunningThreads().addAndGet(llfs.size());
 		
