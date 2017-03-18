@@ -1,5 +1,6 @@
 package com.jianglibo.vaadin.dashboard.view.boxgrouphistory;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,10 +17,12 @@ import com.jianglibo.vaadin.dashboard.annotation.VaadinGridWrapper;
 import com.jianglibo.vaadin.dashboard.config.CommonMenuItemIds;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroup;
 import com.jianglibo.vaadin.dashboard.domain.BoxGroupHistory;
+import com.jianglibo.vaadin.dashboard.domain.BoxHistory;
 import com.jianglibo.vaadin.dashboard.domain.Domains;
 import com.jianglibo.vaadin.dashboard.event.ui.DashboardEventBus;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupHistoryRepository;
 import com.jianglibo.vaadin.dashboard.repositories.BoxGroupRepository;
+import com.jianglibo.vaadin.dashboard.repositories.BoxHistoryRepository;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.SimpleButtonDescription;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.ButtonGroup;
 import com.jianglibo.vaadin.dashboard.uicomponent.dynmenu.DeleteButtonDescription;
@@ -59,14 +62,17 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 	
 	private final BoxGroupHistoryRepository repository;
 	
+	private final BoxHistoryRepository boxHistoryRepo;
+	
 	private BoxGroup boxGroup;
 
 	@Autowired
-	public BoxGroupHistoryListView(BoxGroupHistoryRepository repository, BoxGroupRepository boxGroupRepository, Domains domains, MessageSource messageSource,
+	public BoxGroupHistoryListView(BoxGroupHistoryRepository repository, BoxGroupRepository boxGroupRepository, Domains domains, MessageSource messageSource,BoxHistoryRepository boxHistoryRepo,
 			ApplicationContext applicationContext) {
 		super(applicationContext, messageSource, domains, BoxGroupHistory.class, BoxGroupHistoryGrid.class);
 		this.boxGroupRepository = boxGroupRepository;
 		this.repository = repository;
+		this.boxHistoryRepo = boxHistoryRepo;
 		delayCreateContent();
 	}
 
@@ -182,7 +188,13 @@ public class BoxGroupHistoryListView extends BaseGridView<BoxGroupHistory, BoxGr
 		case CommonMenuItemIds.DELETE:
 			selected.forEach(b -> {
 				if (b.isArchived()) {
-					repository.delete(b.getId());
+					BoxGroupHistory bgh = repository.getOne(b.getId());
+//					bgh.getBoxHistories().forEach(bh -> {
+//						BoxHistory bhnn = boxHistoryRepo.findOne(bh.getId());
+//						boxHistoryRepo.delete(bhnn);
+//					});
+//					bgh.setBoxHistories(new HashSet<>());
+					repository.delete(bgh);
 					NotificationUtil.tray(getMessageSource(), "deletedone", b.getDisplayName());
 				} else {
 					b.setArchived(true);

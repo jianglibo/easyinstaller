@@ -84,8 +84,8 @@ public class Box extends BaseEntity implements HasUpdatedAt {
 	@NotEmpty
 	private String ostype;
 	
-	@OneToMany(mappedBy="box", fetch = FetchType.EAGER, cascade=CascadeType.REMOVE)
-	private List<BoxHistory> histories = Lists.newArrayList();
+//	@OneToMany(mappedBy="box", fetch = FetchType.EAGER, cascade=CascadeType.REMOVE)
+//	private List<BoxHistory> histories = Lists.newArrayList();
 	
 	@VaadinFormField(order = 3000, fieldType=Ft.TEXT_AREA)
 	private String description;
@@ -115,13 +115,13 @@ public class Box extends BaseEntity implements HasUpdatedAt {
 	@VaadinFormField(fieldType = Ft.TEXT_AREA, order = 200, rowNumber = 5)
 	private String boxRoleConfig = "";
 	
-	public List<BoxHistory> getHistories() {
-		return histories;
-	}
-
-	public void setHistories(List<BoxHistory> histories) {
-		this.histories = histories;
-	}
+//	public List<BoxHistory> getHistories() {
+//		return histories;
+//	}
+//
+//	public void setHistories(List<BoxHistory> histories) {
+//		this.histories = histories;
+//	}
 
 	public String getIp() {
 		return ip;

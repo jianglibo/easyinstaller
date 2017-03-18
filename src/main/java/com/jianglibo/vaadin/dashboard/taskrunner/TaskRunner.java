@@ -204,7 +204,7 @@ public class TaskRunner {
 						BoxHistory bh = boxHistoryRepository.save(td.getBoxHistory());
 						// may cause org.eclipse.persistence.exceptions.OptimisticLockException
 						Box box = boxRepository.findOne(bh.getBox().getId());
-						box.getHistories().add(bh);
+//						box.getHistories().add(bh);
 						bhs.add(bh);
 						box = boxRepository.save(box);
 						bh.setBox(box);;
