@@ -38,7 +38,7 @@ public class BoxGroupForm extends FormBase<BoxGroup> {
 		// because all entity maybe detached, they are not the same object.
 		Set<Box> newBoxes = bg.getBoxes();
 		Set<Box> originBoxes = Sets.newHashSet();
-		if (bg.getId() > 0) {
+		if (bg.getId() != null && bg.getId() > 0) {
 			originBoxes = boxRepository.findByBoxGroup(bg); 
 		}
 		
