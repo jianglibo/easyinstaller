@@ -26,12 +26,25 @@ public class JschExecuteResult {
 	public String getErr() {
 		return err;
 	}
-
+	
+	public String getErrNullToEmpty() {
+		if (err == null) {
+			return ""; 
+		}
+		return err;
+	}
 	public void setErr(String err) {
 		this.err = err;
 	}
 
 	public String getOut() {
+		return out;
+	}
+	
+	public String getOutNullToEmpty() {
+		if (out == null) {
+			return "";
+		}
 		return out;
 	}
 
@@ -45,5 +58,10 @@ public class JschExecuteResult {
 
 	public void setExitValue(int exitValue) {
 		this.exitValue = exitValue;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("exitVal: [%s], out: [%s], err: [%s]", getExitValue(), getOut(), getErr());
 	}
 }

@@ -1,6 +1,7 @@
 package com.jianglibo.vaadin.dashboard.ssh;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -19,35 +20,38 @@ public class TestSessionBuilder extends SshBaset {
 		assertTrue(true);
 	}
 
-//	@Test
-//	public void t() throws JSchException, IOException {
-//		JschSession jsb =  getJschSession();
-//
-//		JschExecuteResult result = jsb.exec("ls");
-//		assertThat(result.getExitStatus(), equalTo(0));
-//		assertThat(result.getState(), equalTo(ResultType.ZERO));
-//		
-//		result = jsb.exec("lxxs");
-//		assertThat(result.getState(), equalTo(ResultType.NONE_ZERO));
-//		assertTrue(result.getCmdOut().contains("command not found"));
-//	}
-//	
-//	@Test
-//	public void twhich() throws JSchException {
-//		JschSession jsb =  getJschSession();
-//
-//		JschExecuteResult result = jsb.exec("which java");
-//		assertThat(result.getState(), equalTo(ResultType.ZERO));
-//		
-//		result = jsb.exec("which alternatives");
-//		assertThat(result.getState(), equalTo(ResultType.ZERO));
-//		
-//		result = jsb.exec("which java1");
-//		printme(result.toString());
-//		
-//		result = jsb.exec("alternatives --list");
-//		printme(result.toString());
-//		
-//	}
+	@Test
+	public void t() throws JSchException, IOException {
+		JschSession jsb =  getJschSession();
+
+		JschExecuteResult result = jsb.exec("ls -l");
+		printme(result.toString());
+		assertThat(result.getExitValue(), equalTo(0));
+		assertThat(result.getErr(), equalTo(""));
+		
+		result = jsb.exec("lxxs");
+		assertThat(result.getExitValue(), equalTo(1));
+		assertTrue(result.getErr().contains("command not found"));
+	}
+	
+	@Test
+	public void twhich() throws JSchException {
+		JschSession jsb =  getJschSession();
+
+		JschExecuteResult result = jsb.exec("which java");
+		printme(result.toString());
+		assertThat(result.getExitValue(), equalTo(0));
+		
+		result = jsb.exec("which alternatives");
+		printme(result.toString());
+		assertThat(result.getErr(), equalTo(0));
+		
+		result = jsb.exec("which java1");
+		printme(result.toString());
+		
+		result = jsb.exec("alternatives --list");
+		printme(result.toString());
+		
+	}
 
 }
