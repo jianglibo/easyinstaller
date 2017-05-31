@@ -154,74 +154,83 @@ dependencies {
 
 }
 
-task listJars << {
-    def dpFile = new File("fixtures/out/dp.txt")
-    PrintWriter writer = new PrintWriter(dpFile)
-    configurations.compile.each { File file -> writer.println(file.name) }
-    writer.close();
-}
-
-task copyember << {
-
-    copy {
-        from '../m3958-ember/dist'
-        into 'src/main/resources/static/dist'
-    }
-
-    FileCollection collection = files('../m3958-ember/dist/index.html','../m3958-ember/dist/crossdomain.xml','../m3958-ember/dist/robots.txt')
-
-    copy {
-        from collection
-        into 'src/main/resources/templates/llapp'
+task listJars {
+    doLast {
+        def dpFile = new File("fixtures/out/dp.txt")
+        PrintWriter writer = new PrintWriter(dpFile)
+        configurations.compile.each { File file -> writer.println(file.name) }
+        writer.close();
     }
 }
 
-task fileToCopyList << {
+task copyember {
+    doLast {
+        copy {
+            from '../m3958-ember/dist'
+            into 'src/main/resources/static/dist'
+        }
+
+        FileCollection collection = files('../m3958-ember/dist/index.html','../m3958-ember/dist/crossdomain.xml','../m3958-ember/dist/robots.txt')
+
+        copy {
+            from collection
+            into 'src/main/resources/templates/llapp'
+        }
+    }
+}
+
+task fileToCopyList {
     // Project.files(), always use project root folder as base.
-    FileCollection collection = files('../m3958-ember/dist/index.html','../m3958-ember/dist/crossdomain.xml','../m3958-ember/dist/robots.txt')
-    collection.each {println it}
+    doLast {
+        FileCollection collection = files('../m3958-ember/dist/index.html','../m3958-ember/dist/crossdomain.xml','../m3958-ember/dist/robots.txt')
+        collection.each {println it}
+    }
 }
 
 task wrapper(type: Wrapper) { gradleVersion = '3.2.1' }
 
-task demoFindAll << {
-    def list = [1, 2, 3, 4]
+task demoFindAll {
+    doLast {
+        def list = [1, 2, 3, 4]
 
-    def f = list.find { ele -> ele == 2 }
-    println f;
+        def f = list.find { ele -> ele == 2 }
+        println f;
+    }
 }
 
-task demoFindFile << {
+task demoFindFile {
     //    def source = fileTree(dir: '../m3958-ember').matching { include 'org/gradle/api/**' }
     // 单个文件each的话，就变成了行对象。
+    doLast {
+        def source = fileTree(dir: '../m3958-ember/dist').findAll { File fn ->
 
-    def source = fileTree(dir: '../m3958-ember/dist').findAll { File fn ->
-
-        String fns = fn.toString()
-        fns.endsWith(".js") || fns.endsWith(".css")
+            String fns = fn.toString()
+            fns.endsWith(".js") || fns.endsWith(".css")
+        }
+        source.each {println it}
     }
-    source.each {println it}
 }
 /**
  gradle 的task具备许多方法和属性，https://docs.gradle.org/current/dsl/org.gradle.api.Task.html
  其它对象也是。
  */
-task demoSubstitude << {
-    def f = file('fixtures/gradle/abc.txt')
+task demoSubstitude {
+    doLast {
+        def f = file('fixtures/gradle/abc.txt')
 
-    copy {
-        into temporaryDir
-        from f
-        filter(ReplaceTokens, tokens:[name:'jlb'])
+        copy {
+            into temporaryDir
+            from f
+            filter(ReplaceTokens, tokens:[name:'jlb'])
+        }
+
+        println fileToPath(temporaryDir).resolve('abc.txt')
+
+        copy {
+            into 'fixtures/gradle'
+            from temporaryDir
+        }
     }
-
-    println fileToPath(temporaryDir).resolve('abc.txt')
-
-    copy {
-        into 'fixtures/gradle'
-        from temporaryDir
-    }
-
 }
 
 /*
